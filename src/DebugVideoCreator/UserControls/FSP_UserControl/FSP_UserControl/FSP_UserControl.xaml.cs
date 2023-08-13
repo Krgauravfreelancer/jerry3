@@ -13,32 +13,17 @@ namespace FSP_UserControl
     /// </summary>
     public partial class FSPUserControl : UserControl
     {
-
+        private int selectedProjectId;
 
         public FSPUserControl()
         {
             InitializeComponent();
-
-
-            Refresh();
         }
 
-        private void Refresh()
+        public void SetSelectedProjectIdAndReset(int project_id)
         {
-            var data = DataManagerSqlLite.GetProjects(false);
-            RefreshComboBoxes<CBVProject>(cmbProject, data, "project_name");
-        }
-
-        private void RefreshComboBoxes<T>(System.Windows.Controls.ComboBox combo, List<T> source, string columnNameToShow)
-        {
-            combo.SelectedItem = null;
-            combo.DisplayMemberPath = columnNameToShow;
-            combo.Items.Clear();
-            foreach (var item in source)
-            {
-                combo.Items.Add(item);
-            }
-
+            selectedProjectId = project_id;
+            SetUp();
         }
 
         private void PlayBtn_Click(object sender, RoutedEventArgs e)
@@ -46,14 +31,10 @@ namespace FSP_UserControl
             Player.Play();
         }
 
-        private void cmbProject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void SetUp()
         {
-            int SelectedIndex = ((ComboBox)sender).SelectedIndex + 1;
-
-            var data = DataManagerSqlLite.GetVideoEvents(SelectedIndex, true);
-
+            var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
             List<PlaylistItem> playlist = new List<PlaylistItem>();
-
             foreach (var item in data)
             {
                 TimeSpan start;
@@ -73,36 +54,27 @@ namespace FSP_UserControl
 
                 if (item.fk_videoevent_media == 1)
                 {
-                    //Its an image
                     mediaType = MediaType.Image;
                 }
-
-                if (item.fk_videoevent_media == 2)
+                else if (item.fk_videoevent_media == 2)
                 {
-                    //Its a video
                     mediaType = MediaType.Video;
                 }
-
-                if (item.fk_videoevent_media == 3)
+                else if (item.fk_videoevent_media == 3)
                 {
-                    //Its an audio
                     mediaType = MediaType.Audio;
                 }
 
                 if (videoSegments.Count > 0)
                 {
                     byte[] MediaData = videoSegments[0].videosegment_media;
-
                     PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
-
                     playlist.Add(playlistItem);
                 }
             }
 
             Player.Init(playlist);
-
             List<TimeLineItem> timeline = Player.GetPlaylist();
-
             Timeline.SetTimeline(timeline);
         }
 

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DebugVideoCreator"
-             xmlns:designviewuc="clr-namespace:DesignView_UserControl;assembly=DesignView_UserControl"
+             xmlns:fullscreenplayeruc="clr-namespace:FSP_UserControl;assembly=FSP_UserControl"
              xmlns:audiouc="clr-namespace:Audio_UserControl;assembly=Audio_UserControl"
              xmlns:timelineuc2="clr-namespace:Timeline_UserControl;assembly=Timeline_UserControl"
              xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl"
@@ -42,13 +42,13 @@
             <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
             <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
             <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-            <designviewuc:DesignView_UserControl Margin="-5,10,10,10" Height="300" Width="650" x:Name="DesignViewUserConrol"  Grid.Row="0" Grid.Column="0"  VerticalAlignment="Center" HorizontalAlignment="Center">
-                <designviewuc:DesignView_UserControl.ContextMenu >
+            <fullscreenplayeruc:FSPUserControl Margin="-5,10,10,10" Height="280" Width="650" x:Name="FSPUserConrol"  Grid.Row="0" Grid.Column="0"  VerticalAlignment="Center" HorizontalAlignment="Center">
+                <fullscreenplayeruc:FSPUserControl.ContextMenu >
                     <ContextMenu StaysOpen="true">
                         <MenuItem Header="Manage Design"/>
                     </ContextMenu>
-                </designviewuc:DesignView_UserControl.ContextMenu>
-            </designviewuc:DesignView_UserControl>
+                </fullscreenplayeruc:FSPUserControl.ContextMenu>
+            </fullscreenplayeruc:FSPUserControl>
 
             <notesuc:Notes_UserControl Grid.Row="0" Grid.Column="1"  Height="290" Margin="0" x:Name="NotesUserConrol" VerticalAlignment="Center" HorizontalAlignment="Center" />
 

@@ -245,6 +245,10 @@
       <Project>{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}</Project>
       <Name>DesignImager_UserControl</Name>
     </ProjectReference>
+    <ProjectReference Include="UserControls\FSP_UserControl\FSP_UserControl\FSP_UserControl.csproj">
+      <Project>{542a15f2-e184-4199-8739-4060d566ac03}</Project>
+      <Name>FSP_UserControl</Name>
+    </ProjectReference>
     <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
       <Name>Notes_UserControl</Name>

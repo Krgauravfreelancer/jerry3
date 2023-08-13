@@ -81,7 +81,7 @@ namespace FSP_UserControl.Controls
             {
                 Content = Text + Ext,
                 Background = Background,
-                Width = Width - 2,
+                Width = Width > 2 ? Width - 2 : 0,
                 Margin = new Thickness(1, 1, 1, 1),
                 VerticalContentAlignment = VerticalAlignment.Center,
                 HorizontalContentAlignment = HorizontalAlignment.Center,

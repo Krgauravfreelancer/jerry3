@@ -40,6 +40,9 @@ namespace DebugVideoCreator
             NotesUserConrol.Visibility = Visibility.Visible;
 
             AudioUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+
+            // Reload Control
+            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
         }
 
         private void TimelineUserConrol_BtnInsertVideoEventDataClickEvent(object sender, RoutedEventArgs e)
@@ -69,7 +72,7 @@ namespace DebugVideoCreator
                     if (insertedVideoEventId.Count > 0)
                     {
                         RefreshOrLoadComboBoxes();
-                        DesignViewUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -182,7 +185,7 @@ namespace DebugVideoCreator
                     if (insertedVideoSegmentId > 0)
                     {
                         RefreshOrLoadComboBoxes();
-                        DesignViewUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -260,11 +263,11 @@ namespace DebugVideoCreator
                 if (selectedVideoEvent.fk_videoevent_media == 3)
                 {
                     AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-                    DesignViewUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 }
                 else
                 {
-                    DesignViewUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 }
 
             }
