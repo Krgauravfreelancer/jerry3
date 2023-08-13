@@ -20,12 +20,12 @@
             <RowDefinition Height="870"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Center" VerticalAlignment="top" Height="60">
-            <Label Content="CB Video Creator - Manage Timeline" FontWeight="Bold" FontSize="16" Foreground="#0000FF"/>
-            <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#0000FF"/>
+            <Label Content="CB Video Creator - Manage Timeline" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
+            <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Height="60" HorizontalAlignment="Right" Margin="0 0 20 0">
-            <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#0000FF"  />
-            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="200" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#0000FF"  />
+            <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
+            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="200" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
         </StackPanel>
         <Grid Margin="20,0,20,20" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
@@ -37,11 +37,11 @@
                 <RowDefinition Height="310"></RowDefinition>
                 <RowDefinition Height="250"></RowDefinition>
             </Grid.RowDefinitions>
-            <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="0" />
-            <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="1" Grid.Row="0"/>
-            <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
-            <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-            <Border BorderThickness="1" BorderBrush="#0000FF"  Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+            <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" />
+            <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="0"/>
+            <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
+            <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+            <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
             <fullscreenplayeruc:FSPUserControl Margin="-5,10,10,10" Height="280" Width="650" x:Name="FSPUserConrol"  Grid.Row="0" Grid.Column="0"  VerticalAlignment="Center" HorizontalAlignment="Center">
                 <fullscreenplayeruc:FSPUserControl.ContextMenu >
                     <ContextMenu StaysOpen="true">

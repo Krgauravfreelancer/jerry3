@@ -131,8 +131,17 @@ namespace DebugVideoCreator
             return dataTable;
         }
 
-        
+        private void rbPending_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
+        private void rbWIP_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
+        private void rbArchived_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

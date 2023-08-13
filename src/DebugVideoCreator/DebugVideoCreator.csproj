@@ -207,9 +207,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="cbslogo_temp.jpg" />
     <Content Include="Images\black_background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\cbslogo_temp.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Images\manufacturing_background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
