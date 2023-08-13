@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="FSP_UserControl.FSPUserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FSP_UserControl" xmlns:fullscreenplayer_usercontrol="clr-namespace:FullScreenPlayer_UserControl;assembly=FullScreenPlayer_UserControl" xmlns:controls="clr-namespace:FSP_UserControl.Controls"
+        mc:Ignorable="d" Height="600" Width="800" Background="#FF4A4A4A">
+    <Border>
+        <DockPanel>
+            <Border  DockPanel.Dock="Top" Background="#FFC3C3C3" BorderBrush="#FFA0A0A0" BorderThickness="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Choose Project **" VerticalAlignment="Center" Margin="10"/>
+                    <ComboBox Name="cmbProject" MinWidth="150" Margin="5" SelectionChanged="cmbProject_SelectionChanged"/>
+                    <Button Name="PlayBtn" Click="PlayBtn_Click" Padding="20,5" Margin="5">Play</Button>
+                </StackPanel>
+
+            </Border>
+            <controls:TimeLine_UserControl x:Name="Timeline"  DockPanel.Dock="Top"/>
+            <TextBlock Name="PositionTxt" Text="--:--" DockPanel.Dock="Bottom" FontSize="23" HorizontalAlignment="Center" Margin="20" Foreground="White" FontWeight="Bold"/>
+            <fullscreenplayer_usercontrol:FullScreenPlayer_Control x:Name="Player" Margin="50,50,50,0" Position_Changed="Player_Position_Changed"/>
+        </DockPanel>
+    </Border>
+</UserControl>

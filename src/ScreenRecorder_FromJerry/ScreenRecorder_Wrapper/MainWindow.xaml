@@ -1,0 +1,12 @@
+﻿<Window xmlns:ScreenRecording_UserControl="clr-namespace:ScreenRecording_UserControl;assembly=ScreenRecording_UserControl"  x:Class="ScreenRecorder_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreenRecorder_Wrapper"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="100" Width="500">
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <!--<ScreenRecording_UserControl:ScreenRecorder_UserControl Name="ScreenCapture_UC" Margin="20,0"/>-->
+    </Grid>
+</Window>

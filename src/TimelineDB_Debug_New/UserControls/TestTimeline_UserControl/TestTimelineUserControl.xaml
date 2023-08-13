@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="TestTimeline_UserControl.TestTimelineUserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TestTimeline_UserControl"
+        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        mc:Ignorable="d" Height="200" Width="720">
+    <Grid>
+        <Label x:Name="lblheader" FontWeight="Bold" FontSize="16" Foreground="#0000FF"  Content="Manage Video Event" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top" Margin="0,5,0,0" />
+
+        <GroupBox HorizontalAlignment="Left" Height="160" Header="VideoEvent Table Insert" Margin="10,30,0,0" VerticalAlignment="Top" Width="700">
+            <Grid>
+                <Label Content="Project" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                <ComboBox x:Name="cmbProjectForVideoEvent" IsEnabled="False" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" Width="150" Height="25" />
+                <Label x:Name="lblTrack" Content="Track" HorizontalAlignment="Left" Margin="180,0,0,0"/>
+                <TextBox x:Name="txtTrack" HorizontalAlignment="Left" TextChanged="TxtStart_TextChanged" Margin="180,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Height="25"/>
+                <Label x:Name="lblStart" Content="Start" HorizontalAlignment="Left" Margin="350,0,0,0"/>
+                <wpfx:DateTimeUpDown x:Name="timespancontrol" Format="Custom" FormatString="HH:mm:ss" Value="00:00"
+                                     HorizontalAlignment="Left" Margin="350,30,0,0" VerticalAlignment="Top" Width="150" Height="25"/>
+                <Label x:Name="lblDuration" Content="Duration" HorizontalAlignment="Left" Margin="520,0,0,70"/>
+                <TextBox x:Name="txtDuration" HorizontalAlignment="Left" TextChanged="TxtDuration_TextChanged" Margin="520,30,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="25"/>
+                
+                
+                <Label Content="Choose Media **" HorizontalAlignment="Left" Margin="10,65,0,0"/>
+                <ComboBox x:Name="cmbMedia" SelectionChanged="cmbMedia_SelectionChanged" HorizontalAlignment="Left" Margin="10,95,0,0" VerticalAlignment="Top" Width="100" Height="25" />
+                <TextBox x:Name="txtMediaPath" HorizontalAlignment="Left" Margin="130,95,0,0" TextWrapping="Wrap" Height="25" IsEnabled="False" Text="Choose Media .." VerticalAlignment="Top" Width="270"/>
+                <Button x:Name="btnBrowse" IsEnabled="False" Content="Browse" HorizontalAlignment="Left" Margin="400,95,0,0" VerticalAlignment="Top" 
+                        Click="BtnBrowse_Click" Height="25" Width="100" RenderTransformOrigin="0.469,2.104"/>
+
+
+                <Button x:Name="btnInsert" IsEnabled="False" Content="Insert Data In VideoEvent" HorizontalAlignment="Left" Margin="520,95,0,0" VerticalAlignment="Top" Click="BtnInsertVideoEventData_Click" Height="25" Width="150" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+
+</UserControl>

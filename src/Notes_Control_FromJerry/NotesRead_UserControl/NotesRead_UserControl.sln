@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesRead_UserControl", "NotesRead_UserControl.csproj", "{8A791BA1-34F4-47B4-B7FC-26C66043500A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {67420EBE-1236-4587-96D4-21ADD13CF6BC}
+	EndGlobalSection
+EndGlobal

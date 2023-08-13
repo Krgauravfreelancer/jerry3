@@ -1,0 +1,34 @@
+﻿<Window x:Class="ScreenRecorderDB_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ScreenRecorderDB_Wrapper"
+        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        mc:Ignorable="d"
+        Loaded="OnControlLoaded"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <Button Content="Clean Key and DB" HorizontalAlignment="Left" Margin="250,30,0,0" VerticalAlignment="Top" 
+                Click="BtnCleanRegistry_Click" Height="25" Width="250" RenderTransformOrigin="0.469,2.104"/>
+                
+        <GroupBox HorizontalAlignment="Left" Height="160" Header="Image/Video Table Insert" Margin="10,80,0,0" VerticalAlignment="Top" Width="768">
+            <Grid>
+                <Label Content="Choose VideoEvent **" HorizontalAlignment="Left" Margin="15,0,0,0" />
+                <ComboBox x:Name="cmbVideoEvent" HorizontalAlignment="Left" Margin="15,30,0,0" VerticalAlignment="Top" Width="150" Height="25"                          />
+                <Label Content="Choose Media" HorizontalAlignment="Left" Margin="175,0,0,0" />
+                <ComboBox x:Name="cmbMedia" HorizontalAlignment="Left" Margin="175,30,0,0" VerticalAlignment="Top" Width="150" Height="25" SelectionChanged="cmbMedia_SelectionChanged"                         />
+                <Label Content="Choose Blob" HorizontalAlignment="Left" Margin="345,0,0,0" />
+                <ComboBox x:Name="cmbBlob" HorizontalAlignment="Left" Margin="345,30,0,0" VerticalAlignment="Top" Width="150" Height="25"                          />
+                <Button x:Name="btnAddImage" IsEnabled="False" Content="Add Image" HorizontalAlignment="Left" Margin="570,60,0,0" VerticalAlignment="Top" 
+                        Click="BtnInsertImage_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+                <Button x:Name="btnAddVideo" IsEnabled="False" Content="Add Video" HorizontalAlignment="Left" Margin="570,100,0,0" VerticalAlignment="Top" 
+                        Click="BtnInsertVideo_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+
+        
+
+    </Grid>
+
+</Window>

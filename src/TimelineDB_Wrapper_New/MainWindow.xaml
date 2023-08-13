@@ -1,0 +1,27 @@
+﻿<Window x:Class="TimelineDB_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimelineDB_Wrapper"
+        xmlns:timelineuc="clr-namespace:TestTimeline_UserControl;assembly=TestTimeline_UserControl"
+        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        mc:Ignorable="d"
+        Title="Timeline DB Wrapper" Height="400" Width="800">
+    <Grid Background="Transparent">
+
+
+        <timelineuc:TestTimelineUserControl x:Name="TimelineUserConrol" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        <Label Content="Static Image for UC, Use Right click to add Video Event" Margin="50,220,0,0" VerticalAlignment="Top" ></Label>
+        <Image HorizontalAlignment="Left" Height="110" Margin="50,250,0,0" VerticalAlignment="Top" Width="689" Source="/TimelineUserControl.jpg"/>
+
+        <Grid.ContextMenu>
+            <ContextMenu Name="cm" StaysOpen="true">
+                <MenuItem Header="Add Audio Event to Selected Timeline" IsEnabled="False"/>
+                <MenuItem Header="Add Form Event to Selected Timeline" IsEnabled="False"/>
+                <MenuItem Header="Add Video Event to Selected Timeline" Click="ContextMenuAddVideoEventDataClickEvent"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+    </Grid>
+
+</Window>

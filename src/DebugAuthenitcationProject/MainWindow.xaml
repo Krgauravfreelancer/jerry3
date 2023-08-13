@@ -1,0 +1,151 @@
+﻿<Window x:Class="AuthenitcationProject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AuthenitcationProject"
+        mc:Ignorable="d"
+        Closing="Window_Closing"
+        Title="Authentication and API Test" Height="800" Width="1250" WindowStartupLocation="CenterScreen">
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="160"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Label Content="Authenticate Retrieve Token" HorizontalAlignment="Center" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"/>
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.ColumnSpan="3">
+            <Button Content="Login √" Background="LightGreen" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Height="25" Click="BtnLogin_Click"/>
+            <Button x:Name="BtnLogOut" Background="LightGreen" Content="Logout √" Width="200" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Center" Height="25" Click="BtnLogout_Click"/>
+        </StackPanel>
+
+        <StackPanel Margin="0 10" HorizontalAlignment="Center" Grid.Row="2" Grid.Column="1" Height="50" VerticalAlignment="Top" Grid.RowSpan="2">
+            <TextBlock Text="Headers" HorizontalAlignment="Center" FontWeight="DemiBold" />
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Width="1120" Orientation="Horizontal">
+            <TextBlock Text="Access Key :" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtAccessKey" IsReadOnly="True" Height="20" Margin="30 0 0 0" Width="750" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3">
+            <TextBlock>
+                <Run>Error :</Run>
+                <Run x:Name="txtBlockError" Foreground="Red"></Run>
+            </TextBlock>
+            <TextBlock>
+                <Run>Token :</Run>
+                <Run x:Name="txtBlockLoginStatus" Foreground="Red">Not logged in</Run>
+            </TextBlock>
+            <TextBox x:Name="txtTokenNumber" Margin="5 0 10 0" Foreground="DarkBlue" Height="20" IsEnabled="false"/>
+        </StackPanel>
+        <Separator Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Height="5" VerticalAlignment="Center"/>
+
+        <Label Content="Test API Access" FontWeight="Bold" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center"/>
+        <StackPanel Grid.Column="0" Grid.Row="9" Margin="5,0,0,0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnListProject" Background="LightGreen" Content="List Projects √" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Height="25" Width="145" Click="BtnListProjects_Click"/>
+            <Button x:Name="BtnCreateProject" Background="LightGreen" Content="Create Project √" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Height="25" Width="145" Click="BtnCreateProject_Click"/>
+            <Button x:Name="BtnUpdateProject" Background="LightGreen" Content="Update Project √" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Height="25" Width="145" Click="BtnUpdateProject_Click"/>
+            <Button x:Name="BtnPatchtProject" Background="LightGreen" Content="Patch Project √" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Height="25" Width="145" Click="BtnPatchProject_Click"/>
+            <Button x:Name="BtnGetProjectCount" Background="LightGreen" Content="Project Count √" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Height="25" Width="145" Click="BtnGetProjectCount_Click"/>
+            <Button x:Name="BtnProjectOwnerShip" Background="LightGreen" Content="Get Project OwnerShip √" Margin="10,0,0,0" Width ="145" Height="25" Click="BtnProjectOwnerShip_Click"/>
+            <Button x:Name="BtnIsAssigned" Background="LightGreen" Content="Is Assigned √" Margin="10,0,0,0" Width ="145" Height="25" Click="BtnIsAssigned_Click"/>
+
+        </StackPanel>
+        <ListBox x:Name="lstProjects" HorizontalAlignment="Left" Height="150" Margin="5 0 10 0" Width="400" Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding project_name}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Grid.Row="11" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3">
+            <Button x:Name="BtnGetMedia" Margin="5 5" Background="LightGreen" Content="List Media √" Width ="145" Height="25" Click="BtnGetMedia_Click"/>
+            <Button x:Name="BtnGetScreens" Margin="5 5" Background="LightGreen" Content="List Screens √" Width ="145" Height="25" Click="BtnGetScreens_Click"/>
+            <Button x:Name="BtnGetApp" Margin="5 5" Background="LightGreen" Content="List App √" Width ="145" Height="25" Click="BtnGetApp_Click"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="12" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetBackgroundList" Margin="5 5" Background="LightGreen"  Content="List Background √" Width ="145" Height="25" Click="BtnListBackground_Click"/>
+            <!--<Button x:Name="BtnGetBackgroundById" Margin="5 5" Content="Background By Id" Width ="145" Height="25" Click="BtnGetBackgroundById_Click"/>-->
+            <Button x:Name="BtnCreateBackground" Margin="5 5" Background="LightGreen"  Content="Create Background √" Width ="145" Height="25" Click="BtnCreateBackground_Click"/>
+            <Button x:Name="BtnUpdateBackground" Margin="5 5" Background="LightGreen" Content="Update Background √" Width ="145" Height="25" Click="BtnUpdateBackground_Click"/>
+            <Button x:Name="BtnDownloadBinary" Margin="5 5" Background="LightGreen" Content="Download Background Binary √" Width ="185" Height="25" Click="BtnDownloadBinary_Click"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="13" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetCompanyList" Margin="5 5" Background="LightGreen" Content="List Company √" Width ="145" Height="25" Click="BtnListCompany_Click"/>
+            <Button x:Name="BtnCreateCompany" Margin="5 5" Background="LightGreen" Content="Create Company √" Width ="145" Height="25" Click="BtnCreateCompany_Click"/>
+            <Button x:Name="BtnUpdateCompany" Margin="5 5" Background="LightGreen" Content="Update Company √" Width ="145" Height="25" Click="BtnUpdateCompany_Click"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="14" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetVideoEventList" Margin="5 5" Background="LightGreen" Content="List VideoEvent √" Width ="145" Height="25" Click="BtnListVideoEvent_Click"/>
+            <Button x:Name="BtnGetVideoEventById" Margin="5 5" Background="LightGreen" Content="VideoEvent By Id √" Width ="145" Height="25" Click="BtnGetVideoEventById_Click"/>
+            <Button x:Name="BtnCreateVideoEvent" Margin="5 5" Background="LightGreen" Content="Create VideoEvent √" Width ="145" Height="25" Click="BtnCreateVideoEvent_Click"/>
+            <Button x:Name="BtnUpdateVideoEvent" Margin="5 5" Background="LightGreen" Content="Update VideoEvent √" Width ="145" Height="25" Click="BtnUpdateVideoEvent_Click"/>
+            <Button x:Name="BtnPatchVideoEvent" Margin="5 5" Background="LightGreen" Content="Patch VideoEvent √" Width ="145" Height="25" Click="BtnPatchVideoEvent_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="15" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetAudioList" Margin="5 5" Background="LightGreen" Content="Get Audio List √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnListAudio_Click"/>
+            <Button x:Name="BtnGetAudioById" Margin="5 5" Background="LightGreen" Content="Audio By Id √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnGetAudioById_Click"/>
+            <Button x:Name="BtnCreateAudio" Margin="5 5" Background="LightGreen" Content="Create Audio √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateAudio_Click"/>
+            <Button x:Name="BtnUpdateAudio" Margin="5 5" Background="LightGreen" BorderBrush="Red" BorderThickness="3" Content="Update Audio √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUpdateAudio_Click"/>
+            <Button x:Name="BtnGetAudioBinary" Margin="5 5" Background="LightGreen" Content="Get Audio Binary √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnGetAudioBinary_Click"/>
+            <!--<Button x:Name="BtnUploadAudioBinary" Margin="5 5" Content="Upload Audio Binary" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUploadAudioBinary_Click"/>-->
+        </StackPanel>
+        <StackPanel Grid.Row="16" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetVideoSegmentList" Margin="5 5" Background="LightGreen" Content="Get VideoSegment List √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnListVideoSegment_Click"/>
+            <Button x:Name="BtnGetVideoSegmentById" Margin="5 5" Background="LightGreen" Content="VideoSegment By Id √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnVideoSegmentById_Click"/>
+            <Button x:Name="BtnCreateVideoSegmentImage" Margin="5 5" Background="LightGreen" Content="Create VS Image √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateVideoSegmentImage_Click"/>
+            <Button x:Name="BtnCreateVideoSegmentVideo" Margin="5 5" Background="LightGreen" Content="Create VS Video √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateVideoSegmentVideo_Click"/>
+            <Button x:Name="BtnUpdateVideoSegment" Margin="5 5" Background="LightGreen" BorderBrush="Red" BorderThickness="3" Content="Update VideoSegment √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUpdateVideoSegmentBinary_Click"/>
+            <Button x:Name="BtnPatchVideoSegment" Margin="5 5" Background="LightGreen" Content="Patch VideoSegment √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnPatchVideoSegment_Click"/>
+            <Button x:Name="BtnGetBinaryVideoSegment" Margin="5 5" Background="LightGreen" Content="Get VideoSegment Binary" HorizontalAlignment="Center" Width ="165" Height="25" Click="BtnGetBinaryVideoSegment_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="17" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetDesignList" Margin="5 5" Background="LightGreen"  Content="Get Design List √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnListDesign_Click"/>
+            <Button x:Name="BtnGetDesignById" Margin="5 5" Background="LightGreen" Content="Design By Id √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnGetDesignById_Click"/>
+            <Button x:Name="BtnCreateDesign" Margin="5 5" Background="LightGreen" Content="Create Design √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateDesign_Click"/>
+            <Button x:Name="BtnUpdateDesign" Margin="5 5" Background="LightGreen" Content="Update Design √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUpdateDesign_Click"/>
+            <Button x:Name="BtnPatchDesign" Margin="5 5" Background="LightGreen" Content="Patch Design √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnPatchDesign_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="18" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetNotesList" Margin="5 5" Background="LightGreen" Content="Get Notes List √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnListNotes_Click"/>
+            <Button x:Name="BtnGetNotesById" Margin="5 5" Background="LightGreen" Content="Notes By Id √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnGetNotesById_Click"/>
+            <Button x:Name="BtnCreateNotes" Margin="5 5" Background="LightGreen" Content="Create Notes √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateNotes_Click"/>
+            <Button x:Name="BtnUpdateNotes" Margin="5 5" Background="LightGreen" Content="Update Notes √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUpdateNotes_Click"/>
+            <Button x:Name="BtnPatchNotes" Margin="5 5" Background="LightGreen" Content="Patch Notes √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnPatchNotes_Click"/>
+        </StackPanel>
+        <StackPanel Grid.Row="19" Grid.Column="0" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
+            <Button x:Name="BtnGetFinalMp4ById" Margin="5 5" Background="LightGreen" Content="FinalMp4 By Id √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnGetFinalMp4ById_Click"/>
+            <Button x:Name="BtnCreateFinalMp4" Margin="5 5" Background="LightGreen" Content="Create FinalMp4 √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnCreateMp4_Click"/>
+            <Button x:Name="BtnUpdateFinalMp4" Margin="5 5" Background="LightGreen" BorderBrush="Red" BorderThickness="3" Content="Update FinalMp4 √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnUpdateFinalMp4_Click"/>
+            <Button x:Name="BtnDownloadFinalMp4" Margin="5 5" Background="LightGreen" Content="Download FinalMp4 √" HorizontalAlignment="Center" Width ="145" Height="25" Click="BtnDownloadFinalMp4_Click"/>
+        </StackPanel>
+
+
+    </Grid>
+</Window>

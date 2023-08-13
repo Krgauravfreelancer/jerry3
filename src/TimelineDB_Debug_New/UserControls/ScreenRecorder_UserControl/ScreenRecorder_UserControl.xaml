@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="ScreenRecording_UserControl.ScreenRecorderUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             ContextMenuClosing="UserControl_ContextMenuClosing"
+             KeyDown="UserControl_KeyDown"
+             Unloaded="UserControl_Unloaded">
+    <StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal" Margin="10">
+            <Button Margin="0,0,10,0" Name="ScreenShot" Padding="20,0" Height="25" Width="120" Click="ScreenShot_Click">ScreenShot</Button>
+            <Button Margin="0,0,10,0" Padding="10,0" Name="RecordButton" Height="25" Width="120" Click="Record_Click">Record</Button>
+            <ComboBox Name="Screens" Margin="0,0,10,0" Height="25" Width="120"  SelectionChanged="Screens_SelectionChanged"></ComboBox>
+            <Button Name="DrawFrame" Height="25" Width="120" Click="DrawFrame_Click">Draw Frame</Button>
+        </StackPanel>
+        <Label x:Name="lblRecordingInfo" HorizontalAlignment="Center" Content="Message: " Height="35" Margin="10"></Label>
+        <Button Name="SaveToDatabase" Margin="10"  Height="25" Width="120" Click="SaveToDatabase_Click">Save to Database</Button>
+    </StackPanel>
+</UserControl>

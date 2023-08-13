@@ -1,0 +1,68 @@
+﻿<Window x:Class="TimelineDB_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TimelineDB_Wrapper"
+        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        mc:Ignorable="d"
+        Loaded="OnControlLoaded"
+        Title="MainWindow" Height="600" Width="800">
+    <Grid>
+        <Button Content="Clean Key and DB" HorizontalAlignment="Left" Margin="250,30,0,0" VerticalAlignment="Top" 
+                Click="BtnCleanRegistry_Click" Height="25" Width="250" RenderTransformOrigin="0.469,2.104"/>
+        <GroupBox HorizontalAlignment="Left" Height="125" Header="VideoEvent Table Insert" Margin="10,60,0,0" VerticalAlignment="Top" Width="768">
+            <Grid>
+                <Label Content="Choose Project **" HorizontalAlignment="Left" Margin="15,0,0,42" />
+                <ComboBox x:Name="cmbProjectForVideoEvent" HorizontalAlignment="Left" Margin="15,30,0,0" VerticalAlignment="Top" Width="150" Height="25" />
+                <Label Content="Choose Media **" HorizontalAlignment="Left" Margin="180,0,0,42"/>
+                <ComboBox x:Name="cmbMediaForVideoEvent" HorizontalAlignment="Left" Margin="180,30,0,0" VerticalAlignment="Top" Width="150" Height="25" />
+                <Label x:Name="lblTrack" Content="Track" HorizontalAlignment="Left" Margin="350,0,0,70"/>
+                <TextBox x:Name="txtTrack" HorizontalAlignment="Left" TextChanged="TxtStart_TextChanged" Margin="350,30,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="25"/>
+                <Label x:Name="lblStart" Content="Start" HorizontalAlignment="Left" Margin="490,0,0,70"/>
+                <wpfx:DateTimeUpDown x:Name="timespancontrol" Format="Custom" FormatString="HH:mm:ss" Value="00:00"
+                                     HorizontalAlignment="Left" Margin="490,30,0,0" VerticalAlignment="Top" Width="120" Height="25"/>
+                <Label x:Name="lblDuration" Content="Duration" HorizontalAlignment="Left" Margin="630,0,0,70"/>
+                <TextBox x:Name="txtDuration" HorizontalAlignment="Left" TextChanged="TxtDuration_TextChanged" Margin="630,30,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Height="25"/>
+                <Button Content="Insert Data In VideoEvent" HorizontalAlignment="Left" Margin="580,65,0,0" VerticalAlignment="Top" Click="BtnInsertVideoEventData_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+        
+        <GroupBox HorizontalAlignment="Left" Height="90" Header="Image/Video Table Insert" Margin="10,210,0,0" VerticalAlignment="Top" Width="768">
+            <Grid>
+                <Label Content="Choose VideoEvent **" HorizontalAlignment="Left" Margin="15,0,0,0" />
+                <ComboBox x:Name="cmbVideoEventForVideoSegment" HorizontalAlignment="Left" Margin="15,30,0,0" VerticalAlignment="Top" Width="200" Height="25"                          />
+                <Label Content="Choose Image/Video File **" HorizontalAlignment="Left" Margin="245,0,0,0" />
+                <ComboBox x:Name="cmbImageorVideoForVideoSegment" HorizontalAlignment="Left" Margin="245,30,0,0" VerticalAlignment="Top" Width="200" Height="25"                          />
+                <Button Content="Add Image/Video" HorizontalAlignment="Left" Margin="570,30,0,0" VerticalAlignment="Top" 
+                        Click="BtnInsertImageOrVideo_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox HorizontalAlignment="Left" Height="90" Header="Audio Table Insert" Margin="10,320,0,0" VerticalAlignment="Top" Width="768">
+            <Grid>
+                <Label Content="Choose VideoEvent **" HorizontalAlignment="Left" Margin="15,0,0,0" />
+                <ComboBox x:Name="cmbVideoEventForAudio" HorizontalAlignment="Left" Margin="15,30,0,0" VerticalAlignment="Top" Width="200" Height="25"                          />
+                <Label Content="Choose Audio File **" HorizontalAlignment="Left" Margin="245,0,0,0" />
+                <ComboBox x:Name="cmbAudioMediaForAudio" HorizontalAlignment="Left" Margin="245,30,0,0" VerticalAlignment="Top" Width="200" Height="25"                          />
+                <Button Content="Add Audio" HorizontalAlignment="Left" Margin="570,30,0,0" VerticalAlignment="Top" 
+                        Click="BtnInsertAudio_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox HorizontalAlignment="Left" Height="90" Header="XML(Design) Table Insert" Margin="10,430,0,0" VerticalAlignment="Top" Width="768">
+            <Grid>
+                <Label Content="Choose VideoEvent **" HorizontalAlignment="Left" Margin="15,0,0,0" />
+                <ComboBox x:Name="cmbVideoEventForXML" HorizontalAlignment="Left" Margin="15,30,0,0" VerticalAlignment="Top" Width="150" Height="25"/>
+                <Label Content="Choose Screen **" HorizontalAlignment="Left" Margin="200,0,0,0" />
+                <ComboBox x:Name="cmbScreenForXML" HorizontalAlignment="Left" Margin="200,30,0,0" VerticalAlignment="Top" Width="150" Height="25" />
+                <Label Content="Choose XML File **" HorizontalAlignment="Left" Margin="370,0,0,0" />
+                <ComboBox x:Name="cmbXMLFileForXML" HorizontalAlignment="Left" Margin="370,30,0,0" VerticalAlignment="Top" Width="150" Height="25" />
+                <Button Content="Add XML" HorizontalAlignment="Left" Margin="570,30,0,0" VerticalAlignment="Top" 
+                        Click="BtnInsertXML_Click" Height="25" Width="170" RenderTransformOrigin="0.469,2.104"/>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+
+</Window>

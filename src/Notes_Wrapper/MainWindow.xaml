@@ -1,0 +1,25 @@
+﻿<Window x:Class="Notes_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:nrctrl="clr-namespace:NotesRead_UserControl;assembly=NotesRead_UserControl"
+        xmlns:local="clr-namespace:Notes_Wrapper"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+            <Button Content="Display Notes" Command="{Binding DisplayNotes}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"/>
+            <Button x:Name="btnManageNotes" Click="btnManageNotes_Click" Content="Manage Notes" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"/>
+        </StackPanel>
+        <nrctrl:NotesReadCtrl x:Name="notesReadCtrl" Margin="10,40,0,10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="2" Width="450"/>
+    </Grid>
+</Window>

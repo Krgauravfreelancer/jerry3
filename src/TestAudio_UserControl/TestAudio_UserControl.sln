@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33513.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAudio_UserControl", "TestAudio_UserControl.csproj", "{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B534FBF-AD46-40C2-8FE0-CBA13FBFC619}
+	EndGlobalSection
+EndGlobal
