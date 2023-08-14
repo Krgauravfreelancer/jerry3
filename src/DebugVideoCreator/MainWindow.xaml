@@ -27,15 +27,33 @@
        
 
         <Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>
-        <DataGrid x:Name="datagrid" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="auto" Height="400" VerticalAlignment="Top" Margin="15,130,0,0" />
-       
-        <Button Content="Manage Timeline" HorizontalAlignment="Left" Margin="15,550,0,0" VerticalAlignment="Top" 
-            Click="BtnManageTimeline_Click" Height="25" Width="180" RenderTransformOrigin="0.469,2.104" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-        <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="200,550,0,0" VerticalAlignment="Top" 
-            Click="BtnManageAudio_Click" Height="25" Width="180" RenderTransformOrigin="0.469,2.104" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-        <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="390,550,0,0" VerticalAlignment="Top" 
-            Click="BtnManageVideo_Click" Height="25" Width="180" RenderTransformOrigin="0.469,2.104" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+        <DataGrid x:Name="datagrid" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="1160" Height="400" VerticalAlignment="Top" Margin="0,130,0,0" Style="{DynamicResource DataGridStyle1}" />
 
+        <StackPanel Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center">
+            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
+                Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
+                Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+        </StackPanel>
     </Grid>
+    <Window.Resources>
+        <!-- DataGrid style -->
+        <Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
+            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle1}"/>
+        </Style>
+        <!-- DataGridColumnHeader style -->
+        <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#3381CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="ToolTip" Value="Click to sort."/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
 
 </Window>

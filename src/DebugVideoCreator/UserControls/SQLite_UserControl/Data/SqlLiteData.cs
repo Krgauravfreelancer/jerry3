@@ -1275,6 +1275,135 @@ namespace Sqllite_Library.Data
             return projects;
         }
 
+        public static List<CBVPendingProjectList> GetPendingProjectList()
+        {
+            var projects = new List<CBVPendingProjectList>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date  FROM cbv_project ";
+
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var project = new CBVPendingProjectList
+                        {
+                            project_id = Convert.ToInt32(sqlReader["project_id"]),
+                            project_name = Convert.ToString(sqlReader["project_name"]),
+                            project_version = Convert.ToInt32(sqlReader["project_version"]),
+                            project_date = Convert.ToDateTime(sqlReader["project_date"]),
+                        };
+                        projects.Add(project);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                if (null != sqlCon)
+                {
+                    sqlCon.Close();
+                }
+                throw e;
+            }
+
+            return projects;
+
+
+
+        }
+
+        public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool archivedFlag, bool wipFlag = false)
+        {
+            var projects = new List<CBVWIPOrArchivedProjectList>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date  FROM cbv_project ";
+
+            if (wipFlag)
+                sqlQueryString = $@"
+                    SELECT P.project_id, P.project_name, P.project_version, P.project_date,
+                            CASE 
+			                    When VECount.VideoEventCount is NULL Then 0
+			                    When VECount.VideoEventCount = 0 Then 0
+			                    Else 1
+		                    End project_started,
+		                    CASE 
+		                        When VECount.VideoEventCount Is Null Then 0
+		                        Else VECount.VideoEventCount 
+		                    End project_videoeventcount
+                    FROM cbv_project P
+                    LEFT JOIN (
+                                Select fk_videoevent_project, count(fk_videoevent_project) as VideoEventCount
+                                from cbv_videoevent VE 
+			                    group by fk_videoevent_project
+                                ) as VECount on VECount.fk_videoevent_project = P.project_id
+					";
+            
+            sqlQueryString += $@" WHERE project_archived={archivedFlag}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var project = new CBVWIPOrArchivedProjectList
+                        {
+                            project_id = Convert.ToInt32(sqlReader["project_id"]),
+                            project_name = Convert.ToString(sqlReader["project_name"]),
+                            project_version = Convert.ToInt32(sqlReader["project_version"]),
+                            project_date = Convert.ToDateTime(sqlReader["project_date"]),
+                        };
+                        if (wipFlag)
+                        {
+                            project.project_started = Convert.ToBoolean(sqlReader["project_started"]);
+                            project.project_videoeventcount = Convert.ToInt32(sqlReader["project_videoeventcount"]);
+                        }
+                        projects.Add(project);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                if (null != sqlCon)
+                {
+                    sqlCon.Close();
+                }
+                throw e;
+            }
+
+            return projects;
+        }
+
         public static List<CBVVideoEvent> GetVideoEvents(int projectId, bool dependentDataFlag = false)
         {
             var data = new List<CBVVideoEvent>();

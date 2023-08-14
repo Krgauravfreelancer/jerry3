@@ -8,6 +8,7 @@ using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using DebugVideoCreator.Helpers;
 
+
 namespace DebugVideoCreator
 {
     public partial class MainWindow : Window
@@ -33,7 +34,9 @@ namespace DebugVideoCreator
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 this.Close();
             }
-            LoadProjectDataGrid();
+            SetWelcomeMessage();
+            // LoadProjectDataGrid();
+
         }
 
         #region == Events ==
@@ -63,8 +66,13 @@ namespace DebugVideoCreator
                 MessageBox.Show("Please select one recrod from Grid", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            var selectedProject = (CBVProject)datagrid.SelectedItem;
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProject.project_id);
+            int selectedProjectId;
+            if((bool)rbPending.IsChecked)
+                selectedProjectId = ((CBVPendingProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+            else
+                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId);
 
             var window = new Window
             {
@@ -101,10 +109,28 @@ namespace DebugVideoCreator
         private void LoadProjectDataGrid()
         {
             var data = DataManagerSqlLite.GetProjects(true, true);
-            //var dt = ToDataTable(data);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
             SetWelcomeMessage();
+        }
+
+        private void rbPending_Click(object sender, RoutedEventArgs e)
+        {
+            var data = DataManagerSqlLite.GetPendingProjectList();
+            datagrid.ItemsSource = data;
+            datagrid.Visibility = Visibility.Visible;
+        }
+        private void rbWIP_Click(object sender, RoutedEventArgs e)
+        {
+            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
+            datagrid.ItemsSource = data;
+            datagrid.Visibility = Visibility.Visible;
+        }
+        private void rbArchived_Click(object sender, RoutedEventArgs e)
+        {
+            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
+            datagrid.ItemsSource = data;
+            datagrid.Visibility = Visibility.Visible;
         }
 
         public DataTable ToDataTable<T>(List<T> items)
@@ -131,17 +157,6 @@ namespace DebugVideoCreator
             return dataTable;
         }
 
-        private void rbPending_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rbWIP_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void rbArchived_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+        
     }
 }

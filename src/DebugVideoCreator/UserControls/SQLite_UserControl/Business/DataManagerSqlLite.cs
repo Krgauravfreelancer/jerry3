@@ -292,6 +292,16 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetProjects(includeArchived, startedFlag);
         }
 
+        public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool includeArchived = false, bool startedFlag = false)
+        {
+            return SqlLiteData.GetWIPOrArchivedProjectList(includeArchived, startedFlag);
+        }
+
+        public static List<CBVPendingProjectList> GetPendingProjectList()
+        {
+            return SqlLiteData.GetPendingProjectList();
+        }
+
         public static int GetProjectsCount()
         {
             return SqlLiteData.GetCount("cbv_project");

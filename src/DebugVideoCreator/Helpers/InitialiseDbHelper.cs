@@ -210,14 +210,14 @@ namespace DebugVideoCreator.Helpers
                 dataTable.Columns.Add("fk_project_background", typeof(int));
                 dataTable.Columns.Add("project_date", typeof(string));
 
-                for (var i = 1; i <= 1; i++) // Made 1 rows to check DataGrid fuctionality
+                for (var i = 1; i <= 2; i++) // Made 1 rows to check DataGrid fuctionality
                 {
                     var row = dataTable.NewRow();
                     row["id"] = 1;
                     row["project_name"] = $"Sample Project - {i}";
                     row["project_version"] = i;
                     row["project_uploaded"] = false;
-                    row["project_archived"] = false;
+                    row["project_archived"] = i%2 == 0;
                     row["fk_project_background"] = 1;
                     row["project_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     row["project_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
