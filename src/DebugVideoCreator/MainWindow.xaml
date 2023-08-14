@@ -10,7 +10,7 @@
         ResizeMode="NoResize"
         Title="Video Creator" Height="850" Width="1200">
     <Grid Margin="10,10,10,10">
-        <Image Height="50" Source="/cbslogo_temp.jpg" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"></Image>
+        <Image Height="90" Source="/images/cbslogo_temp.jpg" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"></Image>
         <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
 
         <StackPanel Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center">

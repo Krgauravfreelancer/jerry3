@@ -207,7 +207,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="cbslogo_temp.jpg" />
     <Content Include="Images\black_background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
