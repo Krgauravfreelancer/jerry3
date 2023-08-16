@@ -269,15 +269,22 @@ namespace ScreenRecording_UserControl
                 }
                 else
                 {
-                    // Stop recording
-                    screenRecordingTime = stopwatch.ElapsedMilliseconds / 1000;
-                    RecordButton.Content = "Record";
+                    try
+                    {
+                        // Stop recording
+                        screenRecordingTime = stopwatch.ElapsedMilliseconds / 1000;
+                        RecordButton.Content = "Record";
 
-                    CompositionTarget.Rendering -= CompositionTarget_Rendering;
+                        CompositionTarget.Rendering -= CompositionTarget_Rendering;
 
-                    writer.Close();
-                    writer = null;
-                    ConvertFileToBlobAndAddtoDataTable(outputPath, "Recording");
+                        writer.Close();
+                        writer = null;
+                        ConvertFileToBlobAndAddtoDataTable(outputPath, "Recording");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Windows.MessageBox.Show("Failed to capture Recording: " + ex.Message, "Error Occured!", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     if (popup != null)
                     {
                         popup.IsOpen = false;
@@ -290,7 +297,7 @@ namespace ScreenRecording_UserControl
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Failed to capture Recording: " + ex.Message, "Error Occured!", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("Failed to capture Recording: " + ex.Message, "Error Occured!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

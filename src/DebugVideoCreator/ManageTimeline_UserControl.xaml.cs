@@ -72,7 +72,7 @@ namespace DebugVideoCreator
                     if (insertedVideoEventId.Count > 0)
                     {
                         RefreshOrLoadComboBoxes();
-                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                        //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -107,7 +107,7 @@ namespace DebugVideoCreator
                 {
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
-                        var dt = GetVideoEventTable();
+                        var dt = GetVideoEventDataTable();
                         var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
                         if (insertedVideoEventIds?.Count > 0)
                         {
@@ -138,7 +138,7 @@ namespace DebugVideoCreator
             }
         }
 
-        private DataTable GetVideoEventTable()
+        private DataTable GetVideoEventDataTable()
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
@@ -237,7 +237,7 @@ namespace DebugVideoCreator
         {
             if (entity == EnumEntity.ALL || entity == EnumEntity.VIDEOEVENT)
             {
-                var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
+                var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, false);
                 RefreshComboBoxes(cmbVideoEvent, data, "videoevent_id");
             }
         }
@@ -263,13 +263,7 @@ namespace DebugVideoCreator
                 if (selectedVideoEvent.fk_videoevent_media == 3)
                 {
                     AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 }
-                else
-                {
-                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                }
-
             }
            
         }

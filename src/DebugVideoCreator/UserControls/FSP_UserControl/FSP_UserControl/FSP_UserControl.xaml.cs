@@ -46,10 +46,6 @@ namespace FSP_UserControl
                 }
 
                 TimeSpan duration = TimeSpan.FromSeconds(item.videoevent_duration);
-
-                List<CBVVideoSegment> videoSegments = item.videosegment_data;
-                List<CBVAudio> AudioSegments = item.audio_data;
-
                 MediaType mediaType = MediaType.Image;
 
                 if (item.fk_videoevent_media == 1)
@@ -65,14 +61,13 @@ namespace FSP_UserControl
                     mediaType = MediaType.Audio;
                 }
 
-                if (videoSegments.Count > 0)
+                if (item.videosegment_data.Count > 0)
                 {
-                    byte[] MediaData = videoSegments[0].videosegment_media;
+                    byte[] MediaData = item.videosegment_data[0].videosegment_media;
                     PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
                     playlist.Add(playlistItem);
                 }
             }
-
             Player.Init(playlist);
             List<TimeLineItem> timeline = Player.GetPlaylist();
             Timeline.SetTimeline(timeline);
