@@ -268,3 +268,6 @@
 /src/DesignView_UserControl/obj/Debug
 /src/DesignView_UserControl/packages
 /src/DebugVideoCreator/UserControls/FSP_UserControl/FSP_UserControl/Libraries/ffprobe.exe
+/src/Sample_App_ScreenRecording/.vs/Sample_App_ScreenRecording
+/src/Sample_App_ScreenRecording/bin/x86/Debug
+/src/Sample_App_ScreenRecording/obj

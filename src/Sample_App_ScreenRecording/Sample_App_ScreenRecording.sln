@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample_App_ScreenRecording", "Sample_App_ScreenRecording.csproj", "{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Debug|x86.ActiveCfg = Debug|x86
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Debug|x86.Build.0 = Debug|x86
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Release|x86.ActiveCfg = Release|x86
+		{F5EAAC03-A7B9-4AC6-9F9B-D3BB88B7EA7E}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A1F9A43D-BF8B-4AB7-967B-0BB09EBFB437}
+	EndGlobalSection
+EndGlobal
