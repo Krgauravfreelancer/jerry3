@@ -30,8 +30,8 @@ namespace DebugVideoCreator
             lblSelectedProjectId.Content = subjectText;
 
             //Timeline
-            //TimelineUserConrol.SetSelectedProjectId(selectedProjectId);
-            //TimelineUserConrol.Visibility = Visibility.Visible;
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectId);
+            TimelineUserConrol.Visibility = Visibility.Visible;
             //TimelineUserConrol.BtnInsertVideoEventDataClickEvent += TimelineUserConrol_BtnInsertVideoEventDataClickEvent;
 
             //Test

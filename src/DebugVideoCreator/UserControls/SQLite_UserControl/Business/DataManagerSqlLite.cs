@@ -238,6 +238,16 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToBackground(data);
         }
 
+        public static List<int> InsertRowsToVoiceTimer(DataTable data)
+        {
+            return SqlLiteData.InsertRowsToVoiceTimer(data);
+        }
+
+        public static List<int> InsertRowsToVoiceAverage(DataTable data)
+        {
+            return SqlLiteData.InsertRowsToVoiceAverage(data);
+        }
+
         #endregion
 
 
@@ -312,6 +322,16 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetCount("cbv_background");
         }
 
+        public static int GetVoiceTimerCount()
+        {
+            return SqlLiteData.GetCount("cbv_voicetimer");
+        }
+
+        public static int GetVoiceAverageCount() // For Testing Purpose
+        {
+            return SqlLiteData.GetCount("cbv_voiceaverage");
+        }
+
         // Lets not fetch dependent tables be default and thats why flag is false
         public static List<CBVVideoEvent> GetVideoEvents(int projectId = 0, bool dependentDataFlag = false)
         {
@@ -358,6 +378,16 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetBackground(company_id);
         }
 
+        public static List<CBVVoiceTimer> GetVoiceTimers()
+        {
+            return SqlLiteData.GetVoiceTimers();
+        }
+
+        public static List<CBVVoiceAvergae> GetVoiceAverage()
+        {
+            return SqlLiteData.GetVoiceAverage();
+        }
+
         #endregion
 
 
@@ -396,6 +426,16 @@ namespace Sqllite_Library.Business
         public static void UpdateRowsToFinalMp4(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToFinalMp4(dataTable);
+        }
+
+        public static void UpdateRowsToVoiceTimer(DataTable dataTable)
+        {
+            SqlLiteData.UpdateRowsToVoiceTimer(dataTable);
+        }
+
+        public static void UpdateRowsToVoiceAverage(DataTable dataTable)
+        {
+            SqlLiteData.UpdateRowsToVoiceAverage(dataTable);
         }
 
         #endregion

@@ -17,6 +17,7 @@ namespace Timeline_UserControl
     public partial class Timeline_UserControl : UserControl
     {
         public bool HasData { get; set; } = false;
+        private int selectedProjectId;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -24,9 +25,14 @@ namespace Timeline_UserControl
         public Timeline_UserControl()
         {
             InitializeComponent();
+        }
 
+        public void SetSelectedProjectId(int project_id, int videoEvent_id = -1)
+        {
+            selectedProjectId = project_id;
             InitializeTimeline();
         }
+
         private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
         {
             ContextMenuAddVideoEventDataClickEvent();
@@ -142,7 +148,7 @@ namespace Timeline_UserControl
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
 
-            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents();
+            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(selectedProjectId);
             foreach (var videoEvent in videoEventList)
             {
 

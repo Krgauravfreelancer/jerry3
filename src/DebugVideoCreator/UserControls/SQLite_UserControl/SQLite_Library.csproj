@@ -116,6 +116,8 @@
     <Compile Include="Helpers\RegisteryHelper.cs" />
     <Compile Include="Models\CBVBackground.cs" />
     <Compile Include="Models\CBVCompany.cs" />
+    <Compile Include="Models\CBVVoiceAvergae.cs" />
+    <Compile Include="Models\CBVVoiceTimer.cs" />
     <Compile Include="Models\CBVResolution.cs" />
     <Compile Include="Models\CBVNotes.cs" />
     <Compile Include="Models\CBVFinalMp4.cs" />

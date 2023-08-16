@@ -79,12 +79,32 @@ namespace Sqllite_Library.Data
             }
         }
 
+        #endregion
+
+
         #region == Create Table Region ==
+        private static void CreateTableHelper(string sqlQueryString, SQLiteConnection sqlCon)
+        {
+            try
+            {
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                sqlQuery.ExecuteNonQuery();
+                sqlQuery.Dispose();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         private static void CreateAllTables(SQLiteConnection sqlCon)
         {
             CreateCompanyTable(sqlCon);
             CreateBackgroundTable(sqlCon);
-            
+
+            CreateVoiceTimerTable(sqlCon);
+            CreateVoiceAverageTable(sqlCon);
+
             CreateAppTable(sqlCon);
             CreateMediaTable(sqlCon);
             CreateScreenTable(sqlCon);
@@ -107,16 +127,7 @@ namespace Sqllite_Library.Data
                 'company_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
                 UNIQUE (company_name)
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateBackgroundTable(SQLiteConnection sqlCon)
@@ -127,18 +138,29 @@ namespace Sqllite_Library.Data
                 'background_media' BLOB NOT NULL  DEFAULT NULL,
                 'background_active' INTEGER(1) NOT NULL  DEFAULT 1
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
-       
+
+        private static void CreateVoiceTimerTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_voicetimer' (
+                'voicetimer_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                'voicetimer_line' TEXT NOT NULL  DEFAULT 'NULL',
+                'voicetimer_wordcount' INTEGER NOT NULL  DEFAULT 0,
+                'voicetimer_index' INTEGER NOT NULL  DEFAULT 0  
+                );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateVoiceAverageTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_voiceaverage' (
+                'voiceaverage_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                'voiceaverage_average' TEXT NOT NULL  DEFAULT '1'
+                );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
         private static void CreateAppTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_app' (
@@ -147,16 +169,7 @@ namespace Sqllite_Library.Data
                 'app_active' INTEGER(1) NOT NULL  DEFAULT 0,
                 UNIQUE (app_name)
                 );";
-
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
         
         private static void CreateMediaTable(SQLiteConnection sqlCon)
@@ -167,16 +180,7 @@ namespace Sqllite_Library.Data
                 'media_color' TEXT(15) NOT NULL  DEFAULT 'NULL', 
                 UNIQUE (media_name)
                 );";
-
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
         
         private static void CreateScreenTable(SQLiteConnection sqlCon)
@@ -187,16 +191,7 @@ namespace Sqllite_Library.Data
                 'screen_color' TEXT(15) NOT NULL DEFAULT 'NULL',
                 UNIQUE (screen_name)
                 );";
-
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
         
         private static void CreateProjectTable(SQLiteConnection sqlCon)
@@ -214,15 +209,7 @@ namespace Sqllite_Library.Data
                     'project_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                     UNIQUE (project_name, project_version)
                     );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
         
         private static void CreateVideoEventTable(SQLiteConnection sqlCon)
@@ -238,18 +225,7 @@ namespace Sqllite_Library.Data
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
                 );";
-
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateVideoSegmentTable(SQLiteConnection sqlCon)
@@ -261,16 +237,7 @@ namespace Sqllite_Library.Data
                 'videosegment_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videosegment_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateAudioTable(SQLiteConnection sqlCon)
@@ -282,16 +249,7 @@ namespace Sqllite_Library.Data
                 'audio_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'audio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateNotesTable(SQLiteConnection sqlCon)
@@ -305,16 +263,7 @@ namespace Sqllite_Library.Data
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateDesignTable(SQLiteConnection sqlCon)
@@ -328,16 +277,7 @@ namespace Sqllite_Library.Data
                 'design_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'design_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
                 );";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
         private static void CreateFinalMp4Table(SQLiteConnection sqlCon)
@@ -352,22 +292,11 @@ namespace Sqllite_Library.Data
                 'finalmp4_modifydate' TEXT(25) NOT NULL  DEFAULT '1999-01-01 00:00:00',
                 UNIQUE (fk_finalmp4_project, finalmp4_version)
                 );;";
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            CreateTableHelper(sqlQueryString, sqlCon);
         }
 
 
         #endregion  == Create Table Region ==
-
-        #endregion
 
 
         #region == Sync Methods  ==
@@ -766,8 +695,59 @@ namespace Sqllite_Library.Data
 
         #endregion
 
+        #region == Voice tables ==
+        public static List<int> InsertRowsToVoiceTimer(DataTable dataTable)
+        {
+            var insertedIds = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var values = new List<string>
+                {
+                    $"('{dr["voicetimer_line"]}', {dr["voicetimer_wordcount"]}, {dr["voicetimer_index"]})"
+                };
+                var valuesString = string.Join(",", values.ToArray());
+
+                string sqlQueryString =
+                    $@"INSERT INTO cbv_voicetimer 
+                        (voicetimer_line, voicetimer_wordcount, voicetimer_index) 
+                    VALUES 
+                        {valuesString}";
+
+                var id = InsertRecordsInTable("cbv_voicetimer", sqlQueryString);
+                insertedIds.Add(id);
+            }
+
+            return insertedIds;
+        }
+
+        public static List<int> InsertRowsToVoiceAverage(DataTable dataTable)
+        {
+            var insertedIds = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var values = new List<string>
+                {
+                    $"('{dr["voiceaverage_average"]}')"
+                };
+                var valuesString = string.Join(",", values.ToArray());
+
+                string sqlQueryString =
+                    $@"INSERT INTO cbv_voiceaverage 
+                        (voiceaverage_average) 
+                    VALUES 
+                        {valuesString}";
+
+                var id = InsertRecordsInTable("cbv_voiceaverage", sqlQueryString);
+                insertedIds.Add(id);
+            }
+
+            return insertedIds;
+        }
+
+        #endregion
+
         #region == Insert Helper ==
-        
+
         private static int InsertBlobRecordsInTable(string tableName, string InsertQuery, byte[] blob)
         {
             // Check if database is created
@@ -876,6 +856,7 @@ namespace Sqllite_Library.Data
         #endregion
 
         #endregion
+
 
         #region == GET Methods ==
 
@@ -1729,6 +1710,96 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        public static List<CBVVoiceTimer> GetVoiceTimers()
+        {
+            var data = new List<CBVVoiceTimer>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_voicetimer ";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVoiceTimer
+                        {
+                            voicetimer_id = Convert.ToInt32(sqlReader["voicetimer_id"]),
+                            voicetimer_line = Convert.ToString(sqlReader["voicetimer_line"]),
+                            voicetimer_wordcount = Convert.ToInt32(sqlReader["voicetimer_wordcount"]),
+                            voicetimer_index = Convert.ToInt32(sqlReader["voicetimer_index"])
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+
+            return data;
+        }
+
+        public static List<CBVVoiceAvergae> GetVoiceAverage()
+        {
+            var data = new List<CBVVoiceAvergae>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_voiceaverage ";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVoiceAvergae
+                        {
+                            voiceaverage_id = Convert.ToInt32(sqlReader["voiceaverage_id"]),
+                            voiceaverage_average = Convert.ToString(sqlReader["voiceaverage_average"])
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+
+            return data;
+        }
+
         #endregion
 
 
@@ -2017,7 +2088,7 @@ namespace Sqllite_Library.Data
                                         SET 
                                             fk_finalmp4_project = {Convert.ToInt32(dr["fk_finalmp4_project"])},
                                             finalmp4_version = {Convert.ToInt32(dr["finalmp4_version"])},
-                                            finalmp4_comments = '{Convert.ToInt32(dr["finalmp4_comments"])}',
+                                            finalmp4_comments = '{Convert.ToString(dr["finalmp4_comments"])}',
                                             finalmp4_media = @blob,
                                             finalmp4_modifydate = '{modifyDate}'
                                         WHERE 
@@ -2027,187 +2098,39 @@ namespace Sqllite_Library.Data
             }
         }
 
+        public static void UpdateRowsToVoiceTimer(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var voicetimer_id = Convert.ToInt32(dr["voicetimer_id"]);
+                var updateQueryString = $@" UPDATE cbv_voicetimer 
+                                        SET 
+                                            voicetimer_line = '{Convert.ToString(dr["voicetimer_line"])}',
+                                            voicetimer_wordcount = {Convert.ToInt32(dr["voicetimer_wordcount"])},
+                                            voicetimer_index = {Convert.ToInt32(dr["voicetimer_index"])}
+                                        WHERE 
+                                            voicetimer_id = {voicetimer_id}";
+                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                Console.WriteLine($@"cbv_voicetimer table update status for id - {voicetimer_id} result - {updateFlag}");
+            }
+        }
+
+        public static void UpdateRowsToVoiceAverage(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var voiceaverage_id = Convert.ToInt32(dr["voiceaverage_id"]);
+                var updateQueryString = $@" UPDATE cbv_voiceaverage 
+                                        SET 
+                                            voiceaverage_average = '{Convert.ToString(dr["voiceaverage_average"])}'
+                                        WHERE 
+                                            voiceaverage_id = {voiceaverage_id}";
+                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
+            }
+        }
+
         #endregion
 
-
-        #region == Other existing Methods - Not in use for now  ==
-        /*
-        /// <summary>
-        /// A Warapper. 
-        /// Equal to archiveProject(projectId, false);
-        /// </summary>
-        /// <param name="projectId">Project Id</param>
-        public static void UnarchiveProject(int projectId)
-        {
-            ArchiveProject(projectId, false);
-        }
-
-        
-
-        /// <summary>
-        /// Get the project list for given ID consisting Name and ID
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="Exception"> </exception>
-        public static List<CBVProject> GetProject(int projectId)
-        {
-            List<CBVProject> projects = new List<CBVProject>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            string sqlQueryString = $@"SELECT * FROM cbv_project WHERE project_id={projectId}";
-
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                var sqlReader = sqlQuery.ExecuteReader();
-
-
-                while (sqlReader.Read())
-                {
-                    var project = new CBVProject
-                    {
-                        project_id = sqlReader.GetInt32(0),
-                        project_name = sqlReader.GetString(1)
-                    };
-                    projects.Add(project);
-                }
-
-                // Close database
-                sqlCon.Close();
-            }
-            catch (Exception e)
-            {
-                if (null != sqlCon)
-                {
-                    sqlCon.Close();
-                }
-                throw e;
-            }
-
-            return projects;
-        }
-
-        public static List<CBVForm> GetForms(int videoEvent)
-        {
-            List<CBVForm> forms = new List<CBVForm>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            string sqlQueryString = $@"SELECT * FROM cbv_form WHERE fk_form_videoevent = {videoEvent}";
-
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                var sqlReader = sqlQuery.ExecuteReader();
-
-
-                while (sqlReader.Read())
-                {
-                    var form = new CBVForm
-                    {
-                        id = sqlReader.GetInt32(0),
-                        line = sqlReader.GetString(2)
-                    };
-                    forms.Add(form);
-                }
-
-                // Close database
-                sqlCon.Close();
-            }
-            catch (Exception e)
-            {
-                sqlCon?.Close();
-                throw e;
-            }
-
-            return forms;
-        }
-
-        /// <summary>
-        /// Returns event list from database for the given project if
-        /// </summary>
-        /// <param name="projectId"> Priject Id </param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public static List<CBVEvent> GetEvents(int projectId)
-        {
-            List<CBVEvent> events = new List<CBVEvent>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            string sqlQueryString = $@"SELECT * FROM cbv_videoevent WHERE fk_videoevent_project={projectId}";
-
-            SQLiteConnection sqlCon = null;
-
-            try
-            {
-                string fileName = GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                var sqlReader = sqlQuery.ExecuteReader();
-
-
-                while (sqlReader.Read())
-                {
-                    var cbvEvent = new CBVEvent
-                    {
-                        id = sqlReader.GetInt32(0),
-                        projectId = sqlReader.GetInt32(1),
-                        trakeNo = sqlReader.GetInt32(2),
-                        screenId = sqlReader.GetInt32(3),
-                        mediaId = sqlReader.GetInt32(4),
-                        name = sqlReader.GetString(5),
-                        start = sqlReader.GetDouble(6),
-                        duration = sqlReader.GetInt32(7)
-                    };
-
-                    events.Add(cbvEvent);
-                }
-
-                // Close database
-                sqlCon.Close();
-                return events;
-            }
-            catch (Exception e)
-            {
-                sqlCon?.Close();
-                throw e;
-            }
-
-        }
-        */
-
-        #endregion
     }
 }

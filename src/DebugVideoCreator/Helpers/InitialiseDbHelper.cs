@@ -17,13 +17,26 @@ namespace DebugVideoCreator.Helpers
             SyncMedia();
             SyncScreen();
             SyncCompany(); // TBD 
+
             if (DataManagerSqlLite.GetBackgroundsCount() == 0)
                 PopulateBackgroundTable();
 
             if (DataManagerSqlLite.GetProjectsCount() == 0)
                 PopulateProjectTable();
-            
-            
+
+            if (DataManagerSqlLite.GetVoiceTimerCount() == 0)
+            {
+                SyncVoiceTimer();
+                var data = DataManagerSqlLite.GetVoiceTimers(); // For testing purpose to see if all functions are working
+                Console.WriteLine(data.Count);
+            }
+
+            if (DataManagerSqlLite.GetVoiceAverageCount() == 0) // For testing purpose to see if all functions are working
+            {
+                PopulateVoiceAvergae();
+                var data = DataManagerSqlLite.GetVoiceAverage();
+                Console.WriteLine(data.Count);
+            }
         }
 
         #endregion
@@ -190,6 +203,59 @@ namespace DebugVideoCreator.Helpers
             }
         }
 
+        private static void SyncVoiceTimer()
+        {
+            try
+            {
+                var textToInsert = string.Empty;
+                var datatable = new DataTable();
+
+                datatable.Columns.Add("voicetimer_id", typeof(int));
+                datatable.Columns.Add("voicetimer_line", typeof(string));
+                datatable.Columns.Add("voicetimer_wordcount", typeof(int));
+                datatable.Columns.Add("voicetimer_index", typeof(int));
+
+                var row = datatable.NewRow();
+                textToInsert = "Accounting is how you get a clear picture of your financial position. It tells you whether or not you’re making a profit, what your cash flow is, what the current value of your company’s assets and liabilities is, and which parts of your business are actually making money.";
+                row["voicetimer_id"] = -1;
+                row["voicetimer_line"] = textToInsert;
+                row["voicetimer_wordcount"] = textToInsert.Trim().Split(' ').Length;
+                row["voicetimer_index"] = 1;
+                datatable.Rows.Add(row);
+
+                var row2 = datatable.NewRow();
+                textToInsert = "Accounting and bookkeeping are both part of the same process: keeping your financial records in order. However, bookkeeping is more concerned with recording everyday financial transactions and operations, while accounting puts that financial data to good use through analysis, strategy, and tax planning.";
+                row2["voicetimer_id"] = -1;
+                row2["voicetimer_line"] = textToInsert;
+                row2["voicetimer_wordcount"] = textToInsert.Trim().Split(' ').Length;
+                row2["voicetimer_index"] = 2;
+                datatable.Rows.Add(row2);
+
+                var row3 = datatable.NewRow();
+                textToInsert = "Accounting begins with recording transactions. Business transactions need to be put into your company’s general ledger. Recording business transactions this way is part of bookkeeping.";
+                row3["voicetimer_id"] = -1;
+                row3["voicetimer_line"] = textToInsert;
+                row3["voicetimer_wordcount"] = textToInsert.Trim().Split(' ').Length;
+                row3["voicetimer_index"] = 3;
+                datatable.Rows.Add(row3);
+
+                var row4 = datatable.NewRow();
+                textToInsert = "Bookkeeping is the first step of what accountants call the “accounting cycle”: a process designed to take in transaction data and spit out accurate and consistent financial reports.";
+                row4["voicetimer_id"] = -1;
+                row4["voicetimer_line"] = textToInsert;
+                row4["voicetimer_wordcount"] = textToInsert.Trim().Split(' ').Length;
+                row4["voicetimer_index"] = 4;
+                datatable.Rows.Add(row4);
+
+
+                var insertedIds = DataManagerSqlLite.InsertRowsToVoiceTimer(datatable);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         #region == Populate functions ==
@@ -296,6 +362,29 @@ namespace DebugVideoCreator.Helpers
                 {
                     MessageBox.Show("Background images populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+        private static void PopulateVoiceAvergae()  
+        {
+            try
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("voiceaverage_id", typeof(int));
+                dataTable.Columns.Add("voiceaverage_average", typeof(string));
+
+
+                var row = dataTable.NewRow();
+                row["voiceaverage_id"] = -1;
+                row["voiceaverage_average"] = "100";
+                dataTable.Rows.Add(row);
+
+                var insertedId = DataManagerSqlLite.InsertRowsToVoiceAverage(dataTable);
             }
             catch (Exception ex)
             {
