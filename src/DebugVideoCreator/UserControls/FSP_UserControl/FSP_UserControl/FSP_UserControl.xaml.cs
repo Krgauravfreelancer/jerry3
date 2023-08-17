@@ -3,8 +3,10 @@ using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shell;
 
 namespace FSP_UserControl
 {
@@ -18,17 +20,49 @@ namespace FSP_UserControl
         public FSPUserControl()
         {
             InitializeComponent();
+            Player.Loaded += PlayerLoaded;
+            Player.Unloaded += PlayerUnloaded;
+        }
+
+        private void PlayerUnloaded(object sender, RoutedEventArgs e)
+        {
+            //var TempPath = Path.GetTempPath() + "fsptemppath\\";
+            //if (Directory.Exists(TempPath))
+            //{
+            //    Directory.Delete(TempPath, recursive: true);
+            //}
+            Console.WriteLine($"FSPUserControl > PlayerUnloaded event is called !!!");
         }
 
         public void SetSelectedProjectIdAndReset(int project_id)
         {
             selectedProjectId = project_id;
+            if (Player.IsLoaded) SetUp();
+        }
+
+        private void PlayerLoaded(object sender, RoutedEventArgs e)
+        {
             SetUp();
         }
 
         private void PlayBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Play();
+        }
+
+        private void StopBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Player.Stop();
+        }
+
+        private void PauseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Player.Pause();
+        }
+
+        private void Timeline_TimeLine_Clicked(object sender, Controls.SeekEventArgs e)
+        {
+            Player.Seek(e.Position);
         }
 
         private void SetUp()
@@ -46,25 +80,36 @@ namespace FSP_UserControl
                 }
 
                 TimeSpan duration = TimeSpan.FromSeconds(item.videoevent_duration);
+
+                List<CBVVideoSegment> videoSegments = item.videosegment_data;
+                List<CBVAudio> AudioSegments = item.audio_data;
+
                 MediaType mediaType = MediaType.Image;
 
                 if (item.fk_videoevent_media == 1)
                 {
+                    //Its an image
                     mediaType = MediaType.Image;
                 }
-                else if (item.fk_videoevent_media == 2)
+
+                if (item.fk_videoevent_media == 2)
                 {
+                    //Its a video
                     mediaType = MediaType.Video;
                 }
-                else if (item.fk_videoevent_media == 3)
+
+                if (item.fk_videoevent_media == 3)
                 {
+                    //Its an audio
                     mediaType = MediaType.Audio;
                 }
 
-                if (item.videosegment_data.Count > 0)
+                if (videoSegments.Count > 0)
                 {
-                    byte[] MediaData = item.videosegment_data[0].videosegment_media;
+                    byte[] MediaData = videoSegments[0].videosegment_media;
+
                     PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
+
                     playlist.Add(playlistItem);
                 }
             }

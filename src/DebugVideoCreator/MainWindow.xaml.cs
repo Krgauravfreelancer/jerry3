@@ -11,7 +11,7 @@ using DebugVideoCreator.Helpers;
 
 namespace DebugVideoCreator
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IDisposable
     {
         private bool IsSetUp = false;
         public MainWindow()
@@ -87,6 +87,7 @@ namespace DebugVideoCreator
             if (result.HasValue)
             {
                 datagrid.SelectedItem = null;
+                manageTimeline_UserControl.Dispose();
             }
             
         }
@@ -157,6 +158,9 @@ namespace DebugVideoCreator
             return dataTable;
         }
 
-        
+        public void Dispose()
+        {
+            Console.WriteLine("The dispose() function has been called and the resources have been released!");
+        }
     }
 }

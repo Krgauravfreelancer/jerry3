@@ -1,5 +1,6 @@
 ﻿using Designer_UserControl;
 using DesignImager_UserControl;
+using FSP_UserControl;
 using Newtonsoft.Json;
 using ScreenRecording_UserControl;
 using Sqllite_Library.Business;
@@ -18,7 +19,7 @@ namespace DebugVideoCreator
     /// <summary>
     /// Interaction logic for ManageTimeline.xaml
     /// </summary>
-    public partial class ManageTimeline_UserControl : UserControl
+    public partial class ManageTimeline_UserControl : UserControl, IDisposable
     {
         private int selectedProjectId;
         private int selectedVideoEventId = -1;
@@ -265,7 +266,11 @@ namespace DebugVideoCreator
                     AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
                 }
             }
-           
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine("The ManageTimeline_UserControl > dispose() function has been called and the resources have been released!");
         }
     }
 }

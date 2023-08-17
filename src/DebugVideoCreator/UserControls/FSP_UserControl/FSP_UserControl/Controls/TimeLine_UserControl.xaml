@@ -4,17 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FSP_UserControl.Controls"
-             mc:Ignorable="d" 
-             Height="30" d:DesignWidth="800" SizeChanged="UserControl_SizeChanged">
-    <Canvas  >
+             mc:Ignorable="d" Height="30" d:DesignWidth="800" SizeChanged="UserControl_SizeChanged" Loaded="UserControl_Loaded" MouseEnter="UserControl_MouseEnter" MouseMove="UserControl_MouseMove" MouseLeave="UserControl_MouseLeave" Cursor="Hand">
+    <Canvas  Background="Transparent" MouseDown="Canvas_MouseDown">
         <StackPanel Name="MainStack">
-            <StackPanel Name="MediaStack" Orientation="Horizontal" Height="30" Background="purple">
+            <StackPanel Name="MediaStack" Orientation="Horizontal" Height="30" Background="#FF0068CA">
                 <Label Content="Media1 - Video" Background="DodgerBlue" Width="100" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Foreground="White" Margin="1"/>
             </StackPanel>
         </StackPanel>
-        <Border Name="Cursor" BorderThickness="2,0,0,0" Height="30" BorderBrush="White" HorizontalAlignment="Left">
-            <TextBlock Name="ElapsedTxt" VerticalAlignment="Top" Text="00:00" Foreground="Purple"  Background="White" Padding="2,0"/>
+        <Border Name="Indicator" BorderThickness="2,0,0,0" Height="30" BorderBrush="White" HorizontalAlignment="Left">
+            <TextBlock Name="ElapsedTxt" VerticalAlignment="Top" Text="00:00" Foreground="#FF007796"  Background="White" Padding="2,0" />
         </Border>
 
+        <Rectangle Name="Cursor" Width="1" Height="30" Fill="#FF00FFB3"/>
     </Canvas>
 </UserControl>
