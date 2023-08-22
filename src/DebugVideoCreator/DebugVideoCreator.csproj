@@ -140,6 +140,7 @@
     <Reference Include="System.Data.SQLite.Linq, Version=1.0.118.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>packages\System.Data.SQLite.Linq.1.0.118.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -186,7 +187,13 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
-    <Compile Include="Recorder_Speed.cs" />
+    <Compile Include="VoiceAverageHelper.cs" />
+    <Compile Include="VoiceAverage_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VoiceAverage_Form.Designer.cs">
+      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -225,6 +232,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VoiceAverage_Form.resx">
+      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Libraries\regUsernamePassword.reg" />
     <None Include="packages.config" />

@@ -209,6 +209,16 @@ namespace DebugVideoCreator
             }
         }
 
+        private void ContextMenuCalcVoiceAverage(object sender, RoutedEventArgs e)
+        {
+            var form = new VoiceAverage_Form();
+            form.ShowDialog();
+        }
+
+
+
+        
+
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
             TimelineUserConrol.LoadTimelineDataFromDb_Click();

@@ -8,15 +8,16 @@ using System.Threading.Tasks;
 
 namespace DebugVideoCreator
 {
-    public class Recorder_Speed
+    public class VoiceAverageHelper
     {
         WaveIn sourceStream;
         WaveFileWriter waveWriter;
         readonly string FilePath;
         readonly string FileName;
         readonly int InputDeviceIndex;
+        WaveOutEvent player;
 
-        public Recorder_Speed(int inputDeviceIndex, string filePath, string fileName)
+        public VoiceAverageHelper(int inputDeviceIndex, string filePath, string fileName)
         {
             //InitializeComponent();
             this.InputDeviceIndex = inputDeviceIndex;
@@ -82,10 +83,16 @@ namespace DebugVideoCreator
             using (MediaFoundationReader mainOutputStream = new MediaFoundationReader(FilePath + FileName))
             {
                 WaveChannel32 volumeStream = new WaveChannel32(mainOutputStream);
-                WaveOutEvent player = new WaveOutEvent();
+                player = new WaveOutEvent();
                 player.Init(volumeStream);
                 player.Play();
             }
+        }
+
+        public void RecordStop(object sender, EventArgs e)
+        {
+            player.Stop();
+            
         }
     }
 }

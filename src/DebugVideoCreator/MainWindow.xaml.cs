@@ -14,17 +14,12 @@ namespace DebugVideoCreator
     public partial class MainWindow : Window, IDisposable
     {
         private bool IsSetUp = false;
-        private List<CBVVoiceTimer> voiceAverageData;
-        private int voiceAverageIndex = 0;
-        private Recorder_Speed objRecord;
-        string audioFilename;
-        int totalWords = 0;
-        double totalTime = 0.1;
+        
 
         public MainWindow()
         {
             InitializeComponent();
-            voiceAverageData = new List<CBVVoiceTimer>();
+            
 
         }
 
@@ -44,8 +39,6 @@ namespace DebugVideoCreator
                 this.Close();
             }
             SetWelcomeMessage();
-            GetReadingText();
-            txtAverageNote.Text = voiceAverageData[voiceAverageIndex].voicetimer_line;
             // LoadProjectDataGrid();
 
         }
@@ -115,63 +108,16 @@ namespace DebugVideoCreator
         {
             MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
-        private void BtnRecordAudio_Click(object sender, RoutedEventArgs e)
+        private void BtnManageVoiceAverage_Click(object sender, RoutedEventArgs e)
         {
-            btnNext.IsEnabled = false;
-            btnRecord.IsEnabled = false;
-            btnPlay.IsEnabled = false;
-            btnStop.IsEnabled = true;
-            btnRecord.Content = "Recording ...";
-            audioFilename = "\\_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".wav";
-            objRecord = new Recorder_Speed(0, Directory.GetCurrentDirectory() + "\\VoiceRecordings\\", audioFilename);
-            objRecord.StartRecording(sender, e);
-        }
-
-        private void BtnStopRecording_Click(object sender, RoutedEventArgs e)
-        {
-            btnNext.IsEnabled = true;
-            btnRecord.IsEnabled = true;
-            btnStop.IsEnabled = false;
-            btnRecord.Content = "Record";
-            objRecord.RecordEnd(sender, e);
-            totalWords += voiceAverageData[voiceAverageIndex].voicetimer_wordcount;
-            totalTime += objRecord.GetDuration();
-            MessageBox.Show($@"Total {voiceAverageData[voiceAverageIndex].voicetimer_wordcount} words in time {objRecord.GetDuration()} seconds !!", "Result", MessageBoxButton.OK, MessageBoxImage.Information);
-            txtResult.Text = Math.Round(totalWords / totalTime, 2).ToString();
-            btnPlay.IsEnabled = true;
-        }
-
-        private void BtnPlayRecording_Click(object sender, RoutedEventArgs e)
-        {
-            if (audioFilename.Length >= 0)
-                objRecord.RecordPlay(sender, e);
-        }
-
-        private void BtnNext_Click(object sender, RoutedEventArgs e)
-        {
-            if (voiceAverageIndex < voiceAverageData.Count - 1)
-            {
-                voiceAverageIndex++;
-                txtAverageNote.Text = voiceAverageData[voiceAverageIndex].voicetimer_line;
-            }
-            else
-            {
-                btnNext.IsEnabled = false;
-                return;
-            }
+            var form = new VoiceAverage_Form();
+            form.ShowDialog();
         }
 
 
-
+        
 
         #endregion == Events ==
-
-        private void GetReadingText()
-        {
-            voiceAverageData = DataManagerSqlLite.GetVoiceTimers();
-
-        }
 
         private void LoadProjectDataGrid()
         {
