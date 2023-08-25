@@ -36,8 +36,16 @@ namespace Audio_UserControl
 
         public void LoadSelectedAudio(CBVVideoEvent videoevent)
         {
-            byte[] audioData = videoevent?.audio_data[0]?.audio_media;
-            WavePlayer_UC.LoadAudio(audioData);
+            if (videoevent != null)
+            {
+                byte[] audioData = videoevent?.audio_data[0]?.audio_media;
+                WavePlayer_UC.LoadAudio(audioData);
+            }
+            else
+            {
+                InitializeComponent();
+                // WavePlayer_UC = new WavePlayer_UserControl.WavePlayer();
+            }
         }
 
         public CreateEventWindow GetCreateEventWindow(int project_id)

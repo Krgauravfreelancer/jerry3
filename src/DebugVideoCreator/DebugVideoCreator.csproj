@@ -77,6 +77,22 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AudioEditor_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\AudioEditor_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="AudioPlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\AudioPlayer_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="AudioRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\AudioRecorder_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="AudioWave_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\AudioWave_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -267,6 +283,10 @@
     <Content Include="Images\white_background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Libraries\AudioEditor_UserControl.dll" />
+    <Content Include="Libraries\AudioPlayer_UserControl.dll" />
+    <Content Include="Libraries\AudioRecorder_UserControl.dll" />
+    <Content Include="Libraries\AudioWave_UserControl.dll" />
     <Content Include="Libraries\WPFToolkit.Extended.dll" />
     <Resource Include="Libraries\MergeAllInOne.txt" />
     <Content Include="Libraries\libz.exe" />
@@ -316,6 +336,9 @@
       <Project>{dd8cb85d-0c94-40fe-804e-ceb5748ebff8}</Project>
       <Name>Timeline_UserControl</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
