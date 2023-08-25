@@ -11,6 +11,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -23,6 +24,7 @@ namespace DebugVideoCreator
     {
         private int selectedProjectId;
         private int selectedVideoEventId = -1;
+        private int voiceAvgCount = -1;
         public ManageTimeline_UserControl(int projectId)
         {
             InitializeComponent();
@@ -44,6 +46,22 @@ namespace DebugVideoCreator
 
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            ResetAudioMenuOptions();
+        }
+
+        private void ResetAudioMenuOptions()
+        {
+            voiceAvgCount = DataManagerSqlLite.GetVoiceAverageCount();
+            if (voiceAvgCount > 0)
+            {
+                ((System.Windows.Controls.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = true;
+                ((System.Windows.Controls.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Re-Calculate Voice Average";
+            }
+            else
+            {
+                ((System.Windows.Controls.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = false;
+                ((System.Windows.Controls.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Calculate Voice Average";
+            }
         }
 
         private void TimelineUserConrol_BtnInsertVideoEventDataClickEvent(object sender, RoutedEventArgs e)
@@ -211,13 +229,77 @@ namespace DebugVideoCreator
 
         private void ContextMenuCalcVoiceAverage(object sender, RoutedEventArgs e)
         {
-            var form = new VoiceAverage_Form();
-            form.ShowDialog();
+            var vcForm = new VoiceAverage_Form();
+            var result = vcForm.ShowDialog();
+            if (result == DialogResult.Cancel && vcForm.response == MessageBoxResult.Yes && vcForm.newAverage.Length > 0)
+            {
+                if (voiceAvgCount <= 0)
+                {
+                    var insertedVoiceAvergaeId = SaveVoiceAverageToDatabase(vcForm.newAverage);
+                    if (insertedVoiceAvergaeId > 0)
+                    {
+                        ResetAudioMenuOptions();
+                        MessageBox.Show($"Vocie Average Added to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                else
+                {
+                    var isSuccess = UpdateVoiceAverageToDatabase(vcForm.newAverage);
+                    if (isSuccess)
+                    {
+                        ResetAudioMenuOptions();
+                        MessageBox.Show($"Vocie Average updated to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Voice average not saved to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private int SaveVoiceAverageToDatabase(string average)
+        {
+            try
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("voiceaverage_id", typeof(int));
+                dataTable.Columns.Add("voiceaverage_average", typeof(string));
+                var row = dataTable.NewRow();
+                row["voiceaverage_id"] = -1;
+                row["voiceaverage_average"] = average;
+                dataTable.Rows.Add(row);
+                var insertedId = DataManagerSqlLite.InsertRowsToVoiceAverage(dataTable);
+                return insertedId[0];
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private bool UpdateVoiceAverageToDatabase(string average)
+        {
+            try
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("voiceaverage_id", typeof(int));
+                dataTable.Columns.Add("voiceaverage_average", typeof(string));
+                var row = dataTable.NewRow();
+                row["voiceaverage_id"] = 1;
+                row["voiceaverage_average"] = average;
+                dataTable.Rows.Add(row);
+                DataManagerSqlLite.UpdateRowsToVoiceAverage(dataTable);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 
 
-        
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {

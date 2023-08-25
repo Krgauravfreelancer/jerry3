@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DebugVideoCreator
 {
@@ -89,10 +91,15 @@ namespace DebugVideoCreator
             }
         }
 
+        private void Player_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            
+        }
+
         public void RecordStop(object sender, EventArgs e)
         {
             player.Stop();
-            
+            player.Dispose();
         }
     }
 }

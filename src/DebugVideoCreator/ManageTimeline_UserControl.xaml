@@ -57,7 +57,7 @@
                 <audiouc:AudioUserControl.ContextMenu>
                     <ContextMenu StaysOpen="true">
                         <MenuItem Header="Calculate Voice Average"  Click="ContextMenuCalcVoiceAverage" />
-                        <MenuItem Header="Add from File" IsEnabled="False" Click="ContextMenuAddAudioFromFileClickEvent"/>
+                        <MenuItem Header="Add from File" Click="ContextMenuAddAudioFromFileClickEvent"/>
                         <MenuItem Header="Record Audio" IsEnabled="False"/>
                         <MenuItem Header="Manage Audio" IsEnabled="False"/>
                     </ContextMenu>

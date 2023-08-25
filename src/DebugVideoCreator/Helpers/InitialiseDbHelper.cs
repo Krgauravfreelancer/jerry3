@@ -30,13 +30,6 @@ namespace DebugVideoCreator.Helpers
                 var data = DataManagerSqlLite.GetVoiceTimers(); // For testing purpose to see if all functions are working
                 Console.WriteLine(data.Count);
             }
-
-            if (DataManagerSqlLite.GetVoiceAverageCount() == 0) // For testing purpose to see if all functions are working
-            {
-                PopulateVoiceAvergae();
-                var data = DataManagerSqlLite.GetVoiceAverage();
-                Console.WriteLine(data.Count);
-            }
         }
 
         #endregion
@@ -362,29 +355,6 @@ namespace DebugVideoCreator.Helpers
                 {
                     MessageBox.Show("Background images populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-        }
-
-        private static void PopulateVoiceAvergae()  
-        {
-            try
-            {
-                var dataTable = new DataTable();
-                dataTable.Columns.Add("voiceaverage_id", typeof(int));
-                dataTable.Columns.Add("voiceaverage_average", typeof(string));
-
-
-                var row = dataTable.NewRow();
-                row["voiceaverage_id"] = -1;
-                row["voiceaverage_average"] = "100";
-                dataTable.Rows.Add(row);
-
-                var insertedId = DataManagerSqlLite.InsertRowsToVoiceAverage(dataTable);
             }
             catch (Exception ex)
             {

@@ -35,8 +35,6 @@
                 Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
             <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
                 Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-            <Button Content="Manage Voice Avergae" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
-                Click="BtnManageVoiceAverage_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
         </StackPanel>
     </Grid>
     <Window.Resources>

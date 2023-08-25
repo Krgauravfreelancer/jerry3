@@ -108,14 +108,7 @@ namespace DebugVideoCreator
         {
             MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        private void BtnManageVoiceAverage_Click(object sender, RoutedEventArgs e)
-        {
-            var form = new VoiceAverage_Form();
-            form.ShowDialog();
-        }
-
-
-        
+               
 
         #endregion == Events ==
 
