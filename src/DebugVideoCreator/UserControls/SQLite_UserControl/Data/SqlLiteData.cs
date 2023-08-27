@@ -2020,7 +2020,6 @@ namespace Sqllite_Library.Data
                 var audio_id = Convert.ToInt32(dr["audio_id"]);
                 var updateQueryString = $@" UPDATE cbv_audio
                                         SET 
-                                            fk_audio_videoevent = {Convert.ToInt32(dr["fk_audio_videoevent"])},
                                             audio_media = @blob,
                                             audio_modifydate = '{modifyDate}'
                                         WHERE 

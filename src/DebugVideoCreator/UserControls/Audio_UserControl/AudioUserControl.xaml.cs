@@ -15,7 +15,7 @@ namespace Audio_UserControl
 
         List<AudioPlayer> AudioPlayerList = new List<AudioPlayer>();
 
-        CBVVideoEvent SelectedEvent = null;
+        CBVVideoEvent selectedEvent = null;
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
 
@@ -27,10 +27,11 @@ namespace Audio_UserControl
         #region == Public Functions ==
 
 
-        public void SetSelectedProjectId(int project_id, int videoEvent_id = -1)
+        public void SetSelected(int projectId, int videoEventId = -1, CBVVideoEvent _selectedEvent = null)
         {
-            selectedproject_id = project_id;
-            selectedVideoEventId = videoEvent_id;
+            selectedproject_id = projectId;
+            selectedVideoEventId = videoEventId;
+            selectedEvent = _selectedEvent;
             VideoEventSelectionChanged();
         }
 
@@ -41,11 +42,11 @@ namespace Audio_UserControl
                 byte[] audioData = videoevent?.audio_data[0]?.audio_media;
                 WavePlayer_UC.LoadAudio(audioData);
             }
-            else
-            {
-                InitializeComponent();
-                // WavePlayer_UC = new WavePlayer_UserControl.WavePlayer();
-            }
+            //else
+            //{
+            //    InitializeComponent();
+            //    // WavePlayer_UC = new WavePlayer_UserControl.WavePlayer();
+            //}
         }
 
         public CreateEventWindow GetCreateEventWindow(int project_id)
@@ -60,6 +61,7 @@ namespace Audio_UserControl
 
         private void VideoEventSelectionChanged()
         {
+            LoadSelectedAudio(selectedEvent);
         }
 
 

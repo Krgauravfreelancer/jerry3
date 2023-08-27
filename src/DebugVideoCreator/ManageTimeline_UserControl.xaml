@@ -59,7 +59,7 @@
                         <MenuItem Header="Calculate Voice Average"  Click="ContextMenuCalcVoiceAverage" />
                         <MenuItem Header="Add from File" Click="ContextMenuAddAudioFromFileClickEvent"/>
                         <MenuItem Header="Record Audio" Click="ContextMenuRecordAudioClickEvent"/>
-                        <MenuItem Header="Manage Audio" Click="ContextMenuManageAudioClickEvent"/>
+                        <MenuItem Header="Manage Audio" IsEnabled="False" Click="ContextMenuManageAudioClickEvent"/>
                     </ContextMenu>
                 </audiouc:AudioUserControl.ContextMenu>
             </audiouc:AudioUserControl>

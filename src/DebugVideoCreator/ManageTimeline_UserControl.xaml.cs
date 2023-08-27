@@ -28,6 +28,8 @@ namespace DebugVideoCreator
         private int selectedProjectId;
         private int selectedVideoEventId = -1;
         private int voiceAvgCount = -1;
+        private string audioMinutetext, audioSecondtext, audioSaveButtonText;
+        private bool isWavAudio = true;
         private CBVVideoEvent selectedVideoEvent;
         private PopupWindow popup;
         private AudioEditor editor;
@@ -36,6 +38,8 @@ namespace DebugVideoCreator
             InitializeComponent();
 
             popup = new PopupWindow();
+            ResetAudioMenuOptions();
+            RefreshOrLoadComboBoxes();
 
 
             selectedProjectId = projectId;
@@ -48,15 +52,15 @@ namespace DebugVideoCreator
             //TimelineUserConrol.BtnInsertVideoEventDataClickEvent += TimelineUserConrol_BtnInsertVideoEventDataClickEvent;
 
             //Test
-            RefreshOrLoadComboBoxes();
+            
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
             NotesUserConrol.Visibility = Visibility.Visible;
-
-            AudioUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+            
+            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
 
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            ResetAudioMenuOptions();
+            ResetAudio();
         }
 
         private void ResetAudioMenuOptions()
@@ -79,6 +83,7 @@ namespace DebugVideoCreator
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
         }
 
+        #region Video Event Context Menu
         private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
         {
             var screenRecorderUserControl = new ScreenRecorderUserControl(selectedProjectId);
@@ -113,10 +118,9 @@ namespace DebugVideoCreator
             }
         }
 
-        
         private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)
         {
-            
+
             var data = DataManagerSqlLite.GetBackground();
             var designerUserControl = new DesignerUserControl(selectedProjectId, JsonConvert.SerializeObject(data));
             var window = new Window
@@ -136,7 +140,7 @@ namespace DebugVideoCreator
                 {
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
-                        var dt = GetVideoEventDataTable();
+                        var dt = GetVideoEventDataTableForVideoSegment();
                         var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
                         if (insertedVideoEventIds?.Count > 0)
                         {
@@ -167,7 +171,7 @@ namespace DebugVideoCreator
             }
         }
 
-        private DataTable GetVideoEventDataTable()
+        private DataTable GetVideoEventDataTableForVideoSegment()
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
@@ -190,7 +194,6 @@ namespace DebugVideoCreator
             dtVideoEvent.Rows.Add(row);
             return dtVideoEvent;
         }
-
 
         private void ContextMenuAddFormEventDataClickEvent_Step2(int videoEventId)
         {
@@ -226,12 +229,14 @@ namespace DebugVideoCreator
             }
         }
 
+        #endregion
+
         #region == Audio Context Menu ==
 
         private void ContextMenuAddAudioFromFileClickEvent(object sender, RoutedEventArgs e)
         {
             var window = AudioUserConrol.GetCreateEventWindow(selectedProjectId);
-            
+
             var result = window.ShowDialog();
             if (result.HasValue)
             {
@@ -251,7 +256,7 @@ namespace DebugVideoCreator
                     if (insertedVoiceAvergaeId > 0)
                     {
                         ResetAudioMenuOptions();
-                        MessageBox.Show($"Vocie Average Added to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Voice Average Added to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
                 else
@@ -260,7 +265,7 @@ namespace DebugVideoCreator
                     if (isSuccess)
                     {
                         ResetAudioMenuOptions();
-                        MessageBox.Show($"Vocie Average updated to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show($"Voice Average updated to DB.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
@@ -272,43 +277,30 @@ namespace DebugVideoCreator
 
         private void ContextMenuRecordAudioClickEvent(object sender, RoutedEventArgs e)
         {
-            if (popup != null)
-            {
-                popup.Close();
-            }
-
+            popup?.Close();
             popup = new PopupWindow();
-
             AudioRecorder recorder = new AudioRecorder();
             recorder.RecordingStoppedEvent += Recorder_RecordingStoppedEvent;
-
-
             popup.Content = recorder;
             popup.ShowDialog();
         }
 
         private void ContextMenuManageAudioClickEvent(object sender, RoutedEventArgs e)
         {
-            if (popup != null)
-            {
-                popup.Close();
-            }
-
-            CreateAudioEditWindow(selectedVideoEvent?.audio_data[0]?.audio_media);
+            popup?.Close();
+            CreateAudioEditWindow(selectedVideoEvent?.audio_data[0]?.audio_media, "Update");
         }
 
         private void Recorder_RecordingStoppedEvent(object sender, RecordingStoppedArgs e)
         {
-            if (popup != null)
-            {
-                popup.Close();
-            }
+            popup?.Close();
 
-            CreateAudioEditWindow(e.RecordedStream);
+            CreateAudioEditWindow(e.RecordedStream, "Save");
         }
 
-        private void CreateAudioEditWindow(byte[] media)
+        private void CreateAudioEditWindow(byte[] media, string ButtonText)
         {
+            audioSaveButtonText = ButtonText;
             popup = new PopupWindow() { Height = 460 };
 
             editor = new AudioEditor
@@ -324,7 +316,7 @@ namespace DebugVideoCreator
             editor.Selection_Changed += (se, ev) =>
             {
                 byte[] data = editor.GetAudioSelectionAsMp3();
-                player.Init(data, "Bounce");  
+                player.Init(data, "Bounce");
             };
 
             player.PositionUpdated += (se, ev) =>
@@ -370,7 +362,7 @@ namespace DebugVideoCreator
             var textBlock = new Windows.TextBlock() { Text = "Audio Start Time:", VerticalAlignment = VerticalAlignment.Center };
             var textBlock2 = new Windows.TextBlock() { Text = "Audio Encoding:", VerticalAlignment = VerticalAlignment.Center };
 
-            var SMinTxt = new Windows.TextBox() { Margin = new Thickness(5, 5, 0, 5), MaxLength = 2, MinWidth = 25, Text = "00" };
+            var SMinTxt = new Windows.TextBox() { Margin = new Thickness(5, 5, 0, 5), MaxLength = 2, MinWidth = 25, Text = ButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[1].ToString() };
             SMinTxt.PreviewTextInput += (se, ev) =>
             {
                 int i;
@@ -388,10 +380,11 @@ namespace DebugVideoCreator
                 {
                     ((Windows.TextBox)se).Text = Convert.ToInt32(((Windows.TextBox)se).Text).ToString("D2");
                 }
+                audioMinutetext = ((Windows.TextBox)se).Text;
             };
 
             var label = new Windows.Label() { Content = "min" };
-            var SSecTxt = new Windows.TextBox() { Margin = new Thickness(5, 5, 0, 5), MaxLength = 2, MinWidth = 25, Text = "00" };
+            var SSecTxt = new Windows.TextBox() { Margin = new Thickness(5, 5, 0, 5), MaxLength = 2, MinWidth = 25, Text = ButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[2].ToString() };
 
             SSecTxt.PreviewTextInput += (se, ev) =>
             {
@@ -410,6 +403,7 @@ namespace DebugVideoCreator
                 {
                     ((Windows.TextBox)se).Text = Convert.ToInt32(((Windows.TextBox)se).Text).ToString("D2");
                 }
+                audioSecondtext = ((Windows.TextBox)se).Text;
             };
 
             var label2 = new Windows.Label() { Content = "sec" };
@@ -423,13 +417,24 @@ namespace DebugVideoCreator
             Windows.RadioButton radioButtonWav = new Windows.RadioButton() { Content = "As Wav", IsChecked = true, VerticalAlignment = VerticalAlignment.Center };
             Windows.RadioButton radioButtonMp3 = new Windows.RadioButton() { Content = "As Mp3", Margin = new Thickness(5, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
 
+
+            radioButtonWav.Checked += (se, ev) =>
+            {
+                isWavAudio = radioButtonWav.IsChecked ?? false;
+            };
+            radioButtonMp3.Checked += (se, ev) =>
+            {
+                isWavAudio = !(radioButtonMp3.IsChecked ?? false);
+            };
+
+
             Windows.StackPanel stackPanel = new Windows.StackPanel() { Orientation = Windows.Orientation.Horizontal };
             stackPanel.Children.Add(radioButtonWav);
             stackPanel.Children.Add(radioButtonMp3);
 
-            var button = new Windows.Button() { Content = "Save", Padding = new Thickness(5, 0, 5, 0), Margin = new Thickness(5), MinWidth = 100 };
+            var button = new Windows.Button() { Content = ButtonText + " To DB", Padding = new Thickness(5, 0, 5, 0), Margin = new Thickness(5), MinWidth = 100 };
             button.Click += SaveAudioToDatabase;
-            
+
 
             Windows.Button button2 = new Windows.Button() { Content = "Cancel", Padding = new Thickness(5, 0, 5, 0), Margin = new Thickness(5), MinWidth = 100 };
             button2.Click += CancelSaveAudio;
@@ -472,64 +477,93 @@ namespace DebugVideoCreator
             popup.Show();
 
         }
+
+        private DataTable GetVideoEventTableForAudio()
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("videoevent_id", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+            dataTable.Columns.Add("videoevent_track", typeof(int));
+            dataTable.Columns.Add("videoevent_start", typeof(string));
+            dataTable.Columns.Add("videoevent_duration", typeof(int));
+            dataTable.Columns.Add("videoevent_end", typeof(int));
+            dataTable.Columns.Add("videoevent_createdate", typeof(string));
+            dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+            //optional column
+            dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+            dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
+                                                                       // Since this table has Referential Integrity, so lets push one by one
+            return dataTable;
+        }
+
+        private DataTable GetAudioTableForAudio()
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("audio_id", typeof(int));
+            dataTable.Columns.Add("audio_modifydate", typeof(string));
+            dataTable.Columns.Add("audio_media", typeof(byte[])); // Media Column
+            return dataTable;
+        }
+
+
+
         private void SaveAudioToDatabase(object sender, RoutedEventArgs e)
         {
             try
             {
-                //var dataTable = new DataTable();
-                //dataTable.Columns.Add("videoevent_id", typeof(int));
-                //dataTable.Columns.Add("fk_videoevent_project", typeof(int));
-                //dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-                //dataTable.Columns.Add("videoevent_track", typeof(int));
-                //dataTable.Columns.Add("videoevent_start", typeof(string));
-                //dataTable.Columns.Add("videoevent_duration", typeof(int));
-                //dataTable.Columns.Add("videoevent_createdate", typeof(string));
-                //dataTable.Columns.Add("videoevent_modifydate", typeof(string));
-                ////optional column
-                //dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-                //dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
-                //                                                           // Since this table has Referential Integrity, so lets push one by one
-                //dataTable.Rows.Clear();
-                //var row = dataTable.NewRow();
-                //row["videoevent_id"] = -1;
-                //row["fk_videoevent_project"] = selectedProjectId;
-                //row["videoevent_track"] = 1;
-                //row["videoevent_start"] = $"00:{SMinTxt.Text}:{SSecTxt.Text}";
-                //row["videoevent_duration"] = 0;
-                //row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                //row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                //var mediaId = 3;
-                //row["fk_videoevent_media"] = mediaId;
-                //if (mediaId == 4) //select screen if media is form
-                //{
-                //    row["fk_videoevent_screen"] = 1; // Hardcoded 1 for now
-                //    row["media"] = null;
-                //}
-                //else
-                //{
-                //    //Fill Media in case image, video or audio is selected
-                //    row["fk_videoevent_screen"] = -1; // Not needed for this case
-                //    byte[] mediaByte;
-                //    if (radioButtonWav.IsChecked == true)
-                //    {
-                //        mediaByte = editor.GetAudioSelectionAsWav();
-                //    }
-                //    else
-                //    {
-                //        mediaByte = editor.GetAudioSelectionAsMp3();
-                //    }
-                //    row["media"] = mediaByte;
-                //}
-                //dataTable.Rows.Add(row);
-                //Create_Event(dataTable);
-                MessageBox.Show("Coming Soon", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                popup.Close();
+               var dataTable = GetVideoEventTableForAudio();
+                var row = dataTable.NewRow();
+                row["videoevent_id"] = audioSaveButtonText == "Save" ? -1 : selectedVideoEvent.videoevent_id;
+                row["fk_videoevent_project"] = selectedProjectId;
+                row["videoevent_track"] = 1;
+
+                audioMinutetext = audioMinutetext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[1].ToString());
+                audioSecondtext = audioSecondtext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[2].ToString());
+
+                row["videoevent_start"] = $"00:{audioMinutetext}:{audioSecondtext}";
+                row["videoevent_duration"] = 0;
+                row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                row["fk_videoevent_screen"] = -1; // Not needed for this case
+                var mediaId = 3;
+                row["fk_videoevent_media"] = mediaId;
+                //Fill Media in case image, video or audio is selected
+                byte[] mediaByte;
+                if (isWavAudio == true)
+                    mediaByte = editor.GetAudioSelectionAsWav();
+                else
+                    mediaByte = editor.GetAudioSelectionAsMp3();
+                row["media"] = mediaByte;
+                
+                dataTable.Rows.Add(row);
+                if (audioSaveButtonText == "Save")
+                {
+                    var inserted = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
+                    if (inserted?.Count > 0 && inserted[0] > 0)
+                        MessageBox.Show("Audio Successfully saved to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    popup.Close();
+                }
+                else
+                {
+                    var audioDataTable = GetAudioTableForAudio();
+                    var audioRow = audioDataTable.NewRow();
+                    audioRow["audio_id"] = selectedVideoEvent.audio_data[0]?.audio_id;
+                    audioRow["audio_media"] = mediaByte;
+                    audioRow["audio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    audioDataTable.Rows.Add(audioRow);
+                    DataManagerSqlLite.UpdateRowsToVideoEvent(dataTable);
+                    DataManagerSqlLite.UpdateRowsToAudio(audioDataTable);
+                    MessageBox.Show("Audio Successfully updated to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    popup.Close();
+                }
+                RefreshOrLoadComboBoxes();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                popup.Close();
             }
+            
         }
 
         private void CancelSaveAudio(object sender, RoutedEventArgs e)
@@ -538,7 +572,7 @@ namespace DebugVideoCreator
         }
 
 
-    private int SaveVoiceAverageToDatabase(string average)
+        private int SaveVoiceAverageToDatabase(string average)
         {
             try
             {
@@ -612,6 +646,8 @@ namespace DebugVideoCreator
             {
                 var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
                 RefreshComboBoxes(cmbVideoEvent, data, "videoevent_id");
+                selectedVideoEvent = selectedVideoEvent != null ? selectedVideoEvent : (data?.Count > 0 ? data[0] : null);
+                cmbVideoEvent.SelectedItem = selectedVideoEvent;
             }
         }
 
@@ -629,21 +665,26 @@ namespace DebugVideoCreator
         private void cmbVideoEvent_SelectionChanged(object sender, Windows.SelectionChangedEventArgs e)
         {
             selectedVideoEvent = (CBVVideoEvent)cmbVideoEvent?.SelectedItem;
-            if(selectedVideoEvent != null)
+            if (selectedVideoEvent != null)
             {
                 selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
                 NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-                if (selectedVideoEvent.fk_videoevent_media == 3)
-                {
-                    AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-                    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
-                }
-                else
-                {
-                    AudioUserConrol.LoadSelectedAudio(null);
-                    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
+                ResetAudio();
+            }
+        }
 
-                }
+        private void ResetAudio()
+        {
+            if (selectedVideoEvent?.fk_videoevent_media == 3)
+            {
+                AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
+            }
+            else
+            {
+                //AudioUserConrol.LoadSelectedAudio(null);
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
+
             }
         }
 

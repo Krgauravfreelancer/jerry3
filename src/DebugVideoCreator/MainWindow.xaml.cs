@@ -14,13 +14,11 @@ namespace DebugVideoCreator
     public partial class MainWindow : Window, IDisposable
     {
         private bool IsSetUp = false;
-        
+
 
         public MainWindow()
         {
             InitializeComponent();
-            
-
         }
 
         private void OnControlLoaded(object sender, RoutedEventArgs e)
@@ -87,13 +85,22 @@ namespace DebugVideoCreator
                 RenderSize = manageTimeline_UserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            var result = window.ShowDialog();
+            bool? result;
+            try
+            {
+                result = window.ShowDialog();
+                
+            }
+            catch (Exception ex)
+            {
+                result = window.ShowDialog();
+                
+            }
             if (result.HasValue)
             {
                 datagrid.SelectedItem = null;
                 manageTimeline_UserControl.Dispose();
             }
-
         }
 
         private void BtnManageAudio_Click(object sender, RoutedEventArgs e)
@@ -108,7 +115,7 @@ namespace DebugVideoCreator
         {
             MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-               
+
 
         #endregion == Events ==
 
