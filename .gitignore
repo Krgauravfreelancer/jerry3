@@ -272,3 +272,10 @@
 /src/Sample_App_ScreenRecording/bin/x86/Debug
 /src/Sample_App_ScreenRecording/obj
 /src/DebugVideoCreator/UserControls/FSP_UserControl/FSP_UserControl/Libraries/ffmpeg.exe
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/packages
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/ScreenRecording_UserControl/Libraries/ffmpeg.exe
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/ScreenRecording_UserControl/obj/Debug
+/src/ScreenRecorder_UserControl/.vs/ScreenRecording_UserControl
+/src/ScreenRecorder_UserControl/obj/Debug
+/src/ScreenRecorder_UserControl/packages
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/.vs/ScreenRecording_UserControl
