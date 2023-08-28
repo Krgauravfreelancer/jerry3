@@ -91,7 +91,7 @@ namespace DebugVideoCreator
                 result = window.ShowDialog();
                 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = window.ShowDialog();
                 

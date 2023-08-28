@@ -86,36 +86,36 @@ namespace DebugVideoCreator
         #region Video Event Context Menu
         private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
         {
-            var screenRecorderUserControl = new ScreenRecorderUserControl(selectedProjectId);
+            var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
             var window = new Window
             {
                 Title = "Screen Recorder",
-                Content = screenRecorderUserControl,
+                Content = screenRecordingUserControl,
                 ResizeMode = ResizeMode.NoResize,
-                Height = 200,
-                Width = 600,
-                RenderSize = screenRecorderUserControl.RenderSize,
+                Height = 450,
+                Width = 750,
+                RenderSize = screenRecordingUserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            if (result.HasValue && screenRecorderUserControl.datatable != null && screenRecorderUserControl.datatable.Rows.Count > 0)
-            {
-                if (screenRecorderUserControl.UserConsent || MessageBox.Show("Do you want save all recording??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    var insertedVideoEventId = DataManagerSqlLite.InsertRowsToVideoEvent(screenRecorderUserControl.datatable);
-                    if (insertedVideoEventId.Count > 0)
-                    {
-                        RefreshOrLoadComboBoxes();
-                        //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                        NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-                        MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
+            //if (result.HasValue && screenRecorderUserControl.datatable != null && screenRecorderUserControl.datatable.Rows.Count > 0)
+            //{
+            //    if (screenRecorderUserControl.UserConsent || MessageBox.Show("Do you want save all recording??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            //    {
+            //        var insertedVideoEventId = DataManagerSqlLite.InsertRowsToVideoEvent(screenRecorderUserControl.datatable);
+            //        if (insertedVideoEventId.Count > 0)
+            //        {
+            //            RefreshOrLoadComboBoxes();
+            //            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            //            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+            //            MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    }
+            //}
         }
 
         private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)

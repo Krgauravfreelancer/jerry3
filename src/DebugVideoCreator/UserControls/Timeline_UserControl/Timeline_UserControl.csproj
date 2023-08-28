@@ -152,6 +152,10 @@
     <Content Include="Libraries\WPFToolkit.Extended.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj">
+      <Project>{08c59c9f-fa6a-4426-8ae6-0ae881dd6b8b}</Project>
+      <Name>ScreenRecording_UserControl</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
