@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesRead_UserControl", "UserControls\NotesRead_UserControl\NotesRead_UserControl.csproj", "{8A791BA1-34F4-47B4-B7FC-26C66043500A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenRecording_UserControl", "UserControls\ScreenRecorder_UserControl\ScreenRecording_UserControl.csproj", "{D6C0BB73-A2D2-4414-904C-F7FAEC137DEA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Designer_UserControl", "UserControls\Designer_UserControl\Designer_UserControl\Designer_UserControl.csproj", "{FC79A8EF-42F9-44B2-99DA-9A853512DD20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager_UserControl", "UserControls\DesignImager_UserControl\DesignImager_UserControl\DesignImager_UserControl.csproj", "{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}"
@@ -24,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Audio_UserControl", "UserControls\Audio_UserControl\Audio_UserControl.csproj", "{92142A3C-5A46-4E19-A308-F4D549D12C2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSP_UserControl", "UserControls\FSP_UserControl\FSP_UserControl\FSP_UserControl.csproj", "{542A15F2-E184-4199-8739-4060D566AC03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenRecording_UserControl", "UserControls\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj", "{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +51,6 @@ Global
 		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D6C0BB73-A2D2-4414-904C-F7FAEC137DEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6C0BB73-A2D2-4414-904C-F7FAEC137DEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D6C0BB73-A2D2-4414-904C-F7FAEC137DEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6C0BB73-A2D2-4414-904C-F7FAEC137DEA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +71,10 @@ Global
 		{542A15F2-E184-4199-8739-4060D566AC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{542A15F2-E184-4199-8739-4060D566AC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{542A15F2-E184-4199-8739-4060D566AC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

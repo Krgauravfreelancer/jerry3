@@ -324,8 +324,8 @@
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
       <Name>Notes_UserControl</Name>
     </ProjectReference>
-    <ProjectReference Include="UserControls\ScreenRecorder_UserControl\ScreenRecording_UserControl.csproj">
-      <Project>{d6c0bb73-a2d2-4414-904c-f7faec137dea}</Project>
+    <ProjectReference Include="UserControls\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj">
+      <Project>{08c59c9f-fa6a-4426-8ae6-0ae881dd6b8b}</Project>
       <Name>ScreenRecording_UserControl</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
