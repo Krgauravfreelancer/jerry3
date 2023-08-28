@@ -15,6 +15,6 @@
             <TextBlock Name="ElapsedTxt" VerticalAlignment="Top" Text="00:00" Foreground="#FF007796"  Background="White" Padding="2,0" />
         </Border>
 
-        <Rectangle Name="Cursor" Width="1" Height="30" Fill="#FF00FFB3"/>
+        <Rectangle Name="Cursor1" Width="1" Height="30" Fill="#FF00FFB3"/>
     </Canvas>
 </UserControl>
