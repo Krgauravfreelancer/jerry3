@@ -34,40 +34,43 @@ namespace ScreenRecording_UserControl
 
             listBoxVideoEvent.SelectedItem = null;
             listBoxVideoEvent.Items.Clear();
-            foreach (var item in source)
+            if (source != null)
             {
-                var itemExtended = new VideoEventExtended(item)
+                foreach (var item in source.FindAll(x => x.fk_videoevent_media <= 2))
                 {
-                    Start = item.videoevent_start,
-                    ClipDuration = item.videoevent_duration.ToString() + " sec",
-                };
-                if (item.audio_data != null && item.audio_data.Count > 0 && item.fk_videoevent_media == 3)
-                {
-                    itemExtended.MediaName = "Audio";
+                    var itemExtended = new VideoEventExtended(item)
+                    {
+                        Start = item.videoevent_start,
+                        ClipDuration = item.videoevent_duration.ToString() + " sec",
+                    };
+                    if (item.audio_data != null && item.audio_data.Count > 0 && item.fk_videoevent_media == 3)
+                    {
+                        itemExtended.MediaName = "Audio";
+                    }
+                    else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 1)
+                    {
+                        itemExtended.MediaName = "Image";
+                    }
+                    else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 2)
+                    {
+                        itemExtended.MediaName = "Video";
+                    }
+                    else if (item.design_data != null && item.design_data.Count > 0 && item.fk_videoevent_media == 4)
+                    {
+                        itemExtended.MediaName = "Design";
+                    }
+                    else
+                    {
+                        itemExtended.MediaName = "None";
+                    }
+                    listBoxVideoEvent.Items.Add(itemExtended);
                 }
-                else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 1)
-                {
-                    itemExtended.MediaName = "Image";
-                }
-                else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 2)
-                {
-                    itemExtended.MediaName = "Video";
-                }
-                else if (item.design_data != null && item.design_data.Count > 0 && item.fk_videoevent_media == 4)
-                {
-                    itemExtended.MediaName = "Design";
-                }
-                else
-                {
-                    itemExtended.MediaName = "None";
-                }
-                listBoxVideoEvent.Items.Add(itemExtended);
             }
         }
 
         #endregion
 
-        
+
 
         private void ScreenRecorder_Control_CancelClicked(object sender, EventArgs e)
         {
@@ -76,75 +79,58 @@ namespace ScreenRecording_UserControl
 
         private void ScreenRecorder_Control_SaveClicked(object sender, SaveEventArgs e)
         {
-            if (selectedProjectId > 0)
+            List<Media> mediaList = e.MediaList;
+            try
             {
-                List<Media> mediaList = e.MediaList;
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("videoevent_id", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+                dataTable.Columns.Add("videoevent_track", typeof(int));
+                dataTable.Columns.Add("videoevent_start", typeof(string));
+                dataTable.Columns.Add("videoevent_duration", typeof(int));
+                dataTable.Columns.Add("videoevent_createdate", typeof(string));
+                dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+                //optional column
+                dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+                dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
 
-                try
+                // Since this table has Referential Integrity, so lets push one by one
+                dataTable.Rows.Clear();
+
+                foreach (Media element in mediaList)
                 {
-                    var dataTable = new DataTable();
-                    dataTable.Columns.Add("videoevent_id", typeof(int));
-                    dataTable.Columns.Add("fk_videoevent_project", typeof(int));
-                    dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-                    dataTable.Columns.Add("videoevent_track", typeof(int));
-                    dataTable.Columns.Add("videoevent_start", typeof(string));
-                    dataTable.Columns.Add("videoevent_duration", typeof(int));
-                    dataTable.Columns.Add("videoevent_createdate", typeof(string));
-                    dataTable.Columns.Add("videoevent_modifydate", typeof(string));
-                    //optional column
-                    dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-                    dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
-
-                    // Since this table has Referential Integrity, so lets push one by one
-                    dataTable.Rows.Clear();
-
-                    foreach (Media element in mediaList)
+                    var row = dataTable.NewRow();
+                    row["videoevent_id"] = -1;
+                    row["fk_videoevent_project"] = selectedProjectId;
+                    row["videoevent_track"] = 1;
+                    row["videoevent_start"] = element.StartTime.ToString(@"hh\:mm\:ss");
+                    row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    var mediaId = 0;
+                    if (element.mediaType == MediaType.Image)
                     {
-                        var row = dataTable.NewRow();
-                        row["videoevent_id"] = -1;
-                        row["fk_videoevent_project"] = selectedProjectId;
-                        row["videoevent_track"] = 1;
-                        row["videoevent_start"] = element.StartTime.ToString(@"hh\:mm\:ss");
-                        row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                        row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                        var mediaId = 0;
-
-                        if (element.mediaType == MediaType.Image)
-                        {
-                            row["videoevent_duration"] = element.Duration.TotalSeconds;
-                            mediaId = 1;
-                        }
-
-                        if (element.mediaType == MediaType.Video)
-                        {
-                            row["videoevent_duration"] = 0;
-                            mediaId = 2;
-                        }
-
-                        row["fk_videoevent_media"] = mediaId;
-
-                        row["fk_videoevent_screen"] = -1; // Not needed for this case
-
-                        row["media"] = element.mediaData;
-
-                        dataTable.Rows.Add(row);
+                        row["videoevent_duration"] = element.Duration.TotalSeconds;
+                        mediaId = 1;
+                    }
+                    else if (element.mediaType == MediaType.Video)
+                    {
+                        row["videoevent_duration"] = element.Duration.TotalSeconds;
+                        mediaId = 2;
                     }
 
-
-                    Create_Event(dataTable);
-
-                    Recorder.Reset();
+                    row["fk_videoevent_media"] = mediaId;
+                    row["fk_videoevent_screen"] = -1; // Not needed for this case
+                    row["media"] = element.mediaData;
+                    dataTable.Rows.Add(row);
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
+                Create_Event(dataTable);
+                Recorder.Reset();
+                FillListBoxVideoEvent();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Please Select a project");
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -153,7 +139,8 @@ namespace ScreenRecording_UserControl
             var displays = Recorder.GetDisplays();
 
             int i = 1;
-            foreach (var display in displays) {
+            foreach (var display in displays)
+            {
                 Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
                 i++;
             }
@@ -177,6 +164,12 @@ namespace ScreenRecording_UserControl
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void Recorder_UnLoaded(object sender, RoutedEventArgs e)
+        {
+            //e.MediaList
+
         }
     }
 

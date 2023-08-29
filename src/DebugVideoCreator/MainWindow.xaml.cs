@@ -75,7 +75,7 @@ namespace DebugVideoCreator
                 selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId);
-
+            
             var window = new Window
             {
                 Title = "Manage Timeline",

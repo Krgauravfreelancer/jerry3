@@ -40,7 +40,7 @@ namespace DebugVideoCreator
             popup = new PopupWindow();
             ResetAudioMenuOptions();
             RefreshOrLoadComboBoxes();
-
+            
 
             selectedProjectId = projectId;
             var subjectText = "Selected Project Id - " + selectedProjectId;
@@ -61,6 +61,7 @@ namespace DebugVideoCreator
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             ResetAudio();
+            TimelineUserConrol.LoadTimelineDataFromDb_Click();
         }
 
         private void ResetAudioMenuOptions()
@@ -98,24 +99,14 @@ namespace DebugVideoCreator
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            //if (result.HasValue && screenRecorderUserControl.datatable != null && screenRecorderUserControl.datatable.Rows.Count > 0)
-            //{
-            //    if (screenRecorderUserControl.UserConsent || MessageBox.Show("Do you want save all recording??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            //    {
-            //        var insertedVideoEventId = DataManagerSqlLite.InsertRowsToVideoEvent(screenRecorderUserControl.datatable);
-            //        if (insertedVideoEventId.Count > 0)
-            //        {
-            //            RefreshOrLoadComboBoxes();
-            //            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            //            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-            //            MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            //    }
-            //}
+            if (result.HasValue)
+            {
+                RefreshOrLoadComboBoxes();
+                TimelineUserConrol.LoadTimelineDataFromDb_Click();
+                FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+               
+            }
         }
 
         private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)
@@ -217,6 +208,7 @@ namespace DebugVideoCreator
                     if (insertedVideoSegmentId > 0)
                     {
                         RefreshOrLoadComboBoxes();
+                        TimelineUserConrol.LoadTimelineDataFromDb_Click();
                         FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -241,6 +233,7 @@ namespace DebugVideoCreator
             if (result.HasValue)
             {
                 RefreshOrLoadComboBoxes();
+                TimelineUserConrol.LoadTimelineDataFromDb_Click();
             }
         }
 
@@ -558,6 +551,7 @@ namespace DebugVideoCreator
                     popup.Close();
                 }
                 RefreshOrLoadComboBoxes();
+                TimelineUserConrol.LoadTimelineDataFromDb_Click();
             }
             catch (Exception ex)
             {
