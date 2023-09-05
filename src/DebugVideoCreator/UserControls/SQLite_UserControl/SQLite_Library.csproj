@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\RegisteryHelper.cs" />
+    <Compile Include="Models\CBVLocAudio.cs" />
     <Compile Include="Models\CBVBackground.cs" />
     <Compile Include="Models\CBVCompany.cs" />
     <Compile Include="Models\CBVVoiceAvergae.cs" />

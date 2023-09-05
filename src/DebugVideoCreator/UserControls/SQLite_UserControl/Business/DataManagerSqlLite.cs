@@ -116,6 +116,7 @@ namespace Sqllite_Library.Business
                     }
                     else if (mediaId == 3) //Audio
                     {
+                        /*
                         // Insert into cbv_audio
                         var dtAudio = new DataTable();
 
@@ -135,6 +136,7 @@ namespace Sqllite_Library.Business
 
                         var insertedAudioId = InsertRowsToAudio(dtAudio);
                         if (insertedAudioId <= 0) throw new Exception("Error while inserting audio table");
+                        */
                     }
                     else if (mediaId == 4)  //Design
                     {
@@ -195,6 +197,7 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToDesign(data);
         }
 
+        /*
         public static int InsertRowsToAudio(DataTable data)
         {
             var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_audio_videoevent"]);
@@ -203,6 +206,8 @@ namespace Sqllite_Library.Business
 
             return SqlLiteData.InsertRowsToAudio(data);
         }
+        */
+
 
         #endregion
 
@@ -213,6 +218,15 @@ namespace Sqllite_Library.Business
                 throw new Exception("videoevent_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToNotes(data);
+        }
+
+        public static List<int> InsertRowsToLocAudio(DataTable data)
+        {
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_notes", "notes_id", (int)data?.Rows[0]["fk_locaudio_notes"]);
+            //if (!videoeventFlag)
+            //    throw new Exception("notes_id foreign key constraint not successful ");
+
+            return SqlLiteData.InsertRowsToLocAudio(data);
         }
 
         public static int InsertRowsToFinalMp4(DataTable data)
@@ -343,10 +357,12 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetCount("cbv_videoevent");
         }
 
+        /*
         public static List<CBVAudio> GetAudio(int VideoEventId = -1)
         {
             return SqlLiteData.GetAudio(VideoEventId);
         }
+        */
 
         public static List<CBVVideoSegment> GetVideoSegment(int VideoEventId = -1)
         {
@@ -361,6 +377,11 @@ namespace Sqllite_Library.Business
         public static List<CBVNotes> GetNotes(int VideoEventId = -1)
         {
             return SqlLiteData.GetNotes(VideoEventId);
+        }
+
+        public static List<CBVLocAudio> GetLocAudio(int notesId = -1)
+        {
+            return SqlLiteData.GetLocAudio(notesId);
         }
 
         public static List<CBVFinalMp4> GetFinalMp4(int ProjectId = -1, bool dependentDataFlag = false)
@@ -408,10 +429,12 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpdateRowsToVideoSegment(dataTable);
         }
 
+        /*
         public static void UpdateRowsToAudio(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToAudio(dataTable);
         }
+        */
 
         public static void UpdateRowsToDesign(DataTable dataTable)
         {
@@ -421,6 +444,11 @@ namespace Sqllite_Library.Business
         public static void UpdateRowsToNotes(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToNotes(dataTable);
+        }
+
+        public static void UpdateRowsToLocAudio(DataTable dataTable)
+        {
+            SqlLiteData.UpdateRowsToLocAudio(dataTable);
         }
 
         public static void UpdateRowsToFinalMp4(DataTable dataTable)

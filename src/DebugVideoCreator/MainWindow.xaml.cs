@@ -116,6 +116,25 @@ namespace DebugVideoCreator
             MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
+        {
+            InitialiseDbHelper.PopulateLOCAudioTable();
+        }
+
+        private void BtnGetLOCAudio_Click(object sender, RoutedEventArgs e)
+        {
+            var data = DataManagerSqlLite.GetLocAudio();
+            var dataResult = $"id \t notesid \t media.Length \r\n";
+            foreach ( var item in data)
+            {
+                dataResult += item.ToString();
+            }
+            MessageBox.Show(dataResult, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+        
+
+            
+
 
         #endregion == Events ==
 

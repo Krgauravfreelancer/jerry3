@@ -37,7 +37,7 @@ namespace Audio_UserControl
 
         public void LoadSelectedAudio(CBVVideoEvent videoevent)
         {
-            if (videoevent != null)
+            if (videoevent != null && videoevent?.fk_videoevent_media == 3)
             {
                 byte[] audioData = videoevent?.audio_data[0]?.audio_media;
                 WavePlayer_UC.LoadAudio(audioData);
@@ -153,7 +153,7 @@ namespace Audio_UserControl
         {
             AudioPlayer myPlayer = (AudioPlayer)sender;
             int i = AudioPlayerList.IndexOf((AudioPlayer)sender);
-        
+
             //byte[] audioData = ((VideoEventExtended)listBoxAudioEvent.Items[i]).audio_data[0].audio_media;
             //myPlayer.Init(audioData, "Mini Player", true);
         }

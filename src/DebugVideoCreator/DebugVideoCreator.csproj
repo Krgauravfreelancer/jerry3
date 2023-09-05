@@ -274,6 +274,9 @@
     <Content Include="Images\black_background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Media\Audio1.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Resource Include="Images\cbslogo_temp.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

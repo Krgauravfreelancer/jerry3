@@ -530,28 +530,30 @@ namespace DebugVideoCreator
                 row["media"] = mediaByte;
                 
                 dataTable.Rows.Add(row);
-                if (audioSaveButtonText == "Save")
-                {
-                    var inserted = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
-                    if (inserted?.Count > 0 && inserted[0] > 0)
-                        MessageBox.Show("Audio Successfully saved to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                    popup.Close();
-                }
-                else
-                {
-                    var audioDataTable = GetAudioTableForAudio();
-                    var audioRow = audioDataTable.NewRow();
-                    audioRow["audio_id"] = selectedVideoEvent.audio_data[0]?.audio_id;
-                    audioRow["audio_media"] = mediaByte;
-                    audioRow["audio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    audioDataTable.Rows.Add(audioRow);
-                    DataManagerSqlLite.UpdateRowsToVideoEvent(dataTable);
-                    DataManagerSqlLite.UpdateRowsToAudio(audioDataTable);
-                    MessageBox.Show("Audio Successfully updated to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                    popup.Close();
-                }
-                RefreshOrLoadComboBoxes();
-                TimelineUserConrol.LoadTimelineDataFromDb_Click();
+                //if (audioSaveButtonText == "Save")
+                //{
+                //    var inserted = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
+                //    if (inserted?.Count > 0 && inserted[0] > 0)
+                //        MessageBox.Show("Audio Successfully saved to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                //    popup.Close();
+                //}
+                //else
+                //{
+                //    var audioDataTable = GetAudioTableForAudio();
+                //    var audioRow = audioDataTable.NewRow();
+                //    audioRow["audio_id"] = selectedVideoEvent.audio_data[0]?.audio_id;
+                //    audioRow["audio_media"] = mediaByte;
+                //    audioRow["audio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                //    audioDataTable.Rows.Add(audioRow);
+                //    DataManagerSqlLite.UpdateRowsToVideoEvent(dataTable);
+                //    DataManagerSqlLite.UpdateRowsToAudio(audioDataTable);
+                //    MessageBox.Show("Audio Successfully updated to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                //    popup.Close();
+                //}
+                //RefreshOrLoadComboBoxes();
+                //TimelineUserConrol.LoadTimelineDataFromDb_Click();
+                MessageBox.Show("Not saved to DB, Coming Soon", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                popup.Close();
             }
             catch (Exception ex)
             {

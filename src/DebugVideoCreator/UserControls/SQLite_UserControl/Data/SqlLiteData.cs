@@ -113,10 +113,13 @@ namespace Sqllite_Library.Data
             CreateVideoEventTable(sqlCon);
             
             CreateVideoSegmentTable(sqlCon);
-            CreateAudioTable(sqlCon);
+            //CreateAudioTable(sqlCon);
             CreateNotesTable(sqlCon);
             CreateDesignTable(sqlCon);
             
+            CreateLivAudioTable(sqlCon);
+            CreateLocAudioTable(sqlCon);
+
             CreateFinalMp4Table(sqlCon);
         }
 
@@ -240,6 +243,7 @@ namespace Sqllite_Library.Data
             CreateTableHelper(sqlQueryString, sqlCon);
         }
 
+        /*
         private static void CreateAudioTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_audio' (
@@ -251,6 +255,7 @@ namespace Sqllite_Library.Data
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
+        */
 
         private static void CreateNotesTable(SQLiteConnection sqlCon)
         {
@@ -262,6 +267,27 @@ namespace Sqllite_Library.Data
                 'notes_index' INTEGER NOT NULL  DEFAULT 0,
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateLocAudioTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_locaudio' (
+                'locaudio_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
+                'fk_locaudio_notes' INTEGER NOT NULL DEFAULT NULL REFERENCES 'cbv_notes' ('notes_id'),
+                'locaudio_media' BLOB NOT NULL DEFAULT NULL,
+                'locaudio_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'locaudio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateLivAudioTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_livaudio' (
+                'livaudio_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
+                'fk_livaudio_videoevent' INTEGER NOT NULL DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id')
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -575,6 +601,7 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
+        /*
         public static int InsertRowsToAudio(DataTable dataTable)
         {
             var values = new List<string>();
@@ -601,6 +628,7 @@ namespace Sqllite_Library.Data
             var insertedId = InsertBlobRecordsInTable("cbv_audio", sqlQueryString, dataTable.Rows[0]["audio_media"] as byte[]);
             return insertedId;
         }
+        */
 
         public static int InsertRowsToDesign(DataTable dataTable)
         {
@@ -661,6 +689,37 @@ namespace Sqllite_Library.Data
         }
 
         #endregion
+
+        public static List<int> InsertRowsToLocAudio(DataTable dataTable)
+        {
+            var insertedIds = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var values = new List<string>();
+                var createDate = Convert.ToString(dr["locaudio_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                values.Add($"({dr["fk_locaudio_notes"]}, @blob, '{createDate}', '{modifyDate}')");
+
+                var valuesString = string.Join(",", values.ToArray());
+
+                string sqlQueryString =
+                    $@"INSERT INTO cbv_locaudio 
+                    (fk_locaudio_notes, locaudio_media, locaudio_createdate, locaudio_modifydate) 
+                VALUES 
+                    {valuesString}";
+
+                var insertedId = InsertBlobRecordsInTable("cbv_locaudio", sqlQueryString, dataTable.Rows[0]["locaudio_media"] as byte[]);
+                insertedIds.Add(insertedId);
+            }
+            return insertedIds;
+        }
+
 
         #region == FinalMp4 Tables ==
 
@@ -1425,8 +1484,8 @@ namespace Sqllite_Library.Data
                         {
                             var videoEventId = sqlReader.GetInt32(0);
 
-                            var audioData = GetAudio(videoEventId);
-                            obj.audio_data = audioData;
+                            //var audioData = GetAudio(videoEventId);
+                            //obj.audio_data = audioData;
 
                             var videoSegmentData = GetVideoSegment(videoEventId);
                             obj.videosegment_data = videoSegmentData;
@@ -1450,6 +1509,7 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        /*
         public static List<CBVAudio> GetAudio(int videoEventId)
         {
             var data = new List<CBVAudio>();
@@ -1498,6 +1558,7 @@ namespace Sqllite_Library.Data
             }
             return data;
         }
+        */
 
         public static List<CBVVideoSegment> GetVideoSegment(int videoEventId)
         {
@@ -1648,6 +1709,55 @@ namespace Sqllite_Library.Data
                 throw e;
             }
 
+            return data;
+        }
+
+        public static List<CBVLocAudio> GetLocAudio(int notesId)
+        {
+            var data = new List<CBVLocAudio>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_locaudio ";
+            if (notesId > -1)
+                sqlQueryString += $@" where fk_locaudio_notes = {notesId}";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVLocAudio
+                        {
+                            locaudio_id = Convert.ToInt32(sqlReader["locaudio_id"]),
+                            fk_locaudio_notes = Convert.ToInt32(sqlReader["fk_locaudio_notes"]),
+                            locaudio_createdate = Convert.ToDateTime(sqlReader["locaudio_createdate"]),
+                            locaudio_modifydate = Convert.ToDateTime(sqlReader["locaudio_modifydate"]),
+                        };
+                        var byteData = GetBlobMedia(sqlReader, "locaudio_media");
+                        obj.locaudio_media = byteData;
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
             return data;
         }
 
@@ -2009,6 +2119,7 @@ namespace Sqllite_Library.Data
             }
         }
 
+        /*
         public static void UpdateRowsToAudio(DataTable dataTable)
         {
             foreach (DataRow dr in dataTable.Rows)
@@ -2028,6 +2139,7 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_audio table update status for id - {audio_id} result - {updateFlag}");
             }
         }
+        */
 
         public static void UpdateRowsToDesign(DataTable dataTable)
         {
@@ -2073,6 +2185,27 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
             }
         }
+
+        public static void UpdateRowsToLocAudio(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var locaudio_id = Convert.ToInt32(dr["locaudio_id"]);
+                var updateQueryString = $@" UPDATE cbv_locaudio
+                                        SET 
+                                            locaudio_media = @blob,
+                                            locaudio_modifydate = '{modifyDate}'
+                                        WHERE 
+                                            locaudio_id = {locaudio_id}";
+                var updateFlag = UpdateBlobRecordsInTable(updateQueryString, dr["locaudio_media"] as byte[]);
+                Console.WriteLine($@"cbv_locaudio table update status for id - {locaudio_id} result - {updateFlag}");
+            }
+        }
+        
 
         public static void UpdateRowsToFinalMp4(DataTable dataTable)
         {

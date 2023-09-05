@@ -403,6 +403,48 @@ namespace DebugVideoCreator.Helpers
         }
 
 
+        public static void PopulateLOCAudioTable()
+        {
+            try
+            {
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("locaudio_id", typeof(int));
+                dataTable.Columns.Add("fk_locaudio_notes", typeof(int));
+                dataTable.Columns.Add("locaudio_media", typeof(byte[]));
+                dataTable.Columns.Add("locaudio_createdate", typeof(string));
+                dataTable.Columns.Add("locaudio_modifydate", typeof(string));
+
+                var currentDirectory = Directory.GetCurrentDirectory();
+
+                var row = dataTable.NewRow();
+                row["locaudio_id"] = -1;
+                row["fk_locaudio_notes"] = 1;
+                row["locaudio_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                row["locaudio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var path = $"{currentDirectory}\\Media\\Audio1.mp3";
+                using (var fileStream = new FileStream(path, FileMode.Open))
+                {
+                    byte[] mp3Byte = StreamToByteArray(fileStream, 0);
+                    row["locaudio_media"] = mp3Byte;
+                }
+                dataTable.Rows.Add(row);
+               
+
+                var insertedIds = DataManagerSqlLite.InsertRowsToLocAudio(dataTable);
+                if (insertedIds.Count > 0)
+                {
+                    MessageBox.Show("Loc Audio Inserted to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+
         #endregion
     }
 }
