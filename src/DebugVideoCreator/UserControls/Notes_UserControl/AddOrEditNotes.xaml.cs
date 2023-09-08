@@ -63,6 +63,8 @@ namespace Notes_UserControl
             {
                 txtNotes.Text = $"{pauseText} ";
             }
+            txtNotes.Focus();
+            txtNotes.CaretIndex = txtNotes.Text.Length;
         }
 
         private void btnInsertMediumPause_Click(object sender, RoutedEventArgs e)

@@ -19,7 +19,7 @@
             <Button x:Name="btnInsertShortPause" Click="btnInsertShortPause_Click"  Content="Insert Short Pause" Margin="5 0 0 0" HorizontalAlignment="Right" Height="35" Width="120" VerticalAlignment="Center" />
             <Button x:Name="btnInsertMediumPause" Click="btnInsertMediumPause_Click" Content="Insert Medium Pause" Margin="5 0 0 0" HorizontalAlignment="Center"  Height="35" Width="120" VerticalAlignment="Center" />
             <Button x:Name="btnInsertLongPause" Click="btnInsertLongPause_Click" Content="Insert Long Pause" Margin="5 0 0 0" HorizontalAlignment="Center"  Height="35" Width="120" VerticalAlignment="Center" />
-            <Button x:Name="btnSave" Click="btnSave_Click" Content="Save" Margin="5 0 0 0" HorizontalAlignment="Center"  Height="35" Width="95" VerticalAlignment="Center" />
+            <Button x:Name="btnSave" Click="btnSave_Click" Content="Save To DB" Margin="5 0 0 0" HorizontalAlignment="Center"  Height="35" Width="95" VerticalAlignment="Center" />
             <Button x:Name="btnCance" Click="btnCancel_Click" Content="Cancel" Margin="5 0 0 0" HorizontalAlignment="Center"  Height="35" Width="95" VerticalAlignment="Center" />
         </StackPanel>
     </Grid>
