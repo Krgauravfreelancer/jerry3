@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:nrctrl="clr-namespace:NotesRead_UserControl;assembly=NotesRead_UserControl"
         xmlns:local="clr-namespace:Notes_UserControl"
-        mc:Ignorable="d" Width="450">
+        mc:Ignorable="d" Width="480">
     <Grid Background="Transparent" Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -13,14 +13,18 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <ScrollViewer Height="250" VerticalAlignment="Top" Width="460" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >
+            <StackPanel x:Name="stackPanelNotes" Margin="5" Orientation="Vertical" />
+        </ScrollViewer>
         <!--<StackPanel Grid.Row="0" Grid.Column="0" Margin="5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="top">
             <Label Content="Select Video Event **"  HorizontalAlignment="Center" Height="30"/>
             <ComboBox x:Name="cmbVideoEvent" SelectionChanged="CMBVideoEvent_SelectionChanged" HorizontalAlignment="Center" Margin="0,00,0,0" Width="150" Height="30" />
-        </StackPanel>-->
-        <nrctrl:NotesRead_UserControl x:Name="notesReadCtrl" Width="425" BorderThickness="1" BorderBrush="Black" Grid.Row="0" Grid.Column="0" />
+        </StackPanel>-->    
+        <!--<nrctrl:NotesRead_UserControl x:Name="notesReadCtrl" Width="425" BorderThickness="1" BorderBrush="Black" Grid.Row="0" Grid.Column="0" />-->
         <Grid.ContextMenu >
             <ContextMenu Name="NotesContextMenu" StaysOpen="true">
                 <MenuItem Header="Manage Notes" Click="ContextMenu_ManageNotes_ClickEvent"/>
+                <MenuItem Header="Add New Note" Click="ContextMenu_AddNewNoteClickEvent"/>
             </ContextMenu>
         </Grid.ContextMenu>
     </Grid>

@@ -1,10 +1,10 @@
 ﻿using Sqllite_Library.Business;
-using Sqllite_Library.Models;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Notes_UserControl
 {
@@ -37,29 +37,30 @@ namespace Notes_UserControl
         private void btnSaveNotes_Click(object sender, RoutedEventArgs e)
         {
 
-            var dt = notesReadCtrl.GetUpdatedViewTable();
-            
-            // Lets update the data in DB as well for next time as well.
-            var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
-            var notesTable = BuildNotesDataTableForDB();
+            //var dt = notesReadCtrl.GetUpdatedViewTable();
 
-            foreach (DataRow dr in dt.Rows)
-            {
-                var note = notes.Find(x => x.notes_id == Convert.ToInt32(dr["notes_id"]));
+            //// Lets update the data in DB as well for next time as well.
+            //var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
+            //var notesTable = BuildNotesDataTableForDB();
 
-                var dRow = notesTable.NewRow();
-                dRow["notes_index"] = Convert.ToInt32(dr["notes_index"]);
-                dRow["notes_id"] = note.notes_id;
-                dRow["notes_line"] = Convert.ToString(dr["notes_line"]);
-                dRow["notes_createdate"] = note.notes_createdate;
-                dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                dRow["fk_notes_videoevent"] = note.fk_notes_videoevent;
-                dRow["notes_wordcount"] = note.notes_wordcount;
-                notesTable.Rows.Add(dRow);
-            }
-            DataManagerSqlLite.UpdateRowsToNotes(notesTable);
+            //foreach (DataRow dr in dt.Rows)
+            //{
+            //    var note = notes.Find(x => x.notes_id == Convert.ToInt32(dr["notes_id"]));
 
-            MessageBox.Show("Notes are updated to DB successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    var dRow = notesTable.NewRow();
+            //    dRow["notes_index"] = Convert.ToInt32(dr["notes_index"]);
+            //    dRow["notes_id"] = note.notes_id;
+            //    dRow["notes_line"] = Convert.ToString(dr["notes_line"]);
+            //    dRow["notes_createdate"] = note.notes_createdate;
+            //    dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            //    dRow["fk_notes_videoevent"] = note.fk_notes_videoevent;
+            //    dRow["notes_wordcount"] = note.notes_wordcount;
+            //    notesTable.Rows.Add(dRow);
+            //}
+            //DataManagerSqlLite.UpdateRowsToNotes(notesTable);
+
+            //MessageBox.Show("Notes are updated to DB successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            DisplayAllNotes();
         }
 
 
@@ -98,6 +99,23 @@ namespace Notes_UserControl
             }
         }
 
+        private void ContextMenu_AddNewNoteClickEvent(object sender, RoutedEventArgs e)
+        {
+            var uc = new AddOrEditNotes(selectedVideoEventId);
+            var window = new Window
+            {
+                Title = "Add or Edit Notes",
+                Content = uc,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            DisplayAllNotes();
+        }
+        
         private void VideoEventSelectionChanged()
         {
             if (selectedVideoEventId > -1)
@@ -118,17 +136,76 @@ namespace Notes_UserControl
                     var insertedId = DataManagerSqlLite.InsertRowsToNotes(dtNotes);
                     if (insertedId > 0)
                     {
-                        var dtable = GetNotesDataToView(selectedVideoEventId);
-                        notesReadCtrl.SetNotesList(dtable);
+                        //var dtable = GetNotesDataToView(selectedVideoEventId);
+                        //notesReadCtrl.SetNotesList(dtable);
+                        DisplayAllNotes();
                     }
                     //}
                 }
                 else
                 {
-                    var dtable = GetNotesDataToView(selectedVideoEventId);
-                    notesReadCtrl.SetNotesList(dtable);
+                    //var dtable = GetNotesDataToView(selectedVideoEventId);
+                    //notesReadCtrl.SetNotesList(dtable);
+                    DisplayAllNotes();
                 }
             }
+        }
+
+        private TextBlock EnhanceNotes(string text)
+        {
+            string shortPauseText = "{pause-250ms}";
+            string mediumPauseText = "{pause-500ms}";
+            string longPauseText = "{pause-1000ms}";
+
+            var tbNotes = new TextBlock();
+            tbNotes.Inlines.Clear();
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                var array = text.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var word in array)
+                {
+                    if (shortPauseText == word)
+                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.LightBlue });
+                    else if (mediumPauseText == word)
+                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Blue });
+                    else if (longPauseText == word)
+                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Red });
+                    else
+                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Black });
+                }
+            }
+            return tbNotes;
+        }
+
+        private void DisplayAllNotes()
+        {
+            var allNotes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
+            stackPanelNotes.Children.Clear();
+            int i = 0;
+            foreach (var note in allNotes)
+                stackPanelNotes.Children.Add(AddNotes($"{++i}. {note.notes_line}"));
+        }
+
+        private Border AddNotes(string text)
+        {
+            var myBorder1 = new Border
+            {
+                Background = Brushes.White,
+                BorderBrush = Brushes.Black,
+                BorderThickness = new Thickness(1),
+                Width = 415,
+            };
+
+            TextBlock txt1 = EnhanceNotes(text);
+            txt1.TextWrapping = TextWrapping.WrapWithOverflow;
+            txt1.Foreground = Brushes.Black;
+            txt1.FontSize = 12;
+            txt1.Padding = new Thickness(5);
+            txt1.Width = 350;
+            txt1.HorizontalAlignment = HorizontalAlignment.Left;
+            myBorder1.Child = txt1;
+            return myBorder1;
         }
 
         #endregion
@@ -174,8 +251,7 @@ namespace Notes_UserControl
 
         public void UpdateNotes(DataTable dt)
         {
-            notesReadCtrl.SetNotesList(dt);
-            
+            // notesReadCtrl.SetNotesList(dt);
             // Lets update the data in DB as well for next time as well.
             var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
             var notesTable = BuildNotesDataTableForDB();
@@ -184,7 +260,7 @@ namespace Notes_UserControl
             foreach (DataRow dr in dt.Rows)
             {
                 var note = notes.Find(x => x.notes_id == Convert.ToInt32(dr["notes_id"]));
-                
+
                 var dRow = notesTable.NewRow();
                 dRow["notes_index"] = i++;
                 dRow["notes_id"] = note.notes_id;
@@ -196,6 +272,7 @@ namespace Notes_UserControl
                 notesTable.Rows.Add(dRow);
             }
             DataManagerSqlLite.UpdateRowsToNotes(notesTable);
+            DisplayAllNotes();
         }
     }
 }
