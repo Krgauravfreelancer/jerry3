@@ -280,3 +280,6 @@
 /src/ScreenRecorder_UserControl/packages
 /src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/.vs/ScreenRecording_UserControl
 /src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/ScreenRecording_UserControl/bin/Debug
+/src/NotesRead_UserControl/.vs/NotesRead_UserControl
+/src/NotesRead_UserControl/obj/Debug
+/src/NotesRead_UserControl/packages

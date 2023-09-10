@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:nrctrl="clr-namespace:NotesRead_UserControl;assembly=NotesRead_UserControl"
         xmlns:local="clr-namespace:Notes_UserControl"
         mc:Ignorable="d" Width="480">
     <Grid Background="Transparent" Margin="10">
@@ -20,7 +19,6 @@
             <Label Content="Select Video Event **"  HorizontalAlignment="Center" Height="30"/>
             <ComboBox x:Name="cmbVideoEvent" SelectionChanged="CMBVideoEvent_SelectionChanged" HorizontalAlignment="Center" Margin="0,00,0,0" Width="150" Height="30" />
         </StackPanel>-->    
-        <!--<nrctrl:NotesRead_UserControl x:Name="notesReadCtrl" Width="425" BorderThickness="1" BorderBrush="Black" Grid.Row="0" Grid.Column="0" />-->
         <Grid.ContextMenu >
             <ContextMenu Name="NotesContextMenu" StaysOpen="true">
                 <MenuItem Header="Manage Notes" Click="ContextMenu_ManageNotes_ClickEvent"/>

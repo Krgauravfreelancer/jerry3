@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes_UserControl", "UserCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj", "{623A80C5-B24C-40CC-A96B-582E8B61099A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesRead_UserControl", "UserControls\NotesRead_UserControl\NotesRead_UserControl.csproj", "{8A791BA1-34F4-47B4-B7FC-26C66043500A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Designer_UserControl", "UserControls\Designer_UserControl\Designer_UserControl\Designer_UserControl.csproj", "{FC79A8EF-42F9-44B2-99DA-9A853512DD20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager_UserControl", "UserControls\DesignImager_UserControl\DesignImager_UserControl\DesignImager_UserControl.csproj", "{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}"
@@ -47,10 +45,6 @@ Global
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8A791BA1-34F4-47B4-B7FC-26C66043500A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Release|Any CPU.ActiveCfg = Release|Any CPU

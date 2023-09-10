@@ -154,10 +154,6 @@
       <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>
       <Name>NotesManage_UserControl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NotesRead_UserControl\NotesRead_UserControl.csproj">
-      <Project>{8a791ba1-34f4-47b4-b7fc-26c66043500a}</Project>
-      <Name>NotesRead_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
