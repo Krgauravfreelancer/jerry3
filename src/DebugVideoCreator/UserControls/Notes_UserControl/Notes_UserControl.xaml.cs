@@ -1,4 +1,5 @@
-﻿using Sqllite_Library.Business;
+﻿using LocalVoiceGen_UserControl;
+using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Data;
@@ -134,15 +135,25 @@ namespace Notes_UserControl
 
         private void ContextMenu_GenerateVoiceAllNotesClickEvent(object sender, RoutedEventArgs e)
         {
-
+            var uc = new LocalVoiceGenUserControl(selectedVideoEventId);
+            var window = new Window
+            {
+                Title = "Generate Local Voice",
+                Content = uc,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            DisplayAllNotes();
         }
 
 
         #endregion
 
         #region == Event to dynamically manage notes ==
-
-        
 
         private Border AddNotes(CBVNotes note, int index)
         {
@@ -180,7 +191,7 @@ namespace Notes_UserControl
             };
             manageNoteQuery.Click += ContextMenu_ManageNotesClickEvent;
             contextMenu.Items.Add(manageNoteQuery);
-            //2nd Item
+            
             MenuItem addNewNoteQuery = new MenuItem
             {
                 Header = "Add New Note"
@@ -188,7 +199,6 @@ namespace Notes_UserControl
             addNewNoteQuery.Click += ContextMenu_AddNewNoteClickEvent;
             contextMenu.Items.Add(addNewNoteQuery);
 
-            //5th Individual
             var voiceGenerateAllNotesQuery = new MenuItem
             {
                 Header = "Generate Voice For All Notes"
@@ -198,50 +208,63 @@ namespace Notes_UserControl
 
             contextMenu.Items.Add(new Separator());
 
-            //3rd Individual Item
             MenuItem editNoteQuery = new MenuItem
             {
-                Header = "Edit Note"
+                Header = "Advanced Edit"
             };
             editNoteQuery.Click += (sender, e) =>
             {
-                MenuItem mi = sender as MenuItem;
-                MessageBox.Show($"Coming Soon !!!", $"Edit Note - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
-                //    if (mi != null)
-                //    {
-                //        ContextMenu cm = mi.Parent as ContextMenu;
-                //        if (cm != null)
-                //        {
-                //            TreeViewItem node = cm.PlacementTarget as TreeViewItem;
-                //            if (node != null)
-                //            {
-                //                Console.WriteLine(node.Header);
-                //            }
-                //        }
-                //    }
+                var uc = new AddOrEditNotes(selectedVideoEventId, note);
+                var window = new Window
+                {
+                    Title = $"Edit Note with Id - {note.notes_id}",
+                    Content = uc,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    ResizeMode = ResizeMode.NoResize,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+                var result = window.ShowDialog();
+                DisplayAllNotes();
             };
             contextMenu.Items.Add(editNoteQuery);
-            //4th Individual
+            
             var deleteNoteQuery = new MenuItem
             {
-                Header = "Delete Note"
+                Header = "Delete"
             };
             deleteNoteQuery.Click += (sender, e) =>
             {
-                MenuItem mi = sender as MenuItem;
-                MessageBox.Show($"Coming Soon !!!", $"Delete Note - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
+                var result = MessageBox.Show($"Are you sure you want to delete notes \n \n{note.notes_line}", $"Delete Note - {note.notes_id}", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(result == MessageBoxResult.Yes)
+                {
+                    DataManagerSqlLite.DeleteNotesById(note.notes_id);
+                    DisplayAllNotes();
+                }
+                
             };
             contextMenu.Items.Add(deleteNoteQuery);
 
-            //5th Individual
             var voiceGenerateNoteQuery = new MenuItem
             {
-                Header = "Manage Audio For Note"
+                Header = "Manage Audio"
             };
             voiceGenerateNoteQuery.Click += (sender, e) =>
             {
-                MenuItem mi = sender as MenuItem;
-                MessageBox.Show($"Coming Soon !!!", $"Manage Audio - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
+                var uc = new LocalVoiceGenUserControl(selectedVideoEventId, note.notes_id);
+                var window = new Window
+                {
+                    Title = $"Manage Audio For {note.notes_id} notes",
+                    Content = uc,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    ResizeMode = ResizeMode.NoResize,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+                var result = window.ShowDialog();
+                DisplayAllNotes();
             };
             contextMenu.Items.Add(voiceGenerateNoteQuery);
             return contextMenu;

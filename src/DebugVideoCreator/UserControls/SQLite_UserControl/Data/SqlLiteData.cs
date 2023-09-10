@@ -1712,6 +1712,57 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        public static List<CBVNotes> GetNotesbyId(int notesId)
+        {
+            var data = new List<CBVNotes>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_id = {notesId} order by notes_index";
+            
+                sqlQueryString += $@"";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVNotes
+                        {
+                            notes_id = Convert.ToInt32(sqlReader["notes_id"]),
+                            fk_notes_videoevent = Convert.ToInt32(sqlReader["fk_notes_videoevent"]),
+                            notes_line = Convert.ToString(sqlReader["notes_line"]),
+                            notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
+                            notes_index = Convert.ToInt32(sqlReader["notes_index"]),
+                            notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
+                            notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+
+            return data;
+        }
+
         public static List<CBVLocAudio> GetLocAudio(int notesId)
         {
             var data = new List<CBVLocAudio>();
@@ -2259,6 +2310,53 @@ namespace Sqllite_Library.Data
                                             voiceaverage_id = {voiceaverage_id}";
                 var updateFlag = UpdateRecordsInTable(updateQueryString);
                 Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
+            }
+        }
+
+        #endregion
+
+
+        #region == Delete Methods ==
+
+
+        public static void DeleteNotesById(int notesId = -1)
+        {
+            var deleteQueryString = $@" Delete from cbv_notes
+                                        WHERE 
+                                        notes_id = {notesId}";
+            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
+            Console.WriteLine($@"cbv_notes table delete status for id - {notesId} result - {deleteFlag}");
+        }
+
+
+        private static bool DeleteRecordsInTable(string deleteQuery)
+        {
+            // Check if database is created
+            if (false == IsDbCreated())
+            {
+                throw new Exception("Database is not present.");
+            }
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                // Execute the SQLite query
+                var sqlQuery = new SQLiteCommand(deleteQuery, sqlCon);
+                sqlQuery.ExecuteNonQuery();
+                sqlQuery.Dispose();
+                sqlCon?.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
             }
         }
 

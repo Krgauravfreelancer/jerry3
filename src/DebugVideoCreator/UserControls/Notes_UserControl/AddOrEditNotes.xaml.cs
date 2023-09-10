@@ -1,4 +1,5 @@
 ﻿using Sqllite_Library.Business;
+using Sqllite_Library.Models;
 using System;
 using System.Data;
 using System.Windows;
@@ -12,11 +13,24 @@ namespace Notes_UserControl
     public partial class AddOrEditNotes : UserControl
     {
         int selectedVideoEventId = -1;
+        CBVNotes selectedNote;
         public AddOrEditNotes(int videoEventId)
         {
             InitializeComponent();
             selectedVideoEventId = videoEventId;
+            btnSave.Content = "Save To DB";
         }
+
+        public AddOrEditNotes(int videoEventId, CBVNotes note)
+        {
+            InitializeComponent();
+            selectedVideoEventId = videoEventId;
+            selectedNote = note;
+            txtNotes.Text = selectedNote.notes_line;
+            btnSave.Content = "Update To DB";
+        }
+
+        #region == Events ==
 
         private void txtNotes_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -26,7 +40,7 @@ namespace Notes_UserControl
             tbNotes.HorizontalAlignment = HorizontalAlignment.Left;
             tbNotes.TextWrapping = TextWrapping.Wrap;
             tbNotes.Width = 550;
-            scrollviewerTb.Content = NotesHelpers.GetEnhancedNotes(text);
+            scrollviewerTb.Content = tbNotes;
         }
 
         private void btnInsertShortPause_Click(object sender, RoutedEventArgs e)
@@ -35,7 +49,6 @@ namespace Notes_UserControl
             txtNotes.Focus();
             txtNotes.CaretIndex = txtNotes.Text.Length;
         }
-
 
         private void btnInsertMediumPause_Click(object sender, RoutedEventArgs e)
         {
@@ -63,17 +76,28 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
 
             var dRow = dtNotes.NewRow();
-            dRow["notes_index"] = 0;
-            dRow["notes_id"] = -1;
+            
             dRow["notes_line"] = txtNotes.Text;
-            dRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["fk_notes_videoevent"] = selectedVideoEventId;
             dRow["notes_wordcount"] = txtNotes.Text.Split(' ').Length;
             dtNotes.Rows.Add(dRow);
 
+            if (Convert.ToString(btnSave.Content) == "Save To DB")
+            {
+                dRow["notes_id"] = -1;
+                dRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                dRow["notes_index"] = 0;
+                DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+            }
+            else
+            {
+                dRow["notes_id"] = selectedNote.notes_id;
+                dRow["notes_index"] = selectedNote.notes_index;
+                DataManagerSqlLite.UpdateRowsToNotes(dtNotes);
+            }
 
-            DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+            
             ((Window)this.Parent).Close();
         }
 
@@ -81,5 +105,7 @@ namespace Notes_UserControl
         {
             ((Window)this.Parent).Close();
         }
+
+        #endregion
     }
 }

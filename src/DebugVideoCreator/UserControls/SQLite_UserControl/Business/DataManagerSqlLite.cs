@@ -379,6 +379,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetNotes(VideoEventId);
         }
 
+        public static List<CBVNotes> GetNotesbyId(int notesId)
+        {
+            return SqlLiteData.GetNotesbyId(notesId);
+        }
+
         public static List<CBVLocAudio> GetLocAudio(int notesId = -1)
         {
             return SqlLiteData.GetLocAudio(notesId);
@@ -467,6 +472,15 @@ namespace Sqllite_Library.Business
         }
 
         #endregion
+
+        #region == Update Methods ==
+
+        public static void DeleteNotesById(int notesId = -1)
+        {
+            SqlLiteData.DeleteNotesById(notesId);
+        }
+
+        #endregion 
 
     }
 }
