@@ -283,3 +283,7 @@
 /src/NotesRead_UserControl/.vs/NotesRead_UserControl
 /src/NotesRead_UserControl/obj/Debug
 /src/NotesRead_UserControl/packages
+/src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/.vs
+/src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/bin/Debug
+/src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/obj/Debug
+/src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/packages

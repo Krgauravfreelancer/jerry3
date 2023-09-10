@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSP_UserControl", "UserCont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenRecording_UserControl", "UserControls\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj", "{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalVoiceGen_UserControl", "UserControls\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj", "{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
