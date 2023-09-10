@@ -5,88 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LocalVoiceGen_UserControl" 
         xmlns:lvg_uc="clr-namespace:LocalVoiceGen_UserControl;assembly=LocalVoiceGen_UserControl"
-        mc:Ignorable="d"  UseLayoutRounding="False" Height="709" Width="845" Loaded="Window_Loaded">
+        mc:Ignorable="d" UseLayoutRounding="False" Height="400" Width="900">
 
-    <UserControl.Resources>
-        <DataTemplate x:Key="DefaultTemplate">
-            <Grid x:Name="GridItem" Height="25"  Background="#33E6E6E6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock x:Name="MediaName" Grid.Column="0" Text="{Binding Path=MediaName}"  TextAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock x:Name="Start" Grid.Column="1" Text="{Binding Path=Start}"   TextAlignment="Center"  VerticalAlignment="Center"/>
-                <TextBlock x:Name="Duration" Grid.Column="2" Text="{Binding Path=ClipDuration}"  TextAlignment="Center"  VerticalAlignment="Center"/>
-
-            </Grid>
-        </DataTemplate>
-    </UserControl.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Column="0" Margin="0,5">
-            <StackPanel>
-                <Border >
-                    <Grid>
-                        <StackPanel Margin="10,0,10,0" HorizontalAlignment="Left" Orientation="Horizontal">
-                            <StackPanel>
-                                <Label Content="Select Project"/>
-                                <ComboBox Name="ProjectCmbBox" MinWidth="220" SelectionChanged="ProjectCmbBox_SelectionChanged"/>
-
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Margin="10,0,10,10" HorizontalAlignment="Right" Orientation="Horizontal">
-                            <StackPanel>
-                                <Label Content="Create Project"/>
-                                <TextBox Name="ProjectNameTxtBox" MinWidth="150" Text="Project Name"/>
-
-                            </StackPanel>
-                            <Button Name="CreateProjectBtn" Content="Create Project" VerticalAlignment="Bottom" Margin="5,0" Padding="5" Click="CreateProjectBtn_Click"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-                <Border  Padding="10,0" BorderThickness="1" BorderBrush="LightGray">
-                    <Grid Grid.Column="1" Margin="0,5">
-                        <StackPanel Orientation="Vertical">
-                            <Grid Margin="0,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="Media Type" Grid.Column="0" TextAlignment="Center"/>
-                                <TextBlock Text="Start" Grid.Column="1" TextAlignment="Center"/>
-                                <TextBlock Text="Duration" Grid.Column="2" TextAlignment="Center"/>
-                            </Grid>
-                            <ListBox Name="listBoxVideoEvent" ItemTemplate="{StaticResource DefaultTemplate}" Height="300" SelectionChanged="listBoxVideoEvent_SelectionChanged">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </StackPanel>
-        </Grid>
 
 
-        <DockPanel Grid.Row="1" Grid.ColumnSpan="2" Background="WhiteSmoke">
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" Background="WhiteSmoke">
             <Border DockPanel.Dock="Top" Background="#FFE6E6E6" >
                 <Button Name="AddNoteBtn" Content="Add Note" HorizontalAlignment="Left" IsEnabled="False" Margin="5" Padding="10,5" Click="AddNoteBtn_Click"/>
             </Border>
 
             <ScrollViewer  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Bottom">
                 <StackPanel Name="NoteStack" Orientation="Horizontal" Margin="5">
-                    <!--<lvg_uc:LocalVoiceGen_Control Name="GenControl"  Width="300"/>-->
+                    <lvg_uc:LocalVoiceGen_Control Name="GenControl" Width="300"/>
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

@@ -1,9 +1,10 @@
 ﻿using Sqllite_Library.Business;
+using Sqllite_Library.Models;
 using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
+
 using System.Windows.Media;
 
 namespace Notes_UserControl
@@ -15,6 +16,7 @@ namespace Notes_UserControl
     {
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
+
         public Notes_UserControl()
         {
             InitializeComponent();
@@ -26,97 +28,10 @@ namespace Notes_UserControl
         {
             selectedproject_id = project_id;
             selectedVideoEventId = videoEvent_id;
-            VideoEventSelectionChanged();
+            HandleVideoEventSelectionChanged();
         }
 
-        #endregion
-
-        #region == Events ==
-
-
-        private void btnSaveNotes_Click(object sender, RoutedEventArgs e)
-        {
-
-            //var dt = notesReadCtrl.GetUpdatedViewTable();
-
-            //// Lets update the data in DB as well for next time as well.
-            //var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
-            //var notesTable = BuildNotesDataTableForDB();
-
-            //foreach (DataRow dr in dt.Rows)
-            //{
-            //    var note = notes.Find(x => x.notes_id == Convert.ToInt32(dr["notes_id"]));
-
-            //    var dRow = notesTable.NewRow();
-            //    dRow["notes_index"] = Convert.ToInt32(dr["notes_index"]);
-            //    dRow["notes_id"] = note.notes_id;
-            //    dRow["notes_line"] = Convert.ToString(dr["notes_line"]);
-            //    dRow["notes_createdate"] = note.notes_createdate;
-            //    dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            //    dRow["fk_notes_videoevent"] = note.fk_notes_videoevent;
-            //    dRow["notes_wordcount"] = note.notes_wordcount;
-            //    notesTable.Rows.Add(dRow);
-            //}
-            //DataManagerSqlLite.UpdateRowsToNotes(notesTable);
-
-            //MessageBox.Show("Notes are updated to DB successfully", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            DisplayAllNotes();
-        }
-
-
-        private void ContextMenu_ManageNotes_ClickEvent(object sender, RoutedEventArgs e)
-        {
-            if(selectedVideoEventId <= -1)
-            {
-                MessageBox.Show("No Video Event Selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            var dt = GetNotesDataToView(selectedVideoEventId);
-            if (dt?.Rows != null && dt?.Rows?.Count > 0)
-            {
-                var manageNotesUserControl = new ManageNotesUserControl(this, dt);
-
-                var window = new Window
-                {
-                    Title = "Manage Notes",
-                    Content = manageNotesUserControl,
-                    SizeToContent = SizeToContent.WidthAndHeight,
-                    ResizeMode = ResizeMode.NoResize,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    RenderSize = manageNotesUserControl.RenderSize,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen
-                };
-                var result = window.ShowDialog();
-                if (result.HasValue)
-                {
-                    // do something on closing !!
-                }
-            }
-            else
-            {
-                MessageBox.Show("No Notes Rows to Manage", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ContextMenu_AddNewNoteClickEvent(object sender, RoutedEventArgs e)
-        {
-            var uc = new AddOrEditNotes(selectedVideoEventId);
-            var window = new Window
-            {
-                Title = "Add or Edit Notes",
-                Content = uc,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-            DisplayAllNotes();
-        }
-        
-        private void VideoEventSelectionChanged()
+        private void HandleVideoEventSelectionChanged()
         {
             if (selectedVideoEventId > -1)
             {
@@ -151,32 +66,10 @@ namespace Notes_UserControl
             }
         }
 
-        private TextBlock EnhanceNotes(string text)
-        {
-            string shortPauseText = "{pause-250ms}";
-            string mediumPauseText = "{pause-500ms}";
-            string longPauseText = "{pause-1000ms}";
+        #endregion
 
-            var tbNotes = new TextBlock();
-            tbNotes.Inlines.Clear();
+        #region == Events ==
 
-            if (!string.IsNullOrEmpty(text))
-            {
-                var array = text.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var word in array)
-                {
-                    if (shortPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.LightBlue });
-                    else if (mediumPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Blue });
-                    else if (longPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Red });
-                    else
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Black });
-                }
-            }
-            return tbNotes;
-        }
 
         private void DisplayAllNotes()
         {
@@ -184,29 +77,176 @@ namespace Notes_UserControl
             stackPanelNotes.Children.Clear();
             int i = 0;
             foreach (var note in allNotes)
-                stackPanelNotes.Children.Add(AddNotes($"{++i}. {note.notes_line}"));
+                stackPanelNotes.Children.Add(AddNotes(note, ++i));
         }
 
-        private Border AddNotes(string text)
+        #endregion
+
+        #region === ContextMenu Events ===
+
+        private void ContextMenu_ManageNotesClickEvent(object sender, RoutedEventArgs e)
         {
+            if (selectedVideoEventId <= -1)
+            {
+                MessageBox.Show("No Video Event Selected", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            var dt = GetNotesDataToView(selectedVideoEventId);
+            if (dt?.Rows != null && dt?.Rows?.Count > 0)
+            {
+                var manageNotesUserControl = new ManageNotesUserControl(this, dt);
+
+                var window = new Window
+                {
+                    Title = "Manage Notes",
+                    Content = manageNotesUserControl,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    ResizeMode = ResizeMode.NoResize,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    RenderSize = manageNotesUserControl.RenderSize,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen
+                };
+                window.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No Notes Rows to Manage", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ContextMenu_AddNewNoteClickEvent(object sender, RoutedEventArgs e)
+        {
+            var uc = new AddOrEditNotes(selectedVideoEventId);
+            var window = new Window
+            {
+                Title = "Add or Edit Notes",
+                Content = uc,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            DisplayAllNotes();
+        }
+
+        private void ContextMenu_GenerateVoiceAllNotesClickEvent(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
+        #endregion
+
+        #region == Event to dynamically manage notes ==
+
+        
+
+        private Border AddNotes(CBVNotes note, int index)
+        {
+            string text = $"{index}. {note.notes_line}";
             var myBorder1 = new Border
             {
                 Background = Brushes.White,
                 BorderBrush = Brushes.Black,
                 BorderThickness = new Thickness(1),
                 Width = 415,
+                Margin = new Thickness(0, 0, 0, 5)
             };
 
-            TextBlock txt1 = EnhanceNotes(text);
+            TextBlock txt1 = NotesHelpers.GetEnhancedNotes(text);
             txt1.TextWrapping = TextWrapping.WrapWithOverflow;
             txt1.Foreground = Brushes.Black;
             txt1.FontSize = 12;
             txt1.Padding = new Thickness(5);
             txt1.Width = 350;
             txt1.HorizontalAlignment = HorizontalAlignment.Left;
+
+            myBorder1.ContextMenu = GetItemContextMenu(note);
             myBorder1.Child = txt1;
             return myBorder1;
         }
+
+        public ContextMenu GetItemContextMenu(CBVNotes note)
+        {
+            var contextMenu = new ContextMenu();
+
+            //1st Item
+            MenuItem manageNoteQuery = new MenuItem
+            {
+                Header = "Manage All Notes"
+            };
+            manageNoteQuery.Click += ContextMenu_ManageNotesClickEvent;
+            contextMenu.Items.Add(manageNoteQuery);
+            //2nd Item
+            MenuItem addNewNoteQuery = new MenuItem
+            {
+                Header = "Add New Note"
+            };
+            addNewNoteQuery.Click += ContextMenu_AddNewNoteClickEvent;
+            contextMenu.Items.Add(addNewNoteQuery);
+
+            //5th Individual
+            var voiceGenerateAllNotesQuery = new MenuItem
+            {
+                Header = "Generate Voice For All Notes"
+            };
+            voiceGenerateAllNotesQuery.Click += ContextMenu_GenerateVoiceAllNotesClickEvent;
+            contextMenu.Items.Add(voiceGenerateAllNotesQuery);
+
+            contextMenu.Items.Add(new Separator());
+
+            //3rd Individual Item
+            MenuItem editNoteQuery = new MenuItem
+            {
+                Header = "Edit Note"
+            };
+            editNoteQuery.Click += (sender, e) =>
+            {
+                MenuItem mi = sender as MenuItem;
+                MessageBox.Show($"Coming Soon !!!", $"Edit Note - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
+                //    if (mi != null)
+                //    {
+                //        ContextMenu cm = mi.Parent as ContextMenu;
+                //        if (cm != null)
+                //        {
+                //            TreeViewItem node = cm.PlacementTarget as TreeViewItem;
+                //            if (node != null)
+                //            {
+                //                Console.WriteLine(node.Header);
+                //            }
+                //        }
+                //    }
+            };
+            contextMenu.Items.Add(editNoteQuery);
+            //4th Individual
+            var deleteNoteQuery = new MenuItem
+            {
+                Header = "Delete Note"
+            };
+            deleteNoteQuery.Click += (sender, e) =>
+            {
+                MenuItem mi = sender as MenuItem;
+                MessageBox.Show($"Coming Soon !!!", $"Delete Note - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
+            };
+            contextMenu.Items.Add(deleteNoteQuery);
+
+            //5th Individual
+            var voiceGenerateNoteQuery = new MenuItem
+            {
+                Header = "Manage Audio For Note"
+            };
+            voiceGenerateNoteQuery.Click += (sender, e) =>
+            {
+                MenuItem mi = sender as MenuItem;
+                MessageBox.Show($"Coming Soon !!!", $"Manage Audio - {note.notes_id}", MessageBoxButton.OK, MessageBoxImage.Information);
+            };
+            contextMenu.Items.Add(voiceGenerateNoteQuery);
+            return contextMenu;
+        }
+
 
         #endregion
 

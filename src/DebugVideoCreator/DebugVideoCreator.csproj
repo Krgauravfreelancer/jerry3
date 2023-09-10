@@ -323,10 +323,6 @@
       <Project>{542a15f2-e184-4199-8739-4060d566ac03}</Project>
       <Name>FSP_UserControl</Name>
     </ProjectReference>
-    <ProjectReference Include="UserControls\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj">
-      <Project>{4a3f71d8-cced-47d2-9b3c-534c1b78ea90}</Project>
-      <Name>LocalVoiceGen_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
       <Name>Notes_UserControl</Name>

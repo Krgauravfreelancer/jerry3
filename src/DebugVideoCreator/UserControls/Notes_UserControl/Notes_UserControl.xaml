@@ -15,14 +15,11 @@
         <ScrollViewer Height="250" VerticalAlignment="Top" Width="460" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >
             <StackPanel x:Name="stackPanelNotes" Margin="5" Orientation="Vertical" />
         </ScrollViewer>
-        <!--<StackPanel Grid.Row="0" Grid.Column="0" Margin="5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="top">
-            <Label Content="Select Video Event **"  HorizontalAlignment="Center" Height="30"/>
-            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="CMBVideoEvent_SelectionChanged" HorizontalAlignment="Center" Margin="0,00,0,0" Width="150" Height="30" />
-        </StackPanel>-->    
         <Grid.ContextMenu >
             <ContextMenu Name="NotesContextMenu" StaysOpen="true">
-                <MenuItem Header="Manage Notes" Click="ContextMenu_ManageNotes_ClickEvent"/>
+                <MenuItem Header="Manage Notes" Click="ContextMenu_ManageNotesClickEvent"/>
                 <MenuItem Header="Add New Note" Click="ContextMenu_AddNewNoteClickEvent"/>
+                <MenuItem Header="Generate Voice For All Notes" Click="ContextMenu_GenerateVoiceAllNotesClickEvent"/>
             </ContextMenu>
         </Grid.ContextMenu>
     </Grid>

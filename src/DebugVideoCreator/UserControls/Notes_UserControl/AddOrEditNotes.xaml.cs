@@ -3,19 +3,14 @@ using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
 
 namespace Notes_UserControl
 {
     /// <summary>
     /// Interaction logic for AddOrEditNotes.xaml
     /// </summary>
-    public partial class AddOrEditNotes : System.Windows.Controls.UserControl
+    public partial class AddOrEditNotes : UserControl
     {
-        string shortPauseText = "{pause-250ms}";
-        string mediumPauseText = "{pause-500ms}";
-        string longPauseText = "{pause-1000ms}";
         int selectedVideoEventId = -1;
         public AddOrEditNotes(int videoEventId)
         {
@@ -25,56 +20,35 @@ namespace Notes_UserControl
 
         private void txtNotes_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (tbNotes == null) return;
-            tbNotes.Inlines.Clear();
+            if (txtNotes == null) return;
             var text = txtNotes.Text;
-
-            if (!string.IsNullOrEmpty(text))
-            {
-                var array = text.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var word in array)
-                {
-                    if (shortPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.LightBlue });
-                    else if (mediumPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Blue });
-                    else if (longPauseText == word)
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Red });
-                    else
-                        tbNotes.Inlines.Add(new Run(word + " ") { Foreground = Brushes.Black });
-                }
-            }
+            var tbNotes = NotesHelpers.GetEnhancedNotes(text);
+            tbNotes.HorizontalAlignment = HorizontalAlignment.Left;
+            tbNotes.TextWrapping = TextWrapping.Wrap;
+            tbNotes.Width = 550;
+            scrollviewerTb.Content = NotesHelpers.GetEnhancedNotes(text);
         }
 
         private void btnInsertShortPause_Click(object sender, RoutedEventArgs e)
         {
-            InsertPause(shortPauseText);
-        }
-
-        private void InsertPause(string pauseText)
-        {
-            var stringText = txtNotes.Text;
-            if (!string.IsNullOrEmpty(stringText))
-            {
-                stringText += $" {pauseText} ";
-                txtNotes.Text = stringText;
-            }
-            else
-            {
-                txtNotes.Text = $"{pauseText} ";
-            }
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.SHORTPAUSE, txtNotes.Text);
             txtNotes.Focus();
             txtNotes.CaretIndex = txtNotes.Text.Length;
         }
 
+
         private void btnInsertMediumPause_Click(object sender, RoutedEventArgs e)
         {
-            InsertPause(mediumPauseText);
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.MEDIUMPAUSE, txtNotes.Text);
+            txtNotes.Focus();
+            txtNotes.CaretIndex = txtNotes.Text.Length;
         }
 
         private void btnInsertLongPause_Click(object sender, RoutedEventArgs e)
         {
-            InsertPause(longPauseText);
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.LONGPAUSE, txtNotes.Text);
+            txtNotes.Focus();
+            txtNotes.CaretIndex = txtNotes.Text.Length;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -87,7 +61,7 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_index", typeof(int));
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
-           
+
             var dRow = dtNotes.NewRow();
             dRow["notes_index"] = 0;
             dRow["notes_id"] = -1;
@@ -97,7 +71,7 @@ namespace Notes_UserControl
             dRow["fk_notes_videoevent"] = selectedVideoEventId;
             dRow["notes_wordcount"] = txtNotes.Text.Split(' ').Length;
             dtNotes.Rows.Add(dRow);
-           
+
 
             DataManagerSqlLite.InsertRowsToNotes(dtNotes);
             ((Window)this.Parent).Close();

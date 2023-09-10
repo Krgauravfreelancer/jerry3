@@ -12,8 +12,7 @@
          AcceptsReturn="True"  MaxLines="10" VerticalAlignment="Top" Width="570" Height="150" Padding="5"/>
 
         <Label Content="This is how notes are displayed !!" Margin="10,200,10,10" HorizontalAlignment="Center" FontWeight="Bold"/>
-        <ScrollViewer Margin="10,230,10,0" Height="170" VerticalAlignment="Top" Width="570">
-            <TextBlock x:Name="tbNotes" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" Width="550"/>
+        <ScrollViewer x:Name="scrollviewerTb" Margin="10,230,10,0" Height="170" VerticalAlignment="Top" Width="570">
         </ScrollViewer>
         <StackPanel Orientation="Horizontal"  Margin="0,400,0,0" Height="50" Width="580" HorizontalAlignment="Center">
             <Button x:Name="btnInsertShortPause" Click="btnInsertShortPause_Click"  Content="Insert Short Pause" Margin="5 0 0 0" HorizontalAlignment="Right" Height="35" Width="120" VerticalAlignment="Center" />
