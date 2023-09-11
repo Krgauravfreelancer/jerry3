@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using AudioPlayer_UserControl;
 using Sqllite_Library.Models;
 using Audio_UserControl.Windows;
+using Sqllite_Library.Business;
 
 namespace Audio_UserControl
 {
@@ -22,31 +23,55 @@ namespace Audio_UserControl
         public AudioUserControl()
         {
             InitializeComponent();
+            WavePlayer_UC.Loaded += WavePlayer_UC_Loaded;
         }
 
-        #region == Public Functions ==
+        private void WavePlayer_UC_Loaded(object sender, RoutedEventArgs e)
+        {
+            LoadSelectedAudio(selectedEvent);
+        }
 
+
+        #region == Public Functions ==
 
         public void SetSelected(int projectId, int videoEventId = -1, CBVVideoEvent _selectedEvent = null)
         {
             selectedproject_id = projectId;
             selectedVideoEventId = videoEventId;
             selectedEvent = _selectedEvent;
-            VideoEventSelectionChanged();
+            LoadSelectedAudio(selectedEvent);
         }
 
         public void LoadSelectedAudio(CBVVideoEvent videoevent)
         {
-            if (videoevent != null && videoevent?.fk_videoevent_media == 3)
+            if (videoevent != null && WavePlayer_UC.IsLoaded)
             {
-                byte[] audioData = videoevent?.audio_data[0]?.audio_media;
-                WavePlayer_UC.LoadAudio(audioData);
+                var allNotes = DataManagerSqlLite.GetNotes(videoevent.videoevent_id);
+                var finalBytes = new byte[] { };
+
+                foreach(var note in allNotes)
+                {
+                    var data = DataManagerSqlLite.GetLocAudio(note.notes_id);
+                    if (data != null && data.Count > 0)
+                    {
+                        var byteMedia = data[0].locaudio_media;
+                        finalBytes = Combine(finalBytes, byteMedia);
+                    }
+                }
+                if(finalBytes.Length > 0)
+                {
+                    WavePlayer_UC.LoadAudio(finalBytes);
+                }
+                    
             }
-            //else
-            //{
-            //    InitializeComponent();
-            //    // WavePlayer_UC = new WavePlayer_UserControl.WavePlayer();
-            //}
+        }
+
+        public byte[] Combine(byte[] first, byte[] second)
+        {
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
         }
 
         public CreateEventWindow GetCreateEventWindow(int project_id)
@@ -58,13 +83,10 @@ namespace Audio_UserControl
             //this.IsEnabled = false;
         }
 
-
         private void VideoEventSelectionChanged()
         {
             LoadSelectedAudio(selectedEvent);
         }
-
-
 
         #endregion
 
@@ -83,53 +105,6 @@ namespace Audio_UserControl
         }
 
         #endregion
-
-        private void FillListBoxVideoEvent(List<CBVVideoEvent> source)
-        {
-            //listBoxAudioEvent.SelectedItem = null;
-            //listBoxAudioEvent.Items.Clear();
-            //AudioPlayerList.Clear();
-
-            //if (cmbProject.SelectedIndex != -1)
-            //{
-            //    CreateAudioBtn.IsEnabled = true;
-
-            //    foreach (var item in source)
-            //    {
-            //        var itemExtended = new VideoEventExtended(item)
-            //        {
-            //            Start = item.videoevent_start,
-            //            ClipDuration = item.videoevent_duration.ToString() + " sec",
-            //        };
-            //        if (item.audio_data != null && item.audio_data.Count > 0 && item.fk_videoevent_media == 3)
-            //        {
-            //            itemExtended.MediaName = "Audio";
-            //        }
-            //        else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 1)
-            //        {
-            //            itemExtended.MediaName = "Image";
-            //        }
-            //        else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 2)
-            //        {
-            //            itemExtended.MediaName = "Video";
-            //        }
-            //        else if (item.design_data != null && item.design_data.Count > 0 && item.fk_videoevent_media == 4)
-            //        {
-            //            itemExtended.MediaName = "Design";
-            //        }
-            //        else
-            //        {
-            //            itemExtended.MediaName = "None";
-            //        }
-
-            //        if (item.fk_videoevent_media == 3)
-            //        {
-            //            listBoxAudioEvent.Items.Add(itemExtended);
-            //        }
-
-            //    }
-            //}
-        }
 
         PopupWindow popup = new PopupWindow();
 

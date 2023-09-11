@@ -51,17 +51,20 @@ namespace DebugVideoCreator
             TimelineUserConrol.Visibility = Visibility.Visible;
             //TimelineUserConrol.BtnInsertVideoEventDataClickEvent += TimelineUserConrol_BtnInsertVideoEventDataClickEvent;
 
-            //Test
-            
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
             NotesUserConrol.Visibility = Visibility.Visible;
             
-            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
-
+        
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            ResetAudio();
             TimelineUserConrol.LoadTimelineDataFromDb_Click();
+            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
+            NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
+        }
+
+        private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
+        {
+            ResetAudio();
         }
 
         private void ResetAudioMenuOptions()
@@ -105,7 +108,6 @@ namespace DebugVideoCreator
                 TimelineUserConrol.LoadTimelineDataFromDb_Click();
                 FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-               
             }
         }
 
@@ -671,17 +673,20 @@ namespace DebugVideoCreator
 
         private void ResetAudio()
         {
-            if (selectedVideoEvent?.fk_videoevent_media == 3)
-            {
-                AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
-            }
-            else
-            {
-                //AudioUserConrol.LoadSelectedAudio(null);
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
+            AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
+            ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
 
-            }
+            //if (selectedVideoEvent?.fk_videoevent_media == 3)
+            //{
+            //    AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
+            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
+            //}
+            //else
+            //{
+            //    //AudioUserConrol.LoadSelectedAudio(null);
+            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
+
+            //}
         }
 
         public void Dispose()

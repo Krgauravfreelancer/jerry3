@@ -17,6 +17,7 @@ namespace Notes_UserControl
     {
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
+        public event EventHandler locAudioAddedEvent;
 
         public Notes_UserControl()
         {
@@ -79,6 +80,8 @@ namespace Notes_UserControl
             int i = 0;
             foreach (var note in allNotes)
                 stackPanelNotes.Children.Add(AddNotes(note, ++i));
+            if(locAudioAddedEvent != null)
+                locAudioAddedEvent.Invoke(this, new EventArgs());
         }
 
         #endregion

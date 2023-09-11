@@ -2323,7 +2323,13 @@ namespace Sqllite_Library.Data
         {
             var deleteQueryString = $@" Delete from cbv_notes
                                         WHERE 
-                                        notes_id = {notesId}";
+                                        notes_id = {notesId};
+
+                                        Delete from cbv_locaudio
+                                        WHERE 
+                                        fk_locaudio_notes = {notesId};
+
+                                        ";
             var deleteFlag = DeleteRecordsInTable(deleteQueryString);
             Console.WriteLine($@"cbv_notes table delete status for id - {notesId} result - {deleteFlag}");
         }
