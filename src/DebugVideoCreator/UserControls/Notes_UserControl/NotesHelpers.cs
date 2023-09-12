@@ -11,13 +11,20 @@ namespace Notes_UserControl
         public static string MEDIUMPAUSE = "{pause-500ms}";
         public static string LONGPAUSE = "{pause-1000ms}";
 
-        public static string InsertPause(string pauseText, string stringText)
+        public static string InsertPause(string pauseText, string stringText, int caretIndex = -1)
         {
-            var returnText = "";
+            string returnText;
             if (!string.IsNullOrEmpty(stringText))
             {
-                stringText += $" {pauseText} ";
-                returnText = stringText;
+                var index = (caretIndex == -1 || caretIndex == stringText.Length) ? stringText.Length : caretIndex;
+                var text1 = stringText.Substring(0, index);
+                if (index < stringText.Length)
+                {
+                    var text2 = stringText.Substring(index);
+                    returnText = text1 + $" {pauseText} " + text2;
+                }
+                else
+                    returnText = text1 + $" {pauseText} ";
             }
             else
             {

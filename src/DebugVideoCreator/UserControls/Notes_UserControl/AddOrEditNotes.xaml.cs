@@ -45,23 +45,26 @@ namespace Notes_UserControl
 
         private void btnInsertShortPause_Click(object sender, RoutedEventArgs e)
         {
-            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.SHORTPAUSE, txtNotes.Text);
+            var caretIndex = txtNotes.CaretIndex;
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.SHORTPAUSE, txtNotes.Text, txtNotes.CaretIndex);
             txtNotes.Focus();
-            txtNotes.CaretIndex = txtNotes.Text.Length;
+            txtNotes.CaretIndex = caretIndex + NotesHelpers.SHORTPAUSE.Length + 2;
         }
 
         private void btnInsertMediumPause_Click(object sender, RoutedEventArgs e)
         {
-            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.MEDIUMPAUSE, txtNotes.Text);
+            var caretIndex = txtNotes.CaretIndex;
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.MEDIUMPAUSE, txtNotes.Text, txtNotes.CaretIndex);
             txtNotes.Focus();
-            txtNotes.CaretIndex = txtNotes.Text.Length;
+            txtNotes.CaretIndex += caretIndex + NotesHelpers.MEDIUMPAUSE.Length + 2;
         }
 
         private void btnInsertLongPause_Click(object sender, RoutedEventArgs e)
         {
-            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.LONGPAUSE, txtNotes.Text);
+            var caretIndex = txtNotes.CaretIndex; 
+            txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.LONGPAUSE, txtNotes.Text, txtNotes.CaretIndex);
             txtNotes.Focus();
-            txtNotes.CaretIndex = txtNotes.Text.Length;
+            txtNotes.CaretIndex = caretIndex + NotesHelpers.LONGPAUSE.Length + 2; 
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
