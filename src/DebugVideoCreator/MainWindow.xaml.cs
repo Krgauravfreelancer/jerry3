@@ -81,9 +81,18 @@ namespace DebugVideoCreator
                 Title = "Manage Timeline",
                 Content = manageTimeline_UserControl,
                 SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
+                  ResizeMode = ResizeMode.NoResize,
                 RenderSize = manageTimeline_UserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            manageTimeline_UserControl.FSPClosed += (s, ea) =>
+            {
+                //var TempPath = Path.GetTempPath() + "fsptemppath\\";
+                //if (Directory.Exists(TempPath))
+                //{
+                //    Directory.Delete(TempPath, recursive: true);
+                //}
+                //Console.WriteLine($"FSPUserControl > PlayerUnloaded event is called !!!");
             };
             bool? result;
             try

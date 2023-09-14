@@ -33,6 +33,7 @@ namespace DebugVideoCreator
         private CBVVideoEvent selectedVideoEvent;
         private PopupWindow popup;
         private AudioEditor editor;
+        public event EventHandler FSPClosed;
         public ManageTimeline_UserControl(int projectId)
         {
             InitializeComponent();
@@ -56,10 +57,13 @@ namespace DebugVideoCreator
             
         
             // Reload Control
-            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             TimelineUserConrol.LoadTimelineDataFromDb_Click();
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
+            //FSPClosed.
+
+            //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
         private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
@@ -88,6 +92,31 @@ namespace DebugVideoCreator
         }
 
         #region Video Event Context Menu
+
+        private void ContextMenuRunClickEvent(object sender, RoutedEventArgs e)
+        {
+            var fsp_uc = new FSPUserControl();
+            fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
+            FSPClosed += ManageTimeline_UserControl_FSPClosed;
+            var window = new Window
+            {
+                Title = "Full Screen Player",
+                Content = fsp_uc,
+                ResizeMode = ResizeMode.CanMinimize,
+                WindowState = WindowState.Maximized,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+           var result = window.ShowDialog();
+            if (result.HasValue)
+                FSPClosed?.Invoke(this.Parent, EventArgs.Empty);
+            
+        }
+
+        private void ManageTimeline_UserControl_FSPClosed(object sender, EventArgs e)
+        {
+            
+        }
+
         private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
         {
             var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
@@ -106,7 +135,7 @@ namespace DebugVideoCreator
             {
                 RefreshOrLoadComboBoxes();
                 TimelineUserConrol.LoadTimelineDataFromDb_Click();
-                FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
             }
         }
@@ -211,7 +240,7 @@ namespace DebugVideoCreator
                     {
                         RefreshOrLoadComboBoxes();
                         TimelineUserConrol.LoadTimelineDataFromDb_Click();
-                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                        //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Shell;
+using System.Windows.Media;
 
 namespace FSP_UserControl
 {
@@ -16,7 +16,7 @@ namespace FSP_UserControl
     public partial class FSPUserControl : UserControl
     {
         private int selectedProjectId;
-
+        private MediaPlayer _backgroundMusic = new MediaPlayer();
         public FSPUserControl()
         {
             InitializeComponent();
@@ -69,6 +69,7 @@ namespace FSP_UserControl
         {
             var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
             List<PlaylistItem> playlist = new List<PlaylistItem>();
+            var finalBytes = new byte[] { };
             foreach (var item in data)
             {
                 TimeSpan start;
@@ -112,10 +113,48 @@ namespace FSP_UserControl
 
                     playlist.Add(playlistItem);
                 }
+
+
+                var allNotes = DataManagerSqlLite.GetNotes(item.videoevent_id);
+                
+
+                foreach (var note in allNotes)
+                {
+                    var aud = DataManagerSqlLite.GetLocAudio(note.notes_id);
+                    if (aud != null && aud.Count > 0)
+                    {
+                        var byteMedia = aud[0].locaudio_media;
+                        finalBytes = Combine(finalBytes, byteMedia);
+                    }
+                }
             }
             Player.Init(playlist);
             List<TimeLineItem> timeline = Player.GetPlaylist();
             Timeline.SetTimeline(timeline);
+
+            if (finalBytes.Length > 0)
+            {
+                var directory = Directory.GetCurrentDirectory() + "\\" + DateTime.UtcNow.ToString("yyyy-MM-dd-hh-mm-ss") + ".mp3";
+                File.WriteAllBytes(directory, finalBytes);
+                _backgroundMusic.Open(new Uri(directory));
+                _backgroundMusic.MediaEnded += new EventHandler(BackgroundMusic_Ended);
+                _backgroundMusic.Play();
+            }
+            Player.Play();
+        }
+
+        private void BackgroundMusic_Ended(object sender, EventArgs e)
+        {
+            _backgroundMusic.Position = TimeSpan.Zero;
+            _backgroundMusic.Play();
+        }
+
+        public byte[] Combine(byte[] first, byte[] second)
+        {
+            byte[] ret = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, ret, 0, first.Length);
+            Buffer.BlockCopy(second, 0, ret, first.Length, second.Length);
+            return ret;
         }
 
         private void Player_Position_Changed(object sender, FullScreenPlayer_UserControl.PositionChangedArgs e)
