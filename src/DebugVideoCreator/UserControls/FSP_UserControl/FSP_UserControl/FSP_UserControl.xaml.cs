@@ -48,16 +48,19 @@ namespace FSP_UserControl
         private void PlayBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Play();
+            _backgroundMusic.Play();
         }
 
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Stop();
+            _backgroundMusic.Stop();
         }
 
         private void PauseBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Pause();
+            _backgroundMusic.Pause();
         }
 
         private void Timeline_TimeLine_Clicked(object sender, Controls.SeekEventArgs e)
@@ -161,6 +164,11 @@ namespace FSP_UserControl
         {
             PositionTxt.Text = e.Position.ToString("mm':'ss");
             Timeline.Set_Elapsed(e.Position);
+        }
+
+        private void FSPUserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            _backgroundMusic.Stop();
         }
     }
 }

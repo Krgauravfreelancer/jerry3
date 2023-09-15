@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FSP_UserControl"
         xmlns:fullscreenplayer_usercontrol="clr-namespace:FullScreenPlayer_UserControl;assembly=FullScreenPlayer_UserControl"
-        xmlns:controls="clr-namespace:FSP_UserControl.Controls"
+        xmlns:controls="clr-namespace:FSP_UserControl.Controls" Unloaded="FSPUserControl_Unloaded"
         mc:Ignorable="d" Background="#FF4A4A4A">
     <Border BorderBrush="Red">
         <DockPanel>

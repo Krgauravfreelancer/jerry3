@@ -106,7 +106,7 @@ namespace DebugVideoCreator
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-           var result = window.ShowDialog();
+            var result = window.ShowDialog();
             if (result.HasValue)
                 FSPClosed?.Invoke(this.Parent, EventArgs.Empty);
             
