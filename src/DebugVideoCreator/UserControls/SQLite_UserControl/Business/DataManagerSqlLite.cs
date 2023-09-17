@@ -480,6 +480,11 @@ namespace Sqllite_Library.Business
             SqlLiteData.DeleteNotesById(notesId);
         }
 
+        public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        {
+            SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete);
+        }
+
         #endregion 
 
     }

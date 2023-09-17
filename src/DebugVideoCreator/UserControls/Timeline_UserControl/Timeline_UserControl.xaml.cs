@@ -19,6 +19,10 @@ namespace Timeline_UserControl
         public bool HasData { get; set; } = false;
         private int selectedProjectId;
 
+        public event EventHandler ContextMenu_AddVideoEvent_Success;
+        public event EventHandler ContextMenu_AddForm_Clicked;
+        public event EventHandler ContextMenu_Run_Clicked;
+
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
 
@@ -35,43 +39,33 @@ namespace Timeline_UserControl
 
         private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
         {
-            ContextMenuAddVideoEventDataClickEvent();
-        }
-
-        public void ContextMenuAddVideoEventDataClickEvent()
-        {
-            var screenRecorderUserControl = new ScreenRecordingUserControl(selectedProjectId);
+            var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
             var window = new Window
             {
                 Title = "Screen Recorder",
-                Content = screenRecorderUserControl,
+                Content = screenRecordingUserControl,
                 ResizeMode = ResizeMode.NoResize,
-                Height = 200,
-                Width = 600,
-                RenderSize = screenRecorderUserControl.RenderSize,
+                Height = 450,
+                Width = 750,
+                RenderSize = screenRecordingUserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            //if (result.HasValue && screenRecorderUserControl.datatable != null && screenRecorderUserControl.datatable.Rows.Count > 0)
-            //{
-            //    if (screenRecorderUserControl.UserConsent || MessageBox.Show("Do you want save all recording??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            //    {
-            //        var insertedVideoEventId = DataManagerSqlLite.InsertRowsToVideoEvent(screenRecorderUserControl.datatable);
-            //        if (insertedVideoEventId.Count > 0)
-            //        {
-            //            MessageBox.Show($"{screenRecorderUserControl.datatable.Rows.Count} video event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            //            this.LoadVideoEventsFromDb();
-            //        }
-            //    }
-            //    else
-            //    {
-            //        MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            //    }
-            //}
+            if (result.HasValue)
+            {
+                ContextMenu_AddVideoEvent_Success.Invoke(this, new EventArgs());
+            }
         }
 
-        
+        private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_AddForm_Clicked?.Invoke(sender, e);
+        }
 
+        private void ContextMenuRunClickEvent(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_Run_Clicked?.Invoke(sender, e);
+        }
 
         #region == TimelineUserControl : Load from DB functions ==
 
@@ -236,13 +230,6 @@ namespace Timeline_UserControl
 
         }
 
-        private void GetCheckedTimelines(object sender, RoutedEventArgs e)
-        {
-            var selectedTracks = _timelineGridControl.GetCheckedTimelines();
-
-            //do logic here for the checked timelines...
-        }
-
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
             var contextMenu = this.Resources[resourceKey] as ContextMenu;
@@ -251,9 +238,19 @@ namespace Timeline_UserControl
             return contextMenuItem;
         }
 
+
+        private void GetCheckedTimelines(object sender, RoutedEventArgs e)
+        {
+            var selectedTracks = _timelineGridControl.GetCheckedTimelines();
+            MessageBox.Show($"GetCheckedTimelines - Total Checked found - {selectedTracks.Count}", "GetCheckedTimelines", MessageBoxButton.OK, MessageBoxImage.Information);
+            //do logic here for the checked timelines...
+        }
+
+        
         private void GetTrackbarEvents(object sender, RoutedEventArgs e)
         {
             var trackbarEvents = _timelineGridControl.GetTrackbarEvents();
+            MessageBox.Show($"GetTrackbarEvents - Total Trackbar Event found - {trackbarEvents.Count}", "GetTrackbarEvents", MessageBoxButton.OK, MessageBoxImage.Information);
 
             //do logic here for the trackbarEvents ...
         }
@@ -321,42 +318,31 @@ namespace Timeline_UserControl
             LoadTimelineDataFromDb_Click();
         }
 
-        public void ClearTimelines()
+        private void ClearTimelines(object sender, RoutedEventArgs e)
         {
             _timelineGridControl.ClearTimeline();
         }
 
-        private void ClearTimelines(object sender, RoutedEventArgs e)
-        {
-            ClearTimelines();
-        }
-
-        public void DeleteSelectedEvent()
-        {
-            _timelineGridControl.DeleteSelectedEvent();
-        }
-
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
         {
-            DeleteSelectedEvent();
-        }
-
-        public void EditSelectedEvent()
-        {
-            _timelineGridControl.EditSelectedEvent();
+            var selectedEvent = _timelineGridControl.GetSelectedEvent();
+            if (selectedEvent != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete event with Id - {selectedEvent.Id}", "Delete Event", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if(result == MessageBoxResult.Yes)
+                {
+                    DataManagerSqlLite.DeleteVideoEventsById(selectedEvent.Id, true);
+                    _timelineGridControl.DeleteSelectedEvent();
+                }
+            }
         }
 
         private void EditSelectedEvent(object sender, RoutedEventArgs e)
         {
-            EditSelectedEvent();
+            _timelineGridControl.EditSelectedEvent();
         }
 
         private void SaveTimeline(object sender, RoutedEventArgs e)
-        {
-            SaveTimeline();
-        }
-
-        public void SaveTimeline()
         {
             var addedEvents = _timelineGridControl.GetAddedTimelineEvents();
 
@@ -385,6 +371,11 @@ namespace Timeline_UserControl
 
                 DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
             }
+        }
+
+        public void SaveTimeline()
+        {
+            
         }
 
 

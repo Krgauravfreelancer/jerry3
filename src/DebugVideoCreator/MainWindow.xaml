@@ -37,11 +37,11 @@
                 Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
             
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
+        <!--<StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
             <Button Content="Test LOC Audio Insert" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnInsertLocAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
             <Button Content="Get LOC Audio" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
                 Click="BtnGetLOCAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-        </StackPanel>
+        </StackPanel>-->
     </Grid>
     <Window.Resources>
         <!-- DataGrid style -->

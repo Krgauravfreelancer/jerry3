@@ -515,7 +515,7 @@ namespace Sqllite_Library.Data
                 string sqlQueryString = $@"Select max(videoevent_end) from cbv_videoevent ";
                 var whereClause = string.Empty;
 
-                if (fk_videoevent_media <= 2) whereClause = " where fk_videoevent_media = 1 or fk_videoevent_media = 2";
+                if (fk_videoevent_media <= 4) whereClause = " where fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4";
                 else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
 
                 var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
@@ -2139,7 +2139,6 @@ namespace Sqllite_Library.Data
                                             fk_videoevent_media = {Convert.ToInt32(dr["fk_videoevent_media"])},
                                             videoevent_track = {Convert.ToInt32(dr["videoevent_track"])},
                                             videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
-                                            videoevent_end = '{Convert.ToString(dr["videoevent_end"])}',
                                             videoevent_duration = {Convert.ToInt32(dr["videoevent_duration"])},
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
@@ -2334,7 +2333,36 @@ namespace Sqllite_Library.Data
             Console.WriteLine($@"cbv_notes table delete status for id - {notesId} result - {deleteFlag}");
         }
 
+        public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        {
+            var deleteQueryString = $@" 
+                                        Delete from cbv_videoevent
+                                        WHERE 
+                                        videoevent_id = {videoeventId};
+                                        ";
 
+            if(cascadeDelete == true)
+                deleteQueryString = $@" Delete from cbv_design
+                                        WHERE 
+                                        fk_design_videoevent = {videoeventId};
+
+                                        Delete from cbv_videosegment
+                                        WHERE 
+                                        fk_videosegment_videoevent = {videoeventId};
+
+                                        Delete from cbv_locaudio
+                                        WHERE 
+                                        fk_locaudio_notes in (Select notes_id from cbv_notes WHERE fk_notes_videoevent = {videoeventId});
+
+                                        Delete from cbv_notes
+                                        WHERE 
+                                        fk_notes_videoevent = {videoeventId};
+                                        " + deleteQueryString;
+            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
+            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} result - {deleteFlag}");
+        }
+
+        #region == Delete Helper Methods ==
         private static bool DeleteRecordsInTable(string deleteQuery)
         {
             // Check if database is created
@@ -2365,6 +2393,7 @@ namespace Sqllite_Library.Data
                 throw e;
             }
         }
+        #endregion
 
         #endregion
 

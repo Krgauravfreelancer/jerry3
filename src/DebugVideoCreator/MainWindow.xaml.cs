@@ -19,6 +19,8 @@ namespace DebugVideoCreator
         public MainWindow()
         {
             InitializeComponent();
+            rbPending.IsChecked = true;
+            rbPending_Click();
         }
 
         private void OnControlLoaded(object sender, RoutedEventArgs e)
@@ -85,31 +87,18 @@ namespace DebugVideoCreator
                 RenderSize = manageTimeline_UserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            manageTimeline_UserControl.FSPClosed += (s, ea) =>
-            {
-                //var TempPath = Path.GetTempPath() + "fsptemppath\\";
-                //if (Directory.Exists(TempPath))
-                //{
-                //    Directory.Delete(TempPath, recursive: true);
-                //}
-                //Console.WriteLine($"FSPUserControl > PlayerUnloaded event is called !!!");
-            };
-            bool? result;
             try
             {
-                result = window.ShowDialog();
-                
+                var result = window.ShowDialog();
+                if (result.HasValue)
+                {
+                    datagrid.SelectedItem = null;
+                    manageTimeline_UserControl.Dispose();
+                }
             }
             catch (Exception)
-            {
-                result = window.ShowDialog();
-                
-            }
-            if (result.HasValue)
-            {
-                datagrid.SelectedItem = null;
-                manageTimeline_UserControl.Dispose();
-            }
+            { }
+            
         }
 
         private void BtnManageAudio_Click(object sender, RoutedEventArgs e)
@@ -141,10 +130,6 @@ namespace DebugVideoCreator
             MessageBox.Show(dataResult, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
         
-
-            
-
-
         #endregion == Events ==
 
         private void LoadProjectDataGrid()
@@ -155,11 +140,16 @@ namespace DebugVideoCreator
             SetWelcomeMessage();
         }
 
-        private void rbPending_Click(object sender, RoutedEventArgs e)
+        private void rbPending_Click()
         {
             var data = DataManagerSqlLite.GetPendingProjectList();
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
+        }
+
+        private void rbPending_Click(object sender, RoutedEventArgs e)
+        {
+            rbPending_Click();
         }
         private void rbWIP_Click(object sender, RoutedEventArgs e)
         {

@@ -67,7 +67,7 @@
 
 
             <timelineuc2:Timeline_UserControl Height="250"  Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                <timelineuc2:Timeline_UserControl.ContextMenu >
+                <!--<timelineuc2:Timeline_UserControl.ContextMenu >
                     <ContextMenu StaysOpen="true">
                         <MenuItem Header="Populate from Database" Click="LoadTimelineDataFromDb_Click"/>
                         <MenuItem Header="Clear All Timelines" Click="ClearTimelines" />
@@ -81,7 +81,7 @@
                         <MenuItem Header="Save All Timelines" Click="SaveTimeline"/>
                         <MenuItem Header="Run" Click="ContextMenuRunClickEvent"></MenuItem>
                     </ContextMenu>
-                </timelineuc2:Timeline_UserControl.ContextMenu>
+                </timelineuc2:Timeline_UserControl.ContextMenu>-->
             </timelineuc2:Timeline_UserControl>
 
 

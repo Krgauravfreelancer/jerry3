@@ -33,7 +33,6 @@ namespace DebugVideoCreator
         private CBVVideoEvent selectedVideoEvent;
         private PopupWindow popup;
         private AudioEditor editor;
-        public event EventHandler FSPClosed;
         public ManageTimeline_UserControl(int projectId)
         {
             InitializeComponent();
@@ -50,7 +49,9 @@ namespace DebugVideoCreator
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectId);
             TimelineUserConrol.Visibility = Visibility.Visible;
-            //TimelineUserConrol.BtnInsertVideoEventDataClickEvent += TimelineUserConrol_BtnInsertVideoEventDataClickEvent;
+            TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
+            TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
+            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
             NotesUserConrol.Visibility = Visibility.Visible;
@@ -64,11 +65,6 @@ namespace DebugVideoCreator
             //FSPClosed.
 
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
-        }
-
-        private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
-        {
-            ResetAudio();
         }
 
         private void ResetAudioMenuOptions()
@@ -86,63 +82,39 @@ namespace DebugVideoCreator
             }
         }
 
-        private void TimelineUserConrol_BtnInsertVideoEventDataClickEvent(object sender, RoutedEventArgs e)
+        private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
         {
-            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+            ResetAudio();
         }
+
 
         #region Video Event Context Menu
 
-        private void ContextMenuRunClickEvent(object sender, RoutedEventArgs e)
+        private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
             var fsp_uc = new FSPUserControl();
             fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
-            FSPClosed += ManageTimeline_UserControl_FSPClosed;
             var window = new Window
             {
                 Title = "Full Screen Player",
                 Content = fsp_uc,
-                ResizeMode = ResizeMode.CanMinimize,
+                ResizeMode = ResizeMode.CanResize,
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            if (result.HasValue)
-                FSPClosed?.Invoke(this.Parent, EventArgs.Empty);
-            
         }
 
-        private void ManageTimeline_UserControl_FSPClosed(object sender, EventArgs e)
+        private void TimelineUserConrol_ContextMenu_AddVideoEvent_Success(object sender, EventArgs e)
         {
-            
+            RefreshOrLoadComboBoxes();
+            TimelineUserConrol.LoadTimelineDataFromDb_Click();
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
         }
-
-        private void ContextMenuAddVideoEventDataClickEvent(object sender, RoutedEventArgs e)
+        
+        private void TimelineUserConrol_ContextMenu_AddForm_Clicked(object sender, EventArgs e)
         {
-            var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
-            var window = new Window
-            {
-                Title = "Screen Recorder",
-                Content = screenRecordingUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                Height = 450,
-                Width = 750,
-                RenderSize = screenRecordingUserControl.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-            if (result.HasValue)
-            {
-                RefreshOrLoadComboBoxes();
-                TimelineUserConrol.LoadTimelineDataFromDb_Click();
-                //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-            }
-        }
-
-        private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)
-        {
-
             var data = DataManagerSqlLite.GetBackground();
             var designerUserControl = new DesignerUserControl(selectedProjectId, JsonConvert.SerializeObject(data));
             var window = new Window
@@ -162,7 +134,7 @@ namespace DebugVideoCreator
                 {
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
-                        var dt = GetVideoEventDataTableForVideoSegment();
+                        var dt = GetVideoEventDataTableForDesignVideoSegment();
                         var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
                         if (insertedVideoEventIds?.Count > 0)
                         {
@@ -193,7 +165,7 @@ namespace DebugVideoCreator
             }
         }
 
-        private DataTable GetVideoEventDataTableForVideoSegment()
+        private DataTable GetVideoEventDataTableForDesignVideoSegment()
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
@@ -641,31 +613,6 @@ namespace DebugVideoCreator
 
         #endregion 
 
-
-        private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
-        {
-            TimelineUserConrol.LoadTimelineDataFromDb_Click();
-        }
-
-        private void ClearTimelines(object sender, RoutedEventArgs e)
-        {
-            TimelineUserConrol.ClearTimelines();
-        }
-
-        private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
-        {
-            TimelineUserConrol.DeleteSelectedEvent();
-        }
-
-        private void EditSelectedEvent(object sender, RoutedEventArgs e)
-        {
-            TimelineUserConrol.EditSelectedEvent();
-        }
-
-        private void SaveTimeline(object sender, RoutedEventArgs e)
-        {
-            TimelineUserConrol.SaveTimeline();
-        }
 
         private void RefreshOrLoadComboBoxes(EnumEntity entity = EnumEntity.ALL)
         {

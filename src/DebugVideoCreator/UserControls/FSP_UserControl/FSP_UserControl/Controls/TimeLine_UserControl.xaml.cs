@@ -37,12 +37,12 @@ namespace FSP_UserControl.Controls
 
         private void BuildTimeLine(List<TimeLineItem> timeLineItems)
         {
-            if (timeLineItems?.Count > 0)
+            MediaStack.Children.Clear();
+
+            if (timeLineItems.Count > 0)
             {
                 TotalWidth = this.ActualWidth;
                 TotalTime = timeLineItems[timeLineItems.Count - 1].EndTime.TotalSeconds;
-
-                MediaStack.Children.Clear();
 
                 foreach (TimeLineItem item in timeLineItems)
                 {
@@ -51,6 +51,11 @@ namespace FSP_UserControl.Controls
                     MediaStack.Children.Add(newLabel);
                 }
             }
+            else
+            {
+                Set_Elapsed(TimeSpan.Zero);
+            }
+
         }
 
         private Label CreateLabel(string Text, double Width, TimeLineType Type)
@@ -113,8 +118,19 @@ namespace FSP_UserControl.Controls
         public void Set_Elapsed(TimeSpan Elapsed)
         {
             double Offset = Elapsed.TotalSeconds / TotalTime * TotalWidth;
+
+            if (Double.IsNaN(Offset) == true)
+            {
+                Offset = 0;
+            }
+
             ElapsedTxt.Text = Elapsed.ToString("mm':'ss");
             Indicator.Margin = new Thickness(Offset, 0, 0, 0);
+        }
+
+        public void Completed()
+        {
+            Indicator.Margin = new Thickness(TotalWidth - 2, 0, 0, 0);
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -150,22 +166,22 @@ namespace FSP_UserControl.Controls
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             MediaStack.Children.Clear();
-            Cursor1.Visibility = Visibility.Hidden;
+            Cursor.Visibility = Visibility.Hidden;
         }
 
         private void UserControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            Cursor1.Visibility = Visibility.Visible;
+            Cursor.Visibility = Visibility.Visible;
         }
 
         private void UserControl_MouseMove(object sender, MouseEventArgs e)
         {
-            Cursor1.Margin = new Thickness(e.GetPosition(this).X, 0, 0, 0);
+            Cursor.Margin = new Thickness(e.GetPosition(this).X, 0, 0, 0);
         }
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            Cursor1.Visibility = Visibility.Hidden;
+            Cursor.Visibility = Visibility.Hidden;
         }
     }
 
