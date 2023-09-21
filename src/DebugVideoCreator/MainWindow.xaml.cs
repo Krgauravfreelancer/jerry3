@@ -7,20 +7,21 @@ using System.Windows;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using DebugVideoCreator.Helpers;
-
+using System.Threading.Tasks;
+using DebugVideoCreator.Auth;
+using System.Windows.Media;
 
 namespace DebugVideoCreator
 {
     public partial class MainWindow : Window, IDisposable
     {
         private bool IsSetUp = false;
-
+        private readonly AuthAPIViewModel authApiViewModel;
 
         public MainWindow()
         {
             InitializeComponent();
-            //rbPending.IsChecked = true;
-            //rbPending_Click();
+            authApiViewModel = new AuthAPIViewModel();
         }
 
         private void OnControlLoaded(object sender, RoutedEventArgs e)
@@ -34,6 +35,7 @@ namespace DebugVideoCreator
                 }
                 rbPending.IsChecked = true;
                 rbPending_Click();
+               _ = Login();
             }
             catch (Exception ex)
             {
@@ -44,6 +46,53 @@ namespace DebugVideoCreator
             // LoadProjectDataGrid();
 
         }
+
+        #region == Auth Events ==
+        private async Task Login()
+        {
+            await authApiViewModel.ExecuteLoginAsync();
+            ResetTokenOrError();
+        }
+        private async void BtnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            await Login();
+        }
+
+        private async void BtnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            await authApiViewModel.ExecuteLogoutAsync();
+            ResetTokenOrError();
+        }
+
+        private void ResetTokenOrError()
+        {
+            if (!string.IsNullOrEmpty(authApiViewModel.GetError()))
+            {
+                txtError.Text = authApiViewModel.GetError();
+                txtError.Foreground = Brushes.Red;
+                btnLogin.IsEnabled = true;
+            }
+            else
+            {
+                txtError.Text = "";
+                txtError.Foreground = Brushes.Green;
+                btnLogin.IsEnabled = false;
+            }
+
+            if (!string.IsNullOrEmpty(authApiViewModel.GetToken()))
+            {
+                txtToken.Text = "Logged In with Token - " + authApiViewModel.GetToken();
+                txtToken.Foreground = Brushes.Green;
+                btnLogout.IsEnabled = true;
+            }
+            else
+            {
+                txtToken.Text = "";
+                txtToken.Foreground = Brushes.Red;
+                btnLogout.IsEnabled = false;
+            }
+        }
+        #endregion
 
         #region == Events ==
 

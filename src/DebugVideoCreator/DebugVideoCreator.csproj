@@ -201,6 +201,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Auth\AuthApiClientHelper.cs" />
+    <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="PopupWindow.xaml.cs">
