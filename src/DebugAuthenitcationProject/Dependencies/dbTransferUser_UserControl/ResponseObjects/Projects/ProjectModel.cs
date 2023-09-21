@@ -30,7 +30,7 @@ namespace dbTransferUser_UserControl.ResponseObjects.Projects
         public int fk_project_createdby { get; set; }
 
         [JsonPropertyName("fk_project_modifyby")]
-        public int fk_project_modifyby { get; set; }
+        public int? fk_project_modifyby { get; set; }
 
         [JsonPropertyName("project_modifydate")]
         public string project_modifydate { get; set; }

@@ -287,3 +287,7 @@
 /src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/bin/Debug
 /src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/obj/Debug
 /src/DebugVideoCreator/UserControls/LocalVoiceGen_UserControl/packages
+/src/DebugVideoCreator/UserControls/Authentication_UserControl/.vs
+/src/DebugVideoCreator/UserControls/Authentication_UserControl/obj
+/src/DebugVideoCreator/UserControls/Authentication_UserControl/packages
+/src/DebugVideoCreator/UserControls/Authentication_UserControl/bin/Debug/net48

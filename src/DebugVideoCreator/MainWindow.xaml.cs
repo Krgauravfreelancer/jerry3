@@ -19,8 +19,8 @@ namespace DebugVideoCreator
         public MainWindow()
         {
             InitializeComponent();
-            rbPending.IsChecked = true;
-            rbPending_Click();
+            //rbPending.IsChecked = true;
+            //rbPending_Click();
         }
 
         private void OnControlLoaded(object sender, RoutedEventArgs e)
@@ -32,6 +32,8 @@ namespace DebugVideoCreator
                     InitialiseDbHelper.InitializeDatabase();
                     IsSetUp = true;
                 }
+                rbPending.IsChecked = true;
+                rbPending_Click();
             }
             catch (Exception ex)
             {

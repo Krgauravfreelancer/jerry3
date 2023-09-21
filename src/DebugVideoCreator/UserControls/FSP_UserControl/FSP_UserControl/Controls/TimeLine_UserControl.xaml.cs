@@ -166,22 +166,22 @@ namespace FSP_UserControl.Controls
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             MediaStack.Children.Clear();
-            Cursor.Visibility = Visibility.Hidden;
+            Cursor1.Visibility = Visibility.Hidden;
         }
 
         private void UserControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            Cursor.Visibility = Visibility.Visible;
+            Cursor1.Visibility = Visibility.Visible;
         }
 
         private void UserControl_MouseMove(object sender, MouseEventArgs e)
         {
-            Cursor.Margin = new Thickness(e.GetPosition(this).X, 0, 0, 0);
+            Cursor1.Margin = new Thickness(e.GetPosition(this).X, 0, 0, 0);
         }
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            Cursor.Visibility = Visibility.Hidden;
+            Cursor1.Visibility = Visibility.Hidden;
         }
     }
 
