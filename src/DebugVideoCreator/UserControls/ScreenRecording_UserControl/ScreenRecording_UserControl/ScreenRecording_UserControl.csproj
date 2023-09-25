@@ -8,8 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ScreenRecorder_Wrapper</RootNamespace>
-    <AssemblyName>ScreenRecorder_Wrapper</AssemblyName>
+    <RootNamespace>ScreenRecording_UserControl</RootNamespace>
+    <AssemblyName>ScreenRecording_UserControl</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
