@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using DebugVideoCreator.Auth;
 using System.Windows.Media;
 
-namespace DebugVideoCreator
+namespace DebugVideoCreator.XAML
 {
     public partial class MainWindow : Window, IDisposable
     {

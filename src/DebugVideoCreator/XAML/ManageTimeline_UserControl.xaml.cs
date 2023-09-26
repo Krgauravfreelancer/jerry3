@@ -18,7 +18,7 @@ using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 using AudioPlayer_UserControl;
 
-namespace DebugVideoCreator
+namespace DebugVideoCreator.XAML
 {
     /// <summary>
     /// Interaction logic for ManageTimeline.xaml

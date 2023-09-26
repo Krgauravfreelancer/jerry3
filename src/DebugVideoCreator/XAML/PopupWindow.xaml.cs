@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DebugVideoCreator
+namespace DebugVideoCreator.XAML
 {
     /// <summary>
     /// Interaction logic for PopupWindow.xaml

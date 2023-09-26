@@ -205,7 +205,7 @@
     <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
-    <Compile Include="PopupWindow.xaml.cs">
+    <Compile Include="XAML\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="VoiceAverageHelper.cs" />
@@ -215,7 +215,7 @@
     <Compile Include="VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Page Include="XAML\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -224,21 +224,21 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Helpers\TestEncryptionHelper.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="XAML\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ManageTimeline_UserControl.xaml">
+    <Page Include="XAML\ManageTimeline_UserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PopupWindow.xaml">
+    <Page Include="XAML\PopupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ManageTimeline_UserControl.xaml.cs">
+    <Compile Include="XAML\ManageTimeline_UserControl.xaml.cs">
       <DependentUpon>ManageTimeline_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
