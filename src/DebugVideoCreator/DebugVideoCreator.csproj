@@ -208,11 +208,11 @@
     <Compile Include="XAML\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VoiceAverageHelper.cs" />
-    <Compile Include="VoiceAverage_Form.cs">
+    <Compile Include="VoiceAverage\VoiceAverageHelper.cs" />
+    <Compile Include="VoiceAverage\VoiceAverage_Form.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VoiceAverage_Form.Designer.cs">
+    <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
     <Page Include="XAML\MainWindow.xaml">
@@ -258,7 +258,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="VoiceAverage_Form.resx">
+    <EmbeddedResource Include="VoiceAverage\VoiceAverage_Form.resx">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Libraries\regUsernamePassword.reg" />

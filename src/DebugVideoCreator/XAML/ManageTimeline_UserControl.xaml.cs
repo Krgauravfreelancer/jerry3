@@ -10,7 +10,6 @@ using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Windows;
 using Windows = System.Windows.Controls;
 using Forms = System.Windows.Forms;
