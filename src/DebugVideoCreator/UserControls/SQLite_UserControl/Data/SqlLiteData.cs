@@ -2027,7 +2027,7 @@ namespace Sqllite_Library.Data
         #region == Update Methods ==
 
         #region == Update Helper methods ==
-        private static bool UpdateRecordsInTable(string UpdateQuery)
+        private static bool ExecuteNonQueryInTable(string UpdateQuery)
         {
             // Check if database is created
             if (false == IsDbCreated())
@@ -2119,7 +2119,7 @@ namespace Sqllite_Library.Data
                                             project_modifydate = '{modifyDate}'
                                         WHERE 
                                             project_id = {project_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
             }
         }
@@ -2143,7 +2143,7 @@ namespace Sqllite_Library.Data
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
                                             videoevent_id = {videoevent_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_videoevent table update status for id - {videoevent_id} result - {updateFlag}");
             }
         }
@@ -2209,7 +2209,7 @@ namespace Sqllite_Library.Data
                                             design_modifydate = '{modifyDate}'
                                         WHERE 
                                             design_id = {design_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_design table update status for id - {design_id} result - {updateFlag}");
             }
         }
@@ -2231,7 +2231,7 @@ namespace Sqllite_Library.Data
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
             }
         }
@@ -2292,7 +2292,7 @@ namespace Sqllite_Library.Data
                                             voicetimer_index = {Convert.ToInt32(dr["voicetimer_index"])}
                                         WHERE 
                                             voicetimer_id = {voicetimer_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_voicetimer table update status for id - {voicetimer_id} result - {updateFlag}");
             }
         }
@@ -2307,7 +2307,7 @@ namespace Sqllite_Library.Data
                                             voiceaverage_average = '{Convert.ToString(dr["voiceaverage_average"])}'
                                         WHERE 
                                             voiceaverage_id = {voiceaverage_id}";
-                var updateFlag = UpdateRecordsInTable(updateQueryString);
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
             }
         }
@@ -2394,6 +2394,72 @@ namespace Sqllite_Library.Data
             }
         }
         #endregion
+
+        #endregion
+
+
+        #region == Upsert Methods ==
+        public static void UpsertRowsToApp(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var app_id = Convert.ToInt32(dr["app_id"]);
+                var app_name = Convert.ToString(dr["app_name"]);
+                var app_active = Convert.ToInt32(dr["app_active"]);
+
+                var upsertQueryString = $@" INSERT INTO cbv_app(app_name, app_active)
+                                                    VALUES('{app_name}',{app_active})
+                                                ON CONFLICT(app_name) 
+                                                DO UPDATE 
+                                                SET
+                                                    app_active = excluded.app_active;";
+                
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                Console.WriteLine($@"cbv_app table upsert status for id - {app_id} result - {upsertFlag}");
+            }
+        }
+
+        public static void UpsertRowsToMedia(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var media_id = Convert.ToInt32(dr["media_id"]);
+                var media_name = Convert.ToString(dr["media_name"]);
+                var media_color = Convert.ToString(dr["media_color"]);
+
+                var upsertQueryString = $@" INSERT INTO cbv_media(media_name, media_color)
+                                                    VALUES('{media_name}','{media_color}')
+                                                ON CONFLICT(media_name) 
+                                                DO UPDATE 
+                                                SET
+                                                    media_color = excluded.media_color;";
+
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                Console.WriteLine($@"cbv_media table upsert status for id - {media_id} result - {upsertFlag}");
+            }
+        }
+
+        public static void UpsertRowsToScreen(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var screen_id = Convert.ToInt32(dr["screen_id"]);
+                var screen_name = Convert.ToString(dr["screen_name"]);
+                var screen_color = Convert.ToString(dr["screen_color"]);
+
+                var upsertQueryString = $@" INSERT INTO cbv_screen(screen_name, screen_color)
+                                                    VALUES('{screen_name}','{screen_color}')
+                                                ON CONFLICT(screen_name) 
+                                                DO UPDATE 
+                                                SET
+                                                    screen_color = excluded.screen_color;";
+
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                Console.WriteLine($@"cbv_screen table upsert status for id - {screen_id} result - {upsertFlag}");
+            }
+        }
+
+
 
         #endregion
 

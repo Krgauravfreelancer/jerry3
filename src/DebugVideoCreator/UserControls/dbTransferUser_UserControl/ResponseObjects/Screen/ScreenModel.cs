@@ -1,17 +1,9 @@
-﻿using System.Text.Json.Serialization;
-
-namespace dbTransferUser_UserControl.ResponseObjects.Screen
+﻿namespace dbTransferUser_UserControl.ResponseObjects.Screen
 {
     public class ScreenModel
     {
-        [JsonPropertyName("screen_name")]
-        public string ScreenName { get; set; }
-
-        [JsonPropertyName("screen_color")]
-        public string ScreenColor { get; set; }
-        public override string ToString()
-        {
-            return $@"ScreenName - {ScreenName}, ScreenColor - {ScreenColor}";
-        }
+        public int screen_id { get; set; }
+        public string screen_name { get; set; }
+        public string screen_color { get; set; }
     }
 }

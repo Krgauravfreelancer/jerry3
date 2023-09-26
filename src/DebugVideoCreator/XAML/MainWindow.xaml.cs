@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Reflection;
 using System.Windows;
 using Sqllite_Library.Business;
-using Sqllite_Library.Models;
 using DebugVideoCreator.Helpers;
 using System.Threading.Tasks;
 using DebugVideoCreator.Auth;
 using System.Windows.Media;
+using dbTransferUser_UserControl.ResponseObjects.Projects;
 
 namespace DebugVideoCreator.XAML
 {
@@ -24,18 +23,22 @@ namespace DebugVideoCreator.XAML
             authApiViewModel = new AuthAPIViewModel();
         }
 
-        private void OnControlLoaded(object sender, RoutedEventArgs e)
+        private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (!IsSetUp)
-                {
-                    InitialiseDbHelper.InitializeDatabase();
-                    IsSetUp = true;
-                }
-                rbPending.IsChecked = true;
-                rbPending_Click();
-               _ = Login();
+                //if (!IsSetUp)
+                //{
+                //    InitialiseDbHelper.InitializeDatabase();
+                //    IsSetUp = true;
+                //}
+                //rbPending.IsChecked = true;
+                //rbPending_Click();
+                await Login();
+                await SyncApp();
+                await SyncMedia();
+                await SyncScreens();
+                await PopulateProjects();
             }
             catch (Exception ex)
             {
@@ -43,8 +46,39 @@ namespace DebugVideoCreator.XAML
                 this.Close();
             }
             SetWelcomeMessage();
-            // LoadProjectDataGrid();
 
+        }
+
+        private async Task SyncApp()
+        {
+            var data = await authApiViewModel.GetAllApp();
+            if (data == null) return;
+            SyncDbHelper.SyncApp(data);
+            MessageBox.Show("App Data Synchronised", "Apps Data", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private async Task SyncMedia()
+        {
+            var data = await authApiViewModel.GetAllMedia();
+            if (data == null) return;
+            SyncDbHelper.SyncMedia(data);
+            MessageBox.Show("Media Data Synchronised", "Media Data", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private async Task SyncScreens()
+        {
+            var data = await authApiViewModel.GetAllScreens();
+            if (data == null) return;
+            SyncDbHelper.SyncScreen(data);
+            MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+
+        private async Task PopulateProjects()
+        {
+            var data = await authApiViewModel.GetProjectsData();
+            datagrid.ItemsSource = data;
+            datagrid.Visibility = Visibility.Visible;
         }
 
         #region == Auth Events ==
@@ -122,10 +156,12 @@ namespace DebugVideoCreator.XAML
                 return;
             }
             int selectedProjectId;
-            if ((bool)rbPending.IsChecked)
-                selectedProjectId = ((CBVPendingProjectList)datagrid.SelectedItem)?.project_id ?? 0;
-            else
-                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+            //if ((bool)rbPending.IsChecked)
+            //    selectedProjectId = ((CBVPendingProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+            //else
+            //    selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+
+            selectedProjectId = ((ProjectModel)datagrid.SelectedItem)?.project_id ?? 0;
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId);
             
@@ -135,7 +171,7 @@ namespace DebugVideoCreator.XAML
                 Content = manageTimeline_UserControl,
                 WindowState = WindowState.Maximized,
                 ResizeMode = ResizeMode.CanResize,
-                WindowStartupLocation   = WindowStartupLocation.CenterScreen
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
                 //Title = "Manage Timeline",
                 //Content = manageTimeline_UserControl,
                 //SizeToContent = SizeToContent.WidthAndHeight,
@@ -188,34 +224,21 @@ namespace DebugVideoCreator.XAML
         
         #endregion == Events ==
 
-        private void LoadProjectDataGrid()
+        private async void rbPending_Click(object sender, RoutedEventArgs e)
         {
-            var data = DataManagerSqlLite.GetProjects(true, true);
-            datagrid.ItemsSource = data;
-            datagrid.Visibility = Visibility.Visible;
-            SetWelcomeMessage();
-        }
-
-        private void rbPending_Click()
-        {
-            var data = DataManagerSqlLite.GetPendingProjectList();
+            var data = await authApiViewModel.GetProjectsData(null, ProjectStatusEnum.Pending);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
         }
-
-        private void rbPending_Click(object sender, RoutedEventArgs e)
+        private async void rbWIP_Click(object sender, RoutedEventArgs e)
         {
-            rbPending_Click();
-        }
-        private void rbWIP_Click(object sender, RoutedEventArgs e)
-        {
-            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
+            var data = await authApiViewModel.GetProjectsData(null, ProjectStatusEnum.WIP);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
         }
-        private void rbArchived_Click(object sender, RoutedEventArgs e)
+        private async void rbArchived_Click(object sender, RoutedEventArgs e)
         {
-            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
+            var data = await authApiViewModel.GetProjectsData(null, ProjectStatusEnum.Archived);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
         }

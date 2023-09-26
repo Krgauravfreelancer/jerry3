@@ -1,19 +1,14 @@
-﻿using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-
-namespace dbTransferUser_UserControl.ResponseObjects.Media
+﻿namespace dbTransferUser_UserControl.ResponseObjects.Media
 {
     public class MediaModel
     {
-        [JsonPropertyName("media_name")]
-        public string MediaName { get; set; }
-
-        [JsonPropertyName("media_color")]
-        public string MediaColor { get; set; }
+        public int media_id { get; set; }
+        public string media_name { get; set; }
+        public string media_color { get; set; }
 
         public override string ToString()
         {
-            return $@"MediaName - {MediaName}, MediaColor - {MediaColor}";
+            return $@"MediaName - {media_name}, MediaColor - {media_color}";
         }
     }
 }

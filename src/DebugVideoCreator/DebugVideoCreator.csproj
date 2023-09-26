@@ -203,6 +203,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\AuthApiClientHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="XAML\PopupWindow.xaml.cs">

@@ -48,6 +48,16 @@ namespace dbTransferUser_UserControl.ResponseObjects.Projects
                         project_archived - {project_archived}";
         }
     }
+
+    public enum ProjectStatusEnum
+    {
+        All = 0,
+        WIP = 1,
+        Completed = 2,
+        Cancelled = 3,
+        Pending = 4,
+        Archived = 5
+    }
 }
 
 

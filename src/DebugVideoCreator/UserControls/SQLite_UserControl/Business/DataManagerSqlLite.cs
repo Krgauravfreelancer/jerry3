@@ -485,7 +485,27 @@ namespace Sqllite_Library.Business
             SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete);
         }
 
-        #endregion 
+        #endregion
+
+        #region == Upsert Methods ==
+        public static void UpsertRowsToApp(DataTable dataTable)
+        {
+            SqlLiteData.UpsertRowsToApp(dataTable);
+        }
+
+        public static void UpsertRowsToMedia(DataTable dataTable)
+        {
+            SqlLiteData.UpsertRowsToMedia(dataTable);
+        }
+
+        public static void UpsertRowsToScreen(DataTable dataTable)
+        {
+            SqlLiteData.UpsertRowsToScreen(dataTable);
+        }
+
+
+        
+        #endregion
 
     }
 }

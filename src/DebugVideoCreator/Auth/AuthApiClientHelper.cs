@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using GalaSoft.MvvmLight;
 using Authentication_UserControl;
-//using dbTransferUser_UserControl;
+using dbTransferUser_UserControl;
 using System.Net.NetworkInformation;
 using System.Net.Http;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace DebugVideoCreator.Auth
 {
@@ -14,7 +15,7 @@ namespace DebugVideoCreator.Auth
     {
         //private string token;
         private IAuthControl authCtrl; //authentication DLL
-        //private IDBTransferControl dbTransferCtrl;
+        private IDBTransferControl dbTransferCtrl;
         public string TokenNumber { get; set; }
         public string ErrorMessage { get; set; }
 
@@ -77,7 +78,7 @@ namespace DebugVideoCreator.Auth
         {
             IsBusy = true;
             authCtrl.SetMACAddress(this.MacAddress);
-            //dbTransferCtrl.SetClient(authCtrl.GetHttpClient());
+            dbTransferCtrl.SetClient(authCtrl.GetHttpClient());
         }
         
 
@@ -90,7 +91,7 @@ namespace DebugVideoCreator.Auth
                 if (!string.IsNullOrEmpty(loginRes.Token))
                 {
                     TokenNumber = loginRes.Token;
-                    //dbTransferCtrl = new DBTransferControl(authCtrl.GetHttpClient());
+                    dbTransferCtrl = new DBTransferControl(authCtrl.GetHttpClient());
                 }
                 else
                     ErrorMessage = "No Token returned";
@@ -135,14 +136,14 @@ namespace DebugVideoCreator.Auth
             }
         }
 
-        /*
+        
         public async Task<T> Get<T>(string url)
         {
             try
             {
                 InitializeOrResetDbTransferControl();
                 var result = await dbTransferCtrl.Get(url);
-                var data = JsonSerializer.Deserialize<T>(result);
+                var data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -155,7 +156,7 @@ namespace DebugVideoCreator.Auth
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                // MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -202,7 +203,7 @@ namespace DebugVideoCreator.Auth
                 InitializeOrResetDbTransferControl();
                 
                 var result = await dbTransferCtrl.Create(url, payload);
-                var data = JsonSerializer.Deserialize<T>(result);
+                T data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -231,7 +232,7 @@ namespace DebugVideoCreator.Auth
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.CreateWithFile(url, payload);
-                var data = JsonSerializer.Deserialize<T>(result);
+                var data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -260,7 +261,7 @@ namespace DebugVideoCreator.Auth
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Update(url, payload);
-                var data = JsonSerializer.Deserialize<T>(result);
+                var data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -289,7 +290,7 @@ namespace DebugVideoCreator.Auth
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.UpdateWithFile(url, payload);
-                var data = JsonSerializer.Deserialize<T>(result);
+                var data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -318,7 +319,7 @@ namespace DebugVideoCreator.Auth
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Patch(url, payload);
-                var data = JsonSerializer.Deserialize<T>(result);
+                var data = JsonConvert.DeserializeObject<T>(result);
                 return data;
             }
             catch (DllNotFoundException dllex)
@@ -339,6 +340,6 @@ namespace DebugVideoCreator.Auth
             }
             return default;
         }
-        */
+        
     }
 }

@@ -2,15 +2,18 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-//using dbTransferUser_UserControl.ResponseObjects.Projects;
-//using dbTransferUser_UserControl.ResponseObjects.Background;
-//using dbTransferUser_UserControl.ResponseObjects.Company;
-//using dbTransferUser_UserControl.ResponseObjects.FinalMp4;
-//using dbTransferUser_UserControl.ResponseObjects.Media;
-//using dbTransferUser_UserControl.ResponseObjects.Screen;
-//using dbTransferUser_UserControl.ResponseObjects.App;
-//using dbTransferUser_UserControl.ResponseObjects;
-//using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+using dbTransferUser_UserControl.ResponseObjects.Projects;
+using dbTransferUser_UserControl.ResponseObjects.Background;
+using dbTransferUser_UserControl.ResponseObjects.Company;
+using dbTransferUser_UserControl.ResponseObjects.FinalMp4;
+using dbTransferUser_UserControl.ResponseObjects.Media;
+using dbTransferUser_UserControl.ResponseObjects.Screen;
+using dbTransferUser_UserControl.ResponseObjects.App;
+using dbTransferUser_UserControl.ResponseObjects;
+using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+using System.Net.Http;
+using System.Windows;
+using System.Text;
 
 namespace DebugVideoCreator.Auth
 {
@@ -75,17 +78,19 @@ namespace DebugVideoCreator.Auth
         }
 
 
-        /*
+        
         #region == Project API Calls ==
 
-        public async Task ExecuteLoadProjectsAsync(DateTime? modifiedDate = null)
+        public async Task<List<ProjectModel>> GetProjectsData(DateTime? modifiedDate = null, ProjectStatusEnum status = 0)
         {
             var url = $"api/connect/project/available";
+            if (status > 0)
+                url += $"?projstatus={(int)status}";
             if (modifiedDate.HasValue)
                 url += $"?modifydate={modifiedDate:yyyy-MM-dd HH:mm:ss}";
 
             var result = await _apiClientHelper.Get<ParentDataList<ProjectModel>>(url);
-            AllProjects = result.Data;
+            return result?.Data?.Count > 0 ? result.Data : null;
         }
 
         public async Task CreateProject(string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
@@ -102,7 +107,7 @@ namespace DebugVideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
-            await ExecuteLoadProjectsAsync();
+            await GetProjectsData();
         }
 
         public async Task UpdateProject(int ProjectId, string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
@@ -119,7 +124,7 @@ namespace DebugVideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Update<ParentData<ProjectModel>>(url, payload);
-            await ExecuteLoadProjectsAsync();
+            await GetProjectsData();
         }
 
         public async Task PatchProject(int projectId, int project_version, string project_comments)
@@ -133,7 +138,7 @@ namespace DebugVideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Patch<ParentData<ProjectModel>>(url, payload);
-            await ExecuteLoadProjectsAsync();
+            await GetProjectsData();
         }
 
         public async Task GetProjectCount()
@@ -187,56 +192,43 @@ namespace DebugVideoCreator.Auth
         #endregion
 
         #region == Master table data ==
-        public async Task GetAllMedia()
-        {
-            var url = "api/connect/media";
-            var result = await _apiClientHelper.Get<ParentDataList<MediaModel>>(url);
-            if (result?.Data?.Count > 0)
-            {
-                var builder = new StringBuilder();
-                foreach (var keyPair in result?.Data)
-                    builder.Append(keyPair.MediaName + "\t : \t" + keyPair.MediaColor + "\n");
-                MessageBox.Show(builder.ToString(), "All Media", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show($"No Media Found", "All Media", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public async Task GetAllScreens()
-        {
-            var url = "api/connect/screen";
-            var result = await _apiClientHelper.Get<ParentDataList<ScreenModel>>(url);
-            if (result?.Data?.Count > 0)
-            {
-                var builder = new StringBuilder();
-                foreach (var keyPair in result.Data)
-                    builder.Append(keyPair.ScreenName + "\t : \t" + keyPair.ScreenColor + "\n");
-                MessageBox.Show(builder.ToString(), "All Screen", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show($"No Media Found", "All Screen", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        public async Task GetAllApp()
+        public async Task<AppModel> GetAllApp()
         {
             var url = "api/connect/app";
             var result = await _apiClientHelper.Get<AppModel>(url);
             if (result != null)
-            {
-                MessageBox.Show(result.ToString(), "Apps", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                return result;
             else
-            {
-                MessageBox.Show($"No App Found", "All Media", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                MessageBox.Show($"No data found", "Synchronising Apps Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
         }
 
-        #endregion
+        public async Task<List<MediaModel>> GetAllMedia()
+        {
+            var url = "api/connect/media";
+            var result = await _apiClientHelper.Get<ParentDataList<MediaModel>>(url);
+            if (result?.Data?.Count > 0)
+                return result.Data;
+            else
+                MessageBox.Show($"No data Found", "Synchronising Media Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
+        }
 
+        public async Task<List<ScreenModel>> GetAllScreens()
+        {
+            var url = "api/connect/screen";
+            var result = await _apiClientHelper.Get<ParentDataList<ScreenModel>>(url);
+            if (result?.Data?.Count > 0)
+                return result.Data;
+            else
+                MessageBox.Show($"No data Found", "Synchronising screen Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
+        }
+
+        
+
+        #endregion
+        /*
         #region == Company ==
 
         public async Task ListAllCompany()
