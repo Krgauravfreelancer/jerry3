@@ -1,5 +1,6 @@
 ﻿using dbTransferUser_UserControl.ResponseObjects.App;
 using dbTransferUser_UserControl.ResponseObjects.Media;
+using dbTransferUser_UserControl.ResponseObjects.Projects;
 using dbTransferUser_UserControl.ResponseObjects.Screen;
 using Sqllite_Library.Business;
 using System;
@@ -21,13 +22,14 @@ namespace DebugVideoCreator.Helpers
         public static void InitializeDatabase()
         {
             DataManagerSqlLite.CreateDatabaseIfNotExist(false, true); // Lets keep the flag false for now
-            
-            
+            SyncCompany(); // TBD
+            if (DataManagerSqlLite.GetBackgroundsCount() == 0)
+                PopulateBackgroundTable();
+
             //SyncScreen();
             //SyncCompany(); // TBD 
 
-            //if (DataManagerSqlLite.GetBackgroundsCount() == 0)
-            //    PopulateBackgroundTable();
+
 
             //if (DataManagerSqlLite.GetProjectsCount() == 0)
             //    PopulateProjectTable();
@@ -48,7 +50,7 @@ namespace DebugVideoCreator.Helpers
         {
             try
             {
-                DataManagerSqlLite.CreateDatabaseIfNotExist(false, true);
+                InitializeDatabase();
                 var datatable = new DataTable();
                 datatable.Columns.Add("app_id", typeof(int));
                 datatable.Columns.Add("app_name", typeof(string));
@@ -75,7 +77,7 @@ namespace DebugVideoCreator.Helpers
         {
             try
             {
-                DataManagerSqlLite.CreateDatabaseIfNotExist(false, true);
+                InitializeDatabase();
                 var datatable = new DataTable();
                 datatable.Columns.Add("media_id", typeof(int));
                 datatable.Columns.Add("media_name", typeof(string));
@@ -100,6 +102,7 @@ namespace DebugVideoCreator.Helpers
         {
             try
             {
+                InitializeDatabase();
                 var datatable = new DataTable();
                 datatable.Columns.Add("screen_id", typeof(int));
                 datatable.Columns.Add("screen_name", typeof(string));
@@ -119,6 +122,49 @@ namespace DebugVideoCreator.Helpers
                 throw ex;
             }
         }
+
+        public static void SyncProject_Insert(ProjectModel data)
+        {
+            try
+            {
+                InitializeDatabase();
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("project_id", typeof(int));
+                dataTable.Columns.Add("project_name", typeof(string));
+                dataTable.Columns.Add("project_version", typeof(int));
+                dataTable.Columns.Add("project_comments", typeof(string));
+                dataTable.Columns.Add("project_createdate", typeof(string));
+                dataTable.Columns.Add("project_modifydate", typeof(string));
+                dataTable.Columns.Add("project_uploaded", typeof(bool));
+                dataTable.Columns.Add("project_archived", typeof(bool));
+                dataTable.Columns.Add("fk_project_background", typeof(int));
+                dataTable.Columns.Add("project_date", typeof(string));
+                
+                var row = dataTable.NewRow();
+                row["project_id"] = data.project_id;
+                row["project_name"] = data.project_name;
+                row["project_version"] = data.project_version;
+                row["project_uploaded"] = false;
+                row["project_archived"] = data.project_archived;
+                row["fk_project_background"] = 1;
+                row["project_createdate"] = data.project_createdate;
+                row["project_modifydate"] = data.project_modifydate;
+                row["project_date"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                dataTable.Rows.Add(row);
+                var insertedId = DataManagerSqlLite.UpsertRowsToProject(dataTable);
+                if (insertedId > -1)
+                {
+                    //MessageBox.Show("Projects populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
 
         private static void SyncCompany()
         {
@@ -298,7 +344,7 @@ namespace DebugVideoCreator.Helpers
                 var insertedId = DataManagerSqlLite.InsertRowsToBackground(dataTable);
                 if (insertedId > -1)
                 {
-                    MessageBox.Show("Background images populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show("Background images populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)

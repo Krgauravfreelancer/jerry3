@@ -262,6 +262,7 @@
     <EmbeddedResource Include="VoiceAverage\VoiceAverage_Form.resx">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include=".editorconfig" />
     <None Include="Libraries\regUsernamePassword.reg" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

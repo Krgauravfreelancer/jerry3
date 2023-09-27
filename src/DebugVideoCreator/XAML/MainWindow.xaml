@@ -36,10 +36,15 @@
 
 
         <Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>
-        <DataGrid x:Name="datagrid" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="1160" Height="400" VerticalAlignment="Top" Margin="0,130,0,0" Style="{DynamicResource DataGridStyle1}" />
+        <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="1160" Height="400" VerticalAlignment="Top" Margin="0,130,0,0" Style="{DynamicResource DataGridStyle1}" />
 
         <StackPanel Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
-            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            <Button Content="Accept" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnAcceptProject_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnAcceptProject" IsEnabled="False"/>
+            <Button Content="Reject" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnRejectProject_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnRejectProject" IsEnabled="False"/>
             <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
                 Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
             <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 

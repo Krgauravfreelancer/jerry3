@@ -2459,7 +2459,40 @@ namespace Sqllite_Library.Data
             }
         }
 
+        public static int UpsertRowsToProject(DataTable dataTable)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var projectUploaded = Convert.ToBoolean(dr["project_uploaded"]);
 
+                var projectDate = Convert.ToString(dr["project_date"]);
+                if (string.IsNullOrEmpty(projectDate))
+                    projectDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var projectArchived = Convert.ToBoolean(dr["project_archived"]);
+
+                var createDate = Convert.ToString(dr["project_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["project_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
+                values.Add($"({dr["project_id"]}, '{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}')");
+            }
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO  cbv_project 
+                    (project_id, project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
+            return insertedId;
+        }
 
         #endregion
 

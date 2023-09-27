@@ -503,8 +503,17 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpsertRowsToScreen(dataTable);
         }
 
+        public static int UpsertRowsToProject(DataTable data)
+        {
+            foreach (DataRow rowMain in data.Rows)
+            {
+                var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
+                if (!backgroundFlag)
+                    throw new Exception("background_id foreign key constraint not successful ");
+            }
+            return SqlLiteData.UpsertRowsToProject(data);
+        }
 
-        
         #endregion
 
     }
