@@ -103,17 +103,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
       <SubType>Code</SubType>
