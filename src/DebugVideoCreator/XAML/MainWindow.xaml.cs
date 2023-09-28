@@ -12,12 +12,12 @@ using dbTransferUser_UserControl.ResponseObjects.Projects;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Sqllite_Library.Models;
+using System.IO;
 
 namespace DebugVideoCreator.XAML
 {
     public partial class MainWindow : Window, IDisposable
     {
-        private bool IsSetUp = false;
         private readonly AuthAPIViewModel authApiViewModel;
         private List<ProjectModel> pendingProjects;
         public MainWindow()
@@ -30,17 +30,14 @@ namespace DebugVideoCreator.XAML
         {
             try
             {
-                //if (!IsSetUp)
-                //{
-                //    InitialiseDbHelper.InitializeDatabase();
-                //    IsSetUp = true;
-                //}
-                //rbPending.IsChecked = true;
-                //rbPending_Click();
                 await Login();
+
                 await SyncApp();
                 await SyncMedia();
                 await SyncScreens();
+                await SyncCompany();
+                await SyncBackground();
+
                 await PopulateProjects();
             }
             catch (Exception ex)
@@ -73,6 +70,24 @@ namespace DebugVideoCreator.XAML
             var data = await authApiViewModel.GetAllScreens();
             if (data == null) return;
             SyncDbHelper.SyncScreen(data);
+            //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private async Task SyncCompany()
+        {
+            var data = await authApiViewModel.GetAllCompany();
+            if (data == null) return;
+            SyncDbHelper.SyncCompany(data);
+            //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private async Task SyncBackground()
+        {
+            var data = await authApiViewModel.GetAllBackground();
+            if (data == null) return;
+            //foreach(var item in data)
+            //    item.backgrounds_media = await authApiViewModel.DownloadBackground(item.backgrounds_id, "png");
+            SyncDbHelper.SyncBackground(data);
             //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 

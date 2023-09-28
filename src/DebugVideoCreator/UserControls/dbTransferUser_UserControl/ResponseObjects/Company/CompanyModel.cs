@@ -1,13 +1,8 @@
-﻿using System.Text.Json.Serialization;
-
-namespace dbTransferUser_UserControl.ResponseObjects.Company
+﻿namespace dbTransferUser_UserControl.ResponseObjects.Company
 {
     public class CompanyModel
     {
-        [JsonPropertyName("company_id")]
         public int company_id { get; set; }
-
-        [JsonPropertyName("company_name")]
         public string company_name { get; set; }
         
         public override string ToString()

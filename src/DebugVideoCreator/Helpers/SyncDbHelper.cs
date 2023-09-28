@@ -1,4 +1,6 @@
 ﻿using dbTransferUser_UserControl.ResponseObjects.App;
+using dbTransferUser_UserControl.ResponseObjects.Background;
+using dbTransferUser_UserControl.ResponseObjects.Company;
 using dbTransferUser_UserControl.ResponseObjects.Media;
 using dbTransferUser_UserControl.ResponseObjects.Projects;
 using dbTransferUser_UserControl.ResponseObjects.Screen;
@@ -8,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
@@ -22,10 +25,6 @@ namespace DebugVideoCreator.Helpers
         public static void InitializeDatabase()
         {
             DataManagerSqlLite.CreateDatabaseIfNotExist(false, true); // Lets keep the flag false for now
-            SyncCompany(); // TBD
-            if (DataManagerSqlLite.GetBackgroundsCount() == 0)
-                PopulateBackgroundTable();
-
             //SyncScreen();
             //SyncCompany(); // TBD 
 
@@ -123,6 +122,61 @@ namespace DebugVideoCreator.Helpers
             }
         }
 
+        public static void SyncCompany(List<CompanyModel> data)
+        {
+            try
+            {
+                var datatable = new DataTable();
+                datatable.Columns.Add("company_id", typeof(int));
+                datatable.Columns.Add("company_name", typeof(string));
+                foreach (var item in data)
+                {
+                    var row = datatable.NewRow();
+                    row["company_id"] = item.company_id;
+                    row["company_name"] = item.company_name;
+                    datatable.Rows.Add(row);
+                }
+                DataManagerSqlLite.UpsertRowsToCompany(datatable);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public static async void SyncBackground(List<BackgroundModel> data)
+        {
+            try
+            {
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("background_id", typeof(int));
+                dataTable.Columns.Add("fk_background_company", typeof(int));
+                dataTable.Columns.Add("background_media", typeof(byte[]));
+                dataTable.Columns.Add("background_active", typeof(bool));
+
+                var currentDirectory = Directory.GetCurrentDirectory();
+
+                foreach(var item in data)
+                {
+                    var row = dataTable.NewRow();
+                    row["background_id"] = item.backgrounds_id;
+                    row["fk_background_company"] = item.fk_backgrounds_company;
+                    row["background_active"] = item.backgrounds_active;
+                    using (WebClient client = new WebClient())
+                    {
+                        row["background_media"] = await client.DownloadDataTaskAsync(item.backgrounds_url);
+                    }
+                    dataTable.Rows.Add(row);
+                }
+                DataManagerSqlLite.UpsertRowsToBackground(dataTable);
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public static void SyncProject_Insert(ProjectModel data)
         {
             try
@@ -165,27 +219,10 @@ namespace DebugVideoCreator.Helpers
 
         }
 
+        
 
-        private static void SyncCompany()
-        {
-            try
-            {
-                var datatable = new DataTable();
 
-                datatable.Columns.Add("company_id", typeof(int));
-                datatable.Columns.Add("company_name", typeof(string));
 
-                var row = datatable.NewRow();
-                row["company_id"] = -1;
-                row["company_name"] = "CommercialBase";
-                datatable.Rows.Add(row);
-                var insertedIds = DataManagerSqlLite.SyncCompany(datatable);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
 
         private static void SyncVoiceTimer()
         {
@@ -354,7 +391,7 @@ namespace DebugVideoCreator.Helpers
 
         }
 
-        private static byte[] StreamToByteArray(Stream stream, int initialLength)
+        public static byte[] StreamToByteArray(Stream stream, int initialLength)
         {
             // If we've been passed an unhelpful initial length, just
             // use 32K.

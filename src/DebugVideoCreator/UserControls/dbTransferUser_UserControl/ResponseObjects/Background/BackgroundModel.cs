@@ -4,17 +4,12 @@ namespace dbTransferUser_UserControl.ResponseObjects.Background
 {
     public class BackgroundModel
     {
-        [JsonPropertyName("backgrounds_id")]
         public int backgrounds_id { get; set; }
-
-        [JsonPropertyName("fk_backgrounds_company")]
         public int fk_backgrounds_company { get; set; }
-
-        [JsonPropertyName("backgrounds_media")]
         public string backgrounds_media { get; set; }
-        
-        [JsonPropertyName("backgrounds_active")]
         public bool backgrounds_active { get; set; }
+        public string backgrounds_url { get; set; }
+        public string backgrounds_thumb { get; set; }
 
         public override string ToString()
         {

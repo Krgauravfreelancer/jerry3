@@ -14,6 +14,8 @@ using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
 using System.Net.Http;
 using System.Windows;
 using System.Text;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace DebugVideoCreator.Auth
 {
@@ -123,8 +125,6 @@ namespace DebugVideoCreator.Auth
             var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
             await GetProjectsData();
         }
-
-
 
         public async Task UpdateProject(int ProjectId, string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
@@ -241,31 +241,42 @@ namespace DebugVideoCreator.Auth
             return null;
         }
 
-        
-
-        #endregion
-        /*
-        #region == Company ==
-
-        public async Task ListAllCompany()
+        public async Task<List<CompanyModel>> GetAllCompany()
         {
             var url = $"api/connect/company";
 
             var result = await _apiClientHelper.Get<List<CompanyModel>>(url);
             if (result != null)
-            {
-                var builder = new StringBuilder();
-                builder.Append($"Total Company found - {result.Count}" + "\n");
-                foreach (var keyPair in result)
-                    builder.Append(keyPair.ToString() + "\n" + "\n");
-                MessageBox.Show(builder.ToString(), $"List of All Company", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                return result;
             else
-            {
-                MessageBox.Show($"No App Found", "All Background", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                MessageBox.Show($"No Company Found", "Synchronising company Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
         }
 
+        public async Task<List<BackgroundModel>> GetAllBackground()
+        {
+            var url = $"api/connect/background";
+            var result = await _apiClientHelper.Get<ParentData<List<BackgroundModel>>>(url);
+            if (result != null)
+                return result?.Data;
+            else
+                MessageBox.Show($"No Background Found", "Synchronising Background Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            return null;
+        }
+
+        public async Task<string> DownloadBackground(int backgroundId, string extension)
+        {
+            var url = $"api/connect/background/download/{backgroundId}";
+            var filename = $"background_{DateTime.Now:yyyyMMddhhmmss.ffff}.{extension}";
+            await _apiClientHelper.GetFile(url, filename);
+            var filepath = $@"{Directory.GetCurrentDirectory()}\\{filename}";
+            return filepath;
+        }
+
+
+        #endregion
+        /*
+        #region == Company ==
         public async Task CreateCompany(string company_name)
         {
             var url = $"api/connect/company";
@@ -310,25 +321,7 @@ namespace DebugVideoCreator.Auth
 
         #region == Background ==
 
-        public async Task ListAllBackground()
-        {
-            var url = $"api/connect/background";
-
-            var result = await _apiClientHelper.Get<List<BackgroundModel>>(url);
-            if (result != null)
-            {
-                var builder = new StringBuilder();
-                builder.Append($"Total backgrounds found - {result.Count}" + "\n");
-                foreach (var keyPair in result)
-                    builder.Append(keyPair.ToString() + "\n" + "\n" + "\n" + "\n");
-                MessageBox.Show(builder.ToString(), $"ListAllBackground", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show($"No Record Found", "ListAllBackground", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
+        
         //public async Task ListBackgroundById(int backgroundId)
         //{
         //    //var url = $"api/connect/background/download/{backgroundId}";

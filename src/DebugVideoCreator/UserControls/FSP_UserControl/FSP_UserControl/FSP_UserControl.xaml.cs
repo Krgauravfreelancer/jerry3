@@ -16,10 +16,20 @@ namespace FSP_UserControl
     public partial class FSPUserControl : UserControl
     {
         private int selectedProjectId;
+        private bool playAudioFlag;
         private MediaPlayer _backgroundMusic = new MediaPlayer();
+        public FSPUserControl(bool playAudio = false)
+        {
+            InitializeComponent();
+            playAudioFlag = playAudio;
+            Player.Loaded += PlayerLoaded;
+            Player.Unloaded += PlayerUnloaded;
+        }
+
         public FSPUserControl()
         {
             InitializeComponent();
+            playAudioFlag = false;
             Player.Loaded += PlayerLoaded;
             Player.Unloaded += PlayerUnloaded;
         }
@@ -48,19 +58,19 @@ namespace FSP_UserControl
         private void PlayBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Play();
-            _backgroundMusic.Play();
+            if (playAudioFlag) _backgroundMusic.Play();
         }
 
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Stop();
-            _backgroundMusic.Stop();
+            if (playAudioFlag) _backgroundMusic.Stop();
         }
 
         private void PauseBtn_Click(object sender, RoutedEventArgs e)
         {
             Player.Pause();
-            _backgroundMusic.Pause();
+            if (playAudioFlag) _backgroundMusic.Pause();
         }
 
         private void Timeline_TimeLine_Clicked(object sender, Controls.SeekEventArgs e)
@@ -135,7 +145,7 @@ namespace FSP_UserControl
             List<TimeLineItem> timeline = Player.GetPlaylist();
             Timeline.SetTimeline(timeline);
 
-            if (finalBytes.Length > 0)
+            if (playAudioFlag && finalBytes.Length > 0)
             {
                 var directory = Directory.GetCurrentDirectory() + "\\" + DateTime.UtcNow.ToString("yyyy-MM-dd-hh-mm-ss") + ".mp3";
                 File.WriteAllBytes(directory, finalBytes);

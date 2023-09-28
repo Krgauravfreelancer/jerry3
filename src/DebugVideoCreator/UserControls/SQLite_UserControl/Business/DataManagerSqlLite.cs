@@ -503,6 +503,16 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpsertRowsToScreen(dataTable);
         }
 
+        public static void UpsertRowsToCompany(DataTable dataTable)
+        {
+            SqlLiteData.UpsertRowsToCompany(dataTable);
+        }
+
+        public static void UpsertRowsToBackground(DataTable dataTable)
+        {
+            SqlLiteData.UpsertRowsToBackground(dataTable);
+        }
+
         public static int UpsertRowsToProject(DataTable data)
         {
             foreach (DataRow rowMain in data.Rows)

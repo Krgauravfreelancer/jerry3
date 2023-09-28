@@ -2058,6 +2058,40 @@ namespace Sqllite_Library.Data
             }
         }
 
+        private static bool ExecuteNonQueryWithBlobInTable(string UpdateQuery, byte[] blob)
+        {
+            // Check if database is created
+            if (false == IsDbCreated())
+            {
+                throw new Exception("Database is not present.");
+            }
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                using (var command = new SQLiteCommand(UpdateQuery, sqlCon))
+                {
+                    var dataParameter = new SQLiteParameter("blob", DbType.Binary) { Value = blob };
+                    command.Parameters.Add(dataParameter);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+                }
+                sqlCon?.Close();
+                return true;
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+        }
+
         private static bool UpdateBlobRecordsInTable(string UpdateQuery, byte[] blob)
         {
             // Check if database is created
@@ -2458,6 +2492,46 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_screen table upsert status for id - {screen_id} result - {upsertFlag}");
             }
         }
+
+        public static void UpsertRowsToCompany(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var company_id = Convert.ToInt32(dr["company_id"]);
+                var company_name = Convert.ToString(dr["company_name"]);
+
+                var upsertQueryString = $@" INSERT INTO cbv_company(company_name)
+                                                    VALUES('{company_name}')
+                                                ON CONFLICT(company_name) 
+                                                DO UPDATE 
+                                                SET
+                                                    company_id = {company_id};";
+
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                Console.WriteLine($@"cbv_company table upsert status for id - {company_id} result - {company_name}");
+            }
+        }
+
+        public static void UpsertRowsToBackground(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var background_id = Convert.ToInt32(dr["background_id"]);
+                var fk_background_company = Convert.ToInt32(dr["fk_background_company"]);
+                var background_active = Convert.ToInt32(dr["background_active"]);
+                var whereClause = $" NOT EXISTS(SELECT 1 FROM cbv_background WHERE fk_background_company = {fk_background_company} and background_active = {background_active} );";
+
+
+                var upsertQueryString = $@" INSERT INTO cbv_background(fk_background_company, background_active, background_media)
+                                                   Select {fk_background_company}, {background_active}, @blob
+                                                WHERE {whereClause};";
+                var upsertFlag = InsertBlobRecordsInTable("cbv_background", upsertQueryString, dr["background_media"] as byte[]);
+                Console.WriteLine($@"cbv_background table upsert status for id - {background_id} result - {upsertFlag}");
+            }
+        }
+
+
+        
 
         public static int UpsertRowsToProject(DataTable dataTable)
         {
