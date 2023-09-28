@@ -103,16 +103,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Timeline_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="Timeline_UserControl.xaml.cs">
-      <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

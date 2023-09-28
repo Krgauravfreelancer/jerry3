@@ -1,9 +1,8 @@
-﻿<UserControl x:Class="Timeline_UserControl.Timeline_UserControl"
+﻿<UserControl x:Class="DebugVideoCreator.XAML.Timeline_UserControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Timeline_UserControl"
         xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
         xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
         mc:Ignorable="d">

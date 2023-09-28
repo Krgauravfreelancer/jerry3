@@ -300,18 +300,28 @@ namespace DebugVideoCreator.XAML
             pendingProjects = await authApiViewModel.GetProjectsData(null, ProjectStatusEnum.Pending);
             datagrid.ItemsSource = RemoveUnnecessaryFields(pendingProjects);
             datagrid.Visibility = Visibility.Visible;
+
+            pendingStack.Visibility = Visibility.Visible;
+            manageStack.Visibility = Visibility.Hidden;
+           
         }
         private void rbWIP_Click(object sender, RoutedEventArgs e)
         {
             var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
+
+            pendingStack.Visibility = Visibility.Hidden;
+            manageStack.Visibility = Visibility.Visible;
         }
         private void rbArchived_Click(object sender, RoutedEventArgs e)
         {
             var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
+
+            pendingStack.Visibility = Visibility.Hidden;
+            manageStack.Visibility = Visibility.Hidden;
         }
 
         public DataTable ToDataTable<T>(List<T> items)

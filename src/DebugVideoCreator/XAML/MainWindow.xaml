@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DebugVideoCreator"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Loaded="OnControlLoaded"
@@ -38,18 +37,20 @@
         <Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>
         <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="1160" Height="400" VerticalAlignment="Top" Margin="0,130,0,0" Style="{DynamicResource DataGridStyle1}" />
 
-        <StackPanel Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
-            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+        <StackPanel x:Name="pendingStack" Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Visibility="Hidden">
             <Button Content="Accept" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnAcceptProject_Click" Height="25" Width="180" 
                     Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnAcceptProject" IsEnabled="False"/>
             <Button Content="Reject" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnRejectProject_Click" Height="25" Width="180" 
                     Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnRejectProject" IsEnabled="False"/>
-            <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
-                Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-            <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
-                Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
-            
+        </StackPanel>
+        <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Visibility="Hidden">
+            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageTimelineButton"/>
+            <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"
+                Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageAudioButton"/>
+            <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"
+                Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageVideoButton"/>
+
         </StackPanel>
         <!--<StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
             <Button Content="Test LOC Audio Insert" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnInsertLocAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>

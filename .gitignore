@@ -296,3 +296,7 @@
 /src/DebugVideoCreator/UserControls/dbTransferUser_UserControl/bin/Debug
 /src/DebugVideoCreator/UserControls/dbTransferUser_UserControl/obj/Debug
 /src/DebugVideoCreator/UserControls/dbTransferUser_UserControl/packages
+/src/Timeline_UserControl/.vs/Timeline_UserControl
+/src/Timeline_UserControl/bin/Debug
+/src/Timeline_UserControl/obj/Debug
+/src/Timeline_UserControl/packages

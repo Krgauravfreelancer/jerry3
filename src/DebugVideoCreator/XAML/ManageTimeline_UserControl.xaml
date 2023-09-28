@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DebugVideoCreator"
              xmlns:fullscreenplayeruc="clr-namespace:FSP_UserControl;assembly=FSP_UserControl"
+             xmlns:timelineuc2="clr-namespace:DebugVideoCreator.XAML"
              xmlns:audiouc="clr-namespace:Audio_UserControl;assembly=Audio_UserControl"
-             xmlns:timelineuc2="clr-namespace:Timeline_UserControl;assembly=Timeline_UserControl"
-             xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl"
+             xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl" 
              mc:Ignorable="d"  Height="950 " Width="1200">
     
     <Grid Background="Transparent">
@@ -66,23 +66,9 @@
 
 
 
-            <timelineuc2:Timeline_UserControl Height="250"  Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                <!--<timelineuc2:Timeline_UserControl.ContextMenu >
-                    <ContextMenu StaysOpen="true">
-                        <MenuItem Header="Populate from Database" Click="LoadTimelineDataFromDb_Click"/>
-                        <MenuItem Header="Clear All Timelines" Click="ClearTimelines" />
-                        <Separator></Separator>
-                        <MenuItem Header="Add Audio Event to Selected Timeline" IsEnabled="False"/>
-                        <MenuItem Header="Add Form Event to Selected Timeline" IsEnabled="True" Click="ContextMenuAddFormEventDataClickEvent"/>
-                        <MenuItem Header="Add Video Event to Selected Timeline" Click="ContextMenuAddVideoEventDataClickEvent"/>
-                        <Separator></Separator>
-                        <MenuItem Header="Edit Selected Event" Click="EditSelectedEvent"/>
-                        <MenuItem Header="Delete Selected Event" Click="DeleteSelectedEvent"/>
-                        <MenuItem Header="Save All Timelines" Click="SaveTimeline"/>
-                        <MenuItem Header="Run" Click="ContextMenuRunClickEvent"></MenuItem>
-                    </ContextMenu>
-                </timelineuc2:Timeline_UserControl.ContextMenu>-->
-            </timelineuc2:Timeline_UserControl>
+            <timelineuc2:Timeline_UserControl Height="250"  Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" />
+
+
 
 
         </Grid>
