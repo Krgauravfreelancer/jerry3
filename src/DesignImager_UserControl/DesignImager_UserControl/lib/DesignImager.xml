@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DesignImager</name>
+    </assembly>
+    <members>
+        <member name="T:DesignImagerNp.controls.DesignImager">
+            <summary>
+            Interaction logic for DesignImager.xaml
+            </summary>
+            <summary>
+            DesignImager
+            </summary>
+        </member>
+        <member name="M:DesignImagerNp.controls.DesignImager.GetImage">
+            <summary>
+            Returns the randered image in a datatable. <br/>
+            The datatable has the following format <br/>
+            Colume 0: <br/>
+             - Name: "id" <br/>
+             - Datatype: Int <br/>
+             - Default value -1 <br/>
+            Colume 1: <br/>
+             - Name: "imageData" <br/>
+             - Datatype: byte[] <br/>
+             - Contains byte array of the image <br/>
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:DesignImagerNp.controls.DesignImager.LoadDesign(System.Data.DataTable)">
+            <summary>
+            Loads the xamls of individual element from datatable into the canvas. <br/>
+            /// The datatable should have the following format <br/>
+            Colume 0: <br/>
+             - Name: "id" <br/>
+             - Datatype: Int <br/>
+            Colume 1: <br/>
+             - Name: "xaml" <br/>
+             - Datatype: string <br/>
+             - Contains valid xaml of UI element for a canvas <br/>
+            </summary>
+            <param name="dataTable">Datatable of designes xaml</param>
+            
+        </member>
+        <member name="M:DesignImagerNp.controls.DesignImager.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:DesignImagerNp.controls.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:DesignImagerNp.controls.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:DesignImagerNp.controls.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

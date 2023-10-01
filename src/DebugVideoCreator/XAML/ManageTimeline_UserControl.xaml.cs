@@ -1,6 +1,5 @@
 ﻿using AudioEditor_UserControl;
 using AudioRecorder_UserControl;
-using DesignImager_UserControl;
 using Newtonsoft.Json;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
@@ -187,7 +186,7 @@ namespace DebugVideoCreator.XAML
 
         private void ContextMenuAddFormEventDataClickEvent_Step2(int videoEventId)
         {
-            var designImagerUserControl = new DesignImagerUserControl(videoEventId);
+            var designImagerUserControl = new DesignImager_UserControl(videoEventId);
             var window = new Window
             {
                 Title = "Design Image",
