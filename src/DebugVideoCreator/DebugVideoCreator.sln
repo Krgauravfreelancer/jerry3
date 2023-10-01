@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes_UserControl", "UserCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj", "{623A80C5-B24C-40CC-A96B-582E8B61099A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Designer_UserControl", "UserControls\Designer_UserControl\Designer_UserControl\Designer_UserControl.csproj", "{FC79A8EF-42F9-44B2-99DA-9A853512DD20}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager_UserControl", "UserControls\DesignImager_UserControl\DesignImager_UserControl\DesignImager_UserControl.csproj", "{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalVoiceGen_UserControl", "UserControls\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj", "{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}"
@@ -48,10 +46,6 @@ Global
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC79A8EF-42F9-44B2-99DA-9A853512DD20}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Release|Any CPU.ActiveCfg = Release|Any CPU

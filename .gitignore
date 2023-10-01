@@ -317,3 +317,7 @@
 /src/ScreenRecording_UserControl/ScreenRecording_UserControl/bin/Debug
 /src/ScreenRecording_UserControl/ScreenRecording_UserControl/Libraries/ffmpeg.exe
 /src/ScreenRecording_UserControl/ScreenRecording_UserControl/obj/Debug
+/src/Designer_UserControl/Designer_UserControl/bin/Debug
+/src/Designer_UserControl/Designer_UserControl/obj/Debug
+/src/Designer_UserControl/packages
+/src/Designer_UserControl/.vs

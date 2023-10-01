@@ -1,6 +1,5 @@
 ﻿using AudioEditor_UserControl;
 using AudioRecorder_UserControl;
-using Designer_UserControl;
 using DesignImager_UserControl;
 using Newtonsoft.Json;
 using Sqllite_Library.Business;
@@ -113,7 +112,7 @@ namespace DebugVideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddForm_Clicked(object sender, EventArgs e)
         {
             var data = DataManagerSqlLite.GetBackground();
-            var designerUserControl = new DesignerUserControl(selectedProjectId, JsonConvert.SerializeObject(data));
+            var designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
             var window = new Window
             {
                 Title = "Designer",
