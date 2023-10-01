@@ -300,3 +300,11 @@
 /src/Timeline_UserControl/bin/Debug
 /src/Timeline_UserControl/obj/Debug
 /src/Timeline_UserControl/packages
+/src/DebugVideoCreator/Libraries/ffmpeg.exe
+/src/DebugVideoCreator/Libraries/ffprobe.exe
+/src/FSP_UserControl/FSP_UserControl/bin/Debug
+/src/FSP_UserControl/FSP_UserControl/Libraries/ffmpeg.exe
+/src/FSP_UserControl/FSP_UserControl/Libraries/ffprobe.exe
+/src/FSP_UserControl/FSP_UserControl/obj/Debug
+/src/FSP_UserControl/packages
+/src/FSP_UserControl/.vs

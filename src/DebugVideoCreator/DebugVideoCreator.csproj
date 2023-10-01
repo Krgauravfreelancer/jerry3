@@ -102,6 +102,10 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="FullScreenPlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\FullScreenPlayer_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
@@ -210,6 +214,12 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
+    <Compile Include="XAML\FullScreenPlayer_UserControl.xaml.cs">
+      <DependentUpon>FullScreenPlayer_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XAML\FullSreenPlayerTimeLine_UserControl.xaml.cs">
+      <DependentUpon>FullSreenPlayerTimeLine_UserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAML\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
@@ -223,6 +233,14 @@
     <Compile Include="XAML\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="XAML\FullScreenPlayer_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="XAML\FullSreenPlayerTimeLine_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="XAML\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -274,6 +292,8 @@
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
+    <None Include="Libraries\regJerry.reg" />
+    <None Include="Libraries\regJerry2.reg" />
     <None Include="Libraries\regUsernamePassword.reg" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -305,6 +325,9 @@
     <Content Include="Libraries\AudioPlayer_UserControl.dll" />
     <Content Include="Libraries\AudioRecorder_UserControl.dll" />
     <Content Include="Libraries\AudioWave_UserControl.dll" />
+    <Content Include="Libraries\ffmpeg.exe" />
+    <Content Include="Libraries\ffprobe.exe" />
+    <Content Include="Libraries\FullScreenPlayer_UserControl.dll" />
     <Content Include="Libraries\Timeline.UserControls.dll" />
     <Resource Include="Libraries\Timeline.UserControls.xml" />
     <Content Include="Libraries\WPFToolkit.Extended.dll" />
@@ -343,10 +366,6 @@
     <ProjectReference Include="UserControls\DesignImager_UserControl\DesignImager_UserControl\DesignImager_UserControl.csproj">
       <Project>{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}</Project>
       <Name>DesignImager_UserControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="UserControls\FSP_UserControl\FSP_UserControl\FSP_UserControl.csproj">
-      <Project>{542a15f2-e184-4199-8739-4060d566ac03}</Project>
-      <Name>FSP_UserControl</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>

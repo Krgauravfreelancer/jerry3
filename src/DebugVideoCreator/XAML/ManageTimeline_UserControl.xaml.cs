@@ -2,7 +2,6 @@
 using AudioRecorder_UserControl;
 using Designer_UserControl;
 using DesignImager_UserControl;
-using FSP_UserControl;
 using Newtonsoft.Json;
 using ScreenRecording_UserControl;
 using Sqllite_Library.Business;
@@ -91,7 +90,7 @@ namespace DebugVideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
-            var fsp_uc = new FSPUserControl(true);
+            var fsp_uc = new FullScreenPlayerUserControl(true);
             fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
             var window = new Window
             {
