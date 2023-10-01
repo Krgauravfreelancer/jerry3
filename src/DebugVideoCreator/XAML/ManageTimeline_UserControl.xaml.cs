@@ -57,9 +57,45 @@ namespace DebugVideoCreator.XAML
             TimelineUserConrol.LoadTimelineDataFromDb_Click();
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
+            NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
+            NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
             //FSPClosed.
 
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
+        }
+
+        private void NotesUserConrol_locAudioManageEvent(object sender, int notesId)
+        {
+            var uc = new LocalVoice_UserControl(selectedVideoEventId, notesId);
+            var window = new Window
+            {
+                Title = $"Manage Audio For {notesId} notes",
+                Content = uc,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            NotesUserConrol.DisplayAllNotes();
+        }
+
+        private void NotesUserConrol_locAudioShowEvent(object sender, EventArgs e)
+        {
+            var uc = new LocalVoice_UserControl(selectedVideoEventId);
+            var window = new Window
+            {
+                Title = "Generate Local Voice",
+                Content = uc,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            NotesUserConrol.DisplayAllNotes();
         }
 
         private void ResetAudioMenuOptions()

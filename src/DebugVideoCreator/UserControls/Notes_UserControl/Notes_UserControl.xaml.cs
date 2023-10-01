@@ -1,5 +1,4 @@
-﻿using LocalVoiceGen_UserControl;
-using Sqllite_Library.Business;
+﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Data;
@@ -18,6 +17,8 @@ namespace Notes_UserControl
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
         public event EventHandler locAudioAddedEvent;
+        public event EventHandler locAudioShowEvent;
+        public event EventHandler<int> locAudioManageEvent;
 
         public Notes_UserControl()
         {
@@ -25,6 +26,17 @@ namespace Notes_UserControl
         }
 
         #region == Public Functions ==
+
+        public void DisplayAllNotes()
+        {
+            var allNotes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
+            stackPanelNotes.Children.Clear();
+            int i = 0;
+            foreach (var note in allNotes)
+                stackPanelNotes.Children.Add(AddNotes(note, ++i));
+            if (locAudioAddedEvent != null)
+                locAudioAddedEvent.Invoke(this, new EventArgs());
+        }
 
         public void SetSelectedProjectId(int project_id, int videoEvent_id = -1)
         {
@@ -66,22 +78,6 @@ namespace Notes_UserControl
                     DisplayAllNotes();
                 }
             }
-        }
-
-        #endregion
-
-        #region == Events ==
-
-
-        private void DisplayAllNotes()
-        {
-            var allNotes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
-            stackPanelNotes.Children.Clear();
-            int i = 0;
-            foreach (var note in allNotes)
-                stackPanelNotes.Children.Add(AddNotes(note, ++i));
-            if(locAudioAddedEvent != null)
-                locAudioAddedEvent.Invoke(this, new EventArgs());
         }
 
         #endregion
@@ -138,19 +134,8 @@ namespace Notes_UserControl
 
         private void ContextMenu_GenerateVoiceAllNotesClickEvent(object sender, RoutedEventArgs e)
         {
-            var uc = new LocalVoiceGenUserControl(selectedVideoEventId);
-            var window = new Window
-            {
-                Title = "Generate Local Voice",
-                Content = uc,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-            DisplayAllNotes();
+            if (locAudioShowEvent != null)
+                locAudioShowEvent.Invoke(this, new EventArgs());
         }
 
 
@@ -255,19 +240,9 @@ namespace Notes_UserControl
             };
             voiceGenerateNoteQuery.Click += (sender, e) =>
             {
-                var uc = new LocalVoiceGenUserControl(selectedVideoEventId, note.notes_id);
-                var window = new Window
-                {
-                    Title = $"Manage Audio For {note.notes_id} notes",
-                    Content = uc,
-                    SizeToContent = SizeToContent.WidthAndHeight,
-                    ResizeMode = ResizeMode.NoResize,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen
-                };
-                var result = window.ShowDialog();
-                DisplayAllNotes();
+                if (locAudioManageEvent != null)
+                    locAudioManageEvent.Invoke(this, note.notes_id);
+
             };
             contextMenu.Items.Add(voiceGenerateNoteQuery);
             return contextMenu;
