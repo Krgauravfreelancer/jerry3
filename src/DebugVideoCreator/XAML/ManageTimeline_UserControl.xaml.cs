@@ -90,7 +90,7 @@ namespace DebugVideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
-            var fsp_uc = new FullScreenPlayerUserControl(true);
+            var fsp_uc = new FullScreen_UserControl(true);
             fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
             var window = new Window
             {

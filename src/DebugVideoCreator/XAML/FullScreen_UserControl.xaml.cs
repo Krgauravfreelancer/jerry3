@@ -13,12 +13,12 @@ namespace DebugVideoCreator.XAML
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class FullScreenPlayerUserControl : UserControl
+    public partial class FullScreen_UserControl : UserControl
     {
         private int selectedProjectId;
         private bool playAudioFlag;
         private MediaPlayer _backgroundMusic = new MediaPlayer();
-        public FullScreenPlayerUserControl(bool playAudio = false)
+        public FullScreen_UserControl(bool playAudio = false)
         {
             InitializeComponent();
             playAudioFlag = playAudio;
@@ -26,7 +26,7 @@ namespace DebugVideoCreator.XAML
             Player.Unloaded += PlayerUnloaded;
         }
 
-        public FullScreenPlayerUserControl()
+        public FullScreen_UserControl()
         {
             InitializeComponent();
             playAudioFlag = false;
@@ -176,7 +176,7 @@ namespace DebugVideoCreator.XAML
             Timeline.Set_Elapsed(e.Position);
         }
 
-        private void FullScreenPlayerUserControl_Unloaded(object sender, RoutedEventArgs e)
+        private void FullScreen_UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
             _backgroundMusic.Stop();
         }

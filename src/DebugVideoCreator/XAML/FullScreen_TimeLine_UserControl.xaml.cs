@@ -10,9 +10,9 @@ using System.Windows.Media;
 namespace DebugVideoCreator.XAML
 {
     /// <summary>
-    /// Interaction logic for FullSreenPlayerTimeLine_UserControl.xaml
+    /// Interaction logic for FullScreen_TimeLine_UserControl.xaml
     /// </summary>
-    public partial class FullSreenPlayerTimeLine_UserControl : UserControl
+    public partial class FullScreen_TimeLine_UserControl : UserControl
     {
         List<TimeLineItem> TimeLineItems = null;
 
@@ -24,7 +24,7 @@ namespace DebugVideoCreator.XAML
 
         double TotalWidth = 0;
         double TotalTime = 0;
-        public FullSreenPlayerTimeLine_UserControl()
+        public FullScreen_TimeLine_UserControl()
         {
             InitializeComponent();
         }

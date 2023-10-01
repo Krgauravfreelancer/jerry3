@@ -40,13 +40,13 @@
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-            <local:FullScreenPlayerUserControl Margin="-5,10,10,10" Height="280" Width="650" x:Name="FSPUserConrol"  Grid.Row="0" Grid.Column="0"  VerticalAlignment="Center" HorizontalAlignment="Center">
-                <local:FullScreenPlayerUserControl.ContextMenu >
+            <local:FullScreen_UserControl Margin="-5,10,10,10" Height="280" Width="650" x:Name="FSPUserConrol"  Grid.Row="0" Grid.Column="0"  VerticalAlignment="Center" HorizontalAlignment="Center">
+                <local:FullScreen_UserControl.ContextMenu >
                     <ContextMenu StaysOpen="true">
                         <MenuItem Header="Manage Design"/>
                     </ContextMenu>
-                </local:FullScreenPlayerUserControl.ContextMenu>
-            </local:FullScreenPlayerUserControl>
+                </local:FullScreen_UserControl.ContextMenu>
+            </local:FullScreen_UserControl>
 
             <notesuc:Notes_UserControl Grid.Row="0" Grid.Column="1"  Height="290" Margin="0" x:Name="NotesUserConrol" VerticalAlignment="Center" HorizontalAlignment="Center" />
 

@@ -214,11 +214,11 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
-    <Compile Include="XAML\FullScreenPlayer_UserControl.xaml.cs">
-      <DependentUpon>FullScreenPlayer_UserControl.xaml</DependentUpon>
+    <Compile Include="XAML\FullScreen_UserControl.xaml.cs">
+      <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\FullSreenPlayerTimeLine_UserControl.xaml.cs">
-      <DependentUpon>FullSreenPlayerTimeLine_UserControl.xaml</DependentUpon>
+    <Compile Include="XAML\FullScreen_TimeLine_UserControl.xaml.cs">
+      <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XAML\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
@@ -233,11 +233,11 @@
     <Compile Include="XAML\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="XAML\FullScreenPlayer_UserControl.xaml">
+    <Page Include="XAML\FullScreen_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\FullSreenPlayerTimeLine_UserControl.xaml">
+    <Page Include="XAML\FullScreen_TimeLine_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

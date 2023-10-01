@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="DebugVideoCreator.XAML.FullScreenPlayerUserControl"
+﻿<UserControl x:Class="DebugVideoCreator.XAML.FullScreen_UserControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DebugVideoCreator.XAML"
         xmlns:fullscreenplayer_usercontrol="clr-namespace:FullScreenPlayer_UserControl;assembly=FullScreenPlayer_UserControl"
-        Unloaded="FullScreenPlayerUserControl_Unloaded"
+        Unloaded="FullScreen_UserControl_Unloaded"
         mc:Ignorable="d" Background="#FF4A4A4A">
     <Border BorderBrush="Red">
         <DockPanel>
@@ -17,7 +17,7 @@
                     <Button Name="StopBtn" Click="StopBtn_Click" Height="30" Width="100" Margin="10,0,0,0">Stop</Button>
                 </StackPanel>
             </Border>
-            <local:FullSreenPlayerTimeLine_UserControl x:Name="Timeline" TimeLine_Clicked="Timeline_TimeLine_Clicked" DockPanel.Dock="Bottom"/>
+            <local:FullScreen_TimeLine_UserControl x:Name="Timeline" TimeLine_Clicked="Timeline_TimeLine_Clicked" DockPanel.Dock="Bottom"/>
             <fullscreenplayer_usercontrol:FullScreenPlayer_Control x:Name="Player" Margin="10" Position_Changed="Player_Position_Changed"/>
         </DockPanel>
     </Border>
