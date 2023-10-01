@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes_UserControl", "UserCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj", "{623A80C5-B24C-40CC-A96B-582E8B61099A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalVoiceGen_UserControl", "UserControls\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj", "{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication_UserControl", "UserControls\Authentication_UserControl\Authentication_UserControl.csproj", "{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dbTransferUser_UserControl", "UserControls\dbTransferUser_UserControl\dbTransferUser_UserControl.csproj", "{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}"
@@ -44,10 +42,6 @@ Global
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Release|Any CPU.Build.0 = Release|Any CPU
 		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|Any CPU.ActiveCfg = Release|Any CPU

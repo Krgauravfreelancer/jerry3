@@ -325,3 +325,7 @@
 /src/DesignImager_UserControl/DesignImager_UserControl/obj/Debug
 /src/DesignImager_UserControl/.vs/DesignImager-wrapper
 /src/DesignImager_UserControl/packages
+/src/LocalVoiceGen_UserControl/.vs
+/src/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/bin/Debug
+/src/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/obj/Debug
+/src/LocalVoiceGen_UserControl/packages
