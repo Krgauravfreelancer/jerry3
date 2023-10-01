@@ -151,10 +151,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj">
-      <Project>{4a3f71d8-cced-47d2-9b3c-534c1b78ea90}</Project>
-      <Name>LocalVoiceGen_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="..\NotesManage_UserControl\NotesManage_UserControl.csproj">
       <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>
       <Name>NotesManage_UserControl</Name>
