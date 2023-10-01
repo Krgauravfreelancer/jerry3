@@ -11,7 +11,7 @@ using Sqllite_Library.Business;
 namespace Audio_UserControl
 {
 
-    public partial class AudioUserControl : UserControl
+    public partial class Audio_UserControl : UserControl
     {
 
         List<AudioPlayer> AudioPlayerList = new List<AudioPlayer>();
@@ -20,7 +20,7 @@ namespace Audio_UserControl
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
 
-        public AudioUserControl()
+        public Audio_UserControl()
         {
             InitializeComponent();
             WavePlayer_UC.Loaded += WavePlayer_UC_Loaded;

@@ -115,26 +115,18 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\CreateEventWindow.xaml.cs">
       <DependentUpon>CreateEventWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="AudioUserControl.xaml">
+    <Page Include="Audio_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="AudioUserControl.xaml.cs">
-      <DependentUpon>AudioUserControl.xaml</DependentUpon>
+    <Compile Include="Audio_UserControl.xaml.cs">
+      <DependentUpon>Audio_UserControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PopupWindow.xaml">
