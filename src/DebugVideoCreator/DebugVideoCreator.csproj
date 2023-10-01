@@ -330,6 +330,7 @@
     <Content Include="Libraries\FullScreenPlayer_UserControl.dll" />
     <Content Include="Libraries\Timeline.UserControls.dll" />
     <Resource Include="Libraries\Timeline.UserControls.xml" />
+    <Content Include="Libraries\WavePlayer_UserControl.dll" />
     <Content Include="Libraries\WPFToolkit.Extended.dll" />
     <Resource Include="Libraries\MergeAllInOne.txt" />
     <Content Include="Libraries\libz.exe" />

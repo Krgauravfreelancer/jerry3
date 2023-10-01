@@ -9,10 +9,10 @@ using System.Windows.Input;
 
 namespace Audio_UserControl.Windows
 {
-    public partial class CreateEventWindow : Window
+    public partial class Audio_CreateEventWindow : Window
     {
         int selectedProjectId = -1;
-        public CreateEventWindow(int projectID)
+        public Audio_CreateEventWindow(int projectID)
         {
             InitializeComponent();
             selectedProjectId = projectID;

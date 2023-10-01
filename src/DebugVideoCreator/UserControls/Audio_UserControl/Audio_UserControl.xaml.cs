@@ -74,10 +74,10 @@ namespace Audio_UserControl
             return ret;
         }
 
-        public CreateEventWindow GetCreateEventWindow(int project_id)
+        public Audio_CreateEventWindow GetCreateEventWindow(int project_id)
         {
             selectedproject_id = project_id;
-            var EventWindow = new CreateEventWindow(selectedproject_id);
+            var EventWindow = new Audio_CreateEventWindow(selectedproject_id);
             return EventWindow;
             //EventWindow.ShowDialog();
             //this.IsEnabled = false;

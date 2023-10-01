@@ -118,8 +118,8 @@
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\CreateEventWindow.xaml.cs">
-      <DependentUpon>CreateEventWindow.xaml</DependentUpon>
+    <Compile Include="Windows\Audio_CreateEventWindow.xaml.cs">
+      <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Audio_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -133,7 +133,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\CreateEventWindow.xaml">
+    <Page Include="Windows\Audio_CreateEventWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
