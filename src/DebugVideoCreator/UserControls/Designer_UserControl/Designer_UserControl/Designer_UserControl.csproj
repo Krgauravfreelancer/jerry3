@@ -98,18 +98,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="DesignerUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="CBVBackground.cs" />
     <Compile Include="DesignerUserControl.xaml.cs">
       <DependentUpon>DesignerUserControl.xaml</DependentUpon>
