@@ -15,8 +15,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Designer_UserControl", "Use
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager_UserControl", "UserControls\DesignImager_UserControl\DesignImager_UserControl\DesignImager_UserControl.csproj", "{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenRecording_UserControl", "UserControls\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj", "{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalVoiceGen_UserControl", "UserControls\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl\LocalVoiceGen_UserControl.csproj", "{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication_UserControl", "UserControls\Authentication_UserControl\Authentication_UserControl.csproj", "{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}"
@@ -58,10 +56,6 @@ Global
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED7C73A8-3F0B-472D-BB20-2ADCA2EEADB6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08C59C9F-FA6A-4426-8AE6-0AE881DD6B8B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A3F71D8-CCED-47D2-9B3C-534C1B78EA90}.Release|Any CPU.ActiveCfg = Release|Any CPU

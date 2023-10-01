@@ -182,18 +182,4 @@ namespace LocalVoiceGen_UserControl
             //Setup_Notes(notes);
         }
     }
-
-    public class VideoEventExtended : CBVVideoEvent
-    {
-        public string MediaName { get; set; }
-        public string Start { get; set; }
-        public string ClipDuration { get; set; }
-        public VideoEventExtended(CBVVideoEvent ch)
-        {
-            foreach (var prop in ch.GetType().GetProperties())
-            {
-                this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(ch, null), null);
-            }
-        }
-    }
 }

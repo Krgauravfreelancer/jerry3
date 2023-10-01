@@ -142,6 +142,10 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ScreenRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\ScreenRecorder_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="SixLabors.ImageSharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>packages\SixLabors.ImageSharp.2.0.0\lib\net472\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
@@ -240,6 +244,9 @@
     <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml.cs">
+      <DependentUpon>ScreenRecording_UserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAML\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
@@ -279,6 +286,10 @@
     <Page Include="XAML\PopupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="XAML\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -385,10 +396,6 @@
     <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
       <Name>Notes_UserControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="UserControls\ScreenRecording_UserControl\ScreenRecording_UserControl\ScreenRecording_UserControl.csproj">
-      <Project>{08c59c9f-fa6a-4426-8ae6-0ae881dd6b8b}</Project>
-      <Name>ScreenRecording_UserControl</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>

@@ -312,3 +312,8 @@
 /src/Audio_UserControl/bin/Debug
 /src/Audio_UserControl/obj/Debug
 /src/Audio_UserControl/packages
+/src/ScreenRecording_UserControl/.vs/ScreenRecording_UserControl
+/src/ScreenRecording_UserControl/packages
+/src/ScreenRecording_UserControl/ScreenRecording_UserControl/bin/Debug
+/src/ScreenRecording_UserControl/ScreenRecording_UserControl/Libraries/ffmpeg.exe
+/src/ScreenRecording_UserControl/ScreenRecording_UserControl/obj/Debug
