@@ -218,16 +218,16 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
-    <Compile Include="XAML\Audio_CreateEventWindow.xaml.cs">
+    <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
       <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\Audio_UserControl.xaml.cs">
+    <Compile Include="XAML\Audio\Audio_UserControl.xaml.cs">
       <DependentUpon>Audio_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\FullScreen_UserControl.xaml.cs">
+    <Compile Include="XAML\FullScreen\FullScreen_UserControl.xaml.cs">
       <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\FullScreen_TimeLine_UserControl.xaml.cs">
+    <Compile Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml.cs">
       <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XAML\PopupWindow.xaml.cs">
@@ -243,19 +243,19 @@
     <Compile Include="XAML\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="XAML\Audio_CreateEventWindow.xaml">
+    <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\Audio_UserControl.xaml">
+    <Page Include="XAML\Audio\Audio_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\FullScreen_UserControl.xaml">
+    <Page Include="XAML\FullScreen\FullScreen_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\FullScreen_TimeLine_UserControl.xaml">
+    <Page Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -398,6 +398,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

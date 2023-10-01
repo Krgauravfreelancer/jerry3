@@ -282,7 +282,8 @@ namespace DebugVideoCreator.XAML
         private void ContextMenuManageAudioClickEvent(object sender, RoutedEventArgs e)
         {
             popup?.Close();
-            CreateAudioEditWindow(selectedVideoEvent?.audio_data[0]?.audio_media, "Update");
+            if (selectedVideoEvent?.audio_data != null)
+                CreateAudioEditWindow(selectedVideoEvent?.audio_data[0]?.audio_media, "Update");
         }
 
         private void Recorder_RecordingStoppedEvent(object sender, RecordingStoppedArgs e)
