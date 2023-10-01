@@ -110,7 +110,7 @@ namespace Audio_UserControl
 
         private void ContextMenuAddAudioFromFileClickEvent(object sender, RoutedEventArgs e)
         {
-            var EventWindow = new CreateEventWindow(selectedproject_id);
+            var EventWindow = new Audio_CreateEventWindow(selectedproject_id);
             EventWindow.ShowDialog();
             this.IsEnabled = false;
         }
