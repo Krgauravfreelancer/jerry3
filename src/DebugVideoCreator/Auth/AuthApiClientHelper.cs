@@ -156,7 +156,7 @@ namespace DebugVideoCreator.Auth
             }
             catch (Exception ex)
             {
-                // MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
