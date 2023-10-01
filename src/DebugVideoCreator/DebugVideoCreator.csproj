@@ -247,7 +247,7 @@
     <Compile Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml.cs">
       <DependentUpon>ScreenRecording_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\Timeline_UserControl.xaml.cs">
+    <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
@@ -291,7 +291,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\Timeline_UserControl.xaml">
+    <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

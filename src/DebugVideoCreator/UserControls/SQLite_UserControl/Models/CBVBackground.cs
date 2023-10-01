@@ -6,5 +6,8 @@
         public int fk_background_company { get; set; }
         public byte[] background_media { get; set; }
         public bool background_active { get; set; }
+        //Extended
+        public string background_image_name { get; set; }
+
     }
 }
