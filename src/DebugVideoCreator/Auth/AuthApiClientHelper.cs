@@ -52,7 +52,7 @@ namespace DebugVideoCreator.Auth
             ReadMACAddress();
             AccessKey = APIKEY;
             authCtrl = new AuthControl();
-            authCtrl.InitConnection(); //Call this to initiate the connection. //Needed to call only once
+            authCtrl.InitConnection(); //Call this to initiate the connection. Please note: Needed to call only once
         }
 
         private void ReadMACAddress()
@@ -71,7 +71,7 @@ namespace DebugVideoCreator.Auth
                 }
             }
             //for testing purposes
-            //MacAddress = MACADDRESS;
+            this.MacAddress = "FC:B3:BC:A8:84:A5";
         }
 
         private void InitializeOrResetDbTransferControl()

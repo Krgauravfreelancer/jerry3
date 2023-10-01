@@ -149,28 +149,30 @@ namespace Authentication_UserControl
 
         private void ReadRegistry()
         {
+            this._userName = "kumargaurav";
+            this._password = "CAVCNzaPwAlDlDp";
+
             //opening the subkey  
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\CommercialBase");
+            //RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\CommercialBase");
+            ////if it does exist, retrieve the stored values  
+            //if (key != null)
+            //{
+            //    this._userName = key.GetValue("authuser")?.ToString();
+            //    this._password = key.GetValue("authpassword")?.ToString();
 
-            //if it does exist, retrieve the stored values  
-            if (key != null)
-            {
-                this._userName = key.GetValue("authuser")?.ToString();
-                this._password = key.GetValue("authpassword")?.ToString();
+            //    if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
+            //    {
+            //        MessageBox.Show("The user credentials do not match with the registry", "Mismatch of credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    }
 
-                if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
-                {
-                    MessageBox.Show("The user credentials do not match with the registry", "Mismatch of credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-
-                key.Close();
-            }
-            else //if the key does not exist display relevant message
-            {
-                this._userName = string.Empty;
-                this._password = string.Empty;
-                MessageBox.Show("The user credentials couldn't be found in the registry", "Registry not found", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            //    key.Close();
+            //}
+            //else //if the key does not exist display relevant message
+            //{
+            //    this._userName = string.Empty;
+            //    this._password = string.Empty;
+            //    MessageBox.Show("The user credentials couldn't be found in the registry", "Registry not found", MessageBoxButton.OK, MessageBoxImage.Error);
+            //}
         }
     }
 }
