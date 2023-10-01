@@ -197,6 +197,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Timeline.UserControls.dll</HintPath>
     </Reference>
+    <Reference Include="WavePlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\WavePlayer_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -214,6 +218,12 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
+    <Compile Include="XAML\Audio_CreateEventWindow.xaml.cs">
+      <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="XAML\Audio_UserControl.xaml.cs">
+      <DependentUpon>Audio_UserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAML\FullScreen_UserControl.xaml.cs">
       <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
     </Compile>
@@ -233,6 +243,14 @@
     <Compile Include="XAML\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="XAML\Audio_CreateEventWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="XAML\Audio_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="XAML\FullScreen_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -348,10 +366,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="UserControls\Audio_UserControl\Audio_UserControl.csproj">
-      <Project>{92142a3c-5a46-4e19-a308-f4d549d12c2d}</Project>
-      <Name>Audio_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="UserControls\Authentication_UserControl\Authentication_UserControl.csproj">
       <Project>{759b1a0f-fc55-42f9-a9db-bd140de040aa}</Project>
       <Name>Authentication_UserControl</Name>

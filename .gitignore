@@ -308,3 +308,7 @@
 /src/FSP_UserControl/FSP_UserControl/obj/Debug
 /src/FSP_UserControl/packages
 /src/FSP_UserControl/.vs
+/src/Audio_UserControl/.vs
+/src/Audio_UserControl/bin/Debug
+/src/Audio_UserControl/obj/Debug
+/src/Audio_UserControl/packages
