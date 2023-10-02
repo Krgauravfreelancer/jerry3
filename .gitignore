@@ -329,3 +329,5 @@
 /src/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/bin/Debug
 /src/LocalVoiceGen_UserControl/LocalVoiceGen_UserControl/obj/Debug
 /src/LocalVoiceGen_UserControl/packages
+/src/VideoCreator/Libraries/ffmpeg.exe
+/src/VideoCreator/Libraries/ffprobe.exe

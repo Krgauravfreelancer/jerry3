@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="VideoCreator.XAML.Timeline_UserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
+        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        mc:Ignorable="d">
+    <UserControl.Resources>
+        <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
+            <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click"/>
+            <MenuItem Header="Clear All Timelines" x:Name="MenuItem_ClearAllTimelines" Click="ClearTimelines" />
+            <Separator></Separator>
+            <MenuItem Header="Add Audio Event to Selected Timeline" IsEnabled="False"/>
+            <MenuItem Header="Add Form Event to Selected Timeline" IsEnabled="True" Click="ContextMenuAddFormEventDataClickEvent"/>
+            <MenuItem Header="Add Video Event to Selected Timeline" Click="ContextMenuAddVideoEventDataClickEvent"/>
+            <Separator></Separator>
+            <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"/>
+            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent"/>
+            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline"/>
+            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="ContextMenuRunClickEvent"></MenuItem>
+        </ContextMenu>
+    </UserControl.Resources>
+    <Grid Background="Transparent" ContextMenu="{StaticResource TimelineMenu}">
+        <!--<Grid>-->
+        <StackPanel Margin="20, 10" VerticalAlignment="Top">
+            <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"></timeline:TimelineGridControl>
+            <DockPanel HorizontalAlignment="Center">
+                <Button Width="120" Height="30" Content="Get Trackbar Events" Click="GetTrackbarEvents"></Button>
+                <Button Width="120" Height="30" Content="Get Checked" Click="GetCheckedTimelines"></Button>
+                <Button Width="120" Height="30" Content="Move Trackbar" Click="MoveTrackbar"></Button>
+                <wpfx:DateTimeUpDown x:Name="TrackbarTimepicker" Height="30" Format="Custom" FormatString="HH:mm:ss" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="120" />
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

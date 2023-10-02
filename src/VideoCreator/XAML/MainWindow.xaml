@@ -1,0 +1,80 @@
+﻿<Window x:Class="VideoCreator.XAML.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Loaded="OnControlLoaded"
+        ResizeMode="NoResize"
+        Title="Video Creator" Height="850" Width="1200">
+    <Grid Margin="10,10,10,10">
+        <Image Height="90" Source="/images/cbslogo_temp.jpg" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"></Image>
+        <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
+        <StackPanel Orientation="Vertical" Margin="700,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="450">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="35" VerticalAlignment="Top">
+                <Button x:Name="btnLogin" Content="Login" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnLogin_Click" Height="25" Width="100" 
+                        Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+                <Button x:Name="btnLogout" Content="Logout" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
+                    Click="BtnLogout_Click" Height="25" Width="100" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            </StackPanel>
+            <TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>
+            <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
+        </StackPanel>
+        <StackPanel Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center">
+            <Viewbox Height="20">
+                <RadioButton x:Name="rbPending" Content="PENDING" GroupName="ProjectStatus" Click="rbPending_Click" Background="#ececec" Foreground="#3381CC" />
+            </Viewbox>
+            <Viewbox Height="20">
+                <RadioButton x:Name="rbWIP" Content="WIP" GroupName="ProjectStatus"  Click="rbWIP_Click" Background="#ececec" Foreground="#3381CC" Margin="40,0" />
+            </Viewbox>
+            <Viewbox Height="20">
+                <RadioButton x:Name="rbArchived" Content="ARCHIVED"  Click="rbArchived_Click" GroupName="ProjectStatus" Background="#ececec" Foreground="#3381CC"/>
+            </Viewbox>
+        </StackPanel>
+
+
+        <Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>
+        <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" HorizontalAlignment="Center" Padding="0" Width="1160" Height="400" VerticalAlignment="Top" Margin="0,130,0,0" Style="{DynamicResource DataGridStyle1}" />
+
+        <StackPanel x:Name="pendingStack" Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Visibility="Hidden">
+            <Button Content="Accept" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnAcceptProject_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnAcceptProject" IsEnabled="False"/>
+            <Button Content="Reject" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnRejectProject_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnRejectProject" IsEnabled="False"/>
+        </StackPanel>
+        <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Visibility="Hidden">
+            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageTimelineButton"/>
+            <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"
+                Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageAudioButton"/>
+            <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"
+                Click="BtnManageVideo_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageVideoButton"/>
+
+        </StackPanel>
+        <!--<StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
+            <Button Content="Test LOC Audio Insert" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnInsertLocAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+            <Button Content="Get LOC Audio" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
+                Click="BtnGetLOCAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+        </StackPanel>-->
+    </Grid>
+    <Window.Resources>
+        <!-- DataGrid style -->
+        <Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
+            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle1}"/>
+        </Style>
+        <!-- DataGridColumnHeader style -->
+        <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#3381CC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="5" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="ToolTip" Value="Click to sort."/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+</Window>
