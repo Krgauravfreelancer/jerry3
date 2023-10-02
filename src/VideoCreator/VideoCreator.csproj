@@ -219,8 +219,8 @@
     <Reference Include="System.Security.Principal.Windows, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Security.Principal.Windows.4.7.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    <Reference Include="System.Text.Encoding.CodePages, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encoding.CodePages.7.0.0-preview.7.22375.6\lib\net462\System.Text.Encoding.CodePages.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Text.Encodings.Web.7.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
@@ -319,10 +319,10 @@
     <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml.cs">
+    <Compile Include="ScreenRecording_UserControl.xaml.cs">
       <DependentUpon>ScreenRecording_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
+    <Compile Include="Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
@@ -374,11 +374,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml">
+    <Page Include="ScreenRecording_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
+    <Page Include="Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -453,7 +453,9 @@
     <Content Include="Libraries\designer.dll" />
     <Resource Include="Libraries\designer.xml" />
     <Content Include="Libraries\DesignViewer.dll" />
-    <Content Include="Libraries\ffmpeg.exe" />
+    <EmbeddedResource Include="Libraries\ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Libraries\ffprobe.exe" />
     <Content Include="Libraries\FullScreenPlayer_UserControl.dll" />
     <Content Include="Libraries\Timeline.UserControls.dll" />
@@ -478,7 +480,10 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="XAML\ScreenRecording\" />
+    <Folder Include="XAML\Timeline\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
