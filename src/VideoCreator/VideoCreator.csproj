@@ -319,10 +319,10 @@
     <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="ScreenRecording_UserControl.xaml.cs">
+    <Compile Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml.cs">
       <DependentUpon>ScreenRecording_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Timeline_UserControl.xaml.cs">
+    <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
@@ -374,11 +374,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ScreenRecording_UserControl.xaml">
+    <Page Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Timeline_UserControl.xaml">
+    <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -480,10 +480,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="XAML\ScreenRecording\" />
-    <Folder Include="XAML\Timeline\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
