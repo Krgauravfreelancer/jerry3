@@ -31,16 +31,16 @@ namespace VideoCreator.XAML
         public ManageTimeline_UserControl(int projectId)
         {
             InitializeComponent();
+            selectedProjectId = projectId;
+            var subjectText = "Selected Project Id - " + selectedProjectId;
+            lblSelectedProjectId.Content = subjectText;
 
             popup = new PopupWindow();
             ResetAudioMenuOptions();
             RefreshOrLoadComboBoxes();
             
 
-            selectedProjectId = projectId;
-            var subjectText = "Selected Project Id - " + selectedProjectId;
-            lblSelectedProjectId.Content = subjectText;
-
+            
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectId);
             TimelineUserConrol.Visibility = Visibility.Visible;
