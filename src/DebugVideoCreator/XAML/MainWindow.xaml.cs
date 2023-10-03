@@ -4,9 +4,9 @@ using System.Data;
 using System.Reflection;
 using System.Windows;
 using Sqllite_Library.Business;
-using DebugVideoCreator.Helpers;
+using VideoCreator.Helpers;
 using System.Threading.Tasks;
-using DebugVideoCreator.Auth;
+using VideoCreator.Auth;
 using System.Windows.Media;
 using dbTransferUser_UserControl.ResponseObjects.Projects;
 using System.Runtime.CompilerServices;
@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Sqllite_Library.Models;
 using System.IO;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     public partial class MainWindow : Window, IDisposable
     {
@@ -197,17 +197,17 @@ namespace DebugVideoCreator.XAML
 
             var window = new Window
             {
-                Title = "Manage Timeline",
-                Content = manageTimeline_UserControl,
-                WindowState = WindowState.Maximized,
-                ResizeMode = ResizeMode.CanResize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
                 //Title = "Manage Timeline",
                 //Content = manageTimeline_UserControl,
-                //SizeToContent = SizeToContent.WidthAndHeight,
-                //ResizeMode = ResizeMode.NoResize,
-                //RenderSize = manageTimeline_UserControl.RenderSize,
+                //WindowState = WindowState.Maximized,
+                //ResizeMode = ResizeMode.CanResize,
                 //WindowStartupLocation = WindowStartupLocation.CenterScreen
+                Title = "Manage Timeline",
+                Content = manageTimeline_UserControl,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = manageTimeline_UserControl.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             try
             {

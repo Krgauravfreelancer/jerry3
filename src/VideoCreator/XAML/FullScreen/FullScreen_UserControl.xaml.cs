@@ -16,32 +16,23 @@ namespace VideoCreator.XAML
     public partial class FullScreen_UserControl : UserControl
     {
         private int selectedProjectId;
+        private bool playVideoAudioFlag;
         private bool playAudioFlag;
         private MediaPlayer _backgroundMusic = new MediaPlayer();
-        public FullScreen_UserControl(bool playAudio = false)
+        public FullScreen_UserControl(bool playAudio = false, bool videoAudioFlag = false)
         {
             InitializeComponent();
             playAudioFlag = playAudio;
+            playVideoAudioFlag = videoAudioFlag;
             Player.Loaded += PlayerLoaded;
-            Player.Unloaded += PlayerUnloaded;
         }
 
         public FullScreen_UserControl()
         {
             InitializeComponent();
             playAudioFlag = false;
+            playVideoAudioFlag = false;
             Player.Loaded += PlayerLoaded;
-            Player.Unloaded += PlayerUnloaded;
-        }
-
-        private void PlayerUnloaded(object sender, RoutedEventArgs e)
-        {
-            //var TempPath = Path.GetTempPath() + "fsptemppath\\";
-            //if (Directory.Exists(TempPath))
-            //{
-            //    Directory.Delete(TempPath, recursive: true);
-            //}
-            Console.WriteLine($"FSPUserControl > PlayerUnloaded event is called !!!");
         }
 
         public void SetSelectedProjectIdAndReset(int project_id)
@@ -153,13 +144,13 @@ namespace VideoCreator.XAML
                 _backgroundMusic.MediaEnded += new EventHandler(BackgroundMusic_Ended);
                 _backgroundMusic.Play();
             }
-            Player.Play();
+            if(playVideoAudioFlag)
+                Player.Play();
         }
 
         private void BackgroundMusic_Ended(object sender, EventArgs e)
         {
             _backgroundMusic.Position = TimeSpan.Zero;
-            _backgroundMusic.Play();
         }
 
         public byte[] Combine(byte[] first, byte[] second)

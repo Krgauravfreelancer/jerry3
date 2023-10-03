@@ -17,7 +17,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace DebugVideoCreator.Auth
+namespace VideoCreator.Auth
 {
     internal class AuthAPIViewModel : ViewModelBase
     {

@@ -11,7 +11,7 @@ using Timeline.UserControls.Models;
 using Timeline.UserControls.Variables;
 using Timeline.UserControls.Controls;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     public partial class Timeline_UserControl : UserControl
     {

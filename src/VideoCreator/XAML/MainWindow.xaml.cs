@@ -197,17 +197,17 @@ namespace VideoCreator.XAML
 
             var window = new Window
             {
-                Title = "Manage Timeline",
-                Content = manageTimeline_UserControl,
-                WindowState = WindowState.Maximized,
-                ResizeMode = ResizeMode.CanResize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
                 //Title = "Manage Timeline",
                 //Content = manageTimeline_UserControl,
-                //SizeToContent = SizeToContent.WidthAndHeight,
-                //ResizeMode = ResizeMode.NoResize,
-                //RenderSize = manageTimeline_UserControl.RenderSize,
+                //WindowState = WindowState.Maximized,
+                //ResizeMode = ResizeMode.CanResize,
                 //WindowStartupLocation = WindowStartupLocation.CenterScreen
+                Title = "Manage Timeline",
+                Content = manageTimeline_UserControl,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = manageTimeline_UserControl.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             try
             {

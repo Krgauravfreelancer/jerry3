@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace DebugVideoCreator.VoiceAverage
+namespace VideoCreator.VoiceAverage
 {
     public class VoiceAverageHelper
     {

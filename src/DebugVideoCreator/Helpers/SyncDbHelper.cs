@@ -16,7 +16,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
 
-namespace DebugVideoCreator.Helpers
+namespace VideoCreator.Helpers
 {
     public static class SyncDbHelper
     {

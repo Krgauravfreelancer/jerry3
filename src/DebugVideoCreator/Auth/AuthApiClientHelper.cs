@@ -9,7 +9,7 @@ using System.Net.Http;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace DebugVideoCreator.Auth
+namespace VideoCreator.Auth
 {
     public class AuthApiClientHelper : ViewModelBase
     {

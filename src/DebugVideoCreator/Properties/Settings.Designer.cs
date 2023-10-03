@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DebugVideoCreator.Properties
+namespace VideoCreator.Properties
 {
 
 

@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace DebugVideoCreator.Helpers
+namespace VideoCreator.Helpers
 {
     public static class TestEncryptionHelper
     {

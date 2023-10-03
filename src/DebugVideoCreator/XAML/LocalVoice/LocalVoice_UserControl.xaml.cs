@@ -8,7 +8,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     public partial class LocalVoice_UserControl : UserControl
     {

@@ -1,4 +1,4 @@
-﻿using DebugVideoCreator.VoiceAverage;
+﻿using VideoCreator.VoiceAverage;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 
-namespace DebugVideoCreator
+namespace VideoCreator
 {
     public partial class VoiceAverage_Form : Form
     {

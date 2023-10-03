@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     public partial class DesignImager_UserControl : System.Windows.Controls.UserControl
     {

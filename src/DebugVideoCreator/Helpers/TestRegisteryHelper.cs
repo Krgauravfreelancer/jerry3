@@ -1,7 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 
-namespace DebugVideoCreator.Helpers
+namespace VideoCreator.Helpers
 {
     public static class TestRegisteryHelper
     {

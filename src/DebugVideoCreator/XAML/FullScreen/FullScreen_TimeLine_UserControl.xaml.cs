@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     /// <summary>
     /// Interaction logic for FullScreen_TimeLine_UserControl.xaml

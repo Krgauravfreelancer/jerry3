@@ -7,7 +7,7 @@ using AudioPlayer_UserControl;
 using Sqllite_Library.Models;
 using Sqllite_Library.Business;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
 
     public partial class Audio_UserControl : UserControl

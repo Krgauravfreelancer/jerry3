@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="DebugVideoCreator.XAML.FullScreen_UserControl"
+﻿<UserControl x:Class="VideoCreator.XAML.FullScreen_UserControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DebugVideoCreator.XAML"
+        xmlns:local="clr-namespace:VideoCreator.XAML"
         xmlns:fullscreenplayer_usercontrol="clr-namespace:FullScreenPlayer_UserControl;assembly=FullScreenPlayer_UserControl"
         Unloaded="FullScreen_UserControl_Unloaded"
         mc:Ignorable="d" Background="#FF4A4A4A">

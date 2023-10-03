@@ -13,7 +13,7 @@ using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 using AudioPlayer_UserControl;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     /// <summary>
     /// Interaction logic for ManageTimeline.xaml
@@ -53,13 +53,13 @@ namespace DebugVideoCreator.XAML
             
         
             // Reload Control
-            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             TimelineUserConrol.LoadTimelineDataFromDb_Click();
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
             NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
             NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
-            //FSPClosed.
+            
 
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
@@ -123,7 +123,7 @@ namespace DebugVideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
-            var fsp_uc = new FullScreen_UserControl(true);
+            var fsp_uc = new FullScreen_UserControl(true, true);
             fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
             var window = new Window
             {
@@ -140,7 +140,7 @@ namespace DebugVideoCreator.XAML
         {
             RefreshOrLoadComboBoxes();
             TimelineUserConrol.LoadTimelineDataFromDb_Click();
-            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
         }
         
@@ -243,7 +243,7 @@ namespace DebugVideoCreator.XAML
                     {
                         RefreshOrLoadComboBoxes();
                         TimelineUserConrol.LoadTimelineDataFromDb_Click();
-                        //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }

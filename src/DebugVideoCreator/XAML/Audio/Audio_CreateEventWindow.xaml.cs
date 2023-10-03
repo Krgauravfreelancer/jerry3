@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     public partial class Audio_CreateEventWindow : Window
     {

@@ -1,4 +1,4 @@
-﻿namespace DebugVideoCreator
+﻿namespace VideoCreator
 {
     partial class VoiceAverage_Form
     {

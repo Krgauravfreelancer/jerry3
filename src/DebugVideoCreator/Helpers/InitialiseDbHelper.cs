@@ -4,7 +4,7 @@ using System.Data;
 using System.IO;
 using System.Windows;
 
-namespace DebugVideoCreator.Helpers
+namespace VideoCreator.Helpers
 {
     public static class InitialiseDbHelper
     {

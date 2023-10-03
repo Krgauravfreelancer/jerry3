@@ -9,10 +9,10 @@ using ScreenRecorder_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 
-namespace DebugVideoCreator.XAML
+namespace VideoCreator.XAML
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainWindow.VideoCreator
     /// </summary>
     public partial class ScreenRecordingUserControl : UserControl
     {

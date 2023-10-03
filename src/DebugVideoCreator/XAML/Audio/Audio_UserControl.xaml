@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="DebugVideoCreator.XAML.Audio_UserControl"
+﻿<UserControl x:Class="VideoCreator.XAML.Audio_UserControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DebugVideoCreator.XAML" 
+        xmlns:local="clr-namespace:VideoCreator.XAML" 
         xmlns:audioplayer_usercontrol="clr-namespace:AudioPlayer_UserControl;assembly=AudioPlayer_UserControl" 
         xmlns:waveplayer_usercontrol="clr-namespace:WavePlayer_UserControl;assembly=WavePlayer_UserControl"
         mc:Ignorable="d" Background="Transparent">
@@ -35,7 +35,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="300"/>
+                <RowDefinition Height="220"/>
             </Grid.RowDefinitions>
 
             <waveplayer_usercontrol:WavePlayer x:Name="WavePlayer_UC" Grid.Column="0" Grid.Row="0" />
