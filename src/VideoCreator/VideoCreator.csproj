@@ -456,7 +456,9 @@
     <EmbeddedResource Include="Libraries\ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Content Include="Libraries\ffprobe.exe" />
+    <EmbeddedResource Include="Libraries\ffprobe.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Libraries\FullScreenPlayer_UserControl.dll" />
     <Content Include="Libraries\Timeline.UserControls.dll" />
     <Resource Include="Libraries\Timeline.UserControls.xml" />

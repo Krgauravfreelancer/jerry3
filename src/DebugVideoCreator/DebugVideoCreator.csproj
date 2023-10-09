@@ -418,8 +418,12 @@
     <Content Include="Libraries\designer.dll" />
     <Resource Include="Libraries\designer.xml" />
     <Content Include="Libraries\DesignViewer.dll" />
-    <Content Include="Libraries\ffmpeg.exe" />
-    <Content Include="Libraries\ffprobe.exe" />
+    <EmbeddedResource Include="Libraries\ffmpeg.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Libraries\ffprobe.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="Libraries\FullScreenPlayer_UserControl.dll" />
     <Content Include="Libraries\Timeline.UserControls.dll" />
     <Resource Include="Libraries\Timeline.UserControls.xml" />

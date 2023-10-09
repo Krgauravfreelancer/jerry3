@@ -35,7 +35,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="220"/>
+                <RowDefinition Height="150"/>
             </Grid.RowDefinitions>
 
             <waveplayer_usercontrol:WavePlayer x:Name="WavePlayer_UC" Grid.Column="0" Grid.Row="0" />

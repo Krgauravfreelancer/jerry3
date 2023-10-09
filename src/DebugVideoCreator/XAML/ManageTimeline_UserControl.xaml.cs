@@ -54,7 +54,7 @@ namespace VideoCreator.XAML
         
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            TimelineUserConrol.LoadTimelineDataFromDb_Click();
+            TimelineUserConrol.LoadVideoEventsFromDb();
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
             NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
@@ -139,7 +139,7 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Success(object sender, EventArgs e)
         {
             RefreshOrLoadComboBoxes();
-            TimelineUserConrol.LoadTimelineDataFromDb_Click();
+            TimelineUserConrol.LoadVideoEventsFromDb();
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
         }
@@ -242,7 +242,7 @@ namespace VideoCreator.XAML
                     if (insertedVideoSegmentId > 0)
                     {
                         RefreshOrLoadComboBoxes();
-                        TimelineUserConrol.LoadTimelineDataFromDb_Click();
+                        TimelineUserConrol.LoadVideoEventsFromDb();
                         FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -267,7 +267,7 @@ namespace VideoCreator.XAML
             if (result.HasValue)
             {
                 RefreshOrLoadComboBoxes();
-                TimelineUserConrol.LoadTimelineDataFromDb_Click();
+                TimelineUserConrol.LoadVideoEventsFromDb();
             }
         }
 

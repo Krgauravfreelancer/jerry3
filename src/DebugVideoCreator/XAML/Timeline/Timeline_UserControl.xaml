@@ -3,35 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
         xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
+        xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
-            <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click"/>
-            <MenuItem Header="Clear All Timelines" x:Name="MenuItem_ClearAllTimelines" Click="ClearTimelines" />
+            <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click"></MenuItem>
+            <MenuItem Header="Clear All Timelines" x:Name="MenuItem_ClearAllTimelines" Click="ClearTimelines" >
+            </MenuItem>
             <Separator></Separator>
-            <MenuItem Header="Add Audio Event to Selected Timeline" IsEnabled="False"/>
+            <MenuItem Header="Add Audio Event to Selected Timeline" Click="AddAudioEvent_Click" IsEnabled="False"/>
             <MenuItem Header="Add Form Event to Selected Timeline" IsEnabled="True" Click="ContextMenuAddFormEventDataClickEvent"/>
-            <MenuItem Header="Add Video Event to Selected Timeline" Click="ContextMenuAddVideoEventDataClickEvent"/>
+            <MenuItem Header="Add Video Event to Selected Timeline" Click="AddVideoEvent_Click" />
             <Separator></Separator>
-            <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"/>
-            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent"/>
-            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline"/>
+            <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>
+            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False"></MenuItem>
+            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline"></MenuItem>
             <MenuItem Header="Run" x:Name="MenuItem_Run" Click="ContextMenuRunClickEvent"></MenuItem>
+            <Separator></Separator>
+            <MenuItem Header="Zoom In" Click="ZoomIn"></MenuItem>
+            <MenuItem Header="Zoom Out" Click="ZoomOut"></MenuItem>
         </ContextMenu>
     </UserControl.Resources>
-    <Grid Background="Transparent" ContextMenu="{StaticResource TimelineMenu}">
-        <!--<Grid>-->
-        <StackPanel Margin="20, 10" VerticalAlignment="Top">
-            <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"></timeline:TimelineGridControl>
-            <DockPanel HorizontalAlignment="Center">
-                <Button Width="120" Height="30" Content="Get Trackbar Events" Click="GetTrackbarEvents"></Button>
-                <Button Width="120" Height="30" Content="Get Checked" Click="GetCheckedTimelines"></Button>
-                <Button Width="120" Height="30" Content="Move Trackbar" Click="MoveTrackbar"></Button>
-                <wpfx:DateTimeUpDown x:Name="TrackbarTimepicker" Height="30" Format="Custom" FormatString="HH:mm:ss" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="120" />
-            </DockPanel>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Height="420">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="Transparent" ContextMenu="{StaticResource TimelineMenu}" ContextMenuOpening="Button_ContextMenuOpening">
+                <Label Content="Use Right click to add Audio/Video Event" Margin="10,0,0,0" VerticalAlignment="Top" ></Label>
 
+                <StackPanel Margin="0,30,0,0" VerticalAlignment="Top">
+                    <GroupBox Header="Timeline User Control">
+                        <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
+
+                    </GroupBox>
+                    <GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
+                        <ListView Height="NaN"  x:Name="listView_trackbarEvents">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="EventMediaName" DisplayMemberBinding="{Binding EventMediaName}"/>
+                                    <GridViewColumn Header="Start" DisplayMemberBinding="{Binding videoevent_start}"/>
+                                    <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding videoevent_duration}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </GroupBox>
+
+                    <GroupBox Header="Timeline User Control Wrapper Methods" Margin="0,10,0,0" Padding="10">
+                        <Grid>
+                            <DockPanel HorizontalAlignment="Left">
+                                <Button Width="130" Height="30" Content="Move Trackbar to Time" Click="MoveTrackbar"></Button>
+                                <wpfx:DateTimeUpDown x:Name="TrackbarTimepicker" Height="30" Format="Custom" FormatString="HH:mm:ss" 
+                                         HorizontalAlignment="Left"  VerticalAlignment="Top" Width="120"  />
+
+                            </DockPanel>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
