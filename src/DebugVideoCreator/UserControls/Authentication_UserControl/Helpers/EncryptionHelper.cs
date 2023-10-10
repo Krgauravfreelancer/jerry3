@@ -3,13 +3,15 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace VideoCreator.Helpers
+namespace Authentication_UserControl.Helpers
 {
-    public static class TestEncryptionHelper
+    public static class EncryptionHelper
     {
         public static string SecuredKey = "ZHwf2K9lObxQYnWuhP5d757PqNA7ureD";
         public static string EncryptString(string key, string plainText)
         {
+            if (string.IsNullOrEmpty(plainText)) return string.Empty;
+
             byte[] iv = new byte[16];
             byte[] array;
 
@@ -17,9 +19,7 @@ namespace VideoCreator.Helpers
             {
                 aes.Key = Encoding.ASCII.GetBytes(key);
                 aes.IV = iv;
-
                 ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
                 using (var memoryStream = new MemoryStream())
                 {
                     using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
@@ -28,7 +28,6 @@ namespace VideoCreator.Helpers
                         {
                             streamWriter.Write(plainText);
                         }
-
                         array = memoryStream.ToArray();
                     }
                 }
@@ -39,6 +38,8 @@ namespace VideoCreator.Helpers
 
         public static string DecryptString(string key, string cipherText)
         {
+            if (string.IsNullOrEmpty(cipherText)) return string.Empty;
+
             byte[] iv = new byte[16];
             byte[] buffer = Convert.FromBase64String(cipherText);
 

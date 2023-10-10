@@ -14,28 +14,29 @@ namespace Authentication_UserControl
 {
     public class AuthControl : IAuthControl
     {
-        //private SftpClient _client;
-        //private ConnectionInfo connectionInfo;
         private string _userName = string.Empty;
         private string _password = string.Empty;
 
+        public AuthControl()
+        { }
+
         public void InitConnection()
         {
-            APIAuthClientHelper.InitializeClient();
-            ReadRegistry();
+            Authentication_UC_Helper.InitializeClient();
+            ReadCredentialsFromRegistry();
         }
 
         public void InitConnection(string baseURI)
         {
-            APIAuthClientHelper.InitializeClient(baseURI);
-            ReadRegistry();
+            Authentication_UC_Helper.InitializeClient(baseURI);
+            ReadCredentialsFromRegistry();
         }
         public HttpClient GetHttpClient()
         {
             HttpClient client = null;
-            if(APIAuthClientHelper.HttpApiClient.DefaultRequestHeaders.Contains("X-CBU-Access-Key"))
+            if(Authentication_UC_Helper.HttpApiClient.DefaultRequestHeaders.Contains("X-CBU-Access-Key"))
             {
-                client = APIAuthClientHelper.HttpApiClient;
+                client = Authentication_UC_Helper.HttpApiClient;
             }
             return client;
         }
@@ -47,7 +48,7 @@ namespace Authentication_UserControl
             var parameters = new Dictionary<string, string> { { "username", this._userName }, { "password", this._password },{ "mac", macAddress }};
             var encodedContent = new FormUrlEncodedContent(parameters);
             SetAccessKey(accessKey);
-            using (HttpResponseMessage response = await APIAuthClientHelper.HttpApiClient.PostAsync(url, encodedContent))
+            using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.PostAsync(url, encodedContent))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -96,7 +97,7 @@ namespace Authentication_UserControl
             //SetAccessKey(accessKey);
             //SetToken(token);
             //SetMACAddress(macAddress);
-            using (HttpResponseMessage response = await APIAuthClientHelper.HttpApiClient.GetAsync(url))
+            using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.GetAsync(url))
             {
                 response.EnsureSuccessStatusCode();
                 if (response.IsSuccessStatusCode)
@@ -112,67 +113,80 @@ namespace Authentication_UserControl
 
             }
         }
+        
         public void SetToken(string token) 
         {
-            APIAuthClientHelper.SetToken(token);
+            Authentication_UC_Helper.SetToken(token);
         }
         public void SetMACAddress(string macAddress)
         {
-            APIAuthClientHelper.SetMacAddress(macAddress);
+            Authentication_UC_Helper.SetMacAddress(macAddress);
         }
         public void SetAccessKey(string accessKey)
         {
-            APIAuthClientHelper.SetAccessKey(accessKey);
+            Authentication_UC_Helper.SetAccessKey(accessKey);
         }
 
-        //private void ReadMACAddress()
-        //{
-        //    string macAddress = "";
-
-        //    foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
-        //    {
-        //        if (nic.OperationalStatus == OperationalStatus.Up)
-        //        {
-        //            var hex = BitConverter.ToString(nic.GetPhysicalAddress().GetAddressBytes());
-        //            macAddress = hex.Replace("-", ":");
-        //            if (!string.IsNullOrEmpty(macAddress))
-        //            {
-        //                MacAddress = macAddress;
-        //                break;
-        //            }
-        //        }
-        //    }
-
-        //    //for testing purposes
-        //    //MacAddress = MACADDRESS;
-        //}
-
-        private void ReadRegistry()
+        public string ReadApiKeyFromRegistry()
         {
-            this._userName = "kumargaurav";
-            this._password = "CAVCNzaPwAlDlDp";
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\CommercialBase");
+            try
+            {
+                if (key != null)
+                {
+                    var apiKey = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("apikey")));
+                    key.Close();
+                    if (string.IsNullOrEmpty(apiKey))
+                        ExitApplication("Unable to read or decrypt API Key");
+                    return apiKey;
+                }
+                else
+                    ExitApplication("API Key not found in the registry");
+            }
+            catch (Exception ex)
+            {
+                ExitApplication(ex.Message);
+            }
+            finally
+            {
+                key.Close();
+            }
+            return string.Empty;
+        }
 
-            //opening the subkey  
-            //RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\CommercialBase");
-            ////if it does exist, retrieve the stored values  
-            //if (key != null)
-            //{
-            //    this._userName = key.GetValue("authuser")?.ToString();
-            //    this._password = key.GetValue("authpassword")?.ToString();
+        private void ReadCredentialsFromRegistry()
+        {
+            RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\CommercialBase");
+            try
+            {
+                if (key != null)
+                {
+                    this._userName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("authuser")));
+                    this._password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("authpassword")));
+                    key.Close(); 
+                    if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
+                        ExitApplication("Unable to read or decrypt credentials");
+                    
+                }
+                else
+                    ExitApplication("Credentials not found in the registry");
+            }
+            catch (Exception ex)
+            {
+                ExitApplication(ex.Message);
+            }
+            finally
+            {
+                key.Close();
+            }
+        }
 
-            //    if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
-            //    {
-            //        MessageBox.Show("The user credentials do not match with the registry", "Mismatch of credentials", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //    }
+       
 
-            //    key.Close();
-            //}
-            //else //if the key does not exist display relevant message
-            //{
-            //    this._userName = string.Empty;
-            //    this._password = string.Empty;
-            //    MessageBox.Show("The user credentials couldn't be found in the registry", "Registry not found", MessageBoxButton.OK, MessageBoxImage.Error);
-            //}
+        private void ExitApplication(string message)
+        {
+            MessageBox.Show(message, "Credentials Issue", MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown();
         }
     }
 }

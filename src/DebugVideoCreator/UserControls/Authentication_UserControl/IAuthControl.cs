@@ -21,6 +21,7 @@ namespace Authentication_UserControl
         void SetToken(string token);
         void SetMACAddress(string macAddress);        
         void SetAccessKey(string accessKey);
+        string ReadApiKeyFromRegistry();
 
         HttpClient GetHttpClient();
         //Task<ProjectModel> ListProjects();

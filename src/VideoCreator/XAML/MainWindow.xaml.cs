@@ -13,6 +13,8 @@ using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Sqllite_Library.Models;
 using System.IO;
+using Authentication_UserControl.Helpers;
+using System.Windows.Input;
 
 namespace VideoCreator.XAML
 {
@@ -161,7 +163,7 @@ namespace VideoCreator.XAML
                 this.Title = "Video Creator, Not Logged in - Username not present in registry !!!";
             else
             {
-                var userId = TestEncryptionHelper.DecryptString(TestEncryptionHelper.SecuredKey, encryptedUserId);
+                var userId = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, encryptedUserId);
                 this.Title = $"Video Creator, Logged in as - {userId}";
             }
         }

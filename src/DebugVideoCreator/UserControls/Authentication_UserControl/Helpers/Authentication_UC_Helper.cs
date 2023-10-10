@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace Authentication_UserControl.Helpers
 {
-    public class APIAuthClientHelper
+    public class Authentication_UC_Helper
     {
         private readonly static string baseAddress = "https://sftp.commercial-base.com/";
         public static HttpClient HttpApiClient { get; set; }

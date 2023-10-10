@@ -11,15 +11,13 @@ using Newtonsoft.Json;
 
 namespace VideoCreator.Auth
 {
-    public class AuthApiClientHelper : ViewModelBase
+    public class VideoCreatorAuthHelper : ViewModelBase
     {
         //private string token;
         private IAuthControl authCtrl; //authentication DLL
         private IDBTransferControl dbTransferCtrl;
         public string TokenNumber { get; set; }
         public string ErrorMessage { get; set; }
-
-        const string APIKEY = "6Lwr_)@e{3GVSF58D#JiX4]5)%peA[";
         const string NO_LOGIN_MESSAGE = "Please login first !!!";
 
         #region == Properties ==
@@ -47,12 +45,12 @@ namespace VideoCreator.Auth
 
         #endregion
 
-        public AuthApiClientHelper()
+        public VideoCreatorAuthHelper()
         {
             ReadMACAddress();
-            AccessKey = APIKEY;
             authCtrl = new AuthControl();
-            authCtrl.InitConnection(); //Call this to initiate the connection. Please note: Needed to call only once
+            AccessKey = authCtrl.ReadApiKeyFromRegistry();
+            authCtrl.InitConnection();
         }
 
         private void ReadMACAddress()
@@ -71,9 +69,10 @@ namespace VideoCreator.Auth
                 }
             }
             //for testing purposes
-            this.MacAddress = "FC:B3:BC:A8:84:A5";
+            //this.MacAddress = "FC:B3:BC:A8:84:A5";
         }
 
+        
         private void InitializeOrResetDbTransferControl()
         {
             IsBusy = true;

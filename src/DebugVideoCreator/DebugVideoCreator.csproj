@@ -251,7 +251,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Auth\AuthApiClientHelper.cs" />
+    <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
@@ -329,7 +329,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Helpers\TestEncryptionHelper.cs" />
     <Compile Include="XAML\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -377,8 +376,7 @@
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="Libraries\regJerry.reg" />
-    <None Include="Libraries\regJerry2.reg" />
-    <None Include="Libraries\regUsernamePassword.reg" />
+    <None Include="Libraries\regKumarGaurav.reg" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

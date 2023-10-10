@@ -175,11 +175,11 @@ namespace VideoCreator.XAML
             TimelineGridCtrl2.TrackbarMouseMoved += (sender, e) =>
             {
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-                TrackbarTimepicker.Value = trackBarPosition;
+                //TrackbarTimepicker.Value = trackBarPosition;
 
                 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-                listView_trackbarEvents.ItemsSource = trackbarEvents;
+                //listView_trackbarEvents.ItemsSource = trackbarEvents;
             };
         }
 
@@ -202,15 +202,15 @@ namespace VideoCreator.XAML
 
         private void MoveTrackbar(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var timeInputDate = (DateTime)TrackbarTimepicker.Value;
-                _timelineGridControl.MoveTrackbar(timeInputDate);
-            }
-            catch
-            {
+            //try
+            //{
+            //    var timeInputDate = (DateTime)TrackbarTimepicker.Value;
+            //    _timelineGridControl.MoveTrackbar(timeInputDate);
+            //}
+            //catch
+            //{
 
-            }
+            //}
 
         }
 
@@ -299,7 +299,7 @@ namespace VideoCreator.XAML
         private void ClearTimelines(object sender, RoutedEventArgs e)
         {
             _timelineGridControl.ClearTimeline();
-            listView_trackbarEvents.ItemsSource = null;
+            //listView_trackbarEvents.ItemsSource = null;
         }
 
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)

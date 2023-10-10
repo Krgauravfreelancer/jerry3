@@ -25,7 +25,7 @@ namespace VideoCreator.Auth
 
         #region === Properties ===
 
-        private readonly AuthApiClientHelper _apiClientHelper;
+        private readonly VideoCreatorAuthHelper _apiClientHelper;
 
         private string _projectString;
         public string ProjectString
@@ -46,7 +46,7 @@ namespace VideoCreator.Auth
 
         public AuthAPIViewModel()
         {
-            _apiClientHelper = new AuthApiClientHelper();
+            _apiClientHelper = new VideoCreatorAuthHelper();
             MODIFIEDDATE = new DateTime(2023, 01, 01);// DateTime.UtcNow.AddDays(-30);
         }
 

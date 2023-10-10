@@ -26,7 +26,7 @@
         </ContextMenu>
     </UserControl.Resources>
     <ScrollViewer Margin="10" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-        <Grid Height="420">
+        <Grid Height="280">
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -38,7 +38,7 @@
                         <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
 
                     </GroupBox>
-                    <GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
+                    <!--<GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
                         <ListView Height="NaN"  x:Name="listView_trackbarEvents">
                             <ListView.View>
                                 <GridView>
@@ -59,7 +59,7 @@
 
                             </DockPanel>
                         </Grid>
-                    </GroupBox>
+                    </GroupBox>-->
                 </StackPanel>
             </Grid>
         </Grid>
