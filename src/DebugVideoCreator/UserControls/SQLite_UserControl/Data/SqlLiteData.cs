@@ -1492,6 +1492,9 @@ namespace Sqllite_Library.Data
 
                             var designData = GetDesign(videoEventId);
                             obj.design_data = designData;
+
+                            var notesData = GetNotes(videoEventId);
+                            obj.notes_data = notesData;
                         }
                         data.Add(obj);
                     }

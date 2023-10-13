@@ -16,4 +16,12 @@
         NOTES,
         FINALMP4
     }
+
+    public enum EnumMedia
+    {
+        IMAGE = 1,
+        VIDEO,
+        AUDIO,
+        FORM
+    }
 }

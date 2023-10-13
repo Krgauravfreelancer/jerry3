@@ -21,6 +21,7 @@
             <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
         </StackPanel>
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Height="60" HorizontalAlignment="Right" Margin="0 0 20 0">
+            <Button x:Name="btnSync" Click="btnSync_Click" Content="Sync" Width="80" Height="30" Margin="10 0 50 0" FontWeight="Bold" FontSize="14" Foreground="#3381CC" />
             <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
             <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="200" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
         </StackPanel>

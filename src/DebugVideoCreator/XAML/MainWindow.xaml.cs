@@ -195,7 +195,7 @@ namespace VideoCreator.XAML
             }
             //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId);
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, authApiViewModel);
 
             var window = new Window
             {

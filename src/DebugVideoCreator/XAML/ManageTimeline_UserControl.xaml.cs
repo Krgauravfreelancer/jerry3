@@ -12,6 +12,8 @@ using Forms = System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 using AudioPlayer_UserControl;
+using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+using VideoCreator.Auth;
 
 namespace VideoCreator.XAML
 {
@@ -28,10 +30,13 @@ namespace VideoCreator.XAML
         private CBVVideoEvent selectedVideoEvent;
         private PopupWindow popup;
         private AudioEditor editor;
-        public ManageTimeline_UserControl(int projectId)
+        private readonly AuthAPIViewModel authApiViewModel;
+
+        public ManageTimeline_UserControl(int projectId, AuthAPIViewModel _authApiViewModel)
         {
             InitializeComponent();
             selectedProjectId = projectId;
+            authApiViewModel = _authApiViewModel;
             var subjectText = "Selected Project Id - " + selectedProjectId;
             lblSelectedProjectId.Content = subjectText;
 
@@ -677,6 +682,78 @@ namespace VideoCreator.XAML
                 NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                 ResetAudio();
             }
+        }
+
+        private async void btnSync_Click(object sender, RoutedEventArgs e)
+        {
+            var dataToSync = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
+            if(dataToSync != null && dataToSync.Count > 0) 
+            {
+                foreach (var item in dataToSync)
+                {
+                    var objToSync = new VideoEventModel();
+                    objToSync.fk_videoevent_media = item.fk_videoevent_media;
+                    objToSync.videoevent_track = item.videoevent_track;
+                    objToSync.videoevent_start = item.videoevent_start;
+                    objToSync.videoevent_duration = item.videoevent_duration;
+                    objToSync.fk_videoevent_project = selectedProjectId;
+                    if(objToSync.fk_videoevent_media == (int)EnumMedia.FORM) //Id-4 1:1
+                    {
+                        // We need to fill image and design children
+                        if(item.design_data?.Count > 0)
+                            objToSync.design.Add(GetDesignModel(item));
+                        if (item.videosegment_data?.Count > 0)
+                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
+                        if (item.notes_data?.Count > 0)
+                            objToSync.notes.AddRange(GetNotesModelList(item));
+                    }
+                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.IMAGE) //Id-1 1:1
+                    {
+                        // We need to fill images
+                        if (item.videosegment_data?.Count > 0)
+                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
+                        if (item.notes_data?.Count > 0)
+                            objToSync.notes.AddRange(GetNotesModelList(item));
+                    }
+                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.VIDEO) //Id-2 1:1
+                    {
+                        // We need to fill videos
+                        if (item.videosegment_data?.Count > 0)
+                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
+                        if (item.notes_data?.Count > 0)
+                            objToSync.notes.AddRange(GetNotesModelList(item));
+                    }
+                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.AUDIO) //Id-3 1:1
+                    {
+                        // TBD
+                    }
+                    await authApiViewModel.POSTVideoEvent(objToSync);
+                    break;
+                }
+            }
+            
+        }
+
+        private DesignModelPost GetDesignModel(CBVVideoEvent item)
+        {
+            var designModel = new DesignModelPost();
+            designModel.fk_design_screen = item.design_data[0].fk_design_screen;
+            designModel.design_xml = item.design_data[0].design_xml;
+            return designModel;
+        }
+
+        private List<NotesModelPost> GetNotesModelList(CBVVideoEvent item)
+        {
+            var data = new List<NotesModelPost>();
+            foreach(var note in item.notes_data)
+            {
+                var notesModel = new NotesModelPost();
+                notesModel.notes_line = note.notes_line;
+                notesModel.notes_wordcount = note.notes_wordcount;
+                notesModel.notes_index = note.notes_index;
+                data.Add(notesModel);
+            }
+            return data;
         }
 
         private void ResetAudio()
