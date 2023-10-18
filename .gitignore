@@ -331,3 +331,5 @@
 /src/LocalVoiceGen_UserControl/packages
 /src/VideoCreator/Libraries/ffmpeg.exe
 /src/VideoCreator/Libraries/ffprobe.exe
+/src/VideoCreator/bin/Release
+/src/VideoCreator/obj/Release

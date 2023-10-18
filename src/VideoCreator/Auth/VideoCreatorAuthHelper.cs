@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Net.Http;
 using System.IO;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace VideoCreator.Auth
 {
@@ -86,6 +87,8 @@ namespace VideoCreator.Auth
             try
             {
                 ErrorMessage = string.Empty;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 var loginRes = await authCtrl.Login(MacAddress?.Trim(), AccessKey?.Trim());
                 if (!string.IsNullOrEmpty(loginRes.Token))
                 {
