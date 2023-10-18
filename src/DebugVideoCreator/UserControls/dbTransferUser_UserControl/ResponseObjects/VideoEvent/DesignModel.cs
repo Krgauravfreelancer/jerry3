@@ -16,7 +16,7 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
 
     public class DesignModelPost
     {
-        public int fk_design_screen { get; set; }
+        public string fk_design_screen { get; set; }
         public string design_xml { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
     public class NotesModelPost
     {
         public string notes_line { get; set; }
-        public int notes_wordcount { get; set; }
-        public int notes_index { get; set; }
+        public string notes_wordcount { get; set; }
+        public string notes_index { get; set; }
     }
 }

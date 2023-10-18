@@ -701,7 +701,7 @@ namespace VideoCreator.XAML
                     {
                         // We need to fill image and design children
                         if(item.design_data?.Count > 0)
-                            objToSync.design.Add(GetDesignModel(item));
+                            objToSync.design.AddRange(GetDesignModelList(item));
                         if (item.videosegment_data?.Count > 0)
                             objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
                         if (item.notes_data?.Count > 0)
@@ -734,12 +734,17 @@ namespace VideoCreator.XAML
             
         }
 
-        private DesignModelPost GetDesignModel(CBVVideoEvent item)
+        private List<DesignModelPost> GetDesignModelList(CBVVideoEvent item)
         {
-            var designModel = new DesignModelPost();
-            designModel.fk_design_screen = item.design_data[0].fk_design_screen;
-            designModel.design_xml = item.design_data[0].design_xml;
-            return designModel;
+            var data = new List<DesignModelPost>();
+            foreach (var design in item.design_data)
+            {
+                var designModel = new DesignModelPost();
+                designModel.fk_design_screen = design.fk_design_screen.ToString();
+                designModel.design_xml = design.design_xml;
+                data.Add(designModel);
+            }
+            return data;
         }
 
         private List<NotesModelPost> GetNotesModelList(CBVVideoEvent item)
@@ -749,8 +754,8 @@ namespace VideoCreator.XAML
             {
                 var notesModel = new NotesModelPost();
                 notesModel.notes_line = note.notes_line;
-                notesModel.notes_wordcount = note.notes_wordcount;
-                notesModel.notes_index = note.notes_index;
+                notesModel.notes_wordcount = note.notes_wordcount.ToString();
+                notesModel.notes_index = note.notes_index.ToString();
                 data.Add(notesModel);
             }
             return data;
