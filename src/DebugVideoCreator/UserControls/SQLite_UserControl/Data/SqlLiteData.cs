@@ -210,6 +210,7 @@ namespace Sqllite_Library.Data
                     'project_archived' INTEGER(1) NOT NULL DEFAULT 0,
                     'project_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                     'project_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                    'project_isdeleted' INTEGER(1) NOT NULL DEFAULT 0,
                     UNIQUE (project_name, project_version)
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
@@ -226,7 +227,8 @@ namespace Sqllite_Library.Data
                 'videoevent_duration' INTEGER NOT NULL DEFAULT 0,
                 'videoevent_end' TEXT(8) NOT NULL DEFAULT '00:00:00',
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'videoevent_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -238,7 +240,8 @@ namespace Sqllite_Library.Data
                 'fk_videosegment_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
                 'videosegment_media' BLOB NOT NULL DEFAULT NULL,
                 'videosegment_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'videosegment_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'videosegment_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'videosegment_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -251,7 +254,8 @@ namespace Sqllite_Library.Data
                 'fk_audio_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
                 'audio_media' BLOB NOT NULL DEFAULT NULL,
                 'audio_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'audio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'audio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'audio_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -264,9 +268,12 @@ namespace Sqllite_Library.Data
                 'fk_notes_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
                 'notes_line' TEXT(255) NOT NULL  DEFAULT 'NULL',
                 'notes_wordcount' INTEGER NOT NULL  DEFAULT 0,
-                'notes_index' INTEGER NOT NULL  DEFAULT 0,
+                'notes_index' INTEGER NOT NULL DEFAULT 0,
+                'notes_start' TEXT(8) NOT NULL DEFAULT 'NULL',
+                'notes_duration' INTEGER NOT NULL DEFAULT 1,
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'notes_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -278,7 +285,8 @@ namespace Sqllite_Library.Data
                 'fk_locaudio_notes' INTEGER NOT NULL DEFAULT NULL REFERENCES 'cbv_notes' ('notes_id'),
                 'locaudio_media' BLOB NOT NULL DEFAULT NULL,
                 'locaudio_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'locaudio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'locaudio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'locaudio_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -301,7 +309,8 @@ namespace Sqllite_Library.Data
                 'fk_design_screen' INTEGER NOT NULL DEFAULT 1 REFERENCES 'cbv_screen'('screen_id'),
                 'design_xml' TEXT(255) NOT NULL  DEFAULT 'NULL',
                 'design_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'design_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00'
+                'design_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
+                'design_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -316,6 +325,7 @@ namespace Sqllite_Library.Data
                 'finalmp4_media' BLOB NOT NULL  DEFAULT NULL,
                 'finalmp4_createdate' TEXT(25) NOT NULL  DEFAULT '1999-01-01 00:00:00',
                 'finalmp4_modifydate' TEXT(25) NOT NULL  DEFAULT '1999-01-01 00:00:00',
+                'finalmp4_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
                 UNIQUE (fk_finalmp4_project, finalmp4_version)
                 );;";
             CreateTableHelper(sqlQueryString, sqlCon);
@@ -411,8 +421,6 @@ namespace Sqllite_Library.Data
             return insertedIds;
         }
 
-
-
         #endregion
 
 
@@ -467,25 +475,25 @@ namespace Sqllite_Library.Data
                
                 var projectDate = Convert.ToString(dr["project_date"]);
                 if (string.IsNullOrEmpty(projectDate))
-                    projectDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    projectDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var projectArchived = Convert.ToBoolean(dr["project_archived"]);
 
                 var createDate = Convert.ToString(dr["project_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["project_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}')");
+                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', 0)");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate) 
+                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, project_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -550,23 +558,23 @@ namespace Sqllite_Library.Data
             
             var createDate = Convert.ToString(dr["videoevent_createdate"]);
             if (string.IsNullOrEmpty(createDate))
-                createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             var modifyDate = Convert.ToString(dr["videoevent_modifydate"]);
             if (string.IsNullOrEmpty(modifyDate))
-                modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             var start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]));
             var end = CalcNextEnd(start, Convert.ToInt32(dr["videoevent_duration"]));
 
             values.Add($"({dr["fk_videoevent_project"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}')");
+                $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0)");
            
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO cbv_videoevent 
                     (fk_videoevent_project, fk_videoevent_media, videoevent_track, 
-                        videoevent_start, videoevent_duration, videoevent_end, videoevent_createdate, videoevent_modifydate) 
+                        videoevent_start, videoevent_duration, videoevent_end, videoevent_createdate, videoevent_modifydate, videoevent_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -581,19 +589,19 @@ namespace Sqllite_Library.Data
             {
                 var createDate = Convert.ToString(dr["videosegment_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["videosegment_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_videosegment_videoevent"]}, @blob, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_videosegment_videoevent"]}, @blob, '{createDate}', '{modifyDate}', 0)");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_videosegment 
-                    (fk_videosegment_videoevent, videosegment_media, videosegment_createdate, videosegment_modifydate) 
+                    (fk_videosegment_videoevent, videosegment_media, videosegment_createdate, videosegment_modifydate, videosegment_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -609,19 +617,19 @@ namespace Sqllite_Library.Data
             {
                 var createDate = Convert.ToString(dr["audio_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["audio_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_audio_videoevent"]}, @blob, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_audio_videoevent"]}, @blob, '{createDate}', '{modifyDate}', 0)");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_audio 
-                    (fk_audio_videoevent, audio_media, audio_createdate, audio_modifydate) 
+                    (fk_audio_videoevent, audio_media, audio_createdate, audio_modifydate, audio_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -637,19 +645,19 @@ namespace Sqllite_Library.Data
             {
                 var createDate = Convert.ToString(dr["design_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["design_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}', 0)");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_design 
-                    (fk_design_videoevent, fk_design_background, fk_design_screen, design_xml, design_createdate, design_modifydate) 
+                    (fk_design_videoevent, fk_design_background, fk_design_screen, design_xml, design_createdate, design_modifydate, design_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -667,18 +675,18 @@ namespace Sqllite_Library.Data
                 var max_index = GetMaxIndexForNotes(Convert.ToInt32(dr["fk_notes_videoevent"]));
                 var createDate = Convert.ToString(dr["notes_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["notes_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 var values = new List<string>();
-                values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]},  {max_index}, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', {dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0)");
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
                     $@"INSERT INTO cbv_notes 
-                    (fk_notes_videoevent, notes_line, notes_wordcount, notes_index, notes_createdate, notes_modifydate) 
+                    (fk_notes_videoevent, notes_line, notes_wordcount, notes_index, notes_start, notes_duration, notes_createdate, notes_modifydate, notes_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -698,19 +706,19 @@ namespace Sqllite_Library.Data
                 var values = new List<string>();
                 var createDate = Convert.ToString(dr["locaudio_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_locaudio_notes"]}, @blob, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_locaudio_notes"]}, @blob, '{createDate}', '{modifyDate}', 0)");
 
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
                     $@"INSERT INTO cbv_locaudio 
-                    (fk_locaudio_notes, locaudio_media, locaudio_createdate, locaudio_modifydate) 
+                    (fk_locaudio_notes, locaudio_media, locaudio_createdate, locaudio_modifydate, locaudio_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -731,18 +739,18 @@ namespace Sqllite_Library.Data
             {
                 var createDate = Convert.ToString(dr["finalmp4_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["finalmp4_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', 0)");
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
                     $@"INSERT INTO cbv_finalmp4 
-                    (fk_finalmp4_project, finalmp4_version, finalmp4_comments, finalmp4_media, finalmp4_createdate, finalmp4_modifydate) 
+                    (fk_finalmp4_project, finalmp4_version, finalmp4_comments, finalmp4_media, finalmp4_createdate, finalmp4_modifydate, finalmp4_isdeleted) 
                 VALUES 
                     {valuesString}";
 
@@ -1287,7 +1295,8 @@ namespace Sqllite_Library.Data
                             project_archived = Convert.ToBoolean(sqlReader["project_archived"]),
                             fk_project_background = Convert.ToInt32(sqlReader["fk_project_background"]),
                             project_createdate = Convert.ToDateTime(sqlReader["project_createdate"]),
-                            project_modifydate = Convert.ToDateTime(sqlReader["project_modifydate"])
+                            project_modifydate = Convert.ToDateTime(sqlReader["project_modifydate"]),
+                            project_isdeleted = Convert.ToBoolean(sqlReader["project_isdeleted"])
                         };
                         if (startedFlag)
                         {
@@ -1375,7 +1384,7 @@ namespace Sqllite_Library.Data
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
-            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date  FROM cbv_project ";
+            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date FROM cbv_project ";
 
             if (wipFlag)
                 sqlQueryString = $@"
@@ -1397,7 +1406,7 @@ namespace Sqllite_Library.Data
                                 ) as VECount on VECount.fk_videoevent_project = P.project_id
 					";
             
-            sqlQueryString += $@" WHERE project_archived={archivedFlag}";
+            sqlQueryString += $@" WHERE project_archived={archivedFlag} and project_isdeleted = 0";
 
             SQLiteConnection sqlCon = null;
             try
@@ -1453,7 +1462,7 @@ namespace Sqllite_Library.Data
                 throw new Exception("Database is not present.");
 
             string sqlQueryString = $@"SELECT * FROM cbv_videoevent ";
-            sqlQueryString += projectId <= 0 ? "" : $@" where fk_videoevent_project = {projectId} ";
+            sqlQueryString += projectId <= 0 ? " where videoevent_isdeleted = 0 " : $@" where fk_videoevent_project = {projectId} and videoevent_isdeleted = 0";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1478,7 +1487,8 @@ namespace Sqllite_Library.Data
                             videoevent_duration = sqlReader.GetInt32(5),
                             videoevent_end = sqlReader.GetString(6),
                             videoevent_createdate = sqlReader.GetDateTime(7),
-                            videoevent_modifydate = sqlReader.GetDateTime(8)
+                            videoevent_modifydate = sqlReader.GetDateTime(8),
+                            videoevent_isdeleted = sqlReader.GetBoolean(9)
                         };
                         if (dependentDataFlag)
                         {
@@ -1521,9 +1531,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_audio ";
+            string sqlQueryString = $@"SELECT * FROM cbv_audio where audio_isdeleted = 0";
             if (videoEventId > -1)
-                sqlQueryString += $@" where fk_audio_videoevent = {videoEventId}";
+                sqlQueryString += $@" and fk_audio_videoevent = {videoEventId}";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1544,6 +1554,7 @@ namespace Sqllite_Library.Data
                             fk_audio_videoevent = Convert.ToInt32(sqlReader["fk_audio_videoevent"]),
                             audio_createdate = Convert.ToDateTime(sqlReader["audio_createdate"]),
                             audio_modifydate = Convert.ToDateTime(sqlReader["audio_modifydate"]),
+                            audio_isdeleted = Convert.ToBoolean(sqlReader["audio_isdeleted"]),
                         };
                         var byteData = GetBlobMedia(sqlReader, "audio_media");
                         obj.audio_media = byteData;
@@ -1571,9 +1582,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_videosegment ";
+            string sqlQueryString = $@"SELECT * FROM cbv_videosegment where videosegment_isdeleted = 0";
             if (videoEventId > -1)
-                sqlQueryString += $@" where fk_videosegment_videoevent = {videoEventId};";
+                sqlQueryString += $@" and fk_videosegment_videoevent = {videoEventId};";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1594,6 +1605,7 @@ namespace Sqllite_Library.Data
                             fk_videosegment_videoevent = Convert.ToInt32(sqlReader["fk_videosegment_videoevent"]),
                             videosegment_createdate = Convert.ToDateTime(sqlReader["videosegment_createdate"]),
                             videosegment_modifydate = Convert.ToDateTime(sqlReader["videosegment_modifydate"]),
+                            videosegment_isdeleted = Convert.ToBoolean(sqlReader["videosegment_isdeleted"]),
                         };
                         var byteData = GetBlobMedia(sqlReader, "videosegment_media");
                         obj.videosegment_media = byteData;
@@ -1621,9 +1633,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_design ";
+            string sqlQueryString = $@"SELECT * FROM cbv_design where design_isdeleted = 0";
             if (videoEventId > -1)
-                sqlQueryString += $@" where fk_design_videoevent = {videoEventId} ";
+                sqlQueryString += $@" and fk_design_videoevent = {videoEventId} ";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1647,6 +1659,7 @@ namespace Sqllite_Library.Data
                             design_xml = Convert.ToString(sqlReader["design_xml"]),
                             design_createdate = Convert.ToDateTime(sqlReader["design_createdate"]),
                             design_modifydate = Convert.ToDateTime(sqlReader["design_modifydate"]),
+                            design_isdeleted = Convert.ToBoolean(sqlReader["design_isdeleted"]),
                         };
                         data.Add(obj);
                     }
@@ -1672,9 +1685,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_notes";
+            string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_isdeleted = 0";
             if (videoEventId > -1)
-                sqlQueryString += $@" where fk_notes_videoevent = {videoEventId} order by notes_index";
+                sqlQueryString += $@" and fk_notes_videoevent = {videoEventId} order by notes_index";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1696,8 +1709,11 @@ namespace Sqllite_Library.Data
                             notes_line = Convert.ToString(sqlReader["notes_line"]),
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
+                            notes_start = Convert.ToString(sqlReader["notes_start"]),
+                            notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
+                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"])
                         };
                         data.Add(obj);
                     }
@@ -1723,7 +1739,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_id = {notesId} order by notes_index";
+            string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_id = {notesId} and notes_isdeleted = 0 order by notes_index";
             
                 sqlQueryString += $@"";
             SQLiteConnection sqlCon = null;
@@ -1747,8 +1763,11 @@ namespace Sqllite_Library.Data
                             notes_line = Convert.ToString(sqlReader["notes_line"]),
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
+                            notes_start = Convert.ToString(sqlReader["notes_start"]),
+                            notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
+                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"])
                         };
                         data.Add(obj);
                     }
@@ -1774,9 +1793,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_locaudio ";
+            string sqlQueryString = $@"SELECT * FROM cbv_locaudio where locaudio_isdeleted = 0";
             if (notesId > -1)
-                sqlQueryString += $@" where fk_locaudio_notes = {notesId}";
+                sqlQueryString += $@" and fk_locaudio_notes = {notesId}";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1797,6 +1816,7 @@ namespace Sqllite_Library.Data
                             fk_locaudio_notes = Convert.ToInt32(sqlReader["fk_locaudio_notes"]),
                             locaudio_createdate = Convert.ToDateTime(sqlReader["locaudio_createdate"]),
                             locaudio_modifydate = Convert.ToDateTime(sqlReader["locaudio_modifydate"]),
+                            locaudio_isdeleted = Convert.ToBoolean(sqlReader["locaudio_isdeleted"]),
                         };
                         var byteData = GetBlobMedia(sqlReader, "locaudio_media");
                         obj.locaudio_media = byteData;
@@ -1823,9 +1843,9 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_finalmp4 ";
+            string sqlQueryString = $@"SELECT * FROM cbv_finalmp4 where finalm4_isdeleted = 0";
             if (projectId > -1)
-                sqlQueryString += $@" where fk_finalmp4_project = {projectId} ";
+                sqlQueryString += $@" and fk_finalmp4_project = {projectId} ";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1848,6 +1868,7 @@ namespace Sqllite_Library.Data
                             finalmp4_comments = Convert.ToString(sqlReader["finalmp4_comments"]),
                             finalmp4_createdate = Convert.ToDateTime(sqlReader["finalmp4_createdate"]),
                             finalmp4_modifydate = Convert.ToDateTime(sqlReader["finalmp4_modifydate"]),
+                            finalmp4_isdeleted = Convert.ToBoolean(sqlReader["finalmp4_isdeleted"]),
                             finalmp4_media = GetBlobMedia(sqlReader, "finalmp4_media")
                         };
 
@@ -2140,7 +2161,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["project_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var project_id = Convert.ToInt32(dr["project_id"]);
 
@@ -2167,7 +2188,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["videoevent_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var videoevent_id = Convert.ToInt32(dr["videoevent_id"]);
                 var updateQueryString = $@" UPDATE cbv_videoevent 
@@ -2191,7 +2212,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["videosegment_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var videosegment_id = Convert.ToInt32(dr["videosegment_id"]);
                 var updateQueryString = $@" UPDATE cbv_videosegment 
@@ -2213,7 +2234,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["audio_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var audio_id = Convert.ToInt32(dr["audio_id"]);
                 var updateQueryString = $@" UPDATE cbv_audio
@@ -2234,7 +2255,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["design_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var design_id = Convert.ToInt32(dr["design_id"]);
                 var updateQueryString = $@" UPDATE cbv_design
@@ -2257,7 +2278,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["notes_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var notes_id = Convert.ToInt32(dr["notes_id"]);
                 var updateQueryString = $@" UPDATE cbv_notes
@@ -2265,6 +2286,8 @@ namespace Sqllite_Library.Data
                                             notes_index = {Convert.ToInt32(dr["notes_index"])},
                                             notes_line = '{Convert.ToString(dr["notes_line"])}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
+                                            notes_start = '{Convert.ToString(dr["notes_start"])}',
+                                            notes_duration = {Convert.ToInt32(dr["notes_duration"])},
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
@@ -2279,7 +2302,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var locaudio_id = Convert.ToInt32(dr["locaudio_id"]);
                 var updateQueryString = $@" UPDATE cbv_locaudio
@@ -2300,7 +2323,7 @@ namespace Sqllite_Library.Data
             {
                 var modifyDate = Convert.ToString(dr["finalmp4_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var finalmp4_id = Convert.ToInt32(dr["finalmp4_id"]);
                 var updateQueryString = $@" UPDATE cbv_finalmp4 
@@ -2373,27 +2396,37 @@ namespace Sqllite_Library.Data
         public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete)
         {
             var deleteQueryString = $@" 
-                                        Delete from cbv_videoevent
+                                        update cbv_videoevent 
+                                        Set 
+                                           videoevent_isdeleted = 1 
                                         WHERE 
-                                        videoevent_id = {videoeventId};
+                                            videoevent_id = {videoeventId};
                                         ";
 
             if(cascadeDelete == true)
-                deleteQueryString = $@" Delete from cbv_design
+                deleteQueryString = $@" update cbv_design
+                                        Set 
+                                           design_isdeleted = 1 
                                         WHERE 
-                                        fk_design_videoevent = {videoeventId};
+                                            fk_design_videoevent = {videoeventId};
 
-                                        Delete from cbv_videosegment
+                                        update cbv_videosegment
+                                        Set 
+                                           videosegment_isdeleted = 1
                                         WHERE 
-                                        fk_videosegment_videoevent = {videoeventId};
+                                            fk_videosegment_videoevent = {videoeventId};
 
-                                        Delete from cbv_locaudio
+                                        update cbv_locaudio
+                                        Set 
+                                           locaudio_isdeleted = 1
                                         WHERE 
                                         fk_locaudio_notes in (Select notes_id from cbv_notes WHERE fk_notes_videoevent = {videoeventId});
 
-                                        Delete from cbv_notes
+                                        update cbv_notes
+                                        Set 
+                                           notes_isdeleted = 1
                                         WHERE 
-                                        fk_notes_videoevent = {videoeventId};
+                                            fk_notes_videoevent = {videoeventId};
                                         " + deleteQueryString;
             var deleteFlag = DeleteRecordsInTable(deleteQueryString);
             Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} result - {deleteFlag}");
@@ -2545,25 +2578,25 @@ namespace Sqllite_Library.Data
 
                 var projectDate = Convert.ToString(dr["project_date"]);
                 if (string.IsNullOrEmpty(projectDate))
-                    projectDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    projectDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var projectArchived = Convert.ToBoolean(dr["project_archived"]);
 
                 var createDate = Convert.ToString(dr["project_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var modifyDate = Convert.ToString(dr["project_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"({dr["project_id"]}, '{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}')");
+                values.Add($"({dr["project_id"]}, '{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', 0)");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_id, project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate) 
+                    (project_id, project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, project_isdeleted) 
                 VALUES 
                     {valuesString}";
 

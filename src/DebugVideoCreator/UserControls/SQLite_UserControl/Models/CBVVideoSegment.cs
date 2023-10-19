@@ -9,6 +9,7 @@ namespace Sqllite_Library.Models
         public byte[] videosegment_media { get; set; }
         public DateTime videosegment_createdate { get; set; }
         public DateTime videosegment_modifydate { get; set; }
+        public bool videosegment_isdeleted { get; set; }
         public CBVVideoSegment()
         {
         }

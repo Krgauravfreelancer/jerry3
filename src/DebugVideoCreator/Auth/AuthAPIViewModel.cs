@@ -492,8 +492,8 @@ namespace VideoCreator.Auth
             }
 
             var result = await _apiClientHelper.Create<ParentData<VideoEventModel>>(url, multipart);
-            //if (result?.Status == "success")
-            //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (result?.Status == "success")
+                MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
             if (pathWithFilename?.Length > 0)
             {
 

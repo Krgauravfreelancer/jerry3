@@ -4,9 +4,6 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
 {
     public class NotesModel: NotesModelPost
     {
-        public int notes_id { get; set; }
-        public int fk_notes_videoevent { get; set; }
-        
         //Optional Fields for POST
         public int fk_notes_createdby { get; set; }
         public int fk_notes_modifyby { get; set; }
@@ -17,8 +14,11 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
 
     public class NotesModelPost
     {
+        public int notes_id { get; set; }
+        public int fk_notes_videoevent { get; set; }
         public string notes_line { get; set; }
         public string notes_wordcount { get; set; }
         public string notes_index { get; set; }
+        public bool notes_isdeleted { get; set; }
     }
 }

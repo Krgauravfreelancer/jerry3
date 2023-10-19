@@ -74,6 +74,8 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("fk_notes_videoevent", typeof(int));
             dtNotes.Columns.Add("notes_line", typeof(string));
             dtNotes.Columns.Add("notes_wordcount", typeof(int));
+            dtNotes.Columns.Add("notes_start", typeof(string));
+            dtNotes.Columns.Add("notes_duration", typeof(int));
             dtNotes.Columns.Add("notes_index", typeof(int));
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
@@ -81,6 +83,8 @@ namespace Notes_UserControl
             var dRow = dtNotes.NewRow();
             
             dRow["notes_line"] = txtNotes.Text;
+            dRow["notes_start"] = "00:00:00";
+            dRow["notes_duration"] = 0;
             dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["fk_notes_videoevent"] = selectedVideoEventId;
             dRow["notes_wordcount"] = txtNotes.Text.Split(' ').Length;

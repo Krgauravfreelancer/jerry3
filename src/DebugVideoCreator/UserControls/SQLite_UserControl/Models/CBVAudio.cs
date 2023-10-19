@@ -9,6 +9,7 @@ namespace Sqllite_Library.Models
         public byte[] audio_media { get; set; }
         public DateTime audio_createdate { get; set; }
         public DateTime audio_modifydate { get; set; }
+        public bool audio_isdeleted { get; set; }
         public CBVAudio()
         {
         }

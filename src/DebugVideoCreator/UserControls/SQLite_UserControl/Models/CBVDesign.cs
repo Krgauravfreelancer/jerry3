@@ -11,6 +11,7 @@ namespace Sqllite_Library.Models
         public string design_xml { get; set; }
         public DateTime design_createdate { get; set; }
         public DateTime design_modifydate { get; set; }
+        public bool design_isdeleted { get; set; }
 
         public CBVDesign()
         {

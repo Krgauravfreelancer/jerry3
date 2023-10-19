@@ -14,6 +14,7 @@ namespace Sqllite_Library.Models
         public string videoevent_end { get; set; }
         public DateTime videoevent_createdate { get; set; }
         public DateTime videoevent_modifydate { get; set; }
+        public bool videoevent_isdeleted { get; set; }
         public List<CBVAudio> audio_data { get; set; }
         public List<CBVVideoSegment> videosegment_data { get; set; }
         public List<CBVDesign> design_data { get; set; }
