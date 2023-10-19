@@ -16,10 +16,13 @@ using System.Windows;
 using System.Text;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Sqllite_Library.Models;
+using Newtonsoft.Json;
+using System.Windows.Forms.VisualStyles;
 
 namespace VideoCreator.Auth
 {
-    internal class AuthAPIViewModel : ViewModelBase
+    public class AuthAPIViewModel : ViewModelBase
     {
         private readonly DateTime MODIFIEDDATE;
 
@@ -318,7 +321,8 @@ namespace VideoCreator.Auth
         }
 
         #endregion
-
+        */
+        /*
         #region == Background ==
 
         
@@ -420,114 +424,174 @@ namespace VideoCreator.Auth
         }
 
         #endregion
-
+        */
         #region == Video Event ==
 
-        public async Task ListAllVideoEvent(DateTime? modifiedDate = null)
+
+        public async Task<VideoEventModel> POSTVideoEvent(VideoEventModel videoEventModel)
         {
-            var url = $"api/connect/project/2/videoevent";
-            if (modifiedDate.HasValue)
-                url += $"?modifydate={modifiedDate:yyyy-MM-dd HH:mm:ss}";
+            var url = $"api/connect/project/{videoEventModel.fk_videoevent_project}/videoevent-create";
 
-            var result = await _apiClientHelper.Get<ParentDataList<VideoEventModel>>(url);
-            if (result != null)
-            {
-                var builder = new StringBuilder();
-                builder.Append($"Total Record found - {result.Data.Count}" + "\n");
-                foreach (var keyPair in result.Data)
-                    builder.Append(keyPair.ToString() + "\n" + "\n" + "\n" + "\n");
-                MessageBox.Show(builder.ToString(), $"List All Records - From {modifiedDate}", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show($"No Record Found", "ListAllVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+            var multipart = new MultipartFormDataContent();
+            // FK
+            var requestbodyContent_FK = new StringContent(videoEventModel.fk_videoevent_media.ToString());
+            requestbodyContent_FK.Headers.Add("Content-Disposition", "form-data; name=\"fk_videoevent_media\"");
+            multipart.Add(requestbodyContent_FK);
+            // Track
+            var requestbodyContent_track = new StringContent(videoEventModel.videoevent_track.ToString());
+            requestbodyContent_track.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_track\"");
+            multipart.Add(requestbodyContent_track);
+            // Start
+            var requestbodyContent_start = new StringContent(videoEventModel.videoevent_start.ToString());
+            requestbodyContent_start.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_start\"");
+            multipart.Add(requestbodyContent_start);
+            // Duration
+            var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration.ToString());
+            requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
+            multipart.Add(requestbodyContent_duration);
 
-        public async Task ListVideoEventById(int projectId, int videoEventId)
-        {
-            var url = $"api/connect/project/{projectId}/videoevent/{videoEventId}";
-            var result = await _apiClientHelper.Get<ParentData<VideoEventModel>>(url);
-            if (result != null)
+            // notes
+            if (videoEventModel.notes?.Count > 0)
             {
-                MessageBox.Show(result.Data.ToString(), $"ListVideoEventById - For {videoEventId}", MessageBoxButton.OK, MessageBoxImage.Information);
+                var requestbodyContent_notes = new StringContent(JsonConvert.SerializeObject(videoEventModel.notes));
+                requestbodyContent_notes.Headers.Add("Content-Disposition", "form-data; name=\"notes\"");
+                multipart.Add(requestbodyContent_notes);
             }
-            else
+            // design
+            if(videoEventModel.design?.Count > 0)
             {
-                MessageBox.Show($"No Record Found", "ListVideoEventById", MessageBoxButton.OK, MessageBoxImage.Error);
+                var requestbodyContent_design = new StringContent(JsonConvert.SerializeObject(videoEventModel.design));
+                requestbodyContent_design.Headers.Add("Content-Disposition", "form-data; name=\"design\"");
+                multipart.Add(requestbodyContent_design);
             }
-        }
 
-        public async Task CreateVideoEvent(int projectId, int fk_videoevent_media, int videoevent_track, string videoevent_start, int videoevent_duration)
-        {
-            var url = $"api/connect/project/{projectId}/videoevent";
-            var parameters = new Dictionary<string, string>
+            string pathWithFilename = string.Empty;
+            StreamContent fileStreamContent = null;
+            FileStream fileReadStream = null;
+            if (videoEventModel.videosegment_media_bytes?.Length > 0)
             {
-                { "fk_videoevent_media", fk_videoevent_media.ToString() },
-                { "videoevent_track", videoevent_track.ToString() },
-                { "videoevent_start", videoevent_start },
-                { "videoevent_duration", videoevent_duration.ToString() }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
+                //File
+                var filename = $"_{Guid.NewGuid()}";
+                if (videoEventModel.fk_videoevent_media == (int)EnumMedia.VIDEO)
+                    filename = "video" + filename + ".mp4";
+                else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.IMAGE)
+                    filename = "image" + filename + ".png";
+                else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.FORM)
+                    filename = "design" + filename + ".png";
 
-            var result = await _apiClientHelper.Create<ParentData<VideoEventModel>>(url, payload);
+                var currentDirectory = Directory.GetCurrentDirectory();
+                pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
+                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                file.Write(videoEventModel.videosegment_media_bytes, 0, videoEventModel.videosegment_media_bytes.Length);
+                file.Close();
+
+                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                fileStreamContent = new StreamContent(fileReadStream);
+                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                multipart.Add(fileStreamContent);
+            }
+
+            var result = await _apiClientHelper.Create<ParentData<VideoEventModel>>(url, multipart);
             if (result?.Status == "success")
+                MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (pathWithFilename?.Length > 0)
             {
-                MessageBox.Show($@"{result?.Message} with data - {result.Data}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                fileReadStream?.Close();
+                fileStreamContent.Dispose();
+                File.Delete(pathWithFilename);
             }
-            else
-            {
-                MessageBox.Show(result?.Message, "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return result.Data;
         }
 
-        public async Task UpdateVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, int videoevent_track, string videoevent_start, int videoevent_duration)
-        {
-            var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
-            var parameters = new Dictionary<string, string>
-            {
-                { "fk_videoevent_media", fk_videoevent_media.ToString() },
-                { "videoevent_track", videoevent_track.ToString() },
-                { "videoevent_start", videoevent_start },
-                { "videoevent_duration", videoevent_duration.ToString() }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
+      
 
-            var result = await _apiClientHelper.Update<ParentData<VideoEventModel>>(url, payload);
-            if (result?.Status == "success")
-            {
-                MessageBox.Show($@"{result?.Message} with updated data as - {result.Data}", "UpdateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show(result?.Message, "UpdateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
-        public async Task PatchVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, int videoevent_duration)
-        {
-            var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
-            var parameters = new Dictionary<string, string>
-            {
-                { "fk_videoevent_media", fk_videoevent_media.ToString() },
-                { "videoevent_start", videoevent_start },
-                { "videoevent_duration", videoevent_duration.ToString() }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
 
-            var result = await _apiClientHelper.Patch<ParentData<VideoEventModel>>(url, payload);
-            if (result?.Status == "success")
-            {
-                MessageBox.Show($@"{result?.Message} with updated data as - {result.Data}", "PatchVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show(result?.Message, "PatchVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+        //public async Task ListAllVideoEvent(DateTime? modifiedDate = null)
+        //{
+        //    var url = $"api/connect/project/2/videoevent";
+        //    if (modifiedDate.HasValue)
+        //        url += $"?modifydate={modifiedDate:yyyy-MM-dd HH:mm:ss}";
+
+        //    var result = await _apiClientHelper.Get<ParentDataList<VideoEventModel>>(url);
+        //    if (result != null)
+        //    {
+        //        var builder = new StringBuilder();
+        //        builder.Append($"Total Record found - {result.Data.Count}" + "\n");
+        //        foreach (var keyPair in result.Data)
+        //            builder.Append(keyPair.ToString() + "\n" + "\n" + "\n" + "\n");
+        //        MessageBox.Show(builder.ToString(), $"List All Records - From {modifiedDate}", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show($"No Record Found", "ListAllVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
+        //public async Task ListVideoEventById(int projectId, int videoEventId)
+        //{
+        //    var url = $"api/connect/project/{projectId}/videoevent/{videoEventId}";
+        //    var result = await _apiClientHelper.Get<ParentData<VideoEventModel>>(url);
+        //    if (result != null)
+        //    {
+        //        MessageBox.Show(result.Data.ToString(), $"ListVideoEventById - For {videoEventId}", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show($"No Record Found", "ListVideoEventById", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
+
+
+        //public async Task UpdateVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, int videoevent_track, string videoevent_start, int videoevent_duration)
+        //{
+        //    var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
+        //    var parameters = new Dictionary<string, string>
+        //    {
+        //        { "fk_videoevent_media", fk_videoevent_media.ToString() },
+        //        { "videoevent_track", videoevent_track.ToString() },
+        //        { "videoevent_start", videoevent_start },
+        //        { "videoevent_duration", videoevent_duration.ToString() }
+        //    };
+        //    var payload = new FormUrlEncodedContent(parameters);
+
+        //    var result = await _apiClientHelper.Update<ParentData<VideoEventModel>>(url, payload);
+        //    if (result?.Status == "success")
+        //    {
+        //        MessageBox.Show($@"{result?.Message} with updated data as - {result.Data}", "UpdateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show(result?.Message, "UpdateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
+
+        //public async Task PatchVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, int videoevent_duration)
+        //{
+        //    var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
+        //    var parameters = new Dictionary<string, string>
+        //    {
+        //        { "fk_videoevent_media", fk_videoevent_media.ToString() },
+        //        { "videoevent_start", videoevent_start },
+        //        { "videoevent_duration", videoevent_duration.ToString() }
+        //    };
+        //    var payload = new FormUrlEncodedContent(parameters);
+
+        //    var result = await _apiClientHelper.Patch<ParentData<VideoEventModel>>(url, payload);
+        //    if (result?.Status == "success")
+        //    {
+        //        MessageBox.Show($@"{result?.Message} with updated data as - {result.Data}", "PatchVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show(result?.Message, "PatchVideoEvent", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
 
         #endregion
-
+        /*
         #region == Audio ==
 
         public async Task ListAllAudio(int videoEventId)

@@ -36,7 +36,7 @@ namespace VideoCreator.Auth
             get => _macAddress;
             set => Set(nameof(MacAddress), ref _macAddress, value);
         }
-        
+
         private string _accessKey;
         public string AccessKey
         {
@@ -73,14 +73,14 @@ namespace VideoCreator.Auth
             //this.MacAddress = "FC:B3:BC:A8:84:A5";
         }
 
-        
+
         private void InitializeOrResetDbTransferControl()
         {
             IsBusy = true;
             authCtrl.SetMACAddress(this.MacAddress);
             dbTransferCtrl.SetClient(authCtrl.GetHttpClient());
         }
-        
+
 
         public async Task ExecuteLoginAsync()
         {
@@ -138,7 +138,7 @@ namespace VideoCreator.Auth
             }
         }
 
-        
+
         public async Task<T> Get<T>(string url)
         {
             try
@@ -203,7 +203,7 @@ namespace VideoCreator.Auth
             try
             {
                 InitializeOrResetDbTransferControl();
-                
+
                 var result = await dbTransferCtrl.Create(url, payload);
                 T data = JsonConvert.DeserializeObject<T>(result);
                 return data;
@@ -342,6 +342,6 @@ namespace VideoCreator.Auth
             }
             return default;
         }
-        
+
     }
 }
