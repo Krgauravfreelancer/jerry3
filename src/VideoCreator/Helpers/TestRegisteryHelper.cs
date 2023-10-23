@@ -6,8 +6,8 @@ namespace VideoCreator.Helpers
     public static class TestRegisteryHelper
     {
         const string registryPath = @"SOFTWARE\CommercialBase";
-        const string registryUsernameKey = @"authuser";
-        const string registryPasswordKey = @"authpassword";
+        const string registryUsernameKey = @"reg2";
+        const string registryPasswordKey = @"reg1";
 
         public static void StoreUsernameAndPassword(string username, string password)
         {

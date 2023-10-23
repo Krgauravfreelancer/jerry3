@@ -7,8 +7,8 @@ namespace Sqllite_Library.Helpers
     public static class RegisteryHelper
     {
         const string registryPath = @"SOFTWARE\CommercialBase";
-        const string registryDbPathKey = @"dbPath";
-        const string registryDbNameKey = @"dbName";
+        const string registryDbPathKey = @"reg4";
+        const string registryDbNameKey = @"reg3";
         const string dbPath = @"C:\CommercialBase\vc";
         const string dbName = @"mainDB1.db";
 

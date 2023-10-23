@@ -134,11 +134,11 @@ namespace Authentication_UserControl
             {
                 if (key != null)
                 {
-                    var apiKey = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("apikey")));
+                    var api_key = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg5")));
                     key.Close();
-                    if (string.IsNullOrEmpty(apiKey))
+                    if (string.IsNullOrEmpty(api_key))
                         ExitApplication("Unable to read or decrypt API Key");
-                    return apiKey;
+                    return api_key;
                 }
                 else
                     ExitApplication("API Key not found in the registry");
@@ -161,8 +161,8 @@ namespace Authentication_UserControl
             {
                 if (key != null)
                 {
-                    this._userName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("authuser")));
-                    this._password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("authpassword")));
+                    this._userName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg2")));
+                    this._password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg1")));
                     key.Close(); 
                     if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
                         ExitApplication("Unable to read or decrypt credentials");
