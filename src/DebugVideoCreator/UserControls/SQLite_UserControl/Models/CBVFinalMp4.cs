@@ -12,6 +12,9 @@ namespace Sqllite_Library.Models
         public DateTime finalmp4_createdate { get; set; }
         public DateTime finalmp4_modifydate { get; set; }
         public bool finalmp4_isdeleted { get; set; }
+        public bool finalmp4_issynced { get; set; }
+        public Int64 finalmp4_serverid { get; set; }
+        public string finalmp4_syncerror { get; set; }
         public CBVFinalMp4()
         {
         }

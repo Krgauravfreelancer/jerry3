@@ -15,6 +15,9 @@ namespace Sqllite_Library.Models
         public DateTime project_createdate { get; set; }
         public DateTime project_modifydate { get; set; }
         public bool project_isdeleted { get; set; }
+        public bool project_issynced { get; set; }
+        public Int64 project_serverid { get; set; }
+        public string project_syncerror { get; set; }
         public bool project_started { get; set; } // computed column, based upon  If we have any rows in Video events table for this project, then "Project Started" will be "Yes". If we have a project with no video events dependent rows, then "Project Started" will be "No".
         public int project_videoeventcount { get; set; }
         public bool project_downloaded { get; set; } // computed column, based upon  If we have any rows in finalmp4 table for this project, then "Project Downloaded" will be "Yes". If we have a project with no video events dependent rows, then "Project Downloaded" will be "No".

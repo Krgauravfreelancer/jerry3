@@ -242,8 +242,7 @@ namespace Sqllite_Library.Data
         private static void CreateVideoSegmentTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_videosegment' (
-                'videosegment_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
-                'fk_videosegment_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
+                'videosegment_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY REFERENCES 'cbv_videoevent' ('videoevent_id'),
                 'videosegment_media' BLOB NOT NULL DEFAULT NULL,
                 'videosegment_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videosegment_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
@@ -1656,7 +1655,6 @@ namespace Sqllite_Library.Data
                         var obj = new CBVVideoSegment
                         {
                             videosegment_id = Convert.ToInt32(sqlReader["videosegment_id"]),
-                            fk_videosegment_videoevent = Convert.ToInt32(sqlReader["fk_videosegment_videoevent"]),
                             videosegment_createdate = Convert.ToDateTime(sqlReader["videosegment_createdate"]),
                             videosegment_modifydate = Convert.ToDateTime(sqlReader["videosegment_modifydate"]),
                             videosegment_isdeleted = Convert.ToBoolean(sqlReader["videosegment_isdeleted"]),

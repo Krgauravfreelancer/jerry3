@@ -12,6 +12,9 @@ namespace Sqllite_Library.Models
         public DateTime design_createdate { get; set; }
         public DateTime design_modifydate { get; set; }
         public bool design_isdeleted { get; set; }
+        public bool design_issynced { get; set; }
+        public Int64 design_serverid { get; set; }
+        public string design_syncerror { get; set; }
 
         public CBVDesign()
         {

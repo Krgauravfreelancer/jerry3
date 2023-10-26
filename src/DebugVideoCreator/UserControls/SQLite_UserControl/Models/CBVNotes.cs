@@ -14,6 +14,9 @@ namespace Sqllite_Library.Models
         public DateTime notes_createdate { get; set; }
         public DateTime notes_modifydate { get; set; }
         public bool notes_isdeleted { get; set; }
+        public bool notes_issynced { get; set; }
+        public Int64 notes_serverid { get; set; }
+        public string notes_syncerror { get; set; }
         public CBVNotes()
         {
         }
