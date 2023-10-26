@@ -505,13 +505,19 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+                var issynced = Convert.ToInt16(dr["project_issynced"]);
+                var serverid = Convert.ToInt64(dr["project_serverid"]);
+                var syncerror = Convert.ToString(dr["project_syncerror"])?.Substring(0, 50) ?? "";
+
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', 0)");
+                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
+                    $" '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, project_isdeleted) 
+                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, 
+                        project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -519,8 +525,8 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
+        
         #region == Video Event and Depenedent Tables ==
-
 
         private static string GetNextStart(int fk_videoevent_media)
         {
@@ -585,14 +591,20 @@ namespace Sqllite_Library.Data
             var start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]));
             var end = CalcNextEnd(start, Convert.ToInt32(dr["videoevent_duration"]));
 
+            var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
+            var serverid = Convert.ToInt64(dr["videoevent_serverid"]);
+            var syncerror = Convert.ToString(dr["videoevent_syncerror"])?.Substring(0, 50) ?? "";
+
+
             values.Add($"({dr["fk_videoevent_project"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0)");
+                $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
            
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO cbv_videoevent 
                     (fk_videoevent_project, fk_videoevent_media, videoevent_track, 
-                        videoevent_start, videoevent_duration, videoevent_end, videoevent_createdate, videoevent_modifydate, videoevent_isdeleted) 
+                        videoevent_start, videoevent_duration, videoevent_end, videoevent_createdate, videoevent_modifydate, 
+                        videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -613,13 +625,18 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_videosegment_videoevent"]}, @blob, '{createDate}', '{modifyDate}', 0)");
+                var issynced = Convert.ToInt16(dr["videosegment_issynced"]);
+                var serverid = Convert.ToInt64(dr["videosegment_serverid"]);
+                var syncerror = Convert.ToString(dr["videosegment_syncerror"])?.Substring(0, 50) ?? "";
+
+                values.Add($"({dr["fk_videosegment_videoevent"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_videosegment 
-                    (fk_videosegment_videoevent, videosegment_media, videosegment_createdate, videosegment_modifydate, videosegment_isdeleted) 
+                    (fk_videosegment_videoevent, videosegment_media, videosegment_createdate, videosegment_modifydate, 
+                            videosegment_isdeleted, videosegment_issynced, videosegment_serverid, videosegment_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -669,13 +686,19 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}', 0)");
+                var issynced = Convert.ToInt16(dr["design_issynced"]);
+                var serverid = Convert.ToInt64(dr["design_serverid"]);
+                var syncerror = Convert.ToString(dr["design_syncerror"])?.Substring(0, 50) ?? "";
+
+                values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}'" +
+                            $", 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_design 
-                    (fk_design_videoevent, fk_design_background, fk_design_screen, design_xml, design_createdate, design_modifydate, design_isdeleted) 
+                    (fk_design_videoevent, fk_design_background, fk_design_screen, design_xml, design_createdate, design_modifydate, 
+                        design_isdeleted, design_issynced, design_serverid, design_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -698,13 +721,20 @@ namespace Sqllite_Library.Data
                 var modifyDate = Convert.ToString(dr["notes_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var issynced = Convert.ToInt16(dr["notes_issynced"]);
+                var serverid = Convert.ToInt64(dr["notes_serverid"]);
+                var syncerror = Convert.ToString(dr["notes_syncerror"])?.Substring(0, 50) ?? "";
+
                 var values = new List<string>();
-                values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', {dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0)");
+                values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
+                         $"{dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
                     $@"INSERT INTO cbv_notes 
-                    (fk_notes_videoevent, notes_line, notes_wordcount, notes_index, notes_start, notes_duration, notes_createdate, notes_modifydate, notes_isdeleted) 
+                    (fk_notes_videoevent, notes_line, notes_wordcount, notes_index, notes_start, notes_duration, notes_createdate, notes_modifydate, 
+                        notes_isdeleted, notes_issynced, notes_serverid, notes_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -763,12 +793,18 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', 0)");
+                var issynced = Convert.ToInt16(dr["finalmp4_issynced"]);
+                var serverid = Convert.ToInt64(dr["finalmp4_serverid"]);
+                var syncerror = Convert.ToString(dr["finalmp4_syncerror"])?.Substring(0, 50) ?? "";
+
+                values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', " +
+                    $"0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
                     $@"INSERT INTO cbv_finalmp4 
-                    (fk_finalmp4_project, finalmp4_version, finalmp4_comments, finalmp4_media, finalmp4_createdate, finalmp4_modifydate, finalmp4_isdeleted) 
+                    (fk_finalmp4_project, finalmp4_version, finalmp4_comments, finalmp4_media, finalmp4_createdate, finalmp4_modifydate, 
+                        finalmp4_isdeleted, finalmp4_issynced, finalmp4_serverid, finalmp4_syncerror) 
                 VALUES 
                     {valuesString}";
 
