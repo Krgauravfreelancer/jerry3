@@ -211,6 +211,9 @@ namespace Sqllite_Library.Data
                     'project_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                     'project_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                     'project_isdeleted' INTEGER(1) NOT NULL DEFAULT 0,
+                    'project_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                    'project_serverid' INTEGER NOT NULL  DEFAULT 1,
+                    'project_syncerror' TEXT(50) DEFAULT NULL,
                     UNIQUE (project_name, project_version)
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
@@ -228,7 +231,10 @@ namespace Sqllite_Library.Data
                 'videoevent_end' TEXT(8) NOT NULL DEFAULT '00:00:00',
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'videoevent_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
+                'videoevent_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
+                'videoevent_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                'videoevent_serverid' INTEGER NOT NULL  DEFAULT 1,
+                'videoevent_syncerror' TEXT(50) DEFAULT NULL
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -241,7 +247,10 @@ namespace Sqllite_Library.Data
                 'videosegment_media' BLOB NOT NULL DEFAULT NULL,
                 'videosegment_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videosegment_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'videosegment_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
+                'videosegment_isdeleted' INTEGER(1) NOT NULL DEFAULT 0,
+                'videosegment_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                'videosegment_serverid' INTEGER NOT NULL  DEFAULT 1,
+                'videosegment_syncerror' TEXT(50) DEFAULT NULL
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -273,7 +282,10 @@ namespace Sqllite_Library.Data
                 'notes_duration' INTEGER NOT NULL DEFAULT 1,
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'notes_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
+                'notes_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
+                'notes_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                'notes_serverid' INTEGER NOT NULL  DEFAULT 1,
+                'notes_syncerror' TEXT(50) DEFAULT NULL
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -310,7 +322,10 @@ namespace Sqllite_Library.Data
                 'design_xml' TEXT(255) NOT NULL  DEFAULT 'NULL',
                 'design_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'design_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
-                'design_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0
+                'design_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
+                'design_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                'design_serverid' INTEGER NOT NULL  DEFAULT 1,
+                'design_syncerror' TEXT(50) DEFAULT NULL
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -326,6 +341,9 @@ namespace Sqllite_Library.Data
                 'finalmp4_createdate' TEXT(25) NOT NULL  DEFAULT '1999-01-01 00:00:00',
                 'finalmp4_modifydate' TEXT(25) NOT NULL  DEFAULT '1999-01-01 00:00:00',
                 'finalmp4_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
+                'finalmp4_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                'finalmp4_serverid' INTEGER NOT NULL  DEFAULT 1,
+                'finalmp4_syncerror' TEXT(50) DEFAULT NULL,
                 UNIQUE (fk_finalmp4_project, finalmp4_version)
                 );;";
             CreateTableHelper(sqlQueryString, sqlCon);
