@@ -227,12 +227,11 @@ namespace VideoCreator.Auth
             return default;
         }
 
-        public async Task<T> Create<T>(string url, MultipartFormDataContent payload)
+        public async Task<T> CreateWithMultipart<T>(string url, MultipartFormDataContent payload)
         {
             try
             {
                 InitializeOrResetDbTransferControl();
-
                 var result = await dbTransferCtrl.CreateWithFile(url, payload);
                 var data = JsonConvert.DeserializeObject<T>(result);
                 return data;

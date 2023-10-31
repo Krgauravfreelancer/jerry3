@@ -37,7 +37,7 @@ namespace VideoCreator.XAML
                 await SyncApp();
                 await SyncMedia();
                 await SyncScreens();
-                await SyncCompany();
+                // await SyncCompany();
                 await SyncBackground();
 
                 await PopulateProjects();
@@ -176,6 +176,7 @@ namespace VideoCreator.XAML
                 return;
             }
             int selectedProjectId;
+            Int64 selectedServerProjectId;
             if ((bool)rbPending.IsChecked)
             {
                 MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -187,7 +188,10 @@ namespace VideoCreator.XAML
                 return;
             }
             else if ((bool)rbWIP.IsChecked)
+            {
                 selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
+            }
             else
             {
                 MessageBox.Show("Please select a project from WIP to continue", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -195,7 +199,7 @@ namespace VideoCreator.XAML
             }
             //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, authApiViewModel);
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
 
             var window = new Window
             {

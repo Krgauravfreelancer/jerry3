@@ -628,13 +628,13 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["videosegment_serverid"]);
                 var syncerror = Convert.ToString(dr["videosegment_syncerror"])?.Substring(0, 50) ?? "";
 
-                values.Add($"({dr["fk_videosegment_videoevent"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                values.Add($"({dr["videosegment_id"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
 
             string sqlQueryString =
                 $@"INSERT INTO cbv_videosegment 
-                    (fk_videosegment_videoevent, videosegment_media, videosegment_createdate, videosegment_modifydate, 
+                    (videosegment_id, videosegment_media, videosegment_createdate, videosegment_modifydate, 
                             videosegment_isdeleted, videosegment_issynced, videosegment_serverid, videosegment_syncerror) 
                 VALUES 
                     {valuesString}";
@@ -1349,7 +1349,11 @@ namespace Sqllite_Library.Data
                             fk_project_background = Convert.ToInt32(sqlReader["fk_project_background"]),
                             project_createdate = Convert.ToDateTime(sqlReader["project_createdate"]),
                             project_modifydate = Convert.ToDateTime(sqlReader["project_modifydate"]),
-                            project_isdeleted = Convert.ToBoolean(sqlReader["project_isdeleted"])
+                            project_isdeleted = Convert.ToBoolean(sqlReader["project_isdeleted"]),
+                            project_issynced = Convert.ToBoolean(sqlReader["project_issynced"]),
+                            project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
+                            project_syncerror = Convert.ToString(sqlReader["project_syncerror"])
+
                         };
                         if (startedFlag)
                         {
@@ -1437,11 +1441,11 @@ namespace Sqllite_Library.Data
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
-            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date FROM cbv_project ";
+            string sqlQueryString = "SELECT project_id, project_serverid, project_name, project_version, project_date FROM cbv_project ";
 
             if (wipFlag)
                 sqlQueryString = $@"
-                    SELECT P.project_id, P.project_name, P.project_version, P.project_date,
+                    SELECT P.project_id, project_serverid, P.project_name, P.project_version, P.project_date, 
                             CASE 
 			                    When VECount.VideoEventCount is NULL Then 0
 			                    When VECount.VideoEventCount = 0 Then 0
@@ -1478,6 +1482,7 @@ namespace Sqllite_Library.Data
                         var project = new CBVWIPOrArchivedProjectList
                         {
                             project_id = Convert.ToInt32(sqlReader["project_id"]),
+                            project_serverid = Convert.ToInt32(sqlReader["project_serverid"]),
                             project_name = Convert.ToString(sqlReader["project_name"]),
                             project_version = Convert.ToInt32(sqlReader["project_version"]),
                             project_date = Convert.ToDateTime(sqlReader["project_date"]),
@@ -1541,7 +1546,10 @@ namespace Sqllite_Library.Data
                             videoevent_end = sqlReader.GetString(6),
                             videoevent_createdate = sqlReader.GetDateTime(7),
                             videoevent_modifydate = sqlReader.GetDateTime(8),
-                            videoevent_isdeleted = sqlReader.GetBoolean(9)
+                            videoevent_isdeleted = sqlReader.GetBoolean(9),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
                         };
                         if (dependentDataFlag)
                         {
@@ -1658,6 +1666,9 @@ namespace Sqllite_Library.Data
                             videosegment_createdate = Convert.ToDateTime(sqlReader["videosegment_createdate"]),
                             videosegment_modifydate = Convert.ToDateTime(sqlReader["videosegment_modifydate"]),
                             videosegment_isdeleted = Convert.ToBoolean(sqlReader["videosegment_isdeleted"]),
+                            videosegment_issynced = Convert.ToBoolean(sqlReader["videosegment_issynced"]),
+                            videosegment_serverid = Convert.ToInt64(sqlReader["videosegment_serverid"]),
+                            videosegment_syncerror = Convert.ToString(sqlReader["videosegment_syncerror"])
                         };
                         var byteData = GetBlobMedia(sqlReader, "videosegment_media");
                         obj.videosegment_media = byteData;
@@ -1712,6 +1723,9 @@ namespace Sqllite_Library.Data
                             design_createdate = Convert.ToDateTime(sqlReader["design_createdate"]),
                             design_modifydate = Convert.ToDateTime(sqlReader["design_modifydate"]),
                             design_isdeleted = Convert.ToBoolean(sqlReader["design_isdeleted"]),
+                            design_issynced = Convert.ToBoolean(sqlReader["design_issynced"]),
+                            design_serverid = Convert.ToInt64(sqlReader["design_serverid"]),
+                            design_syncerror = Convert.ToString(sqlReader["design_syncerror"])
                         };
                         data.Add(obj);
                     }
@@ -1765,7 +1779,10 @@ namespace Sqllite_Library.Data
                             notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
-                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"])
+                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"]),
+                            notes_issynced = Convert.ToBoolean(sqlReader["notes_issynced"]),
+                            notes_serverid = Convert.ToInt64(sqlReader["notes_serverid"]),
+                            notes_syncerror = Convert.ToString(sqlReader["notes_syncerror"])
                         };
                         data.Add(obj);
                     }
@@ -1819,7 +1836,10 @@ namespace Sqllite_Library.Data
                             notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
-                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"])
+                            notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"]),
+                            notes_issynced = Convert.ToBoolean(sqlReader["notes_issynced"]),
+                            notes_serverid = Convert.ToInt64(sqlReader["notes_serverid"]),
+                            notes_syncerror = Convert.ToString(sqlReader["notes_syncerror"])
                         };
                         data.Add(obj);
                     }
@@ -1921,7 +1941,10 @@ namespace Sqllite_Library.Data
                             finalmp4_createdate = Convert.ToDateTime(sqlReader["finalmp4_createdate"]),
                             finalmp4_modifydate = Convert.ToDateTime(sqlReader["finalmp4_modifydate"]),
                             finalmp4_isdeleted = Convert.ToBoolean(sqlReader["finalmp4_isdeleted"]),
-                            finalmp4_media = GetBlobMedia(sqlReader, "finalmp4_media")
+                            finalmp4_media = GetBlobMedia(sqlReader, "finalmp4_media"),
+                            finalmp4_issynced = Convert.ToBoolean(sqlReader["finalmp4_issynced"]),
+                            finalmp4_serverid = Convert.ToInt64(sqlReader["finalmp4_serverid"]),
+                            finalmp4_syncerror = Convert.ToString(sqlReader["finalmp4_syncerror"])
                         };
 
                         if (dependentDataFlag)
@@ -2226,6 +2249,9 @@ namespace Sqllite_Library.Data
                                             fk_project_background = {Convert.ToInt32(dr["fk_project_background"])},
                                             project_date = '{Convert.ToString(dr["project_date"])}',
                                             project_archived = {Convert.ToInt32(dr["project_archived"])},
+                                            project_issynced = {Convert.ToBoolean(dr["project_issynced"])},
+                                            project_serverid = {Convert.ToInt64(dr["project_serverid"])},
+                                            project_syncerror = {Convert.ToString(dr["project_syncerror"])}
                                             project_modifydate = '{modifyDate}'
                                         WHERE 
                                             project_id = {project_id}";
@@ -2250,6 +2276,9 @@ namespace Sqllite_Library.Data
                                             videoevent_track = {Convert.ToInt32(dr["videoevent_track"])},
                                             videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
                                             videoevent_duration = {Convert.ToInt32(dr["videoevent_duration"])},
+                                            videoevent_issynced = {Convert.ToBoolean(dr["videoevent_issynced"])},
+                                            videoevent_serverid = {Convert.ToInt64(dr["videoevent_serverid"])},
+                                            videoevent_syncerror = {Convert.ToString(dr["videoevent_syncerror"])},
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
                                             videoevent_id = {videoevent_id}";
@@ -2269,7 +2298,6 @@ namespace Sqllite_Library.Data
                 var videosegment_id = Convert.ToInt32(dr["videosegment_id"]);
                 var updateQueryString = $@" UPDATE cbv_videosegment 
                                         SET 
-                                            fk_videosegment_videoevent = {Convert.ToInt32(dr["fk_videosegment_videoevent"])},
                                             videosegment_media = @blob,
                                             videosegment_modifydate = '{modifyDate}'
                                         WHERE 
@@ -2316,6 +2344,9 @@ namespace Sqllite_Library.Data
                                             fk_design_background = {Convert.ToInt32(dr["fk_design_background"])},
                                             fk_design_screen = {Convert.ToInt32(dr["fk_design_screen"])},
                                             design_xml = '{Convert.ToString(dr["design_xml"])}',
+                                            design_issynced = {Convert.ToBoolean(dr["design_issynced"])},
+                                            design_serverid = {Convert.ToInt64(dr["design_serverid"])},
+                                            design_syncerror = {Convert.ToString(dr["design_syncerror"])},
                                             design_modifydate = '{modifyDate}'
                                         WHERE 
                                             design_id = {design_id}";
@@ -2340,6 +2371,9 @@ namespace Sqllite_Library.Data
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
                                             notes_start = '{Convert.ToString(dr["notes_start"])}',
                                             notes_duration = {Convert.ToInt32(dr["notes_duration"])},
+                                            notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
+                                            notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
+                                            notes_syncerror = {Convert.ToString(dr["notes_syncerror"])},
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
@@ -2384,6 +2418,9 @@ namespace Sqllite_Library.Data
                                             finalmp4_version = {Convert.ToInt32(dr["finalmp4_version"])},
                                             finalmp4_comments = '{Convert.ToString(dr["finalmp4_comments"])}',
                                             finalmp4_media = @blob,
+                                            finalmp4_issynced = {Convert.ToBoolean(dr["finalmp4_issynced"])},
+                                            finalmp4_serverid = {Convert.ToInt64(dr["finalmp4_serverid"])},
+                                            finalmp4_syncerror = {Convert.ToString(dr["finalmp4_syncerror"])},
                                             finalmp4_modifydate = '{modifyDate}'
                                         WHERE 
                                             finalmp4_id = {finalmp4_id}";
@@ -2642,13 +2679,22 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+                var issynced = Convert.ToInt16(dr["project_issynced"]);
+                var serverid = Convert.ToInt64(dr["project_serverid"]);
+
+                var syncErrorString = Convert.ToString(dr["project_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"({dr["project_id"]}, '{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', 0)");
+                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', " +
+                    $"{projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
+                    $" 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_id, project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, project_isdeleted) 
+                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, 
+                        project_createdate, project_modifydate, project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
 

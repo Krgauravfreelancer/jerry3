@@ -430,7 +430,7 @@ namespace VideoCreator.Auth
 
         public async Task<VideoEventModel> POSTVideoEvent(VideoEventModel videoEventModel)
         {
-            var url = $"api/connect/project/{videoEventModel.fk_videoevent_project}/videoevent-create";
+            var url = $"api/connect/project/{videoEventModel.videoevent_serverid}/videoevent-create";
 
             var multipart = new MultipartFormDataContent();
             // FK
@@ -449,6 +449,10 @@ namespace VideoCreator.Auth
             var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration.ToString());
             requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
             multipart.Add(requestbodyContent_duration);
+            // LOC DATE
+            var requestbodyContent_LOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
+            requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
+            multipart.Add(requestbodyContent_LOCDATE);
 
             // notes
             if (videoEventModel.notes?.Count > 0)
@@ -491,7 +495,7 @@ namespace VideoCreator.Auth
                 multipart.Add(fileStreamContent);
             }
 
-            var result = await _apiClientHelper.Create<ParentData<VideoEventModel>>(url, multipart);
+            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoEventModel>>(url, multipart);
             if (result?.Status == "success")
                 MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
             if (pathWithFilename?.Length > 0)

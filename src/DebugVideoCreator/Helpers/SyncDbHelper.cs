@@ -156,7 +156,7 @@ namespace VideoCreator.Helpers
 
                 var currentDirectory = Directory.GetCurrentDirectory();
 
-                foreach(var item in data)
+                foreach (var item in data)
                 {
                     var row = dataTable.NewRow();
                     row["background_id"] = item.backgrounds_id;
@@ -169,7 +169,7 @@ namespace VideoCreator.Helpers
                     dataTable.Rows.Add(row);
                 }
                 DataManagerSqlLite.UpsertRowsToBackground(dataTable);
-                
+
             }
             catch (Exception ex)
             {
@@ -193,9 +193,12 @@ namespace VideoCreator.Helpers
                 dataTable.Columns.Add("project_archived", typeof(bool));
                 dataTable.Columns.Add("fk_project_background", typeof(int));
                 dataTable.Columns.Add("project_date", typeof(string));
-                
+                dataTable.Columns.Add("project_issynced", typeof(bool));
+                dataTable.Columns.Add("project_serverid", typeof(Int64));
+                dataTable.Columns.Add("project_syncerror", typeof(string));
+
                 var row = dataTable.NewRow();
-                row["project_id"] = data.project_id;
+                row["project_id"] = -1;
                 row["project_name"] = data.project_name;
                 row["project_version"] = data.project_version;
                 row["project_uploaded"] = false;
@@ -204,6 +207,10 @@ namespace VideoCreator.Helpers
                 row["project_createdate"] = data.project_createdate;
                 row["project_modifydate"] = data.project_modifydate;
                 row["project_date"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                row["project_issynced"] = true;
+                row["project_serverid"] = data.project_id;
+                row["project_syncerror"] = "";
 
                 dataTable.Rows.Add(row);
                 var insertedId = DataManagerSqlLite.UpsertRowsToProject(dataTable);
@@ -219,7 +226,7 @@ namespace VideoCreator.Helpers
 
         }
 
-        
+
 
 
 
@@ -304,7 +311,7 @@ namespace VideoCreator.Helpers
                     row["project_name"] = $"Sample Project - {i}";
                     row["project_version"] = i;
                     row["project_uploaded"] = false;
-                    row["project_archived"] = i%2 == 0;
+                    row["project_archived"] = i % 2 == 0;
                     row["fk_project_background"] = 1;
                     row["project_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     row["project_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -457,7 +464,7 @@ namespace VideoCreator.Helpers
                     row["locaudio_media"] = mp3Byte;
                 }
                 dataTable.Rows.Add(row);
-               
+
 
                 var insertedIds = DataManagerSqlLite.InsertRowsToLocAudio(dataTable);
                 if (insertedIds.Count > 0)

@@ -13,7 +13,7 @@
             </MenuItem>
             <Separator></Separator>
             <MenuItem Header="Add Audio Event to Selected Timeline" Click="AddAudioEvent_Click" IsEnabled="False"/>
-            <MenuItem Header="Add Form Event to Selected Timeline" IsEnabled="False"/>
+            <MenuItem Header="Add Form Event to Selected Timeline" Click="ContextMenuAddFormEventDataClickEvent" />
             <MenuItem Header="Add Video Event to Selected Timeline" Click="AddVideoEvent_Click" />
             <Separator></Separator>
             <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>

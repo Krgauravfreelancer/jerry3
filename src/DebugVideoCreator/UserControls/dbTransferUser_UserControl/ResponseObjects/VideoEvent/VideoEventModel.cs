@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
@@ -11,6 +12,13 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }
         public int videoevent_duration { get; set; }
+        public string videoevent_modifylocdate { get; set; }
+
+
+        public bool videoevent_isdeleted { get; set; }
+        public bool videoevent_issynced { get; set; }
+        public Int64 videoevent_serverid { get; set; }
+        public string videoevent_syncerror { get; set; }
 
         public List<NotesModelPost> notes { get; set; }
         public List<DesignModelPost> design { get; set; }
