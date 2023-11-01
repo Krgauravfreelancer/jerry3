@@ -42,7 +42,7 @@ namespace Notes_UserControl
         {
             selectedproject_id = project_id;
             selectedVideoEventId = videoEvent_id;
-            HandleVideoEventSelectionChanged();
+            //HandleVideoEventSelectionChanged();
         }
 
         private void HandleVideoEventSelectionChanged()

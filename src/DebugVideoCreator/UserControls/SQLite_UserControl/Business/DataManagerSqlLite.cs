@@ -352,6 +352,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetVideoEvents(projectId, dependentDataFlag);
         }
 
+        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false)
+        {
+            return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag);
+        }
+
         public static int GetVideoEventsCount()
         {
             return SqlLiteData.GetCount("cbv_videoevent");

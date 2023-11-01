@@ -284,7 +284,7 @@ namespace VideoCreator.Auth
             return default;
         }
 
-        public async Task<T> Update<T>(string url, MultipartFormDataContent payload)
+        public async Task<T> UpdateWithMultipart<T>(string url, MultipartFormDataContent payload)
         {
             try
             {

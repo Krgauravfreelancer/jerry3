@@ -506,7 +506,9 @@ namespace Sqllite_Library.Data
 
                 var issynced = Convert.ToInt16(dr["project_issynced"]);
                 var serverid = Convert.ToInt64(dr["project_serverid"]);
-                var syncerror = Convert.ToString(dr["project_syncerror"])?.Substring(0, 50) ?? "";
+
+                var syncErrorString = Convert.ToString(dr["project_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
                 values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
@@ -592,8 +594,9 @@ namespace Sqllite_Library.Data
 
             var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
             var serverid = Convert.ToInt64(dr["videoevent_serverid"]);
-            var syncerror = Convert.ToString(dr["videoevent_syncerror"])?.Substring(0, 50) ?? "";
 
+            var syncErrorString = Convert.ToString(dr["videoevent_syncerror"]);
+            var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
             values.Add($"({dr["fk_videoevent_project"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
                 $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
@@ -626,8 +629,9 @@ namespace Sqllite_Library.Data
 
                 var issynced = Convert.ToInt16(dr["videosegment_issynced"]);
                 var serverid = Convert.ToInt64(dr["videosegment_serverid"]);
-                var syncerror = Convert.ToString(dr["videosegment_syncerror"])?.Substring(0, 50) ?? "";
-
+                var syncErrorString = Convert.ToString(dr["videosegment_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                
                 values.Add($"({dr["videosegment_id"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
@@ -687,8 +691,9 @@ namespace Sqllite_Library.Data
 
                 var issynced = Convert.ToInt16(dr["design_issynced"]);
                 var serverid = Convert.ToInt64(dr["design_serverid"]);
-                var syncerror = Convert.ToString(dr["design_syncerror"])?.Substring(0, 50) ?? "";
-
+                var syncErrorString = Convert.ToString(dr["design_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+               
                 values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}'" +
                             $", 0, {issynced}, {serverid}, '{syncerror}')");
             }
@@ -723,8 +728,9 @@ namespace Sqllite_Library.Data
 
                 var issynced = Convert.ToInt16(dr["notes_issynced"]);
                 var serverid = Convert.ToInt64(dr["notes_serverid"]);
-                var syncerror = Convert.ToString(dr["notes_syncerror"])?.Substring(0, 50) ?? "";
-
+                var syncErrorString = Convert.ToString(dr["notes_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                
                 var values = new List<string>();
                 values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
                          $"{dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
@@ -794,8 +800,9 @@ namespace Sqllite_Library.Data
 
                 var issynced = Convert.ToInt16(dr["finalmp4_issynced"]);
                 var serverid = Convert.ToInt64(dr["finalmp4_serverid"]);
-                var syncerror = Convert.ToString(dr["finalmp4_syncerror"])?.Substring(0, 50) ?? "";
-
+                var syncErrorString = Convert.ToString(dr["finalmp4_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                
                 values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', " +
                     $"0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
@@ -1510,7 +1517,78 @@ namespace Sqllite_Library.Data
 
             return projects;
         }
+        
 
+        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false)
+        {
+            var data = new List<CBVVideoEvent>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where videoevent_id = {videoeventId}";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVideoEvent
+                        {
+                            videoevent_id = sqlReader.GetInt32(0),
+                            fk_videoevent_project = sqlReader.GetInt32(1),
+                            fk_videoevent_media = sqlReader.GetInt32(2),
+                            videoevent_track = sqlReader.GetInt32(3),
+                            videoevent_start = sqlReader.GetString(4),
+                            videoevent_duration = sqlReader.GetInt32(5),
+                            videoevent_end = sqlReader.GetString(6),
+                            videoevent_createdate = sqlReader.GetDateTime(7),
+                            videoevent_modifydate = sqlReader.GetDateTime(8),
+                            videoevent_isdeleted = sqlReader.GetBoolean(9),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
+                        };
+                        if (dependentDataFlag)
+                        {
+                            var videoEventId = sqlReader.GetInt32(0);
+
+                            //var audioData = GetAudio(videoEventId);
+                            //obj.audio_data = audioData;
+
+                            var videoSegmentData = GetVideoSegment(videoEventId);
+                            obj.videosegment_data = videoSegmentData;
+
+                            var designData = GetDesign(videoEventId);
+                            obj.design_data = designData;
+
+                            var notesData = GetNotes(videoEventId);
+                            obj.notes_data = notesData;
+                        }
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+
+            return data;
+        }
         public static List<CBVVideoEvent> GetVideoEvents(int projectId, bool dependentDataFlag = false)
         {
             var data = new List<CBVVideoEvent>();
@@ -1645,7 +1723,7 @@ namespace Sqllite_Library.Data
 
             string sqlQueryString = $@"SELECT * FROM cbv_videosegment where videosegment_isdeleted = 0";
             if (videoEventId > -1)
-                sqlQueryString += $@" and fk_videosegment_videoevent = {videoEventId};";
+                sqlQueryString += $@" and videosegment_id = {videoEventId};";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -2503,7 +2581,7 @@ namespace Sqllite_Library.Data
                                         Set 
                                            videosegment_isdeleted = 1
                                         WHERE 
-                                            fk_videosegment_videoevent = {videoeventId};
+                                            videosegment_id = {videoeventId};
 
                                         update cbv_locaudio
                                         Set 

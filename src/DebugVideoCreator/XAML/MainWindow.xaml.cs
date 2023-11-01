@@ -37,10 +37,12 @@ namespace VideoCreator.XAML
                 await SyncApp();
                 await SyncMedia();
                 await SyncScreens();
-                // await SyncCompany();
+                await SyncCompany();
                 await SyncBackground();
 
-                await PopulateProjects();
+                rbWIP.IsChecked = true;
+                rbWIP_Click(sender, e);
+                //await PopulateProjects();
             }
             catch (Exception ex)
             {
