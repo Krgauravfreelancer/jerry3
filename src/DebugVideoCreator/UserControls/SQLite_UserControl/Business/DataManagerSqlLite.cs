@@ -102,11 +102,21 @@ namespace Sqllite_Library.Business
                         dtVideoSegment.Columns.Add("videosegment_createdate", typeof(string));
                         dtVideoSegment.Columns.Add("videosegment_modifydate", typeof(string));
 
+                        dtVideoSegment.Columns.Add("videosegment_isdeleted", typeof(bool));
+                        dtVideoSegment.Columns.Add("videosegment_issynced", typeof(bool));
+                        dtVideoSegment.Columns.Add("videosegment_serverid", typeof(Int64));
+                        dtVideoSegment.Columns.Add("videosegment_syncerror", typeof(string));
+
                         var rowVideoSegment = dtVideoSegment.NewRow();
-                        rowVideoSegment["videosegment_id"] = -1;
+                        rowVideoSegment["videosegment_id"] = insertedId;
                         rowVideoSegment["videosegment_media"] = rowMain["media"];
                         rowVideoSegment["videosegment_createdate"] = createDate;
                         rowVideoSegment["videosegment_modifydate"] = modifyDate;
+                        rowVideoSegment["videosegment_isdeleted"] = false;
+                        rowVideoSegment["videosegment_issynced"] = true;
+                        rowVideoSegment["videosegment_serverid"] = 1;
+                        rowVideoSegment["videosegment_syncerror"] = "";
+
                         dtVideoSegment.Rows.Add(rowVideoSegment);
 
                         var insertedVideoSegmentId = InsertRowsToVideoSegment(dtVideoSegment, insertedId);
@@ -147,6 +157,11 @@ namespace Sqllite_Library.Business
                         dtDesign.Columns.Add("design_createdate", typeof(string));
                         dtDesign.Columns.Add("design_modifydate", typeof(string));
 
+                        dtDesign.Columns.Add("design_isdeleted", typeof(bool));
+                        dtDesign.Columns.Add("design_issynced", typeof(bool));
+                        dtDesign.Columns.Add("design_serverid", typeof(Int64));
+                        dtDesign.Columns.Add("design_syncerror", typeof(string));
+
                         var rowDesign = dtDesign.NewRow();
                         rowDesign["design_id"] = -1;
                         rowDesign["fk_design_videoevent"] = insertedId;
@@ -154,6 +169,12 @@ namespace Sqllite_Library.Business
                         rowDesign["design_xml"] = rowMain["design_xml"].ToString();
                         rowDesign["design_createdate"] = createDate;
                         rowDesign["design_modifydate"] = modifyDate;
+
+                        rowDesign["design_isdeleted"] = false;
+                        rowDesign["design_issynced"] = true;
+                        rowDesign["design_serverid"] = 1;
+                        rowDesign["design_syncerror"] = "";
+
                         dtDesign.Rows.Add(rowDesign);
                         var insertedDesignId = InsertRowsToDesign(dtDesign);
                         if (insertedDesignId <= 0) throw new Exception("Error while inserting design table");
@@ -170,6 +191,11 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToVideoSegment(DataTable data, int fk_value)
         {
+            // For Johan
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
+            //if (!videoeventFlag)
+            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
+
             var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
             if (!videoeventFlag)
                 throw new Exception("videoevent_Id foreign key constraint not successful ");

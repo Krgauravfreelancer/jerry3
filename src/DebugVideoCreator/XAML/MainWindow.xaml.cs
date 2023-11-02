@@ -41,7 +41,6 @@ namespace VideoCreator.XAML
                 await SyncBackground();
 
                 rbWIP.IsChecked = true;
-                
                 InitialiseAndRefreshScreen();
                 //await PopulateProjects();
             }

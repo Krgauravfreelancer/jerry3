@@ -916,6 +916,16 @@ namespace VideoCreator.XAML
             return data;
         }
 
+        private void btnunlock_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnlock_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void ResetAudio()
         {
             AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);

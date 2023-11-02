@@ -91,6 +91,12 @@ namespace VideoCreator.XAML
                 dataTable.Columns.Add("videoevent_duration", typeof(int));
                 dataTable.Columns.Add("videoevent_createdate", typeof(string));
                 dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+
+                dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
+                dataTable.Columns.Add("videoevent_issynced", typeof(bool));
+                dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+                dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+
                 //optional column
                 dataTable.Columns.Add("media", typeof(byte[])); // Media Column
                 dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
@@ -122,6 +128,10 @@ namespace VideoCreator.XAML
                     row["fk_videoevent_media"] = mediaId;
                     row["fk_videoevent_screen"] = -1; // Not needed for this case
                     row["media"] = element.mediaData;
+                    row["videoevent_isdeleted"] = false;
+                    row["videoevent_issynced"] = true;
+                    row["videoevent_serverid"] = 1;
+                    row["videoevent_syncerror"] = "";
                     dataTable.Rows.Add(row);
                 }
                 Create_Event(dataTable);
