@@ -41,7 +41,7 @@ namespace VideoCreator.XAML
                 await SyncBackground();
 
                 rbWIP.IsChecked = true;
-                stackRadioButtons.Visibility = Visibility.Visible;
+                
                 InitialiseAndRefreshScreen();
                 //await PopulateProjects();
             }
@@ -56,6 +56,8 @@ namespace VideoCreator.XAML
 
         private void InitialiseAndRefreshScreen()
         {
+            lblLoading.Visibility = Visibility.Hidden;
+            stackRadioButtons.Visibility = Visibility.Visible;
             rbWIP_Click(null, null);
         }
 

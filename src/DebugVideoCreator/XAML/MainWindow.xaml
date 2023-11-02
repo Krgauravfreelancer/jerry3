@@ -12,6 +12,12 @@
     <Grid Margin="10,10,10,10">
         <Image Height="90" Source="/images/cbslogo_temp.jpg" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"></Image>
         <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
+
+
+        <Label x:Name="lblLoading" Content="Please wait.. Logging you in and doing initial setup.." HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC" VerticalAlignment="Center" Height="55"/>
+
+
+
         <StackPanel Orientation="Vertical" Margin="700,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="450">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="35" VerticalAlignment="Top">
                 <Button x:Name="btnLogin" Content="Login" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnLogin_Click" Height="25" Width="100" 
