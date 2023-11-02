@@ -429,9 +429,9 @@ namespace VideoCreator.Auth
         #region == Video Event ==
 
 
-        public async Task<VideoEventResponseModel> POSTVideoEvent(VideoEventModel videoEventModel)
+        public async Task<VideoEventResponseModel> POSTVideoEvent(Int64 selectedServerProjectId, VideoEventModel videoEventModel)
         {
-            var url = $"api/connect/project/{videoEventModel.videoevent_serverid}/videoevent-create";
+            var url = $"api/connect/project/{selectedServerProjectId}/videoevent-notes-design-videosegment";
 
             var multipart = new MultipartFormDataContent();
             // FK
@@ -497,8 +497,8 @@ namespace VideoCreator.Auth
             }
 
             var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoEventResponseModel>>(url, multipart);
-            if (result?.Status == "success")
-                MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+            //if (result?.Status == "success")
+            //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
             if (pathWithFilename?.Length > 0)
             {
 
@@ -508,6 +508,50 @@ namespace VideoCreator.Auth
             }
             return result.Data;
         }
+
+        public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
+        {
+            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-create";
+            var multipart = new MultipartFormDataContent();
+            string pathWithFilename = string.Empty;
+            StreamContent fileStreamContent = null;
+            FileStream fileReadStream = null;
+            if (blob?.Length > 0)
+            {
+                //File
+                var filename = $"{Guid.NewGuid()}";
+                if (MediaType == EnumMedia.VIDEO)
+                    filename = $"video_{filename}.mp4";
+                else if (MediaType == EnumMedia.IMAGE)
+                    filename = $"image_{filename}.png";
+                else if (MediaType == EnumMedia.FORM)
+                    filename = $"design_{filename}.png";
+
+                var currentDirectory = Directory.GetCurrentDirectory();
+                pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
+                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                file.Write(blob, 0, blob.Length);
+                file.Close();
+
+                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                fileStreamContent = new StreamContent(fileReadStream);
+                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                multipart.Add(fileStreamContent);
+            }
+
+            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
+            //if (result?.Status == "success")
+            //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "PostVideoSegment", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (pathWithFilename?.Length > 0)
+            {
+
+                fileReadStream?.Close();
+                fileStreamContent.Dispose();
+                File.Delete(pathWithFilename);
+            }
+            return result;
+        }
+
 
         public async Task<VideoEventResponseModel> PutVideoEvent(int projectId, VideoEventModel videoEventModel, byte[] blob = null)
         {
@@ -584,6 +628,7 @@ namespace VideoCreator.Auth
         }
 
 
+        
 
 
 

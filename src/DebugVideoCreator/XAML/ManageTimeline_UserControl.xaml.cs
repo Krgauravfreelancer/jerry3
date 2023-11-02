@@ -15,6 +15,7 @@ using AudioPlayer_UserControl;
 using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
 using VideoCreator.Auth;
 using System.Threading.Tasks;
+using NAudio.CoreAudioApi.Interfaces;
 
 namespace VideoCreator.XAML
 {
@@ -56,7 +57,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
-            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
@@ -86,7 +87,7 @@ namespace VideoCreator.XAML
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            NotesUserConrol.DisplayAllNotes();
+            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
         }
 
         private void NotesUserConrol_locAudioShowEvent(object sender, EventArgs e)
@@ -103,7 +104,7 @@ namespace VideoCreator.XAML
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            NotesUserConrol.DisplayAllNotes();
+            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
         }
 
         private void ResetAudioMenuOptions()
@@ -149,7 +150,7 @@ namespace VideoCreator.XAML
             RefreshOrLoadComboBoxes();
             TimelineUserConrol.LoadVideoEventsFromDb();
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
         }
 
         private List<DesignModelPost> GetDesignModelList(DataTable dtDesign)
@@ -172,10 +173,9 @@ namespace VideoCreator.XAML
             objToSync.videoevent_track = 1; // TBD
             objToSync.videoevent_start = "00:00:00"; // TBD
             objToSync.videoevent_duration = 10;
-            objToSync.videoevent_serverid = selectedServerProjectId;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
-            var result = await authApiViewModel.POSTVideoEvent(objToSync);
+            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
         }
 
@@ -192,35 +192,6 @@ namespace VideoCreator.XAML
                 data.Add(designModel);
             }
             return data;
-        }
-
-        private async Task<VideoEventResponseModel> PutVideoEventToServerForDesign_Step2(int videoeventId, byte[] blob)
-        {
-            var dataToSync = DataManagerSqlLite.GetVideoEventbyId(videoeventId, true);
-            var objToSync = new VideoEventModel();
-            if (dataToSync != null && dataToSync.Count > 0)
-            {
-                var item = dataToSync[0];
-
-                objToSync.fk_videoevent_media = item.fk_videoevent_media;
-                objToSync.videoevent_track = item.videoevent_track;
-                objToSync.videoevent_start = item.videoevent_start;
-                objToSync.videoevent_duration = item.videoevent_duration;
-                objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                objToSync.videoevent_serverid = item.videoevent_serverid;
-                objToSync.fk_videoevent_project = (int)selectedServerProjectId;
-                if (objToSync.fk_videoevent_media == (int)EnumMedia.FORM) //Id-4 1:1
-                {
-                    // We need to fill image and design children
-                    if (item.design_data?.Count > 0)
-                        objToSync.design.AddRange(GetDesignModelListForPut(videoeventId, item));
-                    if (item.notes_data?.Count > 0)
-                        objToSync.notes.AddRange(GetNotesModelList(item));
-                }
-                var result = await authApiViewModel.PutVideoEvent((int)objToSync.fk_videoevent_project, objToSync, blob);
-                return result;
-            }
-            return null;
         }
 
         private async void TimelineUserConrol_ContextMenu_AddForm_Clicked(object sender, EventArgs e)
@@ -256,8 +227,8 @@ namespace VideoCreator.XAML
                             var dtDesign = GetDesignDataTable(addedData.design, videoEventId);
                             DataManagerSqlLite.InsertRowsToDesign(dtDesign);
                             var totalRows = dtDesign.Rows.Count;
-                            MessageBox.Show($"{totalRows} form event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                            ContextMenuAddFormEventDataClickEvent_Step2(videoEventId);
+                            // MessageBox.Show($"{totalRows} form event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(videoEventId, addedData.videoevent.videoevent_id);
                         }
                         else
                         {
@@ -272,7 +243,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private async void ContextMenuAddFormEventDataClickEvent_Step2(int videoeventId)
+        private async void TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(int videoeventId, int videoevent_serverid)
         {
             var designImagerUserControl = new DesignImager_UserControl(videoeventId);
             var window = new Window
@@ -291,16 +262,21 @@ namespace VideoCreator.XAML
                 if (designImagerUserControl.UserConsent || MessageBox.Show("Do you want save all Image??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     // We need to insert the Data to server here and once it is success, then to local DB
-                    var addedData = await PutVideoEventToServerForDesign_Step2(videoeventId, designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[]);
-                    //var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(designImagerUserControl.dtVideoSegment);
-                    //if (insertedVideoSegmentId > 0)
-                    //{
-                    //    RefreshOrLoadComboBoxes();
-                    //    TimelineUserConrol.LoadVideoEventsFromDb();
-                    //    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                    //    NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-                    //    MessageBox.Show($"videosegment record for image added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    //}
+                    var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
+                    var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
+                    if(postResponse.Status == "error")
+                        MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    var dtVideoSegment = GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
+                    var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
+                    if (insertedVideoSegmentId > 0)
+                    {
+                        RefreshOrLoadComboBoxes();
+                        TimelineUserConrol.ClearTimeline();
+                        TimelineUserConrol.LoadVideoEventsFromDb();
+                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                        //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                        MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
                 }
                 else
                 {
@@ -376,6 +352,32 @@ namespace VideoCreator.XAML
             }
 
             return dt;
+        }
+
+        private DataTable GetVideoSegmentDataTableForDesign(byte[] blob, int videoeventId, VideoSegmentPostResponse postResponse)
+        {
+            var dtVideoEvent = new DataTable();
+            dtVideoEvent.Columns.Add("videosegment_id", typeof(int));
+            dtVideoEvent.Columns.Add("videosegment_media", typeof(byte[]));
+            dtVideoEvent.Columns.Add("videosegment_createdate", typeof(string));
+            dtVideoEvent.Columns.Add("videosegment_modifydate", typeof(string));
+            dtVideoEvent.Columns.Add("videosegment_isdeleted", typeof(bool));
+            dtVideoEvent.Columns.Add("videosegment_issynced", typeof(bool));
+            dtVideoEvent.Columns.Add("videosegment_serverid", typeof(Int64));
+            dtVideoEvent.Columns.Add("videosegment_syncerror", typeof(string));
+
+            var row = dtVideoEvent.NewRow();
+            row["videosegment_id"] = videoeventId;
+            row["videosegment_media"] = blob;
+            
+            row["videosegment_createdate"] = postResponse.VideoSegment.videosegment_createdate;
+            row["videosegment_modifydate"] = postResponse.VideoSegment.videosegment_modifydate;
+            row["videosegment_isdeleted"] = false;
+            row["videosegment_issynced"] = true;
+            row["videosegment_serverid"] = postResponse.VideoSegment.videosegment_id;
+            row["videosegment_syncerror"] = "";
+            dtVideoEvent.Rows.Add(row);
+            return dtVideoEvent;
         }
 
         //private DataTable GetVideoSegmentDataTableForDesign(DataTable dtVideoSegment)
@@ -832,7 +834,7 @@ namespace VideoCreator.XAML
             if (selectedVideoEvent != null)
             {
                 selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
-                NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
                 ResetAudio();
             }
         }
@@ -880,7 +882,7 @@ namespace VideoCreator.XAML
                     {
                         // TBD
                     }
-                    await authApiViewModel.POSTVideoEvent(objToSync);
+                    // await authApiViewModel.POSTVideoEvent(objToSync);
                     break;
                 }
             }

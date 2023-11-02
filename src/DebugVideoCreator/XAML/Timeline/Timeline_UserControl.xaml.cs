@@ -143,6 +143,11 @@ namespace VideoCreator.XAML
             _timelineGridControl.SetTimelineDatatable(dt);
         }
 
+        public void ClearTimeline()
+        {
+            _timelineGridControl.ClearTimeline();
+        }
+
         #endregion
 
         #region == TimelineUserControl : Helper functions ==

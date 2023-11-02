@@ -41,7 +41,8 @@ namespace VideoCreator.XAML
                 await SyncBackground();
 
                 rbWIP.IsChecked = true;
-                rbWIP_Click(sender, e);
+                stackRadioButtons.Visibility = Visibility.Visible;
+                InitialiseAndRefreshScreen();
                 //await PopulateProjects();
             }
             catch (Exception ex)
@@ -51,6 +52,16 @@ namespace VideoCreator.XAML
             }
             SetWelcomeMessage();
 
+        }
+
+        private void InitialiseAndRefreshScreen()
+        {
+            rbWIP_Click(null, null);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         private async Task SyncApp()
@@ -228,7 +239,7 @@ namespace VideoCreator.XAML
             }
             catch (Exception)
             { }
-
+            InitialiseAndRefreshScreen();
         }
 
         
@@ -375,5 +386,7 @@ namespace VideoCreator.XAML
         {
             Console.WriteLine("The dispose() function has been called and the resources have been released!");
         }
+
+        
     }
 }

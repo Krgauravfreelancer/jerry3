@@ -27,7 +27,7 @@ namespace Notes_UserControl
 
         #region == Public Functions ==
 
-        public void DisplayAllNotes()
+        public void DisplayAllNotesForSelectedVideoEvent()
         {
             var allNotes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
             stackPanelNotes.Children.Clear();
@@ -38,7 +38,7 @@ namespace Notes_UserControl
                 locAudioAddedEvent.Invoke(this, new EventArgs());
         }
 
-        public void SetSelectedProjectId(int project_id, int videoEvent_id = -1)
+        public void InitializeNotes(int project_id, int videoEvent_id = -1)
         {
             selectedproject_id = project_id;
             selectedVideoEventId = videoEvent_id;
@@ -67,7 +67,7 @@ namespace Notes_UserControl
                     {
                         //var dtable = GetNotesDataToView(selectedVideoEventId);
                         //notesReadCtrl.SetNotesList(dtable);
-                        DisplayAllNotes();
+                        DisplayAllNotesForSelectedVideoEvent();
                     }
                     //}
                 }
@@ -75,7 +75,7 @@ namespace Notes_UserControl
                 {
                     //var dtable = GetNotesDataToView(selectedVideoEventId);
                     //notesReadCtrl.SetNotesList(dtable);
-                    DisplayAllNotes();
+                    DisplayAllNotesForSelectedVideoEvent();
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Notes_UserControl
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
-            DisplayAllNotes();
+            DisplayAllNotesForSelectedVideoEvent();
         }
 
         private void ContextMenu_GenerateVoiceAllNotesClickEvent(object sender, RoutedEventArgs e)
@@ -214,7 +214,7 @@ namespace Notes_UserControl
                     WindowStartupLocation = WindowStartupLocation.CenterScreen
                 };
                 var result = window.ShowDialog();
-                DisplayAllNotes();
+                DisplayAllNotesForSelectedVideoEvent();
             };
             contextMenu.Items.Add(editNoteQuery);
             
@@ -228,7 +228,7 @@ namespace Notes_UserControl
                 if(result == MessageBoxResult.Yes)
                 {
                     DataManagerSqlLite.DeleteNotesById(note.notes_id);
-                    DisplayAllNotes();
+                    DisplayAllNotesForSelectedVideoEvent();
                 }
                 
             };
@@ -319,7 +319,7 @@ namespace Notes_UserControl
                 notesTable.Rows.Add(dRow);
             }
             DataManagerSqlLite.UpdateRowsToNotes(notesTable);
-            DisplayAllNotes();
+            DisplayAllNotesForSelectedVideoEvent();
         }
     }
 }

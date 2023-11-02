@@ -6,6 +6,7 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Loaded="OnControlLoaded"
+        Closed="Window_Closed"
         ResizeMode="NoResize"
         Title="Video Creator" Height="850" Width="1200">
     <Grid Margin="10,10,10,10">
@@ -21,7 +22,7 @@
             <TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
         </StackPanel>
-        <StackPanel Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center">
+        <StackPanel x:Name="stackRadioButtons" Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
             <Viewbox Height="20">
                 <RadioButton x:Name="rbPending" Content="PENDING" GroupName="ProjectStatus" Click="rbPending_Click" Background="#ececec" Foreground="#3381CC" />
             </Viewbox>

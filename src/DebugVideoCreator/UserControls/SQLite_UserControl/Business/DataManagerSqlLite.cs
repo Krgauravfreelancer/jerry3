@@ -98,20 +98,18 @@ namespace Sqllite_Library.Business
                         var dtVideoSegment = new DataTable();
 
                         dtVideoSegment.Columns.Add("videosegment_id", typeof(int));
-                        dtVideoSegment.Columns.Add("fk_videosegment_videoevent", typeof(int));
                         dtVideoSegment.Columns.Add("videosegment_media", typeof(byte[]));
                         dtVideoSegment.Columns.Add("videosegment_createdate", typeof(string));
                         dtVideoSegment.Columns.Add("videosegment_modifydate", typeof(string));
 
                         var rowVideoSegment = dtVideoSegment.NewRow();
                         rowVideoSegment["videosegment_id"] = -1;
-                        rowVideoSegment["fk_videosegment_videoevent"] = insertedId;
                         rowVideoSegment["videosegment_media"] = rowMain["media"];
                         rowVideoSegment["videosegment_createdate"] = createDate;
                         rowVideoSegment["videosegment_modifydate"] = modifyDate;
                         dtVideoSegment.Rows.Add(rowVideoSegment);
 
-                        var insertedVideoSegmentId = InsertRowsToVideoSegment(dtVideoSegment);
+                        var insertedVideoSegmentId = InsertRowsToVideoSegment(dtVideoSegment, insertedId);
                         if (insertedVideoSegmentId <= 0) throw new Exception("Error while inserting videosegment table");
                     }
                     else if (mediaId == 3) //Audio
@@ -170,9 +168,9 @@ namespace Sqllite_Library.Business
             return insertedIds;
         }
 
-        public static int InsertRowsToVideoSegment(DataTable data)
+        public static int InsertRowsToVideoSegment(DataTable data, int fk_value)
         {
-            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_videosegment_videoevent"]);
+            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
             if (!videoeventFlag)
                 throw new Exception("videoevent_Id foreign key constraint not successful ");
 

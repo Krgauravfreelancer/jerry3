@@ -643,8 +643,8 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-            var insertedId = InsertBlobRecordsInTable("cbv_videosegment", sqlQueryString, dataTable.Rows[0]["videosegment_media"] as byte[]);
-            return insertedId;
+            var insertedId = InsertBlobRecordsInTable("cbv_videosegment", sqlQueryString, dataTable.Rows[0]["videosegment_media"] as byte[]); // This does not have seq
+            return 1;
         }
 
         /*
