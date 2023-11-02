@@ -43,6 +43,11 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
 
+            dtNotes.Columns.Add("notes_isdeleted", typeof(bool));
+            dtNotes.Columns.Add("notes_issynced", typeof(bool));
+            dtNotes.Columns.Add("notes_serverid", typeof(Int64));
+            dtNotes.Columns.Add("notes_syncerror", typeof(string));
+
             return dtNotes;
         }
 
@@ -59,6 +64,13 @@ namespace Notes_UserControl
 
             dRow["fk_notes_videoevent"] = 1;
             dRow["notes_wordcount"] = 1;
+
+            dRow["notes_isdeleted"] = false;
+            dRow["notes_issynced"] = true;
+            dRow["notes_serverid"] = 1;
+            dRow["notes_syncerror"] = "";
+
+
             dt.Rows.Add(dRow);
 
             return dt;

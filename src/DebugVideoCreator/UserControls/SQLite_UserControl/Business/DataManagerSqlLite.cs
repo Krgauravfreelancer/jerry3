@@ -192,13 +192,13 @@ namespace Sqllite_Library.Business
         public static int InsertRowsToVideoSegment(DataTable data, int fk_value)
         {
             // For Johan
-            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
-            //if (!videoeventFlag)
-            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
-
             var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
             if (!videoeventFlag)
                 throw new Exception("videoevent_Id foreign key constraint not successful ");
+
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
+            //if (!videoeventFlag)
+            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToVideoSegment(data);
         }

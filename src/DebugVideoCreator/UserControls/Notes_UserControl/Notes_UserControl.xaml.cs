@@ -42,7 +42,7 @@ namespace Notes_UserControl
         {
             selectedproject_id = project_id;
             selectedVideoEventId = videoEvent_id;
-            //HandleVideoEventSelectionChanged();
+            HandleVideoEventSelectionChanged();
         }
 
         private void HandleVideoEventSelectionChanged()
@@ -264,6 +264,13 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_index", typeof(int));
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
+
+            dtNotes.Columns.Add("notes_isdeleted", typeof(bool));
+            dtNotes.Columns.Add("notes_issynced", typeof(bool));
+            dtNotes.Columns.Add("notes_serverid", typeof(Int64));
+            dtNotes.Columns.Add("notes_syncerror", typeof(string));
+
+
             return dtNotes;
         }
 
@@ -279,6 +286,13 @@ namespace Notes_UserControl
             dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["fk_notes_videoevent"] = selectedVideoEventId;
             dRow["notes_wordcount"] = notesLine.Split(' ').Length;
+
+            dRow["notes_isdeleted"] = false;
+            dRow["notes_issynced"] = true;
+            dRow["notes_serverid"] = 1;
+            dRow["notes_syncerror"] = "";
+
+
             dt.Rows.Add(dRow);
             return dt;
         }
@@ -316,6 +330,13 @@ namespace Notes_UserControl
                 dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 dRow["fk_notes_videoevent"] = note.fk_notes_videoevent;
                 dRow["notes_wordcount"] = note.notes_wordcount;
+
+
+                dRow["notes_isdeleted"] = false;
+                dRow["notes_issynced"] = true;
+                dRow["notes_serverid"] = 1;
+                dRow["notes_syncerror"] = "";
+
                 notesTable.Rows.Add(dRow);
             }
             DataManagerSqlLite.UpdateRowsToNotes(notesTable);

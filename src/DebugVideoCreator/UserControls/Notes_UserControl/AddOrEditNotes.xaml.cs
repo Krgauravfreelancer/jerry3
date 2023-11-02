@@ -80,6 +80,11 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
 
+            dtNotes.Columns.Add("notes_isdeleted", typeof(bool));
+            dtNotes.Columns.Add("notes_issynced", typeof(bool));
+            dtNotes.Columns.Add("notes_serverid", typeof(Int64));
+            dtNotes.Columns.Add("notes_syncerror", typeof(string));
+
             var dRow = dtNotes.NewRow();
             
             dRow["notes_line"] = txtNotes.Text;
@@ -88,6 +93,12 @@ namespace Notes_UserControl
             dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["fk_notes_videoevent"] = selectedVideoEventId;
             dRow["notes_wordcount"] = txtNotes.Text.Split(' ').Length;
+
+            dRow["notes_isdeleted"] = false;
+            dRow["notes_issynced"] = true;
+            dRow["notes_serverid"] = 1;
+            dRow["notes_syncerror"] = "";
+
             dtNotes.Rows.Add(dRow);
 
             if (Convert.ToString(btnSave.Content) == "Save To DB")

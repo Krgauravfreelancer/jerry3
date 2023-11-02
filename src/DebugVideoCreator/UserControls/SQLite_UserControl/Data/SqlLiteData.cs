@@ -2451,7 +2451,7 @@ namespace Sqllite_Library.Data
                                             notes_duration = {Convert.ToInt32(dr["notes_duration"])},
                                             notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
                                             notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
-                                            notes_syncerror = {Convert.ToString(dr["notes_syncerror"])},
+                                            notes_syncerror = '{Convert.ToString(dr["notes_syncerror"])}',
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
