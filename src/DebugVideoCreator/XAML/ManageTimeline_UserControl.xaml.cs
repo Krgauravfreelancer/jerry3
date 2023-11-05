@@ -179,15 +179,15 @@ namespace VideoCreator.XAML
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
                         // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await EventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, authApiViewModel);
+                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, authApiViewModel);
                         // Now we have to save the data locally
 
-                        var dt = EventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
+                        var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
                         var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
                         if (insertedVideoEventIds?.Count > 0)
                         {
                             var videoEventId = insertedVideoEventIds[0];
-                            var dtDesign = EventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
+                            var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
                             DataManagerSqlLite.InsertRowsToDesign(dtDesign);
                             var totalRows = dtDesign.Rows.Count;
                             TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(videoEventId, addedData.videoevent.videoevent_id);
@@ -228,7 +228,7 @@ namespace VideoCreator.XAML
                     var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
                     if(postResponse.Status == "error")
                         MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    var dtVideoSegment = EventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
+                    var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
                     var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
                     if (insertedVideoSegmentId > 0)
                     {

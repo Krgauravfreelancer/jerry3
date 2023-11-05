@@ -22,7 +22,7 @@ using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
 {
-    public static class EventHandlerHelper
+    public static class DesignEventHandlerHelper
     {
         #region === Form/Design Functions ==
         public static List<DesignModelPost> GetDesignModelList(DataTable dtDesign)
