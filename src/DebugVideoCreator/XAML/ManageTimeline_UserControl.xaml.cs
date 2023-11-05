@@ -16,6 +16,7 @@ using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
 using VideoCreator.Auth;
 using System.Threading.Tasks;
 using NAudio.CoreAudioApi.Interfaces;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -128,7 +129,7 @@ namespace VideoCreator.XAML
         }
 
 
-        #region Video Event Context Menu
+        #region == Video Event Context Menu ==
 
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
@@ -152,47 +153,9 @@ namespace VideoCreator.XAML
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
         }
+        #endregion
 
-        private List<DesignModelPost> GetDesignModelList(DataTable dtDesign)
-        {
-            var data = new List<DesignModelPost>();
-            foreach (DataRow design in dtDesign.Rows)
-            {
-                var designModel = new DesignModelPost();
-                designModel.fk_design_screen = Convert.ToInt16(design["fk_design_screen"]);
-                designModel.design_xml = Convert.ToString(design["design_xml"]);
-                data.Add(designModel);
-            }
-            return data;
-        }
-
-        private async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign)
-        {
-            var objToSync = new VideoEventModel();
-            objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
-            objToSync.videoevent_track = 1; // TBD
-            objToSync.videoevent_start = "00:00:00"; // TBD
-            objToSync.videoevent_duration = 10;
-            objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            objToSync.design.AddRange(GetDesignModelList(dtDesign));
-            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
-            return result;
-        }
-
-        private List<DesignModel> GetDesignModelListForPut(int videoeventId, CBVVideoEvent videoevent)
-        {
-            var data = new List<DesignModel>();
-            foreach (var design in videoevent.design_data)
-            {
-                var designModel = new DesignModel();
-                designModel.fk_design_screen = design.fk_design_screen;
-                designModel.design_xml = design.design_xml;
-                designModel.fk_design_videoevent = (int)videoevent.videoevent_serverid;
-                designModel.design_id = (int)design.design_serverid;
-                data.Add(designModel);
-            }
-            return data;
-        }
+        #region == Design/Form Context Menu Option ==
 
         private async void TimelineUserConrol_ContextMenu_AddForm_Clicked(object sender, EventArgs e)
         {
@@ -216,18 +179,17 @@ namespace VideoCreator.XAML
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
                         // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await PostVideoEventToServerForDesign(designerUserControl.dataTableAdd);
+                        var addedData = await EventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, authApiViewModel);
                         // Now we have to save the data locally
 
-                        var dt = GetVideoEventDataTableForDesign(addedData);
+                        var dt = EventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
                         var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
                         if (insertedVideoEventIds?.Count > 0)
                         {
                             var videoEventId = insertedVideoEventIds[0];
-                            var dtDesign = GetDesignDataTable(addedData.design, videoEventId);
+                            var dtDesign = EventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
                             DataManagerSqlLite.InsertRowsToDesign(dtDesign);
                             var totalRows = dtDesign.Rows.Count;
-                            // MessageBox.Show($"{totalRows} form event record added to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                             TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(videoEventId, addedData.videoevent.videoevent_id);
                         }
                         else
@@ -266,7 +228,7 @@ namespace VideoCreator.XAML
                     var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
                     if(postResponse.Status == "error")
                         MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    var dtVideoSegment = GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
+                    var dtVideoSegment = EventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
                     var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
                     if (insertedVideoSegmentId > 0)
                     {
@@ -285,137 +247,9 @@ namespace VideoCreator.XAML
             }
         }
 
-        private DataTable GetVideoEventDataTableForDesign(VideoEventResponseModel addedData)
-        {
-            var dtVideoEvent = new DataTable();
-            dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_project", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_duration", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_track", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_media", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_createdate", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_modifydate", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_isdeleted", typeof(bool));
-            dtVideoEvent.Columns.Add("videoevent_issynced", typeof(bool));
-            dtVideoEvent.Columns.Add("videoevent_serverid", typeof(Int64));
-            dtVideoEvent.Columns.Add("videoevent_syncerror", typeof(string));
-
-            var row = dtVideoEvent.NewRow();
-            row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
-            row["videoevent_start"] = addedData.videoevent.videoevent_start;
-            row["videoevent_track"] = addedData.videoevent.videoevent_track;
-            row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
-            row["fk_videoevent_media"] = addedData.videoevent.fk_videoevent_media;
-            row["videoevent_createdate"] = addedData.videoevent.videoevent_createdate;
-            row["videoevent_modifydate"] = addedData.videoevent.videoevent_modifydate;
-            row["videoevent_isdeleted"] = false;
-            row["videoevent_issynced"] = true;
-            row["videoevent_serverid"] = addedData.videoevent.videoevent_id;
-            row["videoevent_syncerror"] = "";
-            dtVideoEvent.Rows.Add(row);
-            return dtVideoEvent;
-        }
-
-        private DataTable GetDesignDataTable(List<DesignModel> alldesigns, int localVideoEventId)
-        {
-            var dt = new DataTable();
-            dt.Columns.Add("design_id", typeof(int));
-            dt.Columns.Add("fk_design_screen", typeof(int));
-            dt.Columns.Add("fk_design_background", typeof(int));
-            dt.Columns.Add("fk_design_videoevent", typeof(int));
-            dt.Columns.Add("design_xml", typeof(string));
-            dt.Columns.Add("design_createdate", typeof(string));
-            dt.Columns.Add("design_modifydate", typeof(string));
-            dt.Columns.Add("design_isdeleted", typeof(bool));
-            dt.Columns.Add("design_issynced", typeof(bool));
-            dt.Columns.Add("design_serverid", typeof(Int64));
-            dt.Columns.Add("design_syncerror", typeof(string));
-
-            foreach (var post in alldesigns)
-            {
-                var row = dt.NewRow();
-                row["design_id"] = -1;
-                row["fk_design_screen"] = post.fk_design_screen;
-                row["fk_design_background"] = 1; // TBD
-                row["fk_design_videoevent"] = localVideoEventId;
-                row["design_xml"] = post.design_xml;
-
-                row["design_createdate"] = post.design_createdate;
-                row["design_modifydate"] = post.design_modifydate;
-                row["design_isdeleted"] = false;
-                row["design_issynced"] = true;
-                row["design_serverid"] = post.design_id;
-                row["design_syncerror"] = "";
-                dt.Rows.Add(row);
-            }
-
-            return dt;
-        }
-
-        private DataTable GetVideoSegmentDataTableForDesign(byte[] blob, int videoeventId, VideoSegmentPostResponse postResponse)
-        {
-            var dtVideoEvent = new DataTable();
-            dtVideoEvent.Columns.Add("videosegment_id", typeof(int));
-            dtVideoEvent.Columns.Add("videosegment_media", typeof(byte[]));
-            dtVideoEvent.Columns.Add("videosegment_createdate", typeof(string));
-            dtVideoEvent.Columns.Add("videosegment_modifydate", typeof(string));
-            dtVideoEvent.Columns.Add("videosegment_isdeleted", typeof(bool));
-            dtVideoEvent.Columns.Add("videosegment_issynced", typeof(bool));
-            dtVideoEvent.Columns.Add("videosegment_serverid", typeof(Int64));
-            dtVideoEvent.Columns.Add("videosegment_syncerror", typeof(string));
-
-            var row = dtVideoEvent.NewRow();
-            row["videosegment_id"] = videoeventId;
-            row["videosegment_media"] = blob;
-            
-            row["videosegment_createdate"] = postResponse.VideoSegment.videosegment_createdate;
-            row["videosegment_modifydate"] = postResponse.VideoSegment.videosegment_modifydate;
-            row["videosegment_isdeleted"] = false;
-            row["videosegment_issynced"] = true;
-            row["videosegment_serverid"] = postResponse.VideoSegment.videosegment_id;
-            row["videosegment_syncerror"] = "";
-            dtVideoEvent.Rows.Add(row);
-            return dtVideoEvent;
-        }
-
-        //private DataTable GetVideoSegmentDataTableForDesign(DataTable dtVideoSegment)
-        //{
-
-        //    var dt = new DataTable();
-        //    dt.Columns.Add("videosegment_id", typeof(int));
-        //    dt.Columns.Add("videosegment_media", typeof(byte[]));
-        //    dt.Columns.Add("videosegment_createdate", typeof(string));
-        //    dt.Columns.Add("videosegment_modifydate", typeof(string));
-
-        //    dt.Columns.Add("videosegment_isdeleted", typeof(bool));
-        //    dt.Columns.Add("videosegment_issynced", typeof(bool));
-        //    dt.Columns.Add("videosegment_serverid", typeof(Int64));
-        //    dt.Columns.Add("videosegment_syncerror", typeof(string));
-
-        //    foreach (var row in dtVideoSegment.Rows)
-        //    {
-        //        var row = dt.NewRow();
-        //        row["videosegment_id"] = -1;
-        //        row["videosegment_media"] = post["fk_design_screen"];
-
-
-        //        row["videosegment_createdate"] = rowvid;
-        //        row["videosegment_modifydate"] = row.design_modifydate;
-        //        row["videosegment_isdeleted"] = false;
-        //        row["videosegment_issynced"] = true;
-        //        row["videosegment_serverid"] = row.video;
-        //        row["videosegment_syncerror"] = "";
-        //        dt.Rows.Add(row);
-        //    }
-
-        //    return dt;
-        //}
-
-
-
         #endregion
+
+
 
         #region == Audio Context Menu ==
 

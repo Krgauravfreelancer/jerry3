@@ -253,6 +253,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\EventHandlerHelper.cs" />
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
