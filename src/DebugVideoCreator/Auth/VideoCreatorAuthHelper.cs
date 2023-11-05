@@ -342,5 +342,34 @@ namespace VideoCreator.Auth
             return default;
         }
 
+        public async Task<T> Delete<T>(string url, FormUrlEncodedContent payload)
+        {
+            try
+            {
+                InitializeOrResetDbTransferControl();
+
+                var result = await dbTransferCtrl.Delete(url, payload);
+                T data = JsonConvert.DeserializeObject<T>(result);
+                return data;
+            }
+            catch (DllNotFoundException dllex)
+            {
+                ErrorMessage = dllex.Message;
+            }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+            return default;
+        }
+
     }
 }

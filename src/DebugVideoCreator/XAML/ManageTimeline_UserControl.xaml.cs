@@ -17,6 +17,8 @@ using VideoCreator.Auth;
 using System.Threading.Tasks;
 using NAudio.CoreAudioApi.Interfaces;
 using VideoCreator.Helpers;
+using System.Windows.Threading;
+using System.Diagnostics.Contracts;
 
 namespace VideoCreator.XAML
 {
@@ -35,6 +37,7 @@ namespace VideoCreator.XAML
         private PopupWindow popup;
         private AudioEditor editor;
         private readonly AuthAPIViewModel authApiViewModel;
+        public event EventHandler closeTheEditWindow;
 
         public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
@@ -44,7 +47,7 @@ namespace VideoCreator.XAML
             authApiViewModel = _authApiViewModel;
             var subjectText = "Selected Project Id - " + selectedProjectId;
             lblSelectedProjectId.Content = subjectText;
-
+            checkIfProjectIsLocked();
             popup = new PopupWindow();
             ResetAudioMenuOptions();
             RefreshOrLoadComboBoxes();
@@ -59,6 +62,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+            
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
@@ -70,8 +74,77 @@ namespace VideoCreator.XAML
             NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
             NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
 
-
+            NotesUserConrol.saveNotesEvent += NotesUserConrol_saveNotesEvent;
+            NotesUserConrol.saveSingleNoteEvent += NotesUserConrol_saveSingleNoteEvent;
+            NotesUserConrol.updateSingleNoteEvent += NotesUserConrol_updateSingleNoteEvent;
+            NotesUserConrol.deleteSingleNoteEvent += NotesUserConrol_deleteSingleNoteEvent;
+            // NotesUserConrol.HandleVideoEventSelectionChanged();
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
+        }
+
+        
+        private async void checkIfProjectIsLocked()
+        {
+            var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
+            //if(response.project_islocked == true && response.permission_status == 1)
+            //{
+            //    MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as loacked by you - " + response.lockedby_username);
+            //    btnlock.IsEnabled = false;
+            //    btnunlock.IsEnabled = true;
+            //}
+            //else
+            {
+                MessageBox.Show($"Project is locked by - {response.lockedby_username}, flow coming soon !! " );
+                btnlock.IsEnabled = true;
+                btnunlock.IsEnabled = false;
+                closeTheEditWindow.Invoke(null, null);
+            }
+        }
+
+        
+        #region === Notes Event Handler event ==
+
+        private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
+        {
+            // Step 1. Save to server
+            var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+            var savedNotes =  await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+
+            // Step 2. Now save the notes to local DB
+            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+
+            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        }
+
+        private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
+        {
+            var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
+            if(result?.Status == "success")
+            {
+                DataManagerSqlLite.DeleteNotesById(notes.notes_id);
+                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+            }
+
+        }
+
+
+        private async void NotesUserConrol_saveSingleNoteEvent(object sender, DataTable datatable)
+        {
+            // Step 1. Save to server
+            var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+            var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+
+            // Step 2. Now save the notes to local DB
+            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+
+            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        }
+
+        private void NotesUserConrol_updateSingleNoteEvent(object sender, DataTable datatable)
+        {
+            throw new NotImplementedException();
         }
 
         private void NotesUserConrol_locAudioManageEvent(object sender, int notesId)
@@ -128,6 +201,8 @@ namespace VideoCreator.XAML
             ResetAudio();
         }
 
+
+        #endregion
 
         #region == Video Event Context Menu ==
 
@@ -248,8 +323,6 @@ namespace VideoCreator.XAML
         }
 
         #endregion
-
-
 
         #region == Audio Context Menu ==
 
@@ -668,87 +741,12 @@ namespace VideoCreator.XAML
             if (selectedVideoEvent != null)
             {
                 selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
-                NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+                NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
                 ResetAudio();
             }
         }
 
-        private async void btnSync_Click(object sender, RoutedEventArgs e)
-        {
-            var dataToSync = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
-            if (dataToSync != null && dataToSync.Count > 0)
-            {
-                foreach (var item in dataToSync)
-                {
-                    var objToSync = new VideoEventModel();
-                    objToSync.fk_videoevent_media = item.fk_videoevent_media;
-                    objToSync.videoevent_track = item.videoevent_track;
-                    objToSync.videoevent_start = item.videoevent_start;
-                    objToSync.videoevent_duration = item.videoevent_duration;
-                    objToSync.fk_videoevent_project = selectedProjectId;
-                    if (objToSync.fk_videoevent_media == (int)EnumMedia.FORM) //Id-4 1:1
-                    {
-                        // We need to fill image and design children
-                        if (item.design_data?.Count > 0)
-                            objToSync.design.AddRange(GetDesignModelList(item));
-                        if (item.videosegment_data?.Count > 0)
-                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
-                        if (item.notes_data?.Count > 0)
-                            objToSync.notes.AddRange(GetNotesModelList(item));
-                    }
-                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.IMAGE) //Id-1 1:1
-                    {
-                        // We need to fill images
-                        if (item.videosegment_data?.Count > 0)
-                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
-                        if (item.notes_data?.Count > 0)
-                            objToSync.notes.AddRange(GetNotesModelList(item));
-                    }
-                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.VIDEO) //Id-2 1:1
-                    {
-                        // We need to fill videos
-                        if (item.videosegment_data?.Count > 0)
-                            objToSync.videosegment_media_bytes = item.videosegment_data[0].videosegment_media;
-                        if (item.notes_data?.Count > 0)
-                            objToSync.notes.AddRange(GetNotesModelList(item));
-                    }
-                    else if (objToSync.fk_videoevent_media == (int)EnumMedia.AUDIO) //Id-3 1:1
-                    {
-                        // TBD
-                    }
-                    // await authApiViewModel.POSTVideoEvent(objToSync);
-                    break;
-                }
-            }
-
-        }
-
-        private List<DesignModelPost> GetDesignModelList(CBVVideoEvent item)
-        {
-            var data = new List<DesignModelPost>();
-            foreach (var design in item.design_data)
-            {
-                var designModel = new DesignModelPost();
-                designModel.fk_design_screen = design.fk_design_screen;
-                designModel.design_xml = design.design_xml;
-                data.Add(designModel);
-            }
-            return data;
-        }
-
-        private List<NotesModelPost> GetNotesModelList(CBVVideoEvent item)
-        {
-            var data = new List<NotesModelPost>();
-            foreach (var note in item.notes_data)
-            {
-                var notesModel = new NotesModelPost();
-                notesModel.notes_line = note.notes_line;
-                notesModel.notes_wordcount = note.notes_wordcount.ToString();
-                notesModel.notes_index = note.notes_index.ToString();
-                data.Add(notesModel);
-            }
-            return data;
-        }
+        
 
         private void btnunlock_Click(object sender, RoutedEventArgs e)
         {

@@ -4,6 +4,7 @@ using System;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace Notes_UserControl
 {
@@ -14,6 +15,9 @@ namespace Notes_UserControl
     {
         int selectedVideoEventId = -1;
         CBVNotes selectedNote;
+        public event EventHandler<DataTable> saveSingleNoteEvent;
+        public event EventHandler<DataTable> updateSingleNoteEvent;
+
         public AddOrEditNotes(int videoEventId)
         {
             InitializeComponent();
@@ -28,6 +32,20 @@ namespace Notes_UserControl
             selectedNote = note;
             txtNotes.Text = selectedNote.notes_line;
             btnSave.Content = "Update To DB";
+        }
+
+        public static void DelayAction(int millisecond, Action action)
+        {
+            var timer = new DispatcherTimer();
+            timer.Tick += delegate
+
+            {
+                action.Invoke();
+                timer.Stop();
+            };
+
+            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
+            timer.Start();
         }
 
         #region == Events ==
@@ -106,13 +124,19 @@ namespace Notes_UserControl
                 dRow["notes_id"] = -1;
                 dRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 dRow["notes_index"] = 0;
-                DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+                if (saveSingleNoteEvent != null)
+                    saveSingleNoteEvent.Invoke(this, dtNotes);
+                else
+                    DelayAction(1000, new Action(() => { saveSingleNoteEvent.Invoke(this, dtNotes); }));
             }
             else
             {
                 dRow["notes_id"] = selectedNote.notes_id;
                 dRow["notes_index"] = selectedNote.notes_index;
-                DataManagerSqlLite.UpdateRowsToNotes(dtNotes);
+                if (updateSingleNoteEvent != null)
+                    updateSingleNoteEvent.Invoke(this, dtNotes);
+                else
+                    DelayAction(1000, new Action(() => { updateSingleNoteEvent.Invoke(this, dtNotes); }));
             }
 
             

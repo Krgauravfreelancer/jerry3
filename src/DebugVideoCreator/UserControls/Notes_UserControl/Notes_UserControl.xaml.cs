@@ -1,11 +1,13 @@
 ﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Notes_UserControl
 {
@@ -20,12 +22,66 @@ namespace Notes_UserControl
         public event EventHandler locAudioShowEvent;
         public event EventHandler<int> locAudioManageEvent;
 
+        // Events added for handling to server first
+        public event EventHandler<DataTable> saveNotesEvent;
+        public event EventHandler<DataTable> saveSingleNoteEvent;
+        public event EventHandler<DataTable> updateSingleNoteEvent;
+        public event EventHandler<CBVNotes> deleteSingleNoteEvent;
+
         public Notes_UserControl()
         {
             InitializeComponent();
         }
 
         #region == Public Functions ==
+
+        
+
+        public void InitializeNotes(int project_id, int videoEvent_id = -1)
+        {
+            selectedproject_id = project_id;
+            selectedVideoEventId = videoEvent_id;
+        }
+
+        public static void DelayAction(int millisecond, Action action)
+        {
+            var timer = new DispatcherTimer();
+            timer.Tick += delegate
+
+            {
+                action.Invoke();
+                timer.Stop();
+            };
+
+            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
+            timer.Start();
+        }
+
+        public void HandleVideoEventSelectionChanged(int videoEventId = -1)
+        {
+            if (videoEventId > 0) selectedVideoEventId = videoEventId;
+            if (selectedVideoEventId > -1)
+            {
+                var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
+                if (notes.Count <= 0)
+                {
+                    var dtNotes = BuildNotesDataTableForDB();
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 1, "Launch Visual Studio, and open the New Project dialog box");
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 2, "In the Window category, select the \"WPF User control Library\"");
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 3, "Name the new project");
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 4, "Click OK to create the project");
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 5, "In Solution Explorer, rename UserControl1 to an appropriate name");
+                    dtNotes = AddNoteRowForDBTable(dtNotes, 6, "Add System.Windows.forms");
+                    if (saveNotesEvent != null)
+                        saveNotesEvent.Invoke(this, dtNotes);
+                    else
+                        DelayAction(1000, new Action(() => { saveNotesEvent.Invoke(this, dtNotes); }));
+                }
+                else
+                    DisplayAllNotesForSelectedVideoEvent();
+            }
+
+        }
 
         public void DisplayAllNotesForSelectedVideoEvent()
         {
@@ -36,48 +92,6 @@ namespace Notes_UserControl
                 stackPanelNotes.Children.Add(AddNotes(note, ++i));
             if (locAudioAddedEvent != null)
                 locAudioAddedEvent.Invoke(this, new EventArgs());
-        }
-
-        public void InitializeNotes(int project_id, int videoEvent_id = -1)
-        {
-            selectedproject_id = project_id;
-            selectedVideoEventId = videoEvent_id;
-            HandleVideoEventSelectionChanged();
-        }
-
-        private void HandleVideoEventSelectionChanged()
-        {
-            if (selectedVideoEventId > -1)
-            {
-                var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
-                if (notes.Count <= 0)
-                {
-                    //var result = MessageBox.Show("No Notes present for selected videoevent, do you want to add template notes?", "Information", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                    //if(result == MessageBoxResult.Yes)
-                    //{
-                    var dtNotes = BuildNotesDataTableForDB();
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 1, "Launch Visual Studio, and open the New Project dialog box");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 2, "In the Window category, select the \"WPF User control Library\"");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 3, "Name the new project");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 4, "Click OK to create the project");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 5, "In Solution Explorer, rename UserControl1 to an appropriate name");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 6, "Add System.Windows.forms");
-                    var insertedId = DataManagerSqlLite.InsertRowsToNotes(dtNotes);
-                    if (insertedId > 0)
-                    {
-                        //var dtable = GetNotesDataToView(selectedVideoEventId);
-                        //notesReadCtrl.SetNotesList(dtable);
-                        DisplayAllNotesForSelectedVideoEvent();
-                    }
-                    //}
-                }
-                else
-                {
-                    //var dtable = GetNotesDataToView(selectedVideoEventId);
-                    //notesReadCtrl.SetNotesList(dtable);
-                    DisplayAllNotesForSelectedVideoEvent();
-                }
-            }
         }
 
         #endregion
@@ -117,11 +131,11 @@ namespace Notes_UserControl
 
         private void ContextMenu_AddNewNoteClickEvent(object sender, RoutedEventArgs e)
         {
-            var uc = new AddOrEditNotes(selectedVideoEventId);
+            var addOrEditNotes = new AddOrEditNotes(selectedVideoEventId);
             var window = new Window
             {
                 Title = "Add or Edit Notes",
-                Content = uc,
+                Content = addOrEditNotes,
                 SizeToContent = SizeToContent.WidthAndHeight,
                 ResizeMode = ResizeMode.NoResize,
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -129,7 +143,21 @@ namespace Notes_UserControl
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
+
+            addOrEditNotes.saveSingleNoteEvent += AddOrEditNotes_SaveSingleNoteEvent;
+            addOrEditNotes.updateSingleNoteEvent += AddOrEditNotes_updateSingleNoteEvent;
+
             DisplayAllNotesForSelectedVideoEvent();
+        }
+
+        private void AddOrEditNotes_updateSingleNoteEvent(object sender, DataTable datatable)
+        {
+            updateSingleNoteEvent.Invoke(sender, datatable);
+        }
+
+        private void AddOrEditNotes_SaveSingleNoteEvent(object sender, DataTable datatable)
+        {
+            saveSingleNoteEvent.Invoke(sender, datatable);
         }
 
         private void ContextMenu_GenerateVoiceAllNotesClickEvent(object sender, RoutedEventArgs e)
@@ -179,7 +207,7 @@ namespace Notes_UserControl
             };
             manageNoteQuery.Click += ContextMenu_ManageNotesClickEvent;
             contextMenu.Items.Add(manageNoteQuery);
-            
+
             MenuItem addNewNoteQuery = new MenuItem
             {
                 Header = "Add New Note"
@@ -217,7 +245,7 @@ namespace Notes_UserControl
                 DisplayAllNotesForSelectedVideoEvent();
             };
             contextMenu.Items.Add(editNoteQuery);
-            
+
             var deleteNoteQuery = new MenuItem
             {
                 Header = "Delete"
@@ -225,12 +253,11 @@ namespace Notes_UserControl
             deleteNoteQuery.Click += (sender, e) =>
             {
                 var result = MessageBox.Show($"Are you sure you want to delete notes \n \n{note.notes_line}", $"Delete Note - {note.notes_id}", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if(result == MessageBoxResult.Yes)
+                if (result == MessageBoxResult.Yes)
                 {
-                    DataManagerSqlLite.DeleteNotesById(note.notes_id);
-                    DisplayAllNotesForSelectedVideoEvent();
+                    deleteSingleNoteEvent.Invoke(sender, note);
                 }
-                
+
             };
             contextMenu.Items.Add(deleteNoteQuery);
 

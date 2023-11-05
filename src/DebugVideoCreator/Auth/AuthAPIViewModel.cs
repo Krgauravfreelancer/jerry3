@@ -552,6 +552,38 @@ namespace VideoCreator.Auth
             return result;
         }
 
+        public async Task<ProjectLockModel> GetLockStatus(Int64 projectServerId)
+        {
+            var url = $"api/connect/project/{projectServerId}/lock-status";
+            var response = await _apiClientHelper.Get<ProjectLockModel>(url);
+            return response;
+        }
+
+        public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
+        {
+            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
+            var parameters = new Dictionary<string, string>
+            {
+                { "notes", JsonConvert.SerializeObject(notes) }
+            };
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Create<ParentData<NotesResponseModel>>(url, payload);
+            return response.Data;
+        }
+
+        public async Task<ParentData<object>> DeleteNotesById(Int64 selectedServerVideoEventId, Int64 notesId)
+        {
+            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes/{notesId}";
+            var parameters = new Dictionary<string, string>();
+            
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Delete<ParentData<object>>(url, payload);
+            return response;
+        }
+
+
 
         public async Task<VideoEventResponseModel> PutVideoEvent(int projectId, VideoEventModel videoEventModel, byte[] blob = null)
         {

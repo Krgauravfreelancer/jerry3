@@ -21,8 +21,8 @@
             <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
         </StackPanel>
         <StackPanel Grid.Row="0" Margin="10, 0, 10, 0" Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top" Height="60">
-            <Button x:Name="btnlock" Click="btnlock_Click" Content="Lock" Width="70" Margin="10" Padding="5 0 5 0" Height="30"  />
-            <Button x:Name="btnunlock" Click="btnunlock_Click" Content="Unlock" Width="70" Margin="10" Padding="5 0 5 0" Height="30"  />
+            <Button x:Name="btnlock" Click="btnlock_Click" Content="Lock" Width="70" Margin="10" Padding="5 0 5 0" Height="30" Visibility="Hidden"  />
+            <Button x:Name="btnunlock" Click="btnunlock_Click" Content="Unlock" Width="70" Margin="10" Padding="5 0 5 0" Height="30" Visibility="Hidden"  />
             <!--<Button x:Name="btnSync" Click="btnSync_Click" Content="Sync" Width="70" Margin="10" Padding="5 0 5 0" Height="30" FontWeight="Bold" FontSize="14" Foreground="#3381CC" />-->
             <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
             <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="120" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />

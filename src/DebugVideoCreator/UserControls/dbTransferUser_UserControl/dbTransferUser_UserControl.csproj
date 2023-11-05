@@ -83,6 +83,7 @@
     <Compile Include="ResponseObjects\ParentDataList.cs" />
     <Compile Include="ResponseObjects\Media\MediaModel.cs" />
     <Compile Include="ResponseObjects\Projects\ProjectAssignModel.cs" />
+    <Compile Include="ResponseObjects\Projects\ProjectLockModel.cs" />
     <Compile Include="ResponseObjects\Projects\ProjectModel.cs" />
     <Compile Include="ResponseObjects\Projects\ProjectCountModel.cs" />
     <Compile Include="ResponseObjects\Screen\ScreenModel.cs" />

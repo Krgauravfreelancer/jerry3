@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -70,7 +71,7 @@ namespace dbTransferUser_UserControl
 
             }
         }
-
+        
         public async Task<string> CreateWithFile(string url, MultipartFormDataContent encodedPayload)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
@@ -160,6 +161,23 @@ namespace dbTransferUser_UserControl
                 {
                     throw new Exception(response.ReasonPhrase);
                 }
+
+            }
+        }
+
+        public async Task<string> Delete(string url, FormUrlEncodedContent encodedPayload)
+        {
+            using (HttpResponseMessage response = await apiHttpClient.DeleteAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return result;
+                }
+                else
+                {
+                    throw new Exception(response.ReasonPhrase);
+}
 
             }
         }

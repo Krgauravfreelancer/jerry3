@@ -229,6 +229,11 @@ namespace VideoCreator.XAML
                 RenderSize = manageTimeline_UserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+
+            manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
+            {
+                window.Close();
+            };
             try
             {
                 var result = window.ShowDialog();
@@ -243,7 +248,6 @@ namespace VideoCreator.XAML
             InitialiseAndRefreshScreen();
         }
 
-        
         private async void BtnAcceptProject_Click(object sender, RoutedEventArgs e)
         {
             var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);

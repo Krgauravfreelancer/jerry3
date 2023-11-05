@@ -13,6 +13,7 @@ namespace dbTransferUser_UserControl
         Task<string> Update(string url, FormUrlEncodedContent encodedPayload);
         Task<string> UpdateWithFile(string url, MultipartFormDataContent encodedPayload);
         Task<string> Patch(string url, FormUrlEncodedContent encodedPayload);
+        Task<string> Delete(string url, FormUrlEncodedContent encodedPayload);
 
 
 

@@ -2547,13 +2547,15 @@ namespace Sqllite_Library.Data
 
         public static void DeleteNotesById(int notesId = -1)
         {
-            var deleteQueryString = $@" Delete from cbv_notes
+            var deleteQueryString = $@" update cbv_notes
+                                        Set 
+                                            notes_isdeleted = 1 
                                         WHERE 
-                                        notes_id = {notesId};
+                                            notes_id = {notesId};
 
                                         Delete from cbv_locaudio
                                         WHERE 
-                                        fk_locaudio_notes = {notesId};
+                                            fk_locaudio_notes = {notesId};
 
                                         ";
             var deleteFlag = DeleteRecordsInTable(deleteQueryString);
