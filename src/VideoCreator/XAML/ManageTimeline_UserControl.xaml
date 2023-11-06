@@ -20,10 +20,12 @@
             <Label Content="CB Video Creator - Manage Timeline" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
             <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
         </StackPanel>
-        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Height="60" HorizontalAlignment="Right" Margin="0 0 20 0">
-            <!--<Button x:Name="btnSync" Click="btnSync_Click" Content="Sync" Width="80" Height="30" Margin="10 0 50 0" FontWeight="Bold" FontSize="14" Foreground="#3381CC" />-->
+        <StackPanel Grid.Row="0" Margin="10, 0, 10, 0" Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top" Height="60">
+            <Button x:Name="btnlock" Click="btnlock_Click" Content="Lock" Width="70" Margin="10" Padding="5 0 5 0" Height="30" Visibility="Hidden"  />
+            <Button x:Name="btnunlock" Click="btnunlock_Click" Content="Unlock" Width="70" Margin="10" Padding="5 0 5 0" Height="30" Visibility="Hidden"  />
+            <!--<Button x:Name="btnSync" Click="btnSync_Click" Content="Sync" Width="70" Margin="10" Padding="5 0 5 0" Height="30" FontWeight="Bold" FontSize="14" Foreground="#3381CC" />-->
             <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
-            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="200" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
+            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="120" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
         </StackPanel>
         <Grid Margin="20,0,20,20" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>

@@ -288,6 +288,8 @@
     </ApplicationDefinition>
     <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
+    <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
+    <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />

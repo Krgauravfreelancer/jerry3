@@ -85,20 +85,20 @@ namespace VideoCreator.XAML
         
         private async void checkIfProjectIsLocked()
         {
-            var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
-            //if(response.project_islocked == true && response.permission_status == 1)
+            //var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
+            //if (response?.project_islocked == true && response?.permission_status == 1)
             //{
             //    MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as loacked by you - " + response.lockedby_username);
             //    btnlock.IsEnabled = false;
             //    btnunlock.IsEnabled = true;
             //}
             //else
-            {
-                MessageBox.Show($"Project is locked by - {response.lockedby_username}, flow coming soon !! " );
-                btnlock.IsEnabled = true;
-                btnunlock.IsEnabled = false;
-                closeTheEditWindow.Invoke(null, null);
-            }
+            //{
+            //    MessageBox.Show($"Project is locked by - {response.lockedby_username}, flow coming soon !! ");
+            //    btnlock.IsEnabled = true;
+            //    btnunlock.IsEnabled = false;
+            //    closeTheEditWindow.Invoke(null, null);
+            //}
         }
 
         

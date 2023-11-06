@@ -40,7 +40,9 @@ namespace VideoCreator.XAML
                 await SyncCompany();
                 await SyncBackground();
 
-                await PopulateProjects();
+                rbWIP.IsChecked = true;
+                InitialiseAndRefreshScreen();
+                //await PopulateProjects();
             }
             catch (Exception ex)
             {
@@ -49,6 +51,18 @@ namespace VideoCreator.XAML
             }
             SetWelcomeMessage();
 
+        }
+
+        private void InitialiseAndRefreshScreen()
+        {
+            lblLoading.Visibility = Visibility.Hidden;
+            stackRadioButtons.Visibility = Visibility.Visible;
+            rbWIP_Click(null, null);
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         private async Task SyncApp()
@@ -176,6 +190,7 @@ namespace VideoCreator.XAML
                 return;
             }
             int selectedProjectId;
+            Int64 selectedServerProjectId;
             if ((bool)rbPending.IsChecked)
             {
                 MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -187,7 +202,10 @@ namespace VideoCreator.XAML
                 return;
             }
             else if ((bool)rbWIP.IsChecked)
+            {
                 selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
+            }
             else
             {
                 MessageBox.Show("Please select a project from WIP to continue", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -195,7 +213,7 @@ namespace VideoCreator.XAML
             }
             //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, authApiViewModel);
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
 
             var window = new Window
             {
@@ -211,6 +229,11 @@ namespace VideoCreator.XAML
                 RenderSize = manageTimeline_UserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+
+            manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
+            {
+                window.Close();
+            };
             try
             {
                 var result = window.ShowDialog();
@@ -222,10 +245,9 @@ namespace VideoCreator.XAML
             }
             catch (Exception)
             { }
-
+            InitialiseAndRefreshScreen();
         }
 
-        
         private async void BtnAcceptProject_Click(object sender, RoutedEventArgs e)
         {
             var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -369,5 +391,7 @@ namespace VideoCreator.XAML
         {
             Console.WriteLine("The dispose() function has been called and the resources have been released!");
         }
+
+        
     }
 }

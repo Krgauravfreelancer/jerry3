@@ -6,11 +6,18 @@
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         Loaded="OnControlLoaded"
+        Closed="Window_Closed"
         ResizeMode="NoResize"
         Title="Video Creator" Height="850" Width="1200">
     <Grid Margin="10,10,10,10">
         <Image Height="90" Source="/images/cbslogo_temp.jpg" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10"></Image>
         <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
+
+
+        <Label x:Name="lblLoading" Content="Please wait.. Logging you in and doing initial setup.." HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC" VerticalAlignment="Center" Height="55"/>
+
+
+
         <StackPanel Orientation="Vertical" Margin="700,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="450">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="35" VerticalAlignment="Top">
                 <Button x:Name="btnLogin" Content="Login" IsEnabled="False" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnLogin_Click" Height="25" Width="100" 
@@ -21,7 +28,7 @@
             <TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
         </StackPanel>
-        <StackPanel Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center">
+        <StackPanel x:Name="stackRadioButtons" Margin="10,75,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
             <Viewbox Height="20">
                 <RadioButton x:Name="rbPending" Content="PENDING" GroupName="ProjectStatus" Click="rbPending_Click" Background="#ececec" Foreground="#3381CC" />
             </Viewbox>
