@@ -219,6 +219,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Timeline.UserControls.dll</HintPath>
     </Reference>
+    <Reference Include="VoiceScripter_UserControl">
+      <HintPath>Libraries\VoiceScripter_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="WavePlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\WavePlayer_UserControl.dll</HintPath>
@@ -378,7 +381,8 @@
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="Libraries\regJerry.reg" />
-    <None Include="Libraries\regKumarGaurav.reg" />
+    <None Include="Libraries\regKumar.reg" />
+    <None Include="Libraries\vosk-model-small-en-us-0.15.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -399,6 +403,7 @@
     <Resource Include="Libraries\DesignImager.xml" />
     <Content Include="Libraries\LocalVoiceGen_UserControl.dll" />
     <Content Include="Libraries\ScreenRecorder_UserControl.dll" />
+    <Content Include="Libraries\VoiceScripter_UserControl.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />

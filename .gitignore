@@ -333,3 +333,17 @@
 /src/VideoCreator/Libraries/ffprobe.exe
 /src/VideoCreator/bin/Release
 /src/VideoCreator/obj/Release
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/.vs
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/ScreenRecorder_Wrapper/bin
+/src/DebugVideoCreator/UserControls/ScreenRecording_UserControl/ScreenRecorder_Wrapper/obj
+/src/DebugVideoCreator/UserControls/Timeline_UserControl/.vs
+/src/DebugVideoCreator/UserControls/Timeline_UserControl/TimelineWrapper/bin/Debug
+/src/DebugVideoCreator/UserControls/Timeline_UserControl/TimelineWrapper/obj/Debug
+/src/DebugVideoCreator/UserControls/TimelineWrapper/.vs/TimelineWrapper
+/src/DebugVideoCreator/UserControls/TimelineWrapper/packages
+/src/DebugVideoCreator/UserControls/TimelineWrapper/TimelineWrapper/bin/Debug
+/src/DebugVideoCreator/UserControls/TimelineWrapper/TimelineWrapper/obj/Debug
+/src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/.vs/ScreenRecorder_Wrapper
+/src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/packages
+/src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/ScreenRecorder_Wrapper/bin
+/src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/ScreenRecorder_Wrapper/obj
