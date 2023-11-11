@@ -164,6 +164,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ScreenRecorder_UserControl.dll</HintPath>
     </Reference>
+    <Reference Include="ScreenRecorder_UserControl_v2, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\ScreenRecorder_UserControl_v2.dll</HintPath>
+    </Reference>
     <Reference Include="SixLabors.ImageSharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>packages\SixLabors.ImageSharp.2.0.0\lib\net472\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
@@ -403,6 +407,7 @@
     <Resource Include="Libraries\DesignImager.xml" />
     <Content Include="Libraries\LocalVoiceGen_UserControl.dll" />
     <Content Include="Libraries\ScreenRecorder_UserControl.dll" />
+    <Content Include="Libraries\ScreenRecorder_UserControl_v2.dll" />
     <Content Include="Libraries\VoiceScripter_UserControl.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
