@@ -35,7 +35,7 @@ namespace VideoCreator.XAML
             InitializeTimeline();
         }
 
-        
+
         #region == TimelineUserControl : Load from DB functions ==
 
         public DataTable AddTimelineRow(
@@ -103,6 +103,7 @@ namespace VideoCreator.XAML
                 media_name = m.media_name,
                 media_color = m.media_color,
             }).ToList();
+
             _timelineGridControl.SetMediaList(mediaList);
         }
 
@@ -121,7 +122,10 @@ namespace VideoCreator.XAML
 
         public void LoadVideoEventsFromDb()
         {
+
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
+
+
             List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(selectedProjectId);
             foreach (var videoEvent in videoEventList)
             {
@@ -142,7 +146,7 @@ namespace VideoCreator.XAML
 
             _timelineGridControl.SetTimelineDatatable(dt);
         }
-
+        
         public void ClearTimeline()
         {
             _timelineGridControl.ClearTimeline();
@@ -151,6 +155,7 @@ namespace VideoCreator.XAML
         #endregion
 
         #region == TimelineUserControl : Helper functions ==
+
 
         private void InitializeTimeline()
         {
@@ -166,8 +171,8 @@ namespace VideoCreator.XAML
             LoadDesignFromDb();
             LoadMediaFromDb();
             LoadScreenFromDb();
-            
-            LoadVideoEventsFromDb();
+
+            //LoadVideoEventsFromDb();
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
             TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
@@ -182,10 +187,13 @@ namespace VideoCreator.XAML
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
 
-                
+
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
                 //listView_trackbarEvents.ItemsSource = trackbarEvents;
             };
+
+
+
         }
 
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -195,6 +203,9 @@ namespace VideoCreator.XAML
             ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
         }
 
+
+
+
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
             var contextMenu = this.Resources[resourceKey] as ContextMenu;
@@ -203,7 +214,7 @@ namespace VideoCreator.XAML
             return contextMenuItem;
         }
 
-      
+
 
         private void MoveTrackbar(object sender, RoutedEventArgs e)
         {
@@ -255,6 +266,7 @@ namespace VideoCreator.XAML
 
         #endregion
 
+
         #region == TimelineUserControl : Context-menu Options ==
 
 
@@ -266,7 +278,7 @@ namespace VideoCreator.XAML
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
             var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
-            var window = new Window
+            var screenRecorderWindow = new System.Windows.Window
             {
                 Title = "Screen Recorder",
                 Content = screenRecordingUserControl,
@@ -276,11 +288,25 @@ namespace VideoCreator.XAML
                 RenderSize = screenRecordingUserControl.RenderSize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            var result = window.ShowDialog();
+            var result = screenRecorderWindow.ShowDialog();
             if (result.HasValue)
             {
                 ContextMenu_AddVideoEvent_Success.Invoke(this, new EventArgs());
             }
+
+            //ScreenRecorderWindow screenRecorderWindow = new ScreenRecorderWindow(this);
+            //screenRecorderWindow.Owner = this;
+
+            /// We need to set the eventhandler for the BtnSaveClickedEvent from the ScreenRecorderWindow to handle the datatable 
+            //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
+            //{
+
+            //    /// Here we will load the dataTable to Timeline when it's returned
+            //    _timelineGridControl.SetTimelineDatatable(dataTable);
+            //};
+
+            //Hide(); //hide the main window so it's not showing when ScreenRecorder is opened.
+
         }
 
         private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)

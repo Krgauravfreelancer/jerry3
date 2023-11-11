@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VideoCreator.XAML"
              xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl" 
-             mc:Ignorable="d"  Height="870 " Width="1200">
+             mc:Ignorable="d"  Height="900 " Width="1200">
     
     <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="70"></RowDefinition>
-            <RowDefinition Height="870"></RowDefinition>
+            <RowDefinition Height="900"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Margin="5" HorizontalAlignment="Center" VerticalAlignment="top" Height="60">
             <Label Content="CB Video Creator - Manage Timeline" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
@@ -35,7 +35,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="300"></RowDefinition>
                 <RowDefinition Height="170"></RowDefinition>
-                <RowDefinition Height="320"></RowDefinition>
+                <RowDefinition Height="350"></RowDefinition>
             </Grid.RowDefinitions>
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" />
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="0"/>
@@ -63,7 +63,7 @@
                 </local:Audio_UserControl.ContextMenu>
             </local:Audio_UserControl>
 
-            <local:Timeline_UserControl Height="320" Width="1150" Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" />
+            <local:Timeline_UserControl Height="350" Width="1150" Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" />
         </Grid>
     </Grid>
 </UserControl>

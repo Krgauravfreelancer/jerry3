@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoCreator.XAML" 
-        xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl"
-        mc:Ignorable="d" Height="505" Width="700">
+        xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl_v2"
+        mc:Ignorable="d" Height="520" Width="700">
     <UserControl.Resources>
         <DataTemplate x:Key="DefaultTemplate">
             <Grid x:Name="GridItem" Height="25"  Background="#33E6E6E6">
@@ -22,9 +22,21 @@
     </UserControl.Resources>
 
     <Grid>
-        <StackPanel>
-            <screenrecorder_usercontrol:ScreenRecorder_Control Name="Recorder" Loaded="Recorder_Loaded" Unloaded="Recorder_UnLoaded" Padding="20,5" CancelClicked="ScreenRecorder_Control_CancelClicked" SaveClicked="ScreenRecorder_Control_SaveClicked"/>
-            <Border Background="#FFE6E6E6" Padding="25,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition MaxWidth="0"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel>
+            <screenrecorder_usercontrol:ScreenRecorder_Control Name="Recorder" Loaded="Recorder_Loaded" DockPanel.Dock="Top" Padding="20,5" TextReceived="Recorder_TextReceived"/>
+            <Border Height="50" DockPanel.Dock="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="SaveBtn" Width="100px" Grid.Column="2" Margin="5" Padding="5" VerticalAlignment="Center" Content="Save" Click="SaveBtn_Click"/>
+                    <Button Name="CancelBtn" Width="100px" Grid.Column="1" Margin="5" Padding="5" VerticalAlignment="Center" Content="Cancel" />
+                    <Button Name="DeleteBtn" Width="100px" Grid.Column="1" Margin="5" Padding="5" VerticalAlignment="Center" Content="Delete Selected" />
+                    <Button Name="PlayBtn" Width="100px" Grid.Column="1" Margin="5" Padding="5" VerticalAlignment="Center" Content="Play" />
+                </StackPanel>
+            </Border>
+            <Border Background="#FFE6E6E6" Padding="25,0" DockPanel.Dock="Top">
                 <Grid Grid.Column="1" Margin="0,15">
                     <StackPanel Orientation="Vertical">
                         <Grid Margin="0,5">
@@ -37,7 +49,7 @@
                             <TextBlock Text="Start" Grid.Column="1" TextAlignment="Center"/>
                             <TextBlock Text="Duration" Grid.Column="2" TextAlignment="Center"/>
                         </Grid>
-                        <ListBox Name="listBoxVideoEvent" ItemTemplate="{StaticResource DefaultTemplate}" Height="300">
+                        <ListBox Name="listBoxVideoEvent" ItemTemplate="{StaticResource DefaultTemplate}" Height="220">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
@@ -47,6 +59,8 @@
                     </StackPanel>
                 </Grid>
             </Border>
-        </StackPanel>
+        </DockPanel>
+
+        <TextBox Name="TextTestBox" Visibility="Collapsed" Grid.Column="1" AcceptsReturn="True" AcceptsTab="True" Padding="5" Background="#FFCCCCCC" VerticalScrollBarVisibility="Visible"/>
     </Grid>
 </UserControl>

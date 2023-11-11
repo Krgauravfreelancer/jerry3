@@ -22,7 +22,8 @@
             <MenuItem Header="Run" x:Name="MenuItem_Run" Click="ContextMenuRunClickEvent"></MenuItem>
         </ContextMenu>
     </UserControl.Resources>
-        <Grid Height="280">
+
+    <Grid Height="280">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -73,4 +74,5 @@
 
         </Grid>
     </Grid>
+
 </UserControl>

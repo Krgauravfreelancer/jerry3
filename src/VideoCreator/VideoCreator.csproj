@@ -183,6 +183,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ScreenRecorder_UserControl.dll</HintPath>
     </Reference>
+    <Reference Include="ScreenRecorder_UserControl_v2, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DebugVideoCreator\Libraries\ScreenRecorder_UserControl_v2.dll</HintPath>
+    </Reference>
     <Reference Include="SixLabors.ImageSharp, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>packages\SixLabors.ImageSharp.2.0.0\lib\net472\SixLabors.ImageSharp.dll</HintPath>
     </Reference>
@@ -253,6 +257,10 @@
     <Reference Include="Timeline.UserControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Timeline.UserControls.dll</HintPath>
+    </Reference>
+    <Reference Include="VoiceScripter_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DebugVideoCreator\Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="WavePlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -412,8 +420,10 @@
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
+    <None Include="Libraries\dbTransferUser_UserControl.dll.config" />
     <None Include="Libraries\regJerry.reg" />
     <None Include="Libraries\regKumarGaurav.reg" />
+    <None Include="Libraries\vosk-model-small-en-us-0.15.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -430,10 +440,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Images\cbslogo_temp.ico" />
+    <Content Include="Libraries\Authentication_UserControl.dll" />
+    <Content Include="Libraries\dbTransferUser_UserControl.dll" />
     <Content Include="Libraries\DesignImager.dll" />
     <Resource Include="Libraries\DesignImager.xml" />
     <Content Include="Libraries\LocalVoiceGen_UserControl.dll" />
+    <Content Include="Libraries\NotesManage_UserControl.dll" />
+    <Content Include="Libraries\Notes_UserControl.dll" />
     <Content Include="Libraries\ScreenRecorder_UserControl.dll" />
+    <Content Include="Libraries\ScreenRecorder_UserControl_v2.dll" />
+    <Content Include="Libraries\Sqllite_Library.dll" />
+    <Content Include="Libraries\VoiceScripter_UserControl.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Aero.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />

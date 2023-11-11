@@ -62,7 +62,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
-
+            
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
@@ -82,7 +82,7 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
-
+        
         private async void checkIfProjectIsLocked()
         {
             //var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
@@ -101,14 +101,14 @@ namespace VideoCreator.XAML
             //}
         }
 
-
+        
         #region === Notes Event Handler event ==
 
         private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
         {
             // Step 1. Save to server
             var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-            var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+            var savedNotes =  await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
 
             // Step 2. Now save the notes to local DB
             var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
@@ -120,7 +120,7 @@ namespace VideoCreator.XAML
         private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
         {
             var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
-            if (result?.Status == "success")
+            if(result?.Status == "success")
             {
                 DataManagerSqlLite.DeleteNotesById(notes.notes_id);
                 NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
@@ -301,7 +301,7 @@ namespace VideoCreator.XAML
                     // We need to insert the Data to server here and once it is success, then to local DB
                     var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
                     var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
-                    if (postResponse.Status == "error")
+                    if(postResponse.Status == "error")
                         MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
                     var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
@@ -746,7 +746,7 @@ namespace VideoCreator.XAML
             }
         }
 
-
+        
 
         private void btnunlock_Click(object sender, RoutedEventArgs e)
         {
