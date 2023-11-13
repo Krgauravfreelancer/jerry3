@@ -182,35 +182,83 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
+        private bool PreValidations()
         {
             if (datagrid.SelectedItem == null)
             {
                 MessageBox.Show("Please select one recrod from Grid", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                return false;
             }
+
+                if ((bool)rbPending.IsChecked)
+                MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            else if ((bool)rbArchived.IsChecked)
+                MessageBox.Show("project is archived, no work possible", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            else if ((bool)rbWIP.IsChecked)
+                return true;
+            else
+                MessageBox.Show("Please select a project from WIP to continue", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            return false;
+        }
+
+        private void manageTimelineButtonReadOnly_Click(object sender, RoutedEventArgs e)
+        {
             int selectedProjectId;
             Int64 selectedServerProjectId;
-            if ((bool)rbPending.IsChecked)
-            {
-                MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            else if ((bool)rbArchived.IsChecked)
-            {
-                MessageBox.Show("project is archived, no work possible", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            else if ((bool)rbWIP.IsChecked)
+            if (PreValidations() == true)
             {
                 selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
                 selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
             }
-            else
+            else return;
+
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel, true);
+
+            var window = new Window
             {
-                MessageBox.Show("Please select a project from WIP to continue", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                //Title = "Manage Timeline",
+                //Content = manageTimeline_UserControl,
+                //WindowState = WindowState.Maximized,
+                //ResizeMode = ResizeMode.CanResize,
+                //WindowStartupLocation = WindowStartupLocation.CenterScreen
+                Title = "Manage Timeline - Readonly",
+                Content = manageTimeline_UserControl,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = manageTimeline_UserControl.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+
+            manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
+            {
+                window.Close();
+            };
+            try
+            {
+                var result = window.ShowDialog();
+                if (result.HasValue)
+                {
+                    datagrid.SelectedItem = null;
+                    manageTimeline_UserControl.Dispose();
+                }
             }
+            catch (Exception)
+            { }
+            InitialiseAndRefreshScreen();
+        }
+
+
+        private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
+        {
+            int selectedProjectId;
+            Int64 selectedServerProjectId;
+            if (PreValidations())
+            {
+                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
+            }
+            else return;
+            
             //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
@@ -392,6 +440,6 @@ namespace VideoCreator.XAML
             Console.WriteLine("The dispose() function has been called and the resources have been released!");
         }
 
-        
+       
     }
 }

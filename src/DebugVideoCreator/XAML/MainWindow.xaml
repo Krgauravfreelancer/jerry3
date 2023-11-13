@@ -53,6 +53,8 @@
         <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,550,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Visibility="Hidden">
             <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
                     Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageTimelineButton"/>
+            <Button Content="Manage Timeline - Readonly" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="manageTimelineButtonReadOnly_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageTimelineButtonReadOnly"/>
             <Button Content="Manage Audio" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"
                 Click="BtnManageAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageAudioButton"/>
             <Button Content="Manage Video" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top"

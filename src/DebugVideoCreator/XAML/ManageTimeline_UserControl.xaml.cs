@@ -19,6 +19,7 @@ using NAudio.CoreAudioApi.Interfaces;
 using VideoCreator.Helpers;
 using System.Windows.Threading;
 using System.Diagnostics.Contracts;
+using System.Windows.Controls;
 
 namespace VideoCreator.XAML
 {
@@ -38,10 +39,12 @@ namespace VideoCreator.XAML
         private AudioEditor editor;
         private readonly AuthAPIViewModel authApiViewModel;
         public event EventHandler closeTheEditWindow;
+        private bool ReadOnly;
 
-        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
+        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
         {
             InitializeComponent();
+            ReadOnly = readonlyMode;
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
@@ -55,21 +58,22 @@ namespace VideoCreator.XAML
 
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectId);
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectId, ReadOnly);
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
             TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
-            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
-            
+            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
+
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             TimelineUserConrol.LoadVideoEventsFromDb();
-            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent);
+            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
+            ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
             NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
             NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
@@ -82,23 +86,45 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
+
+        private void ResetAudioContextMenu()
+        {
+            if (ReadOnly)
+            {
+                var contextMenu = AudioUserConrol.ContextMenu as ContextMenu;
+                for (int i = 0; i < contextMenu.Items.Count; i++)
+                {
+                    MenuItem item = contextMenu.Items[i] as MenuItem;
+                    if (item != null)
+                    {
+                        if (item?.Name != null && item?.Name == "MenuItem_Run")
+                        {
+                            item.IsEnabled = true; //.Visibility = Visibility.Hidden
+                        }
+                        else
+                            item.IsEnabled = false;
+                    }
+                }
+            }
+        }
+
         
         private async void checkIfProjectIsLocked()
         {
-            //var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
-            //if (response?.project_islocked == true && response?.permission_status == 1)
-            //{
-            //    MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as loacked by you - " + response.lockedby_username);
-            //    btnlock.IsEnabled = false;
-            //    btnunlock.IsEnabled = true;
-            //}
-            //else
-            //{
-            //    MessageBox.Show($"Project is locked by - {response.lockedby_username}, flow coming soon !! ");
-            //    btnlock.IsEnabled = true;
-            //    btnunlock.IsEnabled = false;
-            //    closeTheEditWindow.Invoke(null, null);
-            //}
+            var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
+            if (!ReadOnly && response?.project_islocked == true && response?.permission_status == 1)
+            {
+                //MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as its locked by you - " + response.lockedby_username);
+                btnlock.IsEnabled = false;
+                btnunlock.IsEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ");
+                //btnlock.IsEnabled = true;
+                //btnunlock.IsEnabled = false;
+                //closeTheEditWindow.Invoke(null, null);
+            }
         }
 
         

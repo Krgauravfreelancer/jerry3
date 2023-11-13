@@ -28,6 +28,7 @@ namespace Notes_UserControl
         public event EventHandler<DataTable> updateSingleNoteEvent;
         public event EventHandler<CBVNotes> deleteSingleNoteEvent;
 
+        private bool ReadOnly;
         public Notes_UserControl()
         {
             InitializeComponent();
@@ -37,10 +38,30 @@ namespace Notes_UserControl
 
         
 
-        public void InitializeNotes(int project_id, int videoEvent_id = -1)
+        public void InitializeNotes(int project_id, int videoEvent_id = -1, bool readonlyMode = false)
         {
             selectedproject_id = project_id;
             selectedVideoEventId = videoEvent_id;
+            ReadOnly = readonlyMode;
+            ResetContextMenu();
+            DisplayAllNotesForSelectedVideoEvent();
+        }
+
+
+        private void ResetContextMenu()
+        {
+            if (ReadOnly)
+            {
+                var contextMenu = NotesContextMenu as ContextMenu;
+                for (int i = 0; i < contextMenu.Items.Count; i++)
+                {
+                    MenuItem item = contextMenu.Items[i] as MenuItem;
+                    if (item != null)
+                    {
+                        item.IsEnabled = false;
+                    }
+                }
+            }
         }
 
         public static void DelayAction(int millisecond, Action action)
@@ -190,7 +211,6 @@ namespace Notes_UserControl
             txt1.Padding = new Thickness(5);
             txt1.Width = 350;
             txt1.HorizontalAlignment = HorizontalAlignment.Left;
-
             myBorder1.ContextMenu = GetItemContextMenu(note);
             myBorder1.Child = txt1;
             return myBorder1;
@@ -206,13 +226,17 @@ namespace Notes_UserControl
                 Header = "Manage All Notes"
             };
             manageNoteQuery.Click += ContextMenu_ManageNotesClickEvent;
+            manageNoteQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(manageNoteQuery);
+
+
 
             MenuItem addNewNoteQuery = new MenuItem
             {
                 Header = "Add New Note"
             };
             addNewNoteQuery.Click += ContextMenu_AddNewNoteClickEvent;
+            addNewNoteQuery.IsEnabled = !ReadOnly; 
             contextMenu.Items.Add(addNewNoteQuery);
 
             var voiceGenerateAllNotesQuery = new MenuItem
@@ -220,6 +244,7 @@ namespace Notes_UserControl
                 Header = "Generate Voice For All Notes"
             };
             voiceGenerateAllNotesQuery.Click += ContextMenu_GenerateVoiceAllNotesClickEvent;
+            voiceGenerateAllNotesQuery.IsEnabled = !ReadOnly; 
             contextMenu.Items.Add(voiceGenerateAllNotesQuery);
 
             contextMenu.Items.Add(new Separator());
@@ -244,6 +269,7 @@ namespace Notes_UserControl
                 var result = window.ShowDialog();
                 DisplayAllNotesForSelectedVideoEvent();
             };
+            editNoteQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(editNoteQuery);
 
             var deleteNoteQuery = new MenuItem
@@ -259,6 +285,7 @@ namespace Notes_UserControl
                 }
 
             };
+            deleteNoteQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(deleteNoteQuery);
 
             var voiceGenerateNoteQuery = new MenuItem
@@ -271,6 +298,7 @@ namespace Notes_UserControl
                     locAudioManageEvent.Invoke(this, note.notes_id);
 
             };
+            voiceGenerateNoteQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(voiceGenerateNoteQuery);
             return contextMenu;
         }

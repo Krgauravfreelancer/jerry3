@@ -18,7 +18,7 @@ namespace VideoCreator.XAML
         CBVVideoEvent selectedEvent = null;
         private int selectedproject_id;
         private int selectedVideoEventId = -1;
-
+        private bool ReadOnly;
         public Audio_UserControl()
         {
             InitializeComponent();
@@ -33,11 +33,12 @@ namespace VideoCreator.XAML
 
         #region == Public Functions ==
 
-        public void SetSelected(int projectId, int videoEventId = -1, CBVVideoEvent _selectedEvent = null)
+        public void SetSelected(int projectId, int videoEventId = -1, CBVVideoEvent _selectedEvent = null, bool readonlyMode = false)
         {
             selectedproject_id = projectId;
             selectedVideoEventId = videoEventId;
             selectedEvent = _selectedEvent;
+            ReadOnly = readonlyMode;
             LoadSelectedAudio(selectedEvent);
         }
 

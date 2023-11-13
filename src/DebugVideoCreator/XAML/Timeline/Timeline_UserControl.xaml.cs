@@ -23,16 +23,40 @@ namespace VideoCreator.XAML
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
+        private bool ReadOnly;
 
         public Timeline_UserControl()
         {
             InitializeComponent();
         }
 
-        public void SetSelectedProjectId(int project_id, int videoEvent_id = -1)
+        public void SetSelectedProjectId(int project_id, bool readonlyMode = false)
         {
             selectedProjectId = project_id;
             InitializeTimeline();
+            ReadOnly = readonlyMode;
+            ResetContextMenu();
+        }
+
+        private void ResetContextMenu()
+        {
+            if (ReadOnly)
+            {
+                var contextMenu = this.Resources["TimelineMenu"] as ContextMenu;
+                for (int i = 0; i < contextMenu.Items.Count; i++)
+                {
+                    MenuItem item = contextMenu.Items[i] as MenuItem;
+                    if (item != null)
+                    {
+                        if (item?.Name != null && item?.Name == "MenuItem_Run")
+                        {
+                            item.IsEnabled = true; //.Visibility = Visibility.Hidden
+                        }
+                        else
+                            item.IsEnabled = false;
+                    }
+                }
+            }
         }
 
 
