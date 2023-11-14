@@ -41,21 +41,25 @@ namespace VideoCreator.XAML
         public event EventHandler closeTheEditWindow;
         private bool ReadOnly;
 
-        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
+        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
             InitializeComponent();
-            ReadOnly = readonlyMode;
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
             var subjectText = "Selected Project Id - " + selectedProjectId;
             lblSelectedProjectId.Content = subjectText;
+            //Task.Run(async () => { await checkIfProjectIsLocked(); });
+
             checkIfProjectIsLocked();
+            
+        }
+
+        private void InitializeChildren()
+        {
             popup = new PopupWindow();
             ResetAudioMenuOptions();
             RefreshOrLoadComboBoxes();
-
-
 
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectId, ReadOnly);
@@ -112,19 +116,24 @@ namespace VideoCreator.XAML
         private async void checkIfProjectIsLocked()
         {
             var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
-            if (!ReadOnly && response?.project_islocked == true && response?.permission_status == 1)
+            if (response?.project_islocked == true && response?.permission_status == 1)
             {
                 //MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as its locked by you - " + response.lockedby_username);
-                btnlock.IsEnabled = false;
-                btnunlock.IsEnabled = true;
+                ReadOnly = false;
+                //btnlock.IsEnabled = false;
+                //btnunlock.IsEnabled = true;
+                InitializeChildren();
             }
             else
             {
-                MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ");
+                MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ", "Read Only Mode - Info", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ReadOnly = true;
                 //btnlock.IsEnabled = true;
                 //btnunlock.IsEnabled = false;
                 //closeTheEditWindow.Invoke(null, null);
+                InitializeChildren();
             }
+            
         }
 
         

@@ -200,53 +200,7 @@ namespace VideoCreator.XAML
             return false;
         }
 
-        private void manageTimelineButtonReadOnly_Click(object sender, RoutedEventArgs e)
-        {
-            int selectedProjectId;
-            Int64 selectedServerProjectId;
-            if (PreValidations() == true)
-            {
-                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
-                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
-            }
-            else return;
-
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel, true);
-
-            var window = new Window
-            {
-                //Title = "Manage Timeline",
-                //Content = manageTimeline_UserControl,
-                //WindowState = WindowState.Maximized,
-                //ResizeMode = ResizeMode.CanResize,
-                //WindowStartupLocation = WindowStartupLocation.CenterScreen
-                Title = "Manage Timeline - Readonly",
-                Content = manageTimeline_UserControl,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                RenderSize = manageTimeline_UserControl.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-
-            manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
-            {
-                window.Close();
-            };
-            try
-            {
-                var result = window.ShowDialog();
-                if (result.HasValue)
-                {
-                    datagrid.SelectedItem = null;
-                    manageTimeline_UserControl.Dispose();
-                }
-            }
-            catch (Exception)
-            { }
-            InitialiseAndRefreshScreen();
-        }
-
-
+        
         private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
         {
             int selectedProjectId;
