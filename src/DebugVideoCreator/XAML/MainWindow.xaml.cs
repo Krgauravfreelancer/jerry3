@@ -172,12 +172,11 @@ namespace VideoCreator.XAML
 
         private void SetWelcomeMessage()
         {
-            var encryptedUserId = TestRegisteryHelper.GetUsername();
-            if (string.IsNullOrEmpty(encryptedUserId))
+            var userId = authApiViewModel.GetLoggedInUser();
+            if (string.IsNullOrEmpty(userId))
                 this.Title = "Video Creator, Not Logged in - Username not present in registry !!!";
             else
             {
-                var userId = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, encryptedUserId);
                 this.Title = $"Video Creator, Logged in as - {userId}";
             }
         }

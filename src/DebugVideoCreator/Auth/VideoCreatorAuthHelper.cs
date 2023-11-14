@@ -15,7 +15,7 @@ namespace VideoCreator.Auth
     public class VideoCreatorAuthHelper : ViewModelBase
     {
         //private string token;
-        private IAuthControl authCtrl; //authentication DLL
+        public IAuthControl authCtrl; //authentication DLL
         private IDBTransferControl dbTransferCtrl;
         public string TokenNumber { get; set; }
         public string ErrorMessage { get; set; }
@@ -72,7 +72,6 @@ namespace VideoCreator.Auth
             //for testing purposes
             //this.MacAddress = "FC:B3:BC:A8:84:A5";
         }
-
 
         private void InitializeOrResetDbTransferControl()
         {

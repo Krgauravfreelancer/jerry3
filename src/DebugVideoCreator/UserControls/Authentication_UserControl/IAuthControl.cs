@@ -12,9 +12,7 @@ namespace Authentication_UserControl
 {
     public interface IAuthControl
     {
-        
         void InitConnection();
-
         void InitConnection(string baseURI);
         Task<LoginResponseModel> Login(string macAddress, string accessKey);
         Task<LogoutResponseModel> Logout();
@@ -22,6 +20,8 @@ namespace Authentication_UserControl
         void SetMACAddress(string macAddress);        
         void SetAccessKey(string accessKey);
         string ReadApiKeyFromRegistry();
+
+        string GetLoggedInUser();
 
         HttpClient GetHttpClient();
         //Task<ProjectModel> ListProjects();

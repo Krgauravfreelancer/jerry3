@@ -14,8 +14,8 @@ namespace Authentication_UserControl
 {
     public class AuthControl : IAuthControl
     {
-        private string _userName = string.Empty;
-        private string _password = string.Empty;
+        private string UserName = string.Empty;
+        private string Password = string.Empty;
 
         public AuthControl()
         { }
@@ -41,11 +41,15 @@ namespace Authentication_UserControl
             return client;
         }
 
+        public string GetLoggedInUser()
+        {
+            return this.UserName;
+        }
 
         public async Task<LoginResponseModel> Login(string macAddress, string accessKey)
         {
             var url = "employee/login";
-            var parameters = new Dictionary<string, string> { { "username", this._userName }, { "password", this._password },{ "mac", macAddress }};
+            var parameters = new Dictionary<string, string> { { "username", this.UserName }, { "password", this.Password },{ "mac", macAddress }};
             var encodedContent = new FormUrlEncodedContent(parameters);
             SetAccessKey(accessKey);
             using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.PostAsync(url, encodedContent))
@@ -161,10 +165,15 @@ namespace Authentication_UserControl
             {
                 if (key != null)
                 {
-                    this._userName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg2")));
-                    this._password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg1")));
+                    this.UserName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg2")));
+                    this.Password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg1")));
+                    // Comment below to use user creds else manager overwrite code
+                    this.UserName = "manager_kumar";
+                    this.Password = "manag3rKumarP@ssw0rd";
+
+
                     key.Close(); 
-                    if (string.IsNullOrEmpty(this._userName) || string.IsNullOrEmpty(this._password))
+                    if (string.IsNullOrEmpty(this.UserName) || string.IsNullOrEmpty(this.Password))
                         ExitApplication("Unable to read or decrypt credentials");
                     
                 }

@@ -84,7 +84,12 @@ namespace VideoCreator.Auth
         }
 
 
-        
+        public string GetLoggedInUser()
+        {
+            return _apiClientHelper.authCtrl.GetLoggedInUser();
+        }
+
+
         #region == Project API Calls ==
 
         public async Task<List<ProjectModel>> GetProjectsData(DateTime? modifiedDate = null, ProjectStatusEnum status = 0)
@@ -112,7 +117,7 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Create<ParentData<ProjectAcceptRejectModel>>(url, payload);
             return result != null ? result : null;
         }
-        
+
         public async Task CreateProject(string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
             var url = $"api/connect/project";
@@ -463,7 +468,7 @@ namespace VideoCreator.Auth
                 multipart.Add(requestbodyContent_notes);
             }
             // design
-            if(videoEventModel.design?.Count > 0)
+            if (videoEventModel.design?.Count > 0)
             {
                 var requestbodyContent_design = new StringContent(JsonConvert.SerializeObject(videoEventModel.design));
                 requestbodyContent_design.Headers.Add("Content-Disposition", "form-data; name=\"design\"");
@@ -576,7 +581,7 @@ namespace VideoCreator.Auth
         {
             var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes/{notesId}";
             var parameters = new Dictionary<string, string>();
-            
+
             var payload = new FormUrlEncodedContent(parameters);
 
             var response = await _apiClientHelper.Delete<ParentData<object>>(url, payload);
@@ -660,7 +665,7 @@ namespace VideoCreator.Auth
         }
 
 
-        
+
 
 
 
