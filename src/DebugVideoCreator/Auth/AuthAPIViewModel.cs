@@ -460,6 +460,8 @@ namespace VideoCreator.Auth
             requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
             multipart.Add(requestbodyContent_LOCDATE);
 
+            
+
             // notes
             if (videoEventModel.notes?.Count > 0)
             {
@@ -499,6 +501,12 @@ namespace VideoCreator.Auth
                 fileStreamContent = new StreamContent(fileReadStream);
                 fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
                 multipart.Add(fileStreamContent);
+
+
+                // LOC DATE
+                var requestbodyContent_VideoSegmentLOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
+                requestbodyContent_VideoSegmentLOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videosegment_modifylocdate\"");
+                multipart.Add(requestbodyContent_VideoSegmentLOCDATE);
             }
 
             var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoEventResponseModel>>(url, multipart);
@@ -511,7 +519,7 @@ namespace VideoCreator.Auth
                 fileStreamContent.Dispose();
                 File.Delete(pathWithFilename);
             }
-            return result.Data;
+            return result?.Data;
         }
 
         public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)

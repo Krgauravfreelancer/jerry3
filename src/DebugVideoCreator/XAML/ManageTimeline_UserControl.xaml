@@ -59,11 +59,12 @@
                         <MenuItem Header="Add from File" Click="ContextMenuAddAudioFromFileClickEvent"/>
                         <MenuItem Header="Record Audio" Click="ContextMenuRecordAudioClickEvent"/>
                         <MenuItem Header="Manage Audio" IsEnabled="False" Click="ContextMenuManageAudioClickEvent"/>
+                        <MenuItem Header="Add Video Event to Selected Timeline" Click="OpenScreenRecorderForVideoEvent_Click" />
                     </ContextMenu>
                 </local:Audio_UserControl.ContextMenu>
             </local:Audio_UserControl>
 
-            <local:Timeline_UserControl Height="300" Width="1150" Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" />
+            <!--<local:Timeline_UserControl Height="300" Width="1150" Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" />-->
         </Grid>
     </Grid>
 </UserControl>

@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoCreator.XAML" 
-        xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl_v2"
-        mc:Ignorable="d" Height="520" Width="700">
+        xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl"
+        mc:Ignorable="d">
     <UserControl.Resources>
         <DataTemplate x:Key="DefaultTemplate">
             <Grid x:Name="GridItem" Height="25"  Background="#33E6E6E6">

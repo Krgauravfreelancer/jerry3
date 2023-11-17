@@ -62,11 +62,11 @@ namespace VideoCreator.XAML
             RefreshOrLoadComboBoxes();
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectId, ReadOnly);
-            TimelineUserConrol.Visibility = Visibility.Visible;
-            TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
-            TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
-            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
+            //TimelineUserConrol.SetSelectedProjectId(selectedProjectId, ReadOnly);
+            //TimelineUserConrol.Visibility = Visibility.Visible;
+            //TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
+            //TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
+            //TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
@@ -75,7 +75,7 @@ namespace VideoCreator.XAML
 
             // Reload Control
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            TimelineUserConrol.LoadVideoEventsFromDb();
+            //TimelineUserConrol.LoadVideoEventsFromDb();
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
@@ -256,10 +256,79 @@ namespace VideoCreator.XAML
             var result = window.ShowDialog();
         }
 
+        private void OpenScreenRecorderForVideoEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
+            screenRecordingUserControl.saveVideoSegmentEvent += ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
+            var screenRecorderWindow = new System.Windows.Window
+            {
+                Title = "Screen Recorder",
+                Content = screenRecordingUserControl,
+                ResizeMode = ResizeMode.NoResize,
+                Height = 750,
+                Width = 750,
+                RenderSize = screenRecordingUserControl.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = screenRecorderWindow.ShowDialog();
+            if (result.HasValue)
+            {
+                TimelineUserConrol_ContextMenu_AddVideoEvent_Success(this, new EventArgs());
+            }
+
+            //ScreenRecorderWindow screenRecorderWindow = new ScreenRecorderWindow(this);
+            //screenRecorderWindow.Owner = this;
+
+            /// We need to set the eventhandler for the BtnSaveClickedEvent from the ScreenRecorderWindow to handle the datatable 
+            //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
+            //{
+
+            //    /// Here we will load the dataTable to Timeline when it's returned
+            //    _timelineGridControl.SetTimelineDatatable(dataTable);
+            //};
+
+            //Hide(); //hide the main window so it's not showing when ScreenRecorder is opened.
+
+        }
+
+        private async void ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked(object sender, DataTable dataTable)
+        {
+            // We need to insert the Data to server here and once it is success, then to local DB
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedServerProjectId, authApiViewModel);
+                if (addedData != null)
+                {
+                    var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectId);
+                    var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+                    if (insertedVideoEventIds?.Count > 0)
+                    {
+                        var videoEventId = insertedVideoEventIds[0];
+                        var blob = row["media"] as byte[];
+                        var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
+                        var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
+                        if (insertedVideoSegmentId > 0)
+                        {
+                            RefreshOrLoadComboBoxes();
+                            //TimelineUserConrol.ClearTimeline();
+                            //TimelineUserConrol.LoadVideoEventsFromDb();
+                            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                            //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                            MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+        }
+
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Success(object sender, EventArgs e)
         {
             RefreshOrLoadComboBoxes();
-            TimelineUserConrol.LoadVideoEventsFromDb();
+            //TimelineUserConrol.LoadVideoEventsFromDb();
             FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
         }
@@ -343,8 +412,8 @@ namespace VideoCreator.XAML
                     if (insertedVideoSegmentId > 0)
                     {
                         RefreshOrLoadComboBoxes();
-                        TimelineUserConrol.ClearTimeline();
-                        TimelineUserConrol.LoadVideoEventsFromDb();
+                        //TimelineUserConrol.ClearTimeline();
+                        //TimelineUserConrol.LoadVideoEventsFromDb();
                         FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                         //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                         MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -369,7 +438,7 @@ namespace VideoCreator.XAML
             if (result.HasValue)
             {
                 RefreshOrLoadComboBoxes();
-                TimelineUserConrol.LoadVideoEventsFromDb();
+                //TimelineUserConrol.LoadVideoEventsFromDb();
             }
         }
 

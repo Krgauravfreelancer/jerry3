@@ -347,3 +347,5 @@
 /src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/packages
 /src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/ScreenRecorder_Wrapper/bin
 /src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/ScreenRecorder_Wrapper/obj
+/src/DebugVideoCreator/bin/x64/Debug
+/src/DebugVideoCreator/obj/x64/Debug

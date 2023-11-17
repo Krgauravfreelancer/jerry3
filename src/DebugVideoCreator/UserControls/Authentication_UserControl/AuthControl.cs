@@ -168,8 +168,8 @@ namespace Authentication_UserControl
                     this.UserName = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg2")));
                     this.Password = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg1")));
                     // Comment below to use user creds else manager overwrite code
-                    this.UserName = "manager_kumar";
-                    this.Password = "manag3rKumarP@ssw0rd";
+                    //this.UserName = "manager_kumar";
+                    //this.Password = "manag3rKumarP@ssw0rd";
 
 
                     key.Close(); 

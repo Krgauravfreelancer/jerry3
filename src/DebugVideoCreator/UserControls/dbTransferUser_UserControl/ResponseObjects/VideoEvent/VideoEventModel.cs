@@ -43,6 +43,7 @@ namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
     {
         public List<NotesModel> notes { get; set; }
         public List<DesignModel> design { get; set; }
+        public VideoSegmentModel videosegment { get; set; }
         public VideoEventResponseObject videoevent { get; set; }
         public VideoEventResponseModel()
         {

@@ -18,10 +18,12 @@ namespace VideoCreator.XAML
     {
         bool showMessageBoxes = false;
         int selectedProjectId = -1;
+        public event EventHandler<DataTable> saveVideoSegmentEvent;
 
         public ScreenRecordingUserControl(int projectId)
         {
             InitializeComponent();
+            
             selectedProjectId = projectId;
             FillListBoxVideoEvent();
         }
@@ -91,91 +93,81 @@ namespace VideoCreator.XAML
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            
-                List<Media> mediaList = Recorder.GetMedia();
-
-                if (mediaList != null)
+            List<Media> mediaList = Recorder.GetMedia();
+            if (mediaList != null)
+            {
+                try
                 {
-                    try
+                    Recorder.IsEnabled = false;
+
+                    var dataTable = new DataTable();
+                    dataTable.Columns.Add("videoevent_id", typeof(int));
+                    dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+                    dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+                    dataTable.Columns.Add("videoevent_track", typeof(int));
+                    dataTable.Columns.Add("videoevent_start", typeof(string));
+                    dataTable.Columns.Add("videoevent_duration", typeof(int));
+                    dataTable.Columns.Add("videoevent_createdate", typeof(string));
+                    dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+                    dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+                    dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
+                    dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
+                    dataTable.Columns.Add("videoevent_issynced", typeof(bool));
+                    dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+                    dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+
+                    // Since this table has Referential Integrity, so lets push one by one
+                    dataTable.Rows.Clear();
+
+                    var SelectedProject = selectedProjectId;
+                    foreach (Media element in mediaList)
                     {
-                        Recorder.IsEnabled = false;
+                        var row = dataTable.NewRow();
+                        row["fk_videoevent_project"] = selectedProjectId;
+                        row["videoevent_track"] = 1;
+                        row["videoevent_start"] = element.StartTime.ToString(@"hh\:mm\:ss");
+                        row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        row["videoevent_isdeleted"] = false;
+                        row["videoevent_issynced"] = false;
+                        row["videoevent_serverid"] = 1;
+                        row["videoevent_syncerror"] = string.Empty;
 
-                        var dataTable = new DataTable();
-                        dataTable.Columns.Add("videoevent_id", typeof(int));
-                        dataTable.Columns.Add("fk_videoevent_project", typeof(int));
-                        dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-                        dataTable.Columns.Add("videoevent_track", typeof(int));
-                        dataTable.Columns.Add("videoevent_start", typeof(string));
-                        dataTable.Columns.Add("videoevent_duration", typeof(int));
-                        dataTable.Columns.Add("videoevent_createdate", typeof(string));
-                        dataTable.Columns.Add("videoevent_modifydate", typeof(string));
-                        dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-                        dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
-                        dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
-                        dataTable.Columns.Add("videoevent_issynced", typeof(bool));
-                        dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
-                        dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+                        var mediaId = 0;
 
-                        // Since this table has Referential Integrity, so lets push one by one
-                        dataTable.Rows.Clear();
-
-                        var SelectedProject = selectedProjectId;
-
-
-                        foreach (Media element in mediaList)
+                        if (element.mediaType == MediaType.Image)
                         {
-                            var row = dataTable.NewRow();
-                            row["fk_videoevent_project"] = selectedProjectId;
-                            row["videoevent_track"] = 1;
-                            row["videoevent_start"] = element.StartTime.ToString(@"hh\:mm\:ss");
-                            row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                            row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                            row["videoevent_isdeleted"] = false;
-                            row["videoevent_issynced"] = false;
-                            row["videoevent_serverid"] = 1;
-                            row["videoevent_syncerror"] = string.Empty;
-
-                            var mediaId = 0;
-
-                            if (element.mediaType == MediaType.Image)
-                            {
-                                mediaId = 1;
-                            }
-
-                            if (element.mediaType == MediaType.Video)
-                            {
-                                mediaId = 2;
-                            }
-
-                            row["videoevent_duration"] = element.Duration.TotalSeconds;
-
-                            row["fk_videoevent_media"] = mediaId;
-
-                            row["fk_videoevent_screen"] = -1; // Not needed for this case
-
-                            row["media"] = element.mediaData;
-
-                            dataTable.Rows.Add(row);
-
-
+                            mediaId = 1;
                         }
 
-                        List<int> InsertedIDs = CreateMediaEvents(dataTable);
+                        if (element.mediaType == MediaType.Video)
+                        {
+                            mediaId = 2;
+                        }
 
-                        SaveNotes(InsertedIDs, mediaList);
-
-                       
+                        row["videoevent_duration"] = element.Duration.TotalSeconds;
+                        row["fk_videoevent_media"] = mediaId;
+                        row["fk_videoevent_screen"] = -1; // Not needed for this case
+                        row["media"] = element.mediaData;
+                        dataTable.Rows.Add(row);
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    saveVideoSegmentEvent?.Invoke(sender, dataTable);
+                    //List<int> InsertedIDs = CreateMediaEvents(dataTable);
 
-                    Recorder.Reset();
-                    Recorder.IsEnabled = true;
+                    //SaveNotes(InsertedIDs, mediaList);
+
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
 
-            
+                Recorder.Reset();
+                Recorder.IsEnabled = true;
+            }
+
+
         }
 
         private void SaveNotes(List<int> InsertedIDs, List<Media> mediaList)
@@ -280,6 +272,6 @@ namespace VideoCreator.XAML
         }
     }
 
-    
+
 }
 
