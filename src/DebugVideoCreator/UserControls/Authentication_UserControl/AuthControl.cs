@@ -94,21 +94,14 @@ namespace Authentication_UserControl
         public async Task<LogoutResponseModel> Logout()
         {
              var url = "employee/logout";
-
-            //var parameters = new Dictionary<string, string> { { "username", this._userName }, { "password", this._password }, { "mac", macAddress } };
-            //var encodedContent = new FormUrlEncodedContent(parameters);
-
-            //SetAccessKey(accessKey);
-            //SetToken(token);
-            //SetMACAddress(macAddress);
             using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.GetAsync(url))
             {
                 response.EnsureSuccessStatusCode();
                 if (response.IsSuccessStatusCode)
                 {
-                    var projectDet = response.Content.ReadAsStringAsync().Result;
-                    var project = JsonSerializer.Deserialize<LogoutResponseModel>(projectDet);
-                    return project;
+                    var result = response.Content.ReadAsStringAsync().Result;
+                    var jsonResponse = JsonSerializer.Deserialize<LogoutResponseModel>(result);
+                    return jsonResponse;
                 }
                 else
                 {
