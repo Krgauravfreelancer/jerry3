@@ -23,7 +23,7 @@ namespace VideoCreator.XAML
         public ScreenRecordingUserControl(int projectId)
         {
             InitializeComponent();
-            
+
             selectedProjectId = projectId;
             FillListBoxVideoEvent();
         }
@@ -115,6 +115,7 @@ namespace VideoCreator.XAML
                     dataTable.Columns.Add("videoevent_issynced", typeof(bool));
                     dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
                     dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+                    dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
 
                     // Since this table has Referential Integrity, so lets push one by one
                     dataTable.Rows.Clear();
@@ -149,6 +150,8 @@ namespace VideoCreator.XAML
                         row["fk_videoevent_media"] = mediaId;
                         row["fk_videoevent_screen"] = -1; // Not needed for this case
                         row["media"] = element.mediaData;
+
+                        row["videoevent_notes"] = GetNotesDataTable(element);
                         dataTable.Rows.Add(row);
                     }
                     saveVideoSegmentEvent?.Invoke(sender, dataTable);
@@ -168,6 +171,52 @@ namespace VideoCreator.XAML
             }
 
 
+        }
+
+        private DataTable GetNotesDataTable(Media media)
+        {
+            var notesDataTable = new DataTable();
+            notesDataTable.Columns.Add("notes_id", typeof(int));
+            notesDataTable.Columns.Add("fk_notes_videoevent", typeof(int));
+            notesDataTable.Columns.Add("notes_line", typeof(string));
+            notesDataTable.Columns.Add("notes_wordcount", typeof(int));
+            notesDataTable.Columns.Add("notes_index", typeof(int));
+            notesDataTable.Columns.Add("notes_start", typeof(string));
+            notesDataTable.Columns.Add("notes_duration", typeof(int));
+            notesDataTable.Columns.Add("notes_createdate", typeof(string));
+            notesDataTable.Columns.Add("notes_modifydate", typeof(string));
+            notesDataTable.Columns.Add("notes_isdeleted", typeof(bool));
+            notesDataTable.Columns.Add("notes_issynced", typeof(bool));
+            notesDataTable.Columns.Add("notes_serverid", typeof(long));
+            notesDataTable.Columns.Add("notes_syncerror", typeof(string));
+
+            notesDataTable.Rows.Clear();
+
+            
+            int NotesIndex = 0;
+            foreach (var element in media.RecordedTextList)
+            {
+                var noteRow = notesDataTable.NewRow();
+
+                noteRow["notes_id"] = -1;
+                noteRow["fk_notes_videoevent"] = -1;
+                noteRow["notes_line"] = element.Text.Replace("'", "''"); ;
+                noteRow["notes_wordcount"] = element.WordCount;
+                noteRow["notes_index"] = NotesIndex;
+                noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss");
+                noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
+                noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                noteRow["notes_isdeleted"] = false;
+                noteRow["notes_issynced"] = false;
+                noteRow["notes_serverid"] = 1;
+                noteRow["notes_syncerror"] = string.Empty;
+
+                notesDataTable.Rows.Add(noteRow);
+                NotesIndex++;
+
+            }
+            return notesDataTable;
         }
 
         private void SaveNotes(List<int> InsertedIDs, List<Media> mediaList)

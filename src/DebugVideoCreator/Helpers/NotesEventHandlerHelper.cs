@@ -40,7 +40,7 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static DataTable GetNotesDataTableForLocalDB(List<NotesModel> notes, int selectedVideoEventId)
+        public static DataTable GetNotesDataTableForLocalDB(List<NotesModel> notes, int localVideoEventId)
         {
             var dtNotes = new DataTable();
             dtNotes.Columns.Add("notes_id", typeof(int));
@@ -57,11 +57,11 @@ namespace VideoCreator.Helpers
             dtNotes.Columns.Add("notes_serverid", typeof(Int64));
             dtNotes.Columns.Add("notes_syncerror", typeof(string));
 
-            AddNotesRowToDataTable(dtNotes, notes, selectedVideoEventId);
+            AddNotesRowToDataTable(dtNotes, notes, localVideoEventId);
             return dtNotes;
         }
 
-        private static DataTable AddNotesRowToDataTable(this DataTable dt, List<NotesModel> notes, int selectedVideoEventId)
+        private static DataTable AddNotesRowToDataTable(this DataTable dt, List<NotesModel> notes, int localVideoEventId)
         {
             foreach (var item in notes)
             {
@@ -73,7 +73,7 @@ namespace VideoCreator.Helpers
                 dRow["notes_duration"] = 0;
                 dRow["notes_createdate"] = item.notes_createdate;
                 dRow["notes_modifydate"] = item.notes_modifydate;
-                dRow["fk_notes_videoevent"] = selectedVideoEventId;
+                dRow["fk_notes_videoevent"] = localVideoEventId;
                 dRow["notes_wordcount"] = item.notes_wordcount;
                 dRow["notes_isdeleted"] = false;
                 dRow["notes_issynced"] = true;

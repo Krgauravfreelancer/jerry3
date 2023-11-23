@@ -2601,6 +2601,47 @@ namespace Sqllite_Library.Data
             Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} result - {deleteFlag}");
         }
 
+
+        public static void DeleteAllVideoEventsByProjectId(int projectId, bool cascadeDelete)
+        {
+            var deleteQueryString = $@" 
+                                        Delete from cbv_videoevent 
+                                        WHERE 
+                                            fk_videoevent_project = {projectId};
+                                        ";
+
+            if (cascadeDelete == true)
+                deleteQueryString = $@" Delete from cbv_design 
+                                        WHERE 
+                                            fk_design_videoevent in (Select videoevent_id from cbv_videoevent where fk_videoevent_project = {projectId});
+
+                                        Delete from cbv_videosegment 
+                                        WHERE 
+                                            videosegment_id in (Select videoevent_id from cbv_videoevent where fk_videoevent_project = {projectId});
+                                        
+                                        Delete from cbv_locaudio 
+                                        WHERE 
+                                            fk_locaudio_notes in (
+                                                                    Select 
+                                                                        notes_id 
+                                                                    from 
+                                                                        cbv_notes 
+                                                                    WHERE 
+                                                                        fk_notes_videoevent In (Select videoevent_id from cbv_videoevent where fk_videoevent_project = {projectId})
+                                                                );
+                                
+            
+                                        Delete from cbv_notes 
+                                        WHERE 
+                                            fk_notes_videoevent in (Select videoevent_id from cbv_videoevent where fk_videoevent_project = {projectId});
+
+                                        " + deleteQueryString;
+            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
+            Console.WriteLine($@"DeleteAllVideoEventsByProjectId Success for projectId - {projectId} with cascadeflag - {cascadeDelete}");
+        }
+
+
+
         #region == Delete Helper Methods ==
         private static bool DeleteRecordsInTable(string deleteQuery)
         {

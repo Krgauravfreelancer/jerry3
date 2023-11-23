@@ -41,19 +41,7 @@ namespace VideoCreator.Helpers
 
         public static DataTable GetVideoEventDataTableForVideoOrImage(VideoEventResponseModel addedData, int selectedProjectId)
         {
-            var dtVideoEvent = new DataTable();
-            dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_project", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_duration", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_track", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_media", typeof(int));
-            dtVideoEvent.Columns.Add("videoevent_createdate", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_modifydate", typeof(string));
-            dtVideoEvent.Columns.Add("videoevent_isdeleted", typeof(bool));
-            dtVideoEvent.Columns.Add("videoevent_issynced", typeof(bool));
-            dtVideoEvent.Columns.Add("videoevent_serverid", typeof(Int64));
-            dtVideoEvent.Columns.Add("videoevent_syncerror", typeof(string));
+            var dtVideoEvent = GetVideoEventDataTable();
 
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
@@ -73,6 +61,26 @@ namespace VideoCreator.Helpers
         }
 
         
+
+        public static DataTable GetVideoEventTableWithData(int selectedProjectId, AllVideoEventResponseModel videoevent)
+        {
+            var dt = GetVideoEventDataTable();
+            var row = dt.NewRow();
+            row["videoevent_id"] = -1;
+            row["fk_videoevent_project"] = selectedProjectId;
+            row["videoevent_start"] = videoevent.videoevent_start;
+            row["videoevent_track"] = videoevent.videoevent_track;
+            row["videoevent_duration"] = videoevent.videoevent_duration;
+            row["fk_videoevent_media"] = videoevent.fk_videoevent_media;
+            row["videoevent_createdate"] = videoevent.videoevent_createdate;
+            row["videoevent_modifydate"] = videoevent.videoevent_modifydate;
+            row["videoevent_isdeleted"] = videoevent.videoevent_isdeleted;
+            row["videoevent_issynced"] = true;
+            row["videoevent_serverid"] = videoevent.videoevent_id;
+            row["videoevent_syncerror"] = "";
+            dt.Rows.Add(row);
+            return dt;
+        }
 
         public static DataTable GetVideoSegmentDataTableForVideoOrImage(byte[] blob, int videoeventId, VideoSegmentModel videosegment)
         {
@@ -100,20 +108,24 @@ namespace VideoCreator.Helpers
             return dtVideoEvent;
         }
 
-        private static List<DesignModel> GetDesignModelListForPut(int videoeventId, CBVVideoEvent videoevent)
+        private static DataTable GetVideoEventDataTable()
         {
-            var data = new List<DesignModel>();
-            foreach (var design in videoevent.design_data)
-            {
-                var designModel = new DesignModel();
-                designModel.fk_design_screen = design.fk_design_screen;
-                designModel.design_xml = design.design_xml;
-                designModel.fk_design_videoevent = (int)videoevent.videoevent_serverid;
-                designModel.design_id = (int)design.design_serverid;
-                data.Add(designModel);
-            }
-            return data;
+            var dtVideoEvent = new DataTable();
+            dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
+            dtVideoEvent.Columns.Add("fk_videoevent_project", typeof(int));
+            dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
+            dtVideoEvent.Columns.Add("videoevent_duration", typeof(int));
+            dtVideoEvent.Columns.Add("videoevent_track", typeof(int));
+            dtVideoEvent.Columns.Add("fk_videoevent_media", typeof(int));
+            dtVideoEvent.Columns.Add("videoevent_createdate", typeof(string));
+            dtVideoEvent.Columns.Add("videoevent_modifydate", typeof(string));
+            dtVideoEvent.Columns.Add("videoevent_isdeleted", typeof(bool));
+            dtVideoEvent.Columns.Add("videoevent_issynced", typeof(bool));
+            dtVideoEvent.Columns.Add("videoevent_serverid", typeof(Int64));
+            dtVideoEvent.Columns.Add("videoevent_syncerror", typeof(string));
+            return dtVideoEvent;
         }
+
 
         #endregion
     }

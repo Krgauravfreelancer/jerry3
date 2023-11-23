@@ -56,12 +56,12 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToProject(DataTable data)
         {
-            foreach (DataRow rowMain in data.Rows)
-            {
-                var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
-                if (!backgroundFlag)
-                    throw new Exception("background_id foreign key constraint not successful ");
-            }
+            //foreach (DataRow rowMain in data.Rows)
+            //{
+            //    //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
+            //    //if (!backgroundFlag)
+            //    //    throw new Exception("background_id foreign key constraint not successful ");
+            //}
             return SqlLiteData.InsertRowsToProject(data);
         }
 
@@ -72,14 +72,14 @@ namespace Sqllite_Library.Business
             var insertedIds = new List<int>();
             foreach (DataRow rowMain in data.Rows)
             {
-                var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)rowMain["fk_videoevent_project"]);
-                if (!projectFlag)
-                    throw new Exception("project_Id foreign key constraint not successful ");
+                //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)rowMain["fk_videoevent_project"]);
+                //if (!projectFlag)
+                //    throw new Exception("project_Id foreign key constraint not successful ");
 
                 var mediaId = (int)rowMain["fk_videoevent_media"];
-                var mediaFlag = SqlLiteData.ReferentialKeyPresent("cbv_media", "media_id", mediaId);
-                if (!mediaFlag)
-                    throw new Exception("media_Id foreign key constraint not successful ");
+                //var mediaFlag = SqlLiteData.ReferentialKeyPresent("cbv_media", "media_id", mediaId);
+                //if (!mediaFlag)
+                //    throw new Exception("media_Id foreign key constraint not successful ");
 
                 var insertedId = SqlLiteData.InsertRowsToVideoEvent(rowMain);
                 if (insertedId > 0 && populateDependentTablesFlag)
@@ -192,10 +192,6 @@ namespace Sqllite_Library.Business
         public static int InsertRowsToVideoSegment(DataTable data, int fk_value)
         {
             // For Johan
-            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
-            if (!videoeventFlag)
-                throw new Exception("videoevent_Id foreign key constraint not successful ");
-
             //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
             //if (!videoeventFlag)
             //    throw new Exception("videoevent_Id foreign key constraint not successful ");
@@ -205,17 +201,17 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToDesign(DataTable data)
         {
-            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_design_videoevent"]);
-            if (!videoeventFlag)
-                throw new Exception("videoevent_Id foreign key constraint not successful ");
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_design_videoevent"]);
+            //if (!videoeventFlag)
+            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
 
-            var bgFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)data?.Rows[0]["fk_design_background"]);
-            if (!bgFlag)
-                throw new Exception("background_Id foreign key constraint not successful ");
+            //var bgFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)data?.Rows[0]["fk_design_background"]);
+            //if (!bgFlag)
+            //    throw new Exception("background_Id foreign key constraint not successful ");
 
-            var screenFlag = SqlLiteData.ReferentialKeyPresent("cbv_screen", "screen_id", (int)data?.Rows[0]["fk_design_screen"]);
-            if (!screenFlag)
-                throw new Exception("screen_Id foreign key constraint not successful ");
+            //var screenFlag = SqlLiteData.ReferentialKeyPresent("cbv_screen", "screen_id", (int)data?.Rows[0]["fk_design_screen"]);
+            //if (!screenFlag)
+            //    throw new Exception("screen_Id foreign key constraint not successful ");
 
 
             return SqlLiteData.InsertRowsToDesign(data);
@@ -237,9 +233,9 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToNotes(DataTable data)
         {
-            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
-            if (!videoeventFlag)
-                throw new Exception("videoevent_Id foreign key constraint not successful ");
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
+            //if (!videoeventFlag)
+            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToNotes(data);
         }
@@ -255,9 +251,9 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToFinalMp4(DataTable data)
         {
-            var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)data?.Rows[0]["fk_finalmp4_project"]);
-            if (!projectFlag)
-                throw new Exception("project_id foreign key constraint not successful ");
+            //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)data?.Rows[0]["fk_finalmp4_project"]);
+            //if (!projectFlag)
+            //    throw new Exception("project_id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToFinalMp4(data);
         }
@@ -269,9 +265,9 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToBackground(DataTable data)
         {
-            var companyFlag = SqlLiteData.ReferentialKeyPresent("cbv_company", "company_id", (int)data?.Rows[0]["fk_background_company"]);
-            if (!companyFlag)
-                throw new Exception("company_id foreign key constraint not successful ");
+            //var companyFlag = SqlLiteData.ReferentialKeyPresent("cbv_company", "company_id", (int)data?.Rows[0]["fk_background_company"]);
+            //if (!companyFlag)
+            //    throw new Exception("company_id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToBackground(data);
         }
@@ -514,6 +510,11 @@ namespace Sqllite_Library.Business
             SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete);
         }
 
+        public static void DeleteAllVideoEventsByProjectId(int projectId, bool cascadeDelete)
+        {
+            SqlLiteData.DeleteAllVideoEventsByProjectId(projectId, cascadeDelete);
+        }
+
         #endregion
 
         #region == Upsert Methods ==
@@ -546,9 +547,9 @@ namespace Sqllite_Library.Business
         {
             foreach (DataRow rowMain in data.Rows)
             {
-                var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
-                if (!backgroundFlag)
-                    throw new Exception("background_id foreign key constraint not successful ");
+                //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
+                //if (!backgroundFlag)
+                //    throw new Exception("background_id foreign key constraint not successful ");
             }
             return SqlLiteData.UpsertRowsToProject(data);
         }

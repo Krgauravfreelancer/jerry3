@@ -433,6 +433,15 @@ namespace VideoCreator.Auth
         */
         #region == Video Event ==
 
+        public async Task<ParentDataList<AllVideoEventResponseModel>> GetAllVideoEventsbyProjectId(Int64 selectedServerProjectId)
+        {
+            var url = $"api/connect/project/{selectedServerProjectId}/videoevent";
+
+            var result = await _apiClientHelper.Get<ParentDataList<AllVideoEventResponseModel>>(url);
+            if (result != null)
+                return result;
+            return null;
+        }
 
         public async Task<VideoEventResponseModel> POSTVideoEvent(Int64 selectedServerProjectId, VideoEventModel videoEventModel)
         {
@@ -460,7 +469,7 @@ namespace VideoCreator.Auth
             requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
             multipart.Add(requestbodyContent_LOCDATE);
 
-            
+
 
             // notes
             if (videoEventModel.notes?.Count > 0)
@@ -571,6 +580,20 @@ namespace VideoCreator.Auth
             var response = await _apiClientHelper.Get<ProjectLockModel>(url);
             return response;
         }
+
+        public async Task<ParentData<object>> LockProject(Int64 projectServerId, bool lockFlag)
+        {
+            var url = $"api/connect/project/{projectServerId}/lock-unlock";
+            var parameters = new Dictionary<string, string>
+            {
+                { "lock", lockFlag ? "1": "0" }
+            };
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Create<ParentData<object>>(url, payload);
+            return response;
+        }
+
 
         public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
         {

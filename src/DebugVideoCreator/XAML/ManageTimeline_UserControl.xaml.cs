@@ -20,6 +20,8 @@ using VideoCreator.Helpers;
 using System.Windows.Threading;
 using System.Diagnostics.Contracts;
 using System.Windows.Controls;
+using System.Net;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace VideoCreator.XAML
 {
@@ -120,16 +122,16 @@ namespace VideoCreator.XAML
             {
                 //MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as its locked by you - " + response.lockedby_username);
                 ReadOnly = false;
-                //btnlock.IsEnabled = false;
-                //btnunlock.IsEnabled = true;
+                btnlock.IsEnabled = false;
+                btnunlock.IsEnabled = true;
                 InitializeChildren();
             }
             else
             {
-                MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ", "Read Only Mode - Info", MessageBoxButton.OK, MessageBoxImage.Warning);
+                // MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ", "Read Only Mode - Info", MessageBoxButton.OK, MessageBoxImage.Warning);
                 ReadOnly = true;
-                //btnlock.IsEnabled = true;
-                //btnunlock.IsEnabled = false;
+                btnlock.IsEnabled = true;
+                btnunlock.IsEnabled = false;
                 //closeTheEditWindow.Invoke(null, null);
                 InitializeChildren();
             }
@@ -852,14 +854,110 @@ namespace VideoCreator.XAML
 
         
 
-        private void btnunlock_Click(object sender, RoutedEventArgs e)
+        private async void btnReleaseLock_Click(object sender, RoutedEventArgs e)
         {
+            var response = await authApiViewModel.LockProject(selectedServerProjectId, false);
+            if (response?.Status == "success")
+            {
+                MessageBox.Show($"Lock on Project with Id - {selectedServerProjectId} is released successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                ReadOnly = true;
+                btnlock.IsEnabled = true;
+                btnunlock.IsEnabled = false;
+                InitializeChildren();
+            }
+            
+        }
+
+        private async void btnLockForEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var response = await authApiViewModel.LockProject(selectedServerProjectId, true);
+            if (response?.Status == "success")
+            {
+                MessageBox.Show($"Project with Id - {selectedServerProjectId} is locked successfully, waiting for sync","Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+                ReadOnly = false;
+                btnlock.IsEnabled = false;
+                btnunlock.IsEnabled = true;
+                await SyncServerDataToLocalDB();
+                InitializeChildren();
+            }
+            else
+            {
+                MessageBox.Show($"{response?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ReadOnly = true;
+                btnlock.IsEnabled = true;
+                btnunlock.IsEnabled = false;
+                //closeTheEditWindow.Invoke(null, null);
+                InitializeChildren();
+            }
+        }
+
+        private async void btnSync_Click(object sender, RoutedEventArgs e)
+        {
+            var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if(confirm == MessageBoxResult.Yes)
+            {
+                await SyncServerDataToLocalDB();
+            }
+            InitializeChildren();
+        }
+
+        private async Task SyncServerDataToLocalDB()
+        {
+            // Step1: Lets clear the local DB
+
+            DataManagerSqlLite.DeleteAllVideoEventsByProjectId(selectedProjectId, true);
+
+
+            //Step2: Lets fetch the data from 
+            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjectId(selectedServerProjectId);
+
+            if (serverVideoEventData?.Data != null)
+            {
+                foreach (var videoEvent in serverVideoEventData?.Data)
+                {
+                    var localVideoEventId = SaveVideoEvent(videoEvent);
+                    if (videoEvent?.design?.Count > 0)
+                        SaveDesign(localVideoEventId, videoEvent?.design);
+                    if (videoEvent?.notes?.Count > 0)
+                        SaveNotes(localVideoEventId, videoEvent?.notes);
+                    if (videoEvent?.videosegment != null)
+                        SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
+                }
+            }
+            var confirm = MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
 
         }
 
-        private void btnlock_Click(object sender, RoutedEventArgs e)
-        {
 
+        private int SaveVideoEvent(AllVideoEventResponseModel videoevent)
+        {
+            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectId, videoevent);
+            var result = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            return result?.Count > 0 ? result[0]: -1;
+        }
+
+        private void SaveDesign(int localVideoEventId, List<DesignModel> allDesigns)
+        {
+            var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(allDesigns, localVideoEventId);
+            DataManagerSqlLite.InsertRowsToDesign(dtDesign);
+        }
+
+        private void SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
+        {
+            var downloadUrl = videosegment.videosegment_download_url;
+            using (var webClient = new WebClient())
+            {
+                byte[] bytes = webClient.DownloadData(downloadUrl);
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
+            }
+        }
+
+        private void SaveNotes(int localVideoEventId, List<NotesModel> notes)
+        {
+            var dtNotes = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(notes, localVideoEventId);
+            DataManagerSqlLite.InsertRowsToNotes(dtNotes);
         }
 
         private void ResetAudio()
