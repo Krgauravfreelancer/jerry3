@@ -24,7 +24,7 @@ namespace VideoCreator.Helpers
 {
     public static class MediaEventHandlerHelper
     {
-        #region === Image/Video Functions ==
+        #region === Post to server and then save locally ==
 
         public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImage(DataRow row, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
         {
@@ -35,6 +35,20 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_duration = (int)row["videoevent_duration"];
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = (byte[])row["media"];
+            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+            return result;
+        }
+
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImageBackground(CBVVideoEvent videoEvent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        {
+            var objToSync = new VideoEventModel();
+            objToSync.fk_videoevent_media = videoEvent.fk_videoevent_media;
+            objToSync.videoevent_track = videoEvent.videoevent_track; // TBD
+            objToSync.videoevent_start = videoEvent.videoevent_start; // TBD
+            objToSync.videoevent_duration = videoEvent.videoevent_duration;
+            objToSync.videoevent_modifylocdate = videoEvent.videoevent_createdate.ToString("yyyy-MM-dd HH:mm:ss");
+            if(videoEvent?.videosegment_data?.Count > 0)
+                objToSync.videosegment_media_bytes = (byte[])videoEvent?.videosegment_data[0]?.videosegment_media;
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
         }
@@ -61,7 +75,6 @@ namespace VideoCreator.Helpers
         }
 
         
-
         public static DataTable GetVideoEventTableWithData(int selectedProjectId, AllVideoEventResponseModel videoevent)
         {
             var dt = GetVideoEventDataTable();
@@ -82,19 +95,12 @@ namespace VideoCreator.Helpers
             return dt;
         }
 
+
         public static DataTable GetVideoSegmentDataTableForVideoOrImage(byte[] blob, int videoeventId, VideoSegmentModel videosegment)
         {
-            var dtVideoEvent = new DataTable();
-            dtVideoEvent.Columns.Add("videosegment_id", typeof(int));
-            dtVideoEvent.Columns.Add("videosegment_media", typeof(byte[]));
-            dtVideoEvent.Columns.Add("videosegment_createdate", typeof(string));
-            dtVideoEvent.Columns.Add("videosegment_modifydate", typeof(string));
-            dtVideoEvent.Columns.Add("videosegment_isdeleted", typeof(bool));
-            dtVideoEvent.Columns.Add("videosegment_issynced", typeof(bool));
-            dtVideoEvent.Columns.Add("videosegment_serverid", typeof(Int64));
-            dtVideoEvent.Columns.Add("videosegment_syncerror", typeof(string));
+            var dt = GetVideoSegmentDataTable();
 
-            var row = dtVideoEvent.NewRow();
+            var row = dt.NewRow();
             row["videosegment_id"] = videoeventId;
             row["videosegment_media"] = blob;
 
@@ -104,8 +110,67 @@ namespace VideoCreator.Helpers
             row["videosegment_issynced"] = true;
             row["videosegment_serverid"] = videosegment.videosegment_id;
             row["videosegment_syncerror"] = "";
+            dt.Rows.Add(row);
+            return dt;
+        }
+        #endregion
+
+        #region == Save to Local ==
+        public static DataTable GetVideoEventDataTableForVideoOrImageLocally(DataRow datarow, Int64 serverVideoEventId, int selectedProjectId)
+        {
+            var dtVideoEvent = GetVideoEventDataTable();
+
+            var row = dtVideoEvent.NewRow();
+            row["videoevent_id"] = -1;
+            row["fk_videoevent_project"] = selectedProjectId;
+            row["videoevent_start"] = "00:00:00"; // TBD
+            row["videoevent_track"] = 1; // TBD
+            row["videoevent_duration"] = (int)datarow["videoevent_duration"];
+            row["fk_videoevent_media"] = (int)datarow["fk_videoevent_media"];
+            row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_isdeleted"] = false;
+            row["videoevent_issynced"] = false;
+            row["videoevent_serverid"] = serverVideoEventId;
+            row["videoevent_syncerror"] = "";
             dtVideoEvent.Rows.Add(row);
             return dtVideoEvent;
+        }
+
+        public static DataTable GetVideoSegmentDataTableForVideoOrImageLocally(byte[] blob, int videoeventId, Int64 serverVideosegmentId)
+        {
+            var dt = GetVideoSegmentDataTable();
+
+            var row = dt.NewRow();
+            row["videosegment_id"] = videoeventId;
+            row["videosegment_media"] = blob;
+
+            row["videosegment_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videosegment_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videosegment_isdeleted"] = false;
+            row["videosegment_issynced"] = false;
+            row["videosegment_serverid"] = serverVideosegmentId;
+            row["videosegment_syncerror"] = "";
+            dt.Rows.Add(row);
+            return dt;
+        }
+
+        #endregion
+
+        #region == Private Methods ==
+
+        private static DataTable GetVideoSegmentDataTable()
+        {
+            var dtVideoSegment = new DataTable();
+            dtVideoSegment.Columns.Add("videosegment_id", typeof(int));
+            dtVideoSegment.Columns.Add("videosegment_media", typeof(byte[]));
+            dtVideoSegment.Columns.Add("videosegment_createdate", typeof(string));
+            dtVideoSegment.Columns.Add("videosegment_modifydate", typeof(string));
+            dtVideoSegment.Columns.Add("videosegment_isdeleted", typeof(bool));
+            dtVideoSegment.Columns.Add("videosegment_issynced", typeof(bool));
+            dtVideoSegment.Columns.Add("videosegment_serverid", typeof(Int64));
+            dtVideoSegment.Columns.Add("videosegment_syncerror", typeof(string));
+            return dtVideoSegment;
         }
 
         private static DataTable GetVideoEventDataTable()
@@ -126,7 +191,7 @@ namespace VideoCreator.Helpers
             return dtVideoEvent;
         }
 
-
         #endregion
+       
     }
 }

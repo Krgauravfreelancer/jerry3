@@ -22,6 +22,7 @@ using System.Diagnostics.Contracts;
 using System.Windows.Controls;
 using System.Net;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 
 namespace VideoCreator.XAML
 {
@@ -42,6 +43,10 @@ namespace VideoCreator.XAML
         private readonly AuthAPIViewModel authApiViewModel;
         public event EventHandler closeTheEditWindow;
         private bool ReadOnly;
+        private int RetryIntervalInSeconds = 300;
+        private readonly DispatcherTimer dispatcherTimer;
+        private readonly DispatcherTimer dispatcherTimerToCheckIfUnSyncDataPresent;
+        private bool isBackgroundProcessRunning = false;
 
         public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
@@ -54,9 +59,102 @@ namespace VideoCreator.XAML
             //Task.Run(async () => { await checkIfProjectIsLocked(); });
 
             checkIfProjectIsLocked();
-            
+
+
+            // To Check if unsync data present
+            dispatcherTimerToCheckIfUnSyncDataPresent = new DispatcherTimer();
+            dispatcherTimerToCheckIfUnSyncDataPresent.Tick += new EventHandler(RunBackgroundProcessFrequently);
+            dispatcherTimerToCheckIfUnSyncDataPresent.Interval = TimeSpan.FromSeconds(30);
+            dispatcherTimerToCheckIfUnSyncDataPresent.Start();
+            FrequentlyCheckOfflineData();
+
+            // Logic to invoke the BG thread to send not saved data from local DATA to server and update the server Id.
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(RunBackgroundProcess);
+            dispatcherTimer.Interval = TimeSpan.FromSeconds(RetryIntervalInSeconds); 
+            dispatcherTimer.Start();
+
         }
 
+        private void RunBackgroundProcessFrequently(object sender, EventArgs e)
+        {
+            FrequentlyCheckOfflineData();
+        }
+
+        private void FrequentlyCheckOfflineData()
+        {
+            var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectId, true);
+            if (notSyncedData?.Count > 0)
+            {
+                btnUploadNotSyncedData.Content = $"Upload Not Synced Data - {notSyncedData?.Count} events";
+                btnUploadNotSyncedData.Width = 210;
+                btnUploadNotSyncedData.IsEnabled = true;
+                btnDownloadServerData.IsEnabled = false;
+            }
+            else
+            {
+                btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
+                btnUploadNotSyncedData.Width = 160;
+                btnUploadNotSyncedData.IsEnabled = false;
+                btnDownloadServerData.IsEnabled = true;
+            }
+        }
+
+
+        private async void RunBackgroundProcess(object sender, EventArgs e)
+        {
+            await PeriodicallyCheckOfflineDataAndSync();
+            FrequentlyCheckOfflineData();
+        }
+
+        private async Task PeriodicallyCheckOfflineDataAndSync()
+        {
+            if (isBackgroundProcessRunning) return;
+            isBackgroundProcessRunning = true;
+            try
+            {
+                var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectId, true);
+                foreach (var notSyncedRow in notSyncedData)
+                {
+                    if(notSyncedRow.fk_videoevent_media == (int)EnumMedia.IMAGE || notSyncedRow.fk_videoevent_media == (int)EnumMedia.VIDEO) // for image or video
+                    {
+                        await ProcessVideoSegmentDataRowByRowInBackground(notSyncedRow);
+
+                    }
+                    else if(notSyncedRow.fk_videoevent_media == (int)EnumMedia.AUDIO) // for Audio
+                    {
+                        // Coming Soon !!!
+                    }
+                    else if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.FORM) // for DESIGN + IMAGE
+                    {
+                        // TBD
+                    }
+                }
+            }
+            catch(Exception) { }
+            finally { isBackgroundProcessRunning = false; }
+
+        }
+
+        private async Task ProcessVideoSegmentDataRowByRowInBackground(CBVVideoEvent videoEvent)
+        {
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImageBackground(videoEvent, selectedServerProjectId, authApiViewModel);
+            if (addedData != null)
+            {
+                DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, addedData.videoevent.videoevent_id, authApiViewModel.GetError());
+                if (videoEvent?.videosegment_data?.Count > 0)
+                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment.videosegment_id, authApiViewModel.GetError());
+            }
+            else
+            {
+                DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, videoEvent.videoevent_serverid, authApiViewModel.GetError());
+                if (videoEvent?.videosegment_data?.Count > 0)
+                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, videoEvent.videosegment_data[0].videosegment_serverid, authApiViewModel.GetError());
+
+            }
+
+        }
+        
         private void InitializeChildren()
         {
             popup = new PopupWindow();
@@ -297,33 +395,81 @@ namespace VideoCreator.XAML
         {
             // We need to insert the Data to server here and once it is success, then to local DB
             foreach (DataRow row in dataTable.Rows)
+                await ProcessVideoSegmentDataRowByRow(row);
+            
+        }
+
+        private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
+        {
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedServerProjectId, authApiViewModel);
+            if (addedData == null)
             {
-                var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedServerProjectId, authApiViewModel);
-                if (addedData != null)
+                var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
+                    $"{Environment.NewLine}{Environment.NewLine}Press 'Yes' to retry now, " +
+                    $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
+                    $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
+                if (confirmation == MessageBoxResult.Yes)
+                    await ProcessVideoSegmentDataRowByRow(row);
+                else if (confirmation == MessageBoxResult.No)
+                    FailureFlowForSaveImageorVideo(row);
+                else
+                    return;
+            }
+            else
+            {
+                SuccessFlowForSaveImageorVideo(row, addedData);
+            }
+        }
+
+
+        private void SuccessFlowForSaveImageorVideo(DataRow row,  VideoEventResponseModel addedData)
+        {
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectId);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            if (insertedVideoEventIds?.Count > 0)
+            {
+                var videoEventId = insertedVideoEventIds[0];
+                var blob = row["media"] as byte[];
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
+                if (insertedVideoSegmentId > 0)
                 {
-                    var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectId);
-                    var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-                    if (insertedVideoEventIds?.Count > 0)
-                    {
-                        var videoEventId = insertedVideoEventIds[0];
-                        var blob = row["media"] as byte[];
-                        var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
-                        var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
-                        if (insertedVideoSegmentId > 0)
-                        {
-                            RefreshOrLoadComboBoxes();
-                            //TimelineUserConrol.ClearTimeline();
-                            //TimelineUserConrol.LoadVideoEventsFromDb();
-                            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                            //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-                            MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                    RefreshOrLoadComboBoxes();
+                    //TimelineUserConrol.ClearTimeline();
+                    //TimelineUserConrol.LoadVideoEventsFromDb();
+                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                    //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+            }
+        }
+
+        private void FailureFlowForSaveImageorVideo(DataRow row)
+        {
+            // Save the record locally with server Id = temp and issynced = false
+            var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectId);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            if (insertedVideoEventIds?.Count > 0)
+            {
+                var videoEventId = insertedVideoEventIds[0];
+                var blob = row["media"] as byte[];
+                var localServerVideoSegmentId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImageLocally(blob, videoEventId, localServerVideoSegmentId);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, videoEventId);
+                if (insertedVideoSegmentId > 0)
+                {
+                    RefreshOrLoadComboBoxes();
+                    //TimelineUserConrol.ClearTimeline();
+                    //TimelineUserConrol.LoadVideoEventsFromDb();
+                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                    //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    MessageBox.Show($"videosegment record saved locally, background process will try to sync at an interval of {RetryIntervalInSeconds / 60} min.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -891,7 +1037,13 @@ namespace VideoCreator.XAML
             }
         }
 
-        private async void btnSync_Click(object sender, RoutedEventArgs e)
+        private async void btnUploadNotSyncedData_Click(object sender, RoutedEventArgs e)
+        {
+            await PeriodicallyCheckOfflineDataAndSync();
+        }
+
+
+        private async void btnDownloadServer_Click(object sender, RoutedEventArgs e)
         {
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if(confirm == MessageBoxResult.Yes)
@@ -960,6 +1112,7 @@ namespace VideoCreator.XAML
             DataManagerSqlLite.InsertRowsToNotes(dtNotes);
         }
 
+        
         private void ResetAudio()
         {
             AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);

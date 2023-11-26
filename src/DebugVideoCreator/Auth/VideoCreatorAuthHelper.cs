@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.IO;
 using Newtonsoft.Json;
 using System.Net;
+using System.Drawing.Printing;
 
 namespace VideoCreator.Auth
 {
@@ -116,6 +117,7 @@ namespace VideoCreator.Auth
             try
             {
                 IsBusy = true;
+                ErrorMessage = string.Empty;
                 var result = await authCtrl.Logout();
                 if (!string.IsNullOrEmpty(result?.Status))
                 {
@@ -142,6 +144,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
                 var result = await dbTransferCtrl.Get(url);
                 var data = JsonConvert.DeserializeObject<T>(result);
@@ -153,11 +156,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -170,6 +173,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
                 var byteArray = await dbTransferCtrl.GetFileByteArray(url);
                 var memoryStream = new MemoryStream(byteArray);
@@ -185,11 +189,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -201,6 +205,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Create(url, payload);
@@ -213,11 +218,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -230,6 +235,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
                 var result = await dbTransferCtrl.CreateWithFile(url, payload);
                 var data = JsonConvert.DeserializeObject<T>(result);
@@ -241,11 +247,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -258,6 +264,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Update(url, payload);
@@ -270,11 +277,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -287,6 +294,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.UpdateWithFile(url, payload);
@@ -299,11 +307,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -316,6 +324,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Patch(url, payload);
@@ -328,11 +337,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {
@@ -345,6 +354,7 @@ namespace VideoCreator.Auth
         {
             try
             {
+                ErrorMessage = string.Empty;
                 InitializeOrResetDbTransferControl();
 
                 var result = await dbTransferCtrl.Delete(url, payload);
@@ -357,11 +367,11 @@ namespace VideoCreator.Auth
             }
             catch (NullReferenceException)
             {
-                MessageBox.Show(NO_LOGIN_MESSAGE, "Authentication failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = NO_LOGIN_MESSAGE;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = ex.Message;
             }
             finally
             {

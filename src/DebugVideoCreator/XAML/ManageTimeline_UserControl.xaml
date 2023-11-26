@@ -21,11 +21,12 @@
             <Label x:Name="lblSelectedProjectId" Content="Seleted Project Id - " Margin="0,0,0,0" FontWeight="Bold" FontSize="16" Foreground="#3381CC"/>
         </StackPanel>
         <StackPanel Grid.Row="0" Margin="10, 0, 10, 0" Grid.Column="1" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top" Height="60">
-            <Button x:Name="btnlock" Click="btnLockForEdit_Click" Content="Lock For Edit" Width="150" Margin="10" Padding="5 0 5 0" Height="30"  />
-            <Button x:Name="btnunlock" Click="btnReleaseLock_Click" Content="Release lock" Width="150" Margin="10" Padding="5 0 5 0" Height="30"/>
-            <Button x:Name="btnSync" Click="btnSync_Click" Content="Sync Again" Width="150" Margin="10" Padding="5 0 5 0" Height="30" FontWeight="Bold" FontSize="14" Foreground="#3381CC" />
+            <Button x:Name="btnlock" Click="btnLockForEdit_Click" Content="Lock For Edit" Width="100" Margin="2" Padding="5 0 5 0" Height="30"/>
+            <Button x:Name="btnunlock" Click="btnReleaseLock_Click" Content="Release lock" Width="100" Margin="2" Padding="5 0 5 0" Height="30"/>
+            <Button x:Name="btnDownloadServerData" Click="btnDownloadServer_Click" Content="Download Server Data" Width="130" Margin="2" Padding="5 0 5 0" Height="30"/>
+            <Button x:Name="btnUploadNotSyncedData" Click="btnUploadNotSyncedData_Click" Content="Upload Not Synced Data" Width="160" Margin="2" Padding="5 0 5 0" Height="30"/>
             <Label Content="Select Video Event - " Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC" Visibility="Visible" />
-            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="120" Visibility="Visible" Margin="30 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
+            <ComboBox x:Name="cmbVideoEvent" SelectionChanged="cmbVideoEvent_SelectionChanged" Width="120" Visibility="Visible" Margin="5 0 0 0" Height="30" FontWeight="Bold" FontSize="16" Foreground="#3381CC"  />
         </StackPanel>
         <Grid Margin="20,0,20,20" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>

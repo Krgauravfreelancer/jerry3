@@ -223,8 +223,8 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<AppModel>(url);
             if (result != null)
                 return result;
-            else
-                MessageBox.Show($"No data found", "Synchronising Apps Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            //else
+            //    MessageBox.Show($"No data found", "Synchronising Apps Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -234,8 +234,8 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<ParentDataList<MediaModel>>(url);
             if (result?.Data?.Count > 0)
                 return result.Data;
-            else
-                MessageBox.Show($"No data Found", "Synchronising Media Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            //else
+            //    MessageBox.Show($"No data Found", "Synchronising Media Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -245,8 +245,8 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<ParentDataList<ScreenModel>>(url);
             if (result?.Data?.Count > 0)
                 return result.Data;
-            else
-                MessageBox.Show($"No data Found", "Synchronising screen Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            //else
+            //    MessageBox.Show($"No data Found", "Synchronising screen Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -257,8 +257,8 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<List<CompanyModel>>(url);
             if (result != null)
                 return result;
-            else
-                MessageBox.Show($"No Company Found", "Synchronising company Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            //else
+            //    MessageBox.Show($"No Company Found", "Synchronising company Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -268,8 +268,8 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<ParentData<List<BackgroundModel>>>(url);
             if (result != null)
                 return result?.Data;
-            else
-                MessageBox.Show($"No Background Found", "Synchronising Background Data", MessageBoxButton.OK, MessageBoxImage.Error);
+            //else
+            //    MessageBox.Show($"No Background Found", "Synchronising Background Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 

@@ -372,6 +372,12 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetVideoEvents(projectId, dependentDataFlag);
         }
 
+
+        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projectId = 0, bool dependentDataFlag = true)
+        {
+            return SqlLiteData.GetNotSyncedVideoEvents(projectId, dependentDataFlag);
+        }
+
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false)
         {
             return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag);
@@ -454,10 +460,21 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpdateRowsToVideoEvent(dataTable);
         }
 
+        public static void UpdateVideoEventDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
+        {
+            SqlLiteData.UpdateServerId("videoevent", localId, serverId, ErrorMessage);
+        }
+
         public static void UpdateRowsToVideoSegment(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToVideoSegment(dataTable);
         }
+
+        public static void UpdateVideoSegmentDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
+        {
+            SqlLiteData.UpdateServerId("videosegment", localId, serverId, ErrorMessage);
+        }
+        
 
         /*
         public static void UpdateRowsToAudio(DataTable dataTable)

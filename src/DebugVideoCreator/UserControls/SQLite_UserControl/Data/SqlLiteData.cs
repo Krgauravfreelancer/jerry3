@@ -1589,6 +1589,78 @@ namespace Sqllite_Library.Data
 
             return data;
         }
+        
+
+        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projectId, bool dependentDataFlag = true)
+        {
+            var data = new List<CBVVideoEvent>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where fk_videoevent_project = {projectId} and videoevent_issynced = 0 and videoevent_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVideoEvent
+                        {
+                            videoevent_id = sqlReader.GetInt32(0),
+                            fk_videoevent_project = sqlReader.GetInt32(1),
+                            fk_videoevent_media = sqlReader.GetInt32(2),
+                            videoevent_track = sqlReader.GetInt32(3),
+                            videoevent_start = sqlReader.GetString(4),
+                            videoevent_duration = sqlReader.GetInt32(5),
+                            videoevent_end = sqlReader.GetString(6),
+                            videoevent_createdate = sqlReader.GetDateTime(7),
+                            videoevent_modifydate = sqlReader.GetDateTime(8),
+                            videoevent_isdeleted = sqlReader.GetBoolean(9),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
+                        };
+                        if (dependentDataFlag)
+                        {
+                            var videoEventId = sqlReader.GetInt32(0);
+
+                            //var audioData = GetAudio(videoEventId);
+                            //obj.audio_data = audioData;
+
+                            var videoSegmentData = GetVideoSegment(videoEventId, false);
+                            obj.videosegment_data = videoSegmentData;
+
+                            var designData = GetDesign(videoEventId, false);
+                            obj.design_data = designData;
+
+                            var notesData = GetNotes(videoEventId, false);
+                            obj.notes_data = notesData;
+                        }
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception e)
+            {
+                sqlCon?.Close();
+                throw e;
+            }
+
+            return data;
+        }
         public static List<CBVVideoEvent> GetVideoEvents(int projectId, bool dependentDataFlag = false)
         {
             var data = new List<CBVVideoEvent>();
@@ -1713,15 +1785,21 @@ namespace Sqllite_Library.Data
         }
         */
 
-        public static List<CBVVideoSegment> GetVideoSegment(int videoEventId)
+        public static List<CBVVideoSegment> GetVideoSegment(int videoEventId, bool issyncedFlag = true)
         {
             var data = new List<CBVVideoSegment>();
 
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
+            
+            string sqlQueryString = $@"SELECT * FROM cbv_videosegment ";
 
-            string sqlQueryString = $@"SELECT * FROM cbv_videosegment where videosegment_isdeleted = 0";
+            if (issyncedFlag == false)
+                sqlQueryString += $@" where videosegment_issynced = 0 and videosegment_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
+            else
+                sqlQueryString += $@" where videosegment_isdeleted = 0";
+            
             if (videoEventId > -1)
                 sqlQueryString += $@" and videosegment_id = {videoEventId};";
             SQLiteConnection sqlCon = null;
@@ -1766,7 +1844,7 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVDesign> GetDesign(int videoEventId)
+        public static List<CBVDesign> GetDesign(int videoEventId, bool issyncedFlag = true)
         {
             var data = new List<CBVDesign>();
 
@@ -1774,7 +1852,14 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_design where design_isdeleted = 0";
+           
+            string sqlQueryString = $@"SELECT * FROM cbv_design ";
+
+            if (issyncedFlag == false)
+                sqlQueryString += $@" where design_issynced = 0 and design_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
+            else
+                sqlQueryString += $@" where design_isdeleted = 0";
+
             if (videoEventId > -1)
                 sqlQueryString += $@" and fk_design_videoevent = {videoEventId} ";
             SQLiteConnection sqlCon = null;
@@ -1821,7 +1906,7 @@ namespace Sqllite_Library.Data
             return data;
         }
         
-        public static List<CBVNotes> GetNotes(int videoEventId)
+        public static List<CBVNotes> GetNotes(int videoEventId, bool issyncedFlag = true)
         {
             var data = new List<CBVNotes>();
 
@@ -1829,7 +1914,13 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_isdeleted = 0";
+            string sqlQueryString = $@"SELECT * FROM cbv_notes ";
+
+            if (issyncedFlag == false)
+                sqlQueryString += $@" where notes_issynced = 0 and notes_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
+            else
+                sqlQueryString += $@" where notes_isdeleted = 0";
+
             if (videoEventId > -1)
                 sqlQueryString += $@" and fk_notes_videoevent = {videoEventId} order by notes_index";
             SQLiteConnection sqlCon = null;
@@ -2337,7 +2428,7 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
             }
         }
-
+        
         public static void UpdateRowsToVideoEvent(DataTable dataTable)
         {
             foreach (DataRow dr in dataTable.Rows)
@@ -2363,6 +2454,23 @@ namespace Sqllite_Library.Data
                 var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_videoevent table update status for id - {videoevent_id} result - {updateFlag}");
             }
+        }
+
+        public static void UpdateServerId(string table, int localId, Int64 serverId, string ErrorMessage)
+        {
+            var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            
+            var updateQueryString = $@" UPDATE cbv_{table} 
+                                        SET 
+                                            {table}_issynced = {string.IsNullOrEmpty(ErrorMessage)},
+                                            {table}_serverid = {serverId},
+                                            {table}_syncerror = '{ErrorMessage}',
+                                            {table}_modifydate = '{modifyDate}'
+                                        WHERE 
+                                            {table}_id = {localId}";
+            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
+            Console.WriteLine($@"cbv_{table} table update status for id - {localId} result - {updateFlag}");
         }
 
         public static void UpdateRowsToVideoSegment(DataTable dataTable)
