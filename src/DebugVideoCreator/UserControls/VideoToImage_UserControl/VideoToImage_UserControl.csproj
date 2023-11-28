@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Notes_UserControl</RootNamespace>
-    <AssemblyName>Notes_UserControl</AssemblyName>
+    <RootNamespace>VideoToImage_UserControl</RootNamespace>
+    <AssemblyName>VideoToImage_UserControl</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -133,16 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NotesManage_UserControl\NotesManage_UserControl.csproj">
-      <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>
-      <Name>NotesManage_UserControl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
-      <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
-      <Name>SQLite_Library</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,22 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoToImage_UserControl"
         mc:Ignorable="d" Width="480">
-    <!--<Grid Background="Transparent" Margin="10">
+    <Grid Background="Transparent" Margin="10">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <ScrollViewer Height="250" VerticalAlignment="Top" Width="460" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >
-            <StackPanel x:Name="stackPanelNotes" Margin="5" Orientation="Vertical" />
-        </ScrollViewer>
-        <Grid.ContextMenu >
-            <ContextMenu Name="NotesContextMenu" StaysOpen="true">
-                <MenuItem Header="Manage Notes" Click="ContextMenu_ManageNotesClickEvent"/>
-                <MenuItem Header="Add New Note" Click="ContextMenu_AddNewNoteClickEvent"/>
-                <MenuItem Header="Generate Voice For All Notes" Click="ContextMenu_GenerateVoiceAllNotesClickEvent"/>
-            </ContextMenu>
-        </Grid.ContextMenu>
-    </Grid>-->
+        <Label Grid.Row="0" Grid.Column="0" Content="Video Path" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtVideo" HorizontalAlignment="Left" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="40" Padding="5"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Time In Seconds" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Row="1" Grid.Column="1"  PreviewTextInput="NumberValidationTextBox" x:Name="txtTime" HorizontalAlignment="Left" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="40" Padding="5"/>
+
+        <Button Grid.Row="2" Grid.Column="0" x:Name="btnCreateImage" Click="btnCreateImage_Click" Content="Create Image" Margin="5 0 0 0" HorizontalAlignment="Right" Height="35" Width="120" VerticalAlignment="Center" />
+
+    </Grid>
 </UserControl>

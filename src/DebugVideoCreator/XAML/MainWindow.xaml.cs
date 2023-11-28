@@ -22,27 +22,36 @@ namespace VideoCreator.XAML
     {
         private readonly AuthAPIViewModel authApiViewModel;
         private List<ProjectModel> pendingProjects;
+        private bool checkVideo2Image;
         public MainWindow()
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
+            checkVideo2Image = true;
         }
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                await Login();
+                if (checkVideo2Image)
+                {
+                    TryImageFromVideo();
+                    return;
+                }
+                else
+                {
+                    await Login();
+                    await SyncApp();
+                    await SyncMedia();
+                    await SyncScreens();
+                    await SyncCompany();
+                    await SyncBackground();
 
-                await SyncApp();
-                await SyncMedia();
-                await SyncScreens();
-                await SyncCompany();
-                await SyncBackground();
-
-                rbWIP.IsChecked = true;
-                InitialiseAndRefreshScreen();
-                //await PopulateProjects();
+                    rbWIP.IsChecked = true;
+                    InitialiseAndRefreshScreen();
+                    //await PopulateProjects();
+                }
             }
             catch (Exception ex)
             {
@@ -51,6 +60,40 @@ namespace VideoCreator.XAML
             }
             SetWelcomeMessage();
 
+        }
+
+        private void TryImageFromVideo()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory();
+            var VideoFileName = $"{currentDirectory}\\Media\\Screencast1.mp4";
+            //ShellFile shellFile = ShellFile.FromFilePath(VideoFileName);
+            //System.Drawing.Bitmap bm = shellFile.Thumbnail.ExtraLargeBitmap;
+            var filename = $"C:\\commercialBase\\{DateTime.Now.ToString("yyyymmddHHMMss")}.png";
+            var v2i = new VideoToImage_UserControl.VideoToImage_UserControl();
+
+            var window = new Window
+            {
+                //Title = "Manage Timeline",
+                //Content = manageTimeline_UserControl,
+                //WindowState = WindowState.Maximized,
+                //ResizeMode = ResizeMode.CanResize,
+                //WindowStartupLocation = WindowStartupLocation.CenterScreen
+                Title = "Video To Image",
+                Content = v2i,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = v2i.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+
+            try
+            {
+                var result = window.ShowDialog();
+            }
+            catch (Exception)
+            { }
+
+            //bm.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
         }
 
         private void InitialiseAndRefreshScreen()
@@ -189,7 +232,7 @@ namespace VideoCreator.XAML
                 return false;
             }
 
-                if ((bool)rbPending.IsChecked)
+            if ((bool)rbPending.IsChecked)
                 MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             else if ((bool)rbArchived.IsChecked)
                 MessageBox.Show("project is archived, no work possible", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -200,7 +243,7 @@ namespace VideoCreator.XAML
             return false;
         }
 
-        
+
         private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
         {
             int selectedProjectId;
@@ -211,7 +254,7 @@ namespace VideoCreator.XAML
                 selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
             }
             else return;
-            
+
             //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
@@ -252,10 +295,10 @@ namespace VideoCreator.XAML
         private async void BtnAcceptProject_Click(object sender, RoutedEventArgs e)
         {
             var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if(messageBoxResult == MessageBoxResult.Yes)
+            if (messageBoxResult == MessageBoxResult.Yes)
             {
-                var selectedProject =  (ProjectModelUI)datagrid.SelectedItem;
-                if(selectedProject != null)
+                var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
+                if (selectedProject != null)
                 {
                     var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, true);
                     if (result != null)
@@ -326,7 +369,7 @@ namespace VideoCreator.XAML
             else
             {
                 btnAcceptProject.IsEnabled = false;
-                btnRejectProject.IsEnabled = false; 
+                btnRejectProject.IsEnabled = false;
             }
         }
         private List<ProjectModelUI> RemoveUnnecessaryFields(List<ProjectModel> data)
@@ -343,7 +386,7 @@ namespace VideoCreator.XAML
 
             pendingStack.Visibility = Visibility.Visible;
             manageStack.Visibility = Visibility.Hidden;
-           
+
         }
         private void rbWIP_Click(object sender, RoutedEventArgs e)
         {
@@ -393,6 +436,6 @@ namespace VideoCreator.XAML
             Console.WriteLine("The dispose() function has been called and the resources have been released!");
         }
 
-       
+
     }
 }

@@ -498,6 +498,10 @@
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
+    <ProjectReference Include="UserControls\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
+      <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
+      <Name>VideoToImage_UserControl</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
