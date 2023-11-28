@@ -349,3 +349,7 @@
 /src/DebugVideoCreator/UserControls/ScreenRecorder_Wrapper/ScreenRecorder_Wrapper/obj
 /src/DebugVideoCreator/bin/x64/Debug
 /src/DebugVideoCreator/obj/x64/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_UserControl/.vs/VideoToImage_UserControl
+/src/DebugVideoCreator/UserControls/VideoToImage_UserControl/bin/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_UserControl/obj/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_UserControl/packages
