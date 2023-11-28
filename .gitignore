@@ -353,3 +353,11 @@
 /src/DebugVideoCreator/UserControls/VideoToImage_UserControl/bin/Debug
 /src/DebugVideoCreator/UserControls/VideoToImage_UserControl/obj/Debug
 /src/DebugVideoCreator/UserControls/VideoToImage_UserControl/packages
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/packages
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/.vs/VideoToImage_Wrapper
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/obj/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/bin/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/.vs/VideoToImage_UserControl
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/bin/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/obj/Debug
+/src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/packages
