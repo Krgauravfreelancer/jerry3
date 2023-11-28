@@ -14,14 +14,24 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="Video Path" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtVideo" HorizontalAlignment="Left" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="40" Padding="5"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtVideo" TextChanged="txtVideo_TextChanged" HorizontalAlignment="Left" Margin="5" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" Padding="5"/>
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Time In Seconds" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
-        <TextBox Grid.Row="1" Grid.Column="1"  PreviewTextInput="NumberValidationTextBox" x:Name="txtTime" HorizontalAlignment="Left" Margin="10,0,0,0" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="40" Padding="5"/>
-
-        <Button Grid.Row="2" Grid.Column="0" x:Name="btnCreateImage" Click="btnCreateImage_Click" Content="Create Image" Margin="5 0 0 0" HorizontalAlignment="Right" Height="35" Width="120" VerticalAlignment="Center" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Output Path" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Row="1" Grid.Column="1"  x:Name="txtOutput" TextChanged="txtOutput_TextChanged" HorizontalAlignment="Left" Margin="5" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" Padding="5"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="Time In Seconds" Margin="5" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Row="2" Grid.Column="1" PreviewTextInput="NumberValidationTextBox" Text="1" TextChanged="txtPeriod_TextChanged" x:Name="txtTime" HorizontalAlignment="Left" Margin="5" TextAlignment="Left" VerticalAlignment="Top" Width="300" Height="30" Padding="5"/>
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Vertical" HorizontalAlignment="Center" >
+            <Label x:Name="TitleLabel" Content="" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <Label x:Name="FrameRateLabel" Content="" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <Label x:Name="DurationLabel" Content="" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <Label x:Name="ExpectedFramesLabel" Content="" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <Label x:Name="ProgressLabel" Content="" Margin="5" HorizontalAlignment="Center" FontWeight="Bold"/>
+        </StackPanel>
+        <Button Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" x:Name="btnCreateImage" Click="btnCreateImage_Click" Content="Create Image" Margin="5" HorizontalAlignment="Center" Height="35" Width="120" VerticalAlignment="Center" />
 
     </Grid>
 </UserControl>

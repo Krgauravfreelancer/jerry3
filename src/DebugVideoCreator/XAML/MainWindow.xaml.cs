@@ -27,7 +27,7 @@ namespace VideoCreator.XAML
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
-            checkVideo2Image = true;
+            checkVideo2Image = false;
         }
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
@@ -64,34 +64,34 @@ namespace VideoCreator.XAML
 
         private void TryImageFromVideo()
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var VideoFileName = $"{currentDirectory}\\Media\\Screencast1.mp4";
-            //ShellFile shellFile = ShellFile.FromFilePath(VideoFileName);
-            //System.Drawing.Bitmap bm = shellFile.Thumbnail.ExtraLargeBitmap;
-            var filename = $"C:\\commercialBase\\{DateTime.Now.ToString("yyyymmddHHMMss")}.png";
-            var v2i = new VideoToImage_UserControl.VideoToImage_UserControl();
+            //var currentDirectory = Directory.GetCurrentDirectory();
+            //var VideoFileName = $"{currentDirectory}\\Media\\Screencast1.mp4";
+            ////ShellFile shellFile = ShellFile.FromFilePath(VideoFileName);
+            ////System.Drawing.Bitmap bm = shellFile.Thumbnail.ExtraLargeBitmap;
+            //var filename = $"C:\\commercialBase\\{DateTime.Now.ToString("yyyymmddHHMMss")}.png";
+            //var v2i = new VideoToImage_UserControl.VideoToImage_UserControl();
 
-            var window = new Window
-            {
-                //Title = "Manage Timeline",
-                //Content = manageTimeline_UserControl,
-                //WindowState = WindowState.Maximized,
-                //ResizeMode = ResizeMode.CanResize,
-                //WindowStartupLocation = WindowStartupLocation.CenterScreen
-                Title = "Video To Image",
-                Content = v2i,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                RenderSize = v2i.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
+            //var window = new Window
+            //{
+            //    //Title = "Manage Timeline",
+            //    //Content = manageTimeline_UserControl,
+            //    //WindowState = WindowState.Maximized,
+            //    //ResizeMode = ResizeMode.CanResize,
+            //    //WindowStartupLocation = WindowStartupLocation.CenterScreen
+            //    Title = "Video To Image",
+            //    Content = v2i,
+            //    SizeToContent = SizeToContent.WidthAndHeight,
+            //    ResizeMode = ResizeMode.NoResize,
+            //    RenderSize = v2i.RenderSize,
+            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
+            //};
 
-            try
-            {
-                var result = window.ShowDialog();
-            }
-            catch (Exception)
-            { }
+            //try
+            //{
+            //    var result = window.ShowDialog();
+            //}
+            //catch (Exception)
+            //{ }
 
             //bm.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
         }
