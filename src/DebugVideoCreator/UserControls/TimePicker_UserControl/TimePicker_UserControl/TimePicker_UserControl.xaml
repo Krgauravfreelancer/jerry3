@@ -16,12 +16,12 @@
 		</Style>
 		<LinearGradientBrush x:Key="ButtonNormalBackground" EndPoint="0,1" StartPoint="0,0">
 			<GradientStop Color="#F3F3F3" Offset="0"/>
-			<GradientStop Color="#EBEBEB" Offset="0.5"/>
-			<GradientStop Color="#DDDDDD" Offset="0.5"/>
-			<GradientStop Color="#CDCDCD" Offset="1"/>
+            <GradientStop Color="#F3F3F3" Offset="0.5"/>
+            <GradientStop Color="#F3F3F3" Offset="0.5"/>
+            <GradientStop Color="#F3F3F3" Offset="1"/>
 		</LinearGradientBrush>
 		<SolidColorBrush x:Key="ButtonNormalBorder"/>
-		<Style x:Key="ButtonStyle1" TargetType="{x:Type Button}">
+		<!--<Style x:Key="ButtonStyle1" TargetType="{x:Type Button}">
 			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
 			<Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
 			<Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
@@ -49,7 +49,7 @@
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
-		</Style>
+		</Style>-->
 		<Style x:Key="ToggleButtonStyle1" TargetType="{x:Type ToggleButton}">
 			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
 			<Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
@@ -67,10 +67,10 @@
 						</Grid>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsChecked" Value="true">
-								<Setter Property="Background" TargetName="grid" Value="#FF919191"/>
+								<Setter Property="Background" TargetName="grid" Value="#ececec"/>
 							</Trigger>
 							<Trigger Property="IsEnabled" Value="false">
-								<Setter Property="Foreground" Value="#ADADAD"/>
+								<Setter Property="Foreground" Value="#ececec"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -167,37 +167,37 @@
 				</DiscreteObjectKeyFrame>
 			</ObjectAnimationUsingKeyFrames>-->
 		</Storyboard>
-		<Storyboard x:Key="OnClick4">
-			<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>True</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>-->
-			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="HrBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>
-			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="MinBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>
-			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="SecBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>
-		</Storyboard>
-	</UserControl.Resources>
+        <!--<Storyboard x:Key="OnClick4">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>True</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="HrBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="MinBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="SecBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>-->
+    </UserControl.Resources>
 	<UserControl.Triggers>
 		<EventTrigger RoutedEvent="ButtonBase.Click" SourceName="HrBtn">
 			<BeginStoryboard x:Name="OnClick1_BeginStoryboard" Storyboard="{StaticResource OnClick1}"/>
@@ -215,7 +215,7 @@
 
     <Grid x:Name="LayoutRoot">
         <Border BorderBrush="Beige">
-			<Grid Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Grid Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
             
 					<StackPanel Orientation="Horizontal" Background="White">
 						<ToggleButton x:Name="HrBtn" Width="40" Height="40" Style="{DynamicResource ToggleButtonStyle1}" Margin="10,0,10,0">

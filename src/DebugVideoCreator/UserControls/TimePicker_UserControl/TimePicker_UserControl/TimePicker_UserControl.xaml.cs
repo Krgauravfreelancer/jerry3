@@ -17,10 +17,33 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class TimePicker_UserControl : UserControl
 	{
-		public TimePicker_UserControl()
+		public TimePicker_UserControl(string initialTime = "00:00:00")
 		{
 			this.InitializeComponent();
+			Set(initialTime);
 		}
+
+
+		public void Set(string time)
+		{
+			if(!string.IsNullOrEmpty(time))
+			{
+				var TimeBreakupArray = time.Split(':');
+				if(TimeBreakupArray.Length == 3)
+				{
+                    HrTxt.Text = TimeBreakupArray[0];
+					MinTxt.Text = TimeBreakupArray[1];
+					SecTxt.Text = TimeBreakupArray[2];
+                }
+            }
+			
+		}
+
+		public string Get()
+		{
+			return $"{HrTxt.Text}:{MinTxt.Text}:{SecTxt.Text}";
+		}
+
 
 		private void BtnUp_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
@@ -32,8 +55,11 @@ namespace VideoCreator.XAML
 					hour = hour - hour;
 				
 				hour++;
-				
-				HrTxt.Text = hour.ToString();
+
+                if (hour.ToString().Length == 1)
+                    HrTxt.Text = "0" + hour.ToString();
+				else
+					HrTxt.Text = hour.ToString();
 			}
 			else if (MinBtn.IsChecked == true)
 			{
