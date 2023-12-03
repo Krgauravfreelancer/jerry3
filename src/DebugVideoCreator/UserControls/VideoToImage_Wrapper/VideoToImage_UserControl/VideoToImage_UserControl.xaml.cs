@@ -136,8 +136,8 @@ namespace VideoToImage_UserControl
                 using (var engine = new Engine())
                 {
                     var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period) };
-                    var outputFile = new MediaFile { Filename = $"{OutputFolder}\\Image.jpeg" };
-                    engine.GetThumbnail(Mp4Media, outputFile, options);
+                    var outputFile = new MediaFile { Filename = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.png" };
+                    engine.Convert(Mp4Media, outputFile, options);
                 }
             });
             

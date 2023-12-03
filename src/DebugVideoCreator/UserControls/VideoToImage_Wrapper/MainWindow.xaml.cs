@@ -30,7 +30,7 @@ namespace VideoToImage_Wrapper
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var VideoFileName = $"{currentDirectory}\\Media\\Screencast1.mp4";
-            var outputFolder = $"C:\\commercialBase\\{DateTime.Now.ToString("yyyyMMdd_HHmm")}";
+            var outputFolder = $"C:\\commercialBase\\ExtractedImages";
             var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
 
             var window = new Window
