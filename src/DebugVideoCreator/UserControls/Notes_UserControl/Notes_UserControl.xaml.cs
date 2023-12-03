@@ -200,7 +200,6 @@ namespace Notes_UserControl
                 Background = Brushes.White,
                 BorderBrush = Brushes.Black,
                 BorderThickness = new Thickness(1),
-                Width = 415,
                 Margin = new Thickness(0, 0, 0, 5)
             };
 
@@ -209,7 +208,7 @@ namespace Notes_UserControl
             txt1.Foreground = Brushes.Black;
             txt1.FontSize = 12;
             txt1.Padding = new Thickness(5);
-            txt1.Width = 350;
+            //txt1.Width = 350;
             txt1.HorizontalAlignment = HorizontalAlignment.Left;
             myBorder1.ContextMenu = GetItemContextMenu(note);
             myBorder1.Child = txt1;

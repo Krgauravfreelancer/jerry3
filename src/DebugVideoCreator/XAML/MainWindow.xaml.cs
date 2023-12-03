@@ -267,10 +267,7 @@ namespace VideoCreator.XAML
                 //WindowStartupLocation = WindowStartupLocation.CenterScreen
                 Title = "Manage Timeline",
                 Content = manageTimeline_UserControl,
-                SizeToContent = SizeToContent.WidthAndHeight,
-                ResizeMode = ResizeMode.NoResize,
-                RenderSize = manageTimeline_UserControl.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                WindowState = WindowState.Maximized,
             };
 
             manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>

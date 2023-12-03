@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Notes_UserControl"
-        mc:Ignorable="d" Width="480">
+        mc:Ignorable="d">
     <Grid Background="Transparent" Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -12,7 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <ScrollViewer Height="250" VerticalAlignment="Top" Width="460" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >
+        <ScrollViewer Height="250" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <StackPanel x:Name="stackPanelNotes" Margin="5" Orientation="Vertical" />
         </ScrollViewer>
         <Grid.ContextMenu >
