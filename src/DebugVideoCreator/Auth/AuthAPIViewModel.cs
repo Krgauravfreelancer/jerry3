@@ -605,7 +605,7 @@ namespace VideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var response = await _apiClientHelper.Create<ParentData<NotesResponseModel>>(url, payload);
-            return response.Data;
+            return response?.Data;
         }
 
         public async Task<ParentData<object>> DeleteNotesById(Int64 selectedServerVideoEventId, Int64 notesId)
