@@ -10,14 +10,20 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace VideoCreator.XAML
+namespace TimePicker_UserControl
 {
     /// <summary>
     /// Interaction logic for TimePicker_UserControl.xaml
     /// </summary>
     public partial class TimePicker_UserControl : UserControl
 	{
-		public TimePicker_UserControl(string initialTime = "00:00:00")
+        public TimePicker_UserControl()
+        {
+            this.InitializeComponent();
+            Set("00:00:00");
+        }
+
+        public TimePicker_UserControl(string initialTime = "00:00:00")
 		{
 			this.InitializeComponent();
 			Set(initialTime);
