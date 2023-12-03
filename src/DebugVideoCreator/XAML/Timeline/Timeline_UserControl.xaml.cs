@@ -17,9 +17,9 @@ namespace VideoCreator.XAML
         public bool HasData { get; set; } = false;
         private int selectedProjectId;
 
-        public event EventHandler ContextMenu_AddVideoEvent_Success;
-        public event EventHandler ContextMenu_AddForm_Clicked;
-        public event EventHandler ContextMenu_Run_Clicked;
+        //public event EventHandler ContextMenu_AddVideoEvent_Success;
+        //public event EventHandler ContextMenu_AddForm_Clicked;
+        //public event EventHandler ContextMenu_Run_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -62,35 +62,7 @@ namespace VideoCreator.XAML
 
         #region == TimelineUserControl : Load from DB functions ==
 
-        public DataTable AddTimelineRow(
-            DataTable dt,
-            int videoevent_id,
-            int fk_videoevent_project,
-            int fk_videoevent_media,
-            int videoevent_track,
-            string videoevent_start,
-            int videoevent_duration,
-            string videoevent_end,
-            DateTime videoevent_createdate,
-            DateTime videoevent_modifydate
-            )
-        {
-            DataRow dRow = dt.NewRow();
 
-            dRow[nameof(TimelineVideoEvent.videoevent_id)] = videoevent_id;
-            dRow[nameof(TimelineVideoEvent.fk_videoevent_project)] = fk_videoevent_project;
-            dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = fk_videoevent_media;
-            dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoevent_track;
-            dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoevent_start;
-            dRow[nameof(TimelineVideoEvent.videoevent_duration)] = videoevent_duration;
-            dRow[nameof(TimelineVideoEvent.videoevent_end)] = videoevent_end;
-            dRow[nameof(TimelineVideoEvent.videoevent_createdate)] = videoevent_createdate;
-            dRow[nameof(TimelineVideoEvent.videoevent_modifydate)] = videoevent_modifydate;
-
-            dt.Rows.Add(dRow);
-
-            return dt;
-        }
 
         private void LoadAppFromDb()
         {
@@ -144,33 +116,43 @@ namespace VideoCreator.XAML
             _timelineGridControl.SetScreenList(screens);
         }
 
-        public void LoadVideoEventsFromDb()
+        public void LoadVideoEventsFromDb(int projectId)
         {
 
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
 
-            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(selectedProjectId);
+            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projectId);
             foreach (var videoEvent in videoEventList)
             {
 
-                AddTimelineRow(
-                    dt,
-                    videoEvent.videoevent_id,
-                    videoEvent.fk_videoevent_project,
-                    videoEvent.fk_videoevent_media,
-                    videoEvent.videoevent_track,
-                    videoEvent.videoevent_start,
-                    videoEvent.videoevent_duration,
-                    videoEvent.videoevent_end,
-                    videoEvent.videoevent_createdate,
-                    videoEvent.videoevent_modifydate);
+                DataRow dRow = dt.NewRow();
+
+                dRow[nameof(TimelineVideoEvent.videoevent_id)] = videoEvent.videoevent_id;
+                dRow[nameof(TimelineVideoEvent.fk_videoevent_project)] = videoEvent.fk_videoevent_project;
+                dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = videoEvent.fk_videoevent_media;
+                dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoEvent.videoevent_track;
+                dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoEvent.videoevent_start;
+                dRow[nameof(TimelineVideoEvent.videoevent_duration)] = videoEvent.videoevent_duration;
+
+                dRow[nameof(TimelineVideoEvent.videoevent_createdate)] = videoEvent.videoevent_createdate;
+                dRow[nameof(TimelineVideoEvent.videoevent_modifydate)] = videoEvent.videoevent_modifydate;
+
+                dRow[nameof(TimelineVideoEvent.videoevent_isdeleted)] = videoEvent.videoevent_isdeleted;
+                dRow[nameof(TimelineVideoEvent.videoevent_issynced)] = videoEvent.videoevent_issynced;
+                dRow[nameof(TimelineVideoEvent.videoevent_serverid)] = videoEvent.videoevent_serverid;
+                dRow[nameof(TimelineVideoEvent.videoevent_syncerror)] = videoEvent.videoevent_syncerror ?? String.Empty;
+
+
+
+                dRow[nameof(TimelineVideoEvent.videoevent_end)] = videoEvent.videoevent_end;
+                dt.Rows.Add(dRow);
 
             }
 
             _timelineGridControl.SetTimelineDatatable(dt);
         }
-        
+
         public void ClearTimeline()
         {
             _timelineGridControl.ClearTimeline();
@@ -196,7 +178,8 @@ namespace VideoCreator.XAML
             LoadMediaFromDb();
             LoadScreenFromDb();
 
-            //LoadVideoEventsFromDb();
+            //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+            LoadVideoEventsFromDb(selectedProjectId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
             TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
@@ -299,56 +282,68 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
-        private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
+        private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
-            var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
-            var screenRecorderWindow = new System.Windows.Window
+            var window = new Window
             {
-                Title = "Screen Recorder",
-                Content = screenRecordingUserControl,
+                Title = "Add Callout1",
                 ResizeMode = ResizeMode.NoResize,
-                Height = 450,
-                Width = 750,
-                RenderSize = screenRecordingUserControl.RenderSize,
+                Height = 500,
+                Width = 1000,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            var result = screenRecorderWindow.ShowDialog();
-            if (result.HasValue)
-            {
-                ContextMenu_AddVideoEvent_Success.Invoke(this, new EventArgs());
-            }
 
-            //ScreenRecorderWindow screenRecorderWindow = new ScreenRecorderWindow(this);
+
+            ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(window, trackId: 3, selectedProjectId);
             //screenRecorderWindow.Owner = this;
+            //screenRecorderWindow.Title = "Add Callout1";
 
-            /// We need to set the eventhandler for the BtnSaveClickedEvent from the ScreenRecorderWindow to handle the datatable 
+            screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
+            {
+                LoadVideoEventsFromDb(selectedProjectId);
+            };
+
+            //screenRecorderWindow.sh;
+            //Hide();
+
+        }
+
+        private void AddCallout2_Click(object sender, RoutedEventArgs e)
+        {
+
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, selectedProjectId);
+            //screenRecorderWindow.Owner = this;
+            //screenRecorderWindow.Title = "Add Callout2";
+
             //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
             //{
-
-            //    /// Here we will load the dataTable to Timeline when it's returned
-            //    _timelineGridControl.SetTimelineDatatable(dataTable);
+            //    LoadVideoEventsFromDb(Selected_ID);
             //};
 
-            //Hide(); //hide the main window so it's not showing when ScreenRecorder is opened.
+            //screenRecorderWindow.Show();
+            ////Hide();
 
         }
 
-        private void ContextMenuAddFormEventDataClickEvent(object sender, RoutedEventArgs e)
+        private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_AddForm_Clicked?.Invoke(sender, e);
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, selectedProjectId);
+            //screenRecorderWindow.Owner = this;
+            //screenRecorderWindow.Title = "Add Video Event";
+
+            //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
+            //{
+            //    LoadVideoEventsFromDb(selectedProjectId);
+            //};
+
+            //screenRecorderWindow.Show();
+            ////Hide();
+
         }
-
-        private void ContextMenuRunClickEvent(object sender, RoutedEventArgs e)
-        {
-            ContextMenu_Run_Clicked?.Invoke(sender, e);
-        }
-
-
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
-            //show a warning here that user will lose all changes if the changes are not saved
-            LoadVideoEventsFromDb();
+            LoadVideoEventsFromDb(selectedProjectId);
         }
 
         private void ClearTimelines(object sender, RoutedEventArgs e)
@@ -365,6 +360,17 @@ namespace VideoCreator.XAML
         private void EditSelectedEvent(object sender, RoutedEventArgs e)
         {
             _timelineGridControl.EditSelectedEvent();
+        }
+
+        private void GetSelectedEvent(object sender, RoutedEventArgs e)
+        {
+            var selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            //if (selectedEvent == null)
+            //    lblSelectedEvent.Content = "No selected event";
+
+            //else
+            //    lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
         }
 
         private void SaveTimeline(object sender, RoutedEventArgs e)

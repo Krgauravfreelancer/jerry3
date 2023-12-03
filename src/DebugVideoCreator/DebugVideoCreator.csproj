@@ -316,8 +316,8 @@
     <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
       <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
-    <Compile Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml.cs">
-      <DependentUpon>ScreenRecording_UserControl.xaml</DependentUpon>
+    <Compile Include="XAML\ScreenRecording\ScreenRecording_UCWindow.xaml.cs">
+      <DependentUpon>ScreenRecording_UCWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
@@ -370,7 +370,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="XAML\ScreenRecording\ScreenRecording_UserControl.xaml">
+    <Page Include="XAML\ScreenRecording\ScreenRecording_UCWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
