@@ -498,6 +498,10 @@
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
+    <ProjectReference Include="UserControls\TimePicker_UserControl\TimePicker_UserControl\TimePicker_UserControl.csproj">
+      <Project>{78a1300d-fcb5-42f1-a58e-ac682f5f28ca}</Project>
+      <Name>TimePicker_UserControl</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

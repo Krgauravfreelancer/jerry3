@@ -243,7 +243,22 @@ namespace VideoCreator.XAML
             return false;
         }
 
+        
+        private void ShowTimepicker_Click(object sender, RoutedEventArgs e)
+        {
+            var timepicker = new TimePicker_UserControl();
 
+            var window = new Window
+            {
+                Title = "Timepicker",
+                Content = timepicker,
+                SizeToContent = SizeToContent.WidthAndHeight,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = timepicker.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+        }
         private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
         {
             int selectedProjectId;
