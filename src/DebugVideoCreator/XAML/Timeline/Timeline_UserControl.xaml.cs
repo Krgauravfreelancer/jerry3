@@ -1,14 +1,18 @@
-﻿using Sqllite_Library.Business;
+﻿using Newtonsoft.Json;
+using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Timeline.UserControls.Config;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
+using VideoCreator.Auth;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -17,9 +21,12 @@ namespace VideoCreator.XAML
         public bool HasData { get; set; } = false;
         private int selectedProjectId;
 
-        //public event EventHandler ContextMenu_AddVideoEvent_Success;
-        //public event EventHandler ContextMenu_AddForm_Clicked;
-        //public event EventHandler ContextMenu_Run_Clicked;
+        private AuthAPIViewModel authApiViewModel;
+        public event EventHandler ContextMenu_AddVideoEvent_Clicked;
+        public event EventHandler ContextMenu_AddVideoEvent_Success;
+        public event EventHandler ContextMenu_AddCallout1_Clicked;
+        public event EventHandler ContextMenu_AddCallout2_Clicked;
+        public event EventHandler ContextMenu_Run_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -30,12 +37,13 @@ namespace VideoCreator.XAML
             InitializeComponent();
         }
 
-        public void SetSelectedProjectId(int project_id, bool readonlyMode = false)
+        public void SetSelectedProjectId(int project_id, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
         {
             selectedProjectId = project_id;
             InitializeTimeline();
             ReadOnly = readonlyMode;
             ResetContextMenu();
+            authApiViewModel = _authApiViewModel;
         }
 
         private void ResetContextMenu()
@@ -282,63 +290,22 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
+
+        
+
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
-            var window = new Window
-            {
-                Title = "Add Callout1",
-                ResizeMode = ResizeMode.NoResize,
-                Height = 500,
-                Width = 1000,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-
-
-            ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(window, trackId: 3, selectedProjectId);
-            //screenRecorderWindow.Owner = this;
-            //screenRecorderWindow.Title = "Add Callout1";
-
-            screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
-            {
-                LoadVideoEventsFromDb(selectedProjectId);
-            };
-
-            //screenRecorderWindow.sh;
-            //Hide();
-
+            ContextMenu_AddCallout1_Clicked.Invoke(sender, e);
         }
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, selectedProjectId);
-            //screenRecorderWindow.Owner = this;
-            //screenRecorderWindow.Title = "Add Callout2";
-
-            //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
-            //{
-            //    LoadVideoEventsFromDb(Selected_ID);
-            //};
-
-            //screenRecorderWindow.Show();
-            ////Hide();
-
+            ContextMenu_AddCallout2_Clicked.Invoke(sender, e);
         }
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, selectedProjectId);
-            //screenRecorderWindow.Owner = this;
-            //screenRecorderWindow.Title = "Add Video Event";
-
-            //screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
-            //{
-            //    LoadVideoEventsFromDb(selectedProjectId);
-            //};
-
-            //screenRecorderWindow.Show();
-            ////Hide();
-
+            ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
         }
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)

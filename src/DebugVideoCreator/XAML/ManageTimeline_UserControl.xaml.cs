@@ -143,7 +143,7 @@ namespace VideoCreator.XAML
             {
                 DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, addedData.videoevent.videoevent_id, authApiViewModel.GetError());
                 if (videoEvent?.videosegment_data?.Count > 0)
-                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment.videosegment_id, authApiViewModel.GetError());
+                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment[0].videosegment_id, authApiViewModel.GetError());
             }
             else
             {
@@ -162,11 +162,13 @@ namespace VideoCreator.XAML
             RefreshOrLoadComboBoxes();
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectId, ReadOnly);
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectId, authApiViewModel, ReadOnly);
             TimelineUserConrol.Visibility = Visibility.Visible;
-            //TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
-            //TimelineUserConrol.ContextMenu_AddForm_Clicked += TimelineUserConrol_ContextMenu_AddForm_Clicked;
-            //TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
+            TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
+            TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
+            TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
+            TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
+            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
@@ -190,7 +192,7 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
-
+        
         private void ResetAudioContextMenu()
         {
             if (ReadOnly)
@@ -356,47 +358,31 @@ namespace VideoCreator.XAML
             var result = window.ShowDialog();
         }
 
-        private void OpenScreenRecorderForVideoEvent_Click(object sender, RoutedEventArgs e)
+        private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
-            //var screenRecordingUserControl = new ScreenRecordingUserControl(selectedProjectId);
-            //screenRecordingUserControl.saveVideoSegmentEvent += ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
-            //var screenRecorderWindow = new System.Windows.Window
-            //{
-            //    Title = "Screen Recorder",
-            //    Content = screenRecordingUserControl,
-            //    ResizeMode = ResizeMode.NoResize,
-            //    Height = 750,
-            //    Width = 750,
-            //    RenderSize = screenRecordingUserControl.RenderSize,
-            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
-            //};
-            //var result = screenRecorderWindow.ShowDialog();
-            //if (result.HasValue)
-            //{
-            //    TimelineUserConrol_ContextMenu_AddVideoEvent_Success(this, new EventArgs());
-            //}
-
-            ////ScreenRecorderWindow screenRecorderWindow = new ScreenRecorderWindow(this);
-            ////screenRecorderWindow.Owner = this;
-
-            ///// We need to set the eventhandler for the BtnSaveClickedEvent from the ScreenRecorderWindow to handle the datatable 
-            ////screenRecorderWindow.BtnSaveClickedEvent += dataTable =>
-            ////{
-
-            ////    /// Here we will load the dataTable to Timeline when it's returned
-            ////    _timelineGridControl.SetTimelineDatatable(dataTable);
-            ////};
-
-            ////Hide(); //hide the main window so it's not showing when ScreenRecorder is opened.
+            var screenRecordingUserControl = new ScreenRecording_UCWindow(1, selectedProjectId);
+            screenRecordingUserControl.BtnSaveClickedEvent += ScreenRecordingUserControl_BtnSaveClickedEvent; //+= ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
+            var screenRecorderWindow = new System.Windows.Window
+            {
+                Title = "Screen Recorder",
+                Content = screenRecordingUserControl,
+                ResizeMode = ResizeMode.NoResize,
+                RenderSize = screenRecordingUserControl.RenderSize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = screenRecorderWindow.ShowDialog();
+            if (result.HasValue)
+            {
+                TimelineUserConrol_ContextMenu_AddVideoEvent_Success(this, new EventArgs());
+            }
 
         }
 
-        private async void ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked(object sender, DataTable dataTable)
+        private async void ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
             foreach (DataRow row in dataTable.Rows)
                 await ProcessVideoSegmentDataRowByRow(row);
-            
         }
 
         private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
@@ -430,7 +416,7 @@ namespace VideoCreator.XAML
             {
                 var videoEventId = insertedVideoEventIds[0];
                 var blob = row["media"] as byte[];
-                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment[0]);
                 var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
                 if (insertedVideoSegmentId > 0)
                 {
@@ -484,95 +470,33 @@ namespace VideoCreator.XAML
 
         #region == Design/Form Context Menu Option ==
 
-        private async void TimelineUserConrol_ContextMenu_AddForm_Clicked(object sender, EventArgs e)
+        private async Task HandleCalloutLogic()
         {
-            var data = DataManagerSqlLite.GetBackground();
-            var designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
-            var window = new Window
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel);
+            if (isSuccess)
             {
-                Title = "Designer",
-                Content = designerUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                Height = 500,
-                Width = 1000,
-                RenderSize = designerUserControl.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-            if (result.HasValue && designerUserControl.dataTableAdd.Rows.Count > 0 || designerUserControl.dataTableUpdate.Rows.Count > 0)
-            {
-                if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    if (designerUserControl.dataTableAdd.Rows.Count > 0)
-                    {
-                        // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, authApiViewModel);
-                        // Now we have to save the data locally
-
-                        var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
-                        var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-                        if (insertedVideoEventIds?.Count > 0)
-                        {
-                            var videoEventId = insertedVideoEventIds[0];
-                            var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
-                            DataManagerSqlLite.InsertRowsToDesign(dtDesign);
-                            var totalRows = dtDesign.Rows.Count;
-                            TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(videoEventId, addedData.videoevent.videoevent_id);
-                        }
-                        else
-                        {
-                            MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                RefreshOrLoadComboBoxes();
+                TimelineUserConrol.ClearTimeline();
+                TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+                FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            else
+                MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddForm_Clicked_Step2(int videoeventId, int videoevent_serverid)
+        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, EventArgs e)
         {
-            var designImagerUserControl = new DesignImager_UserControl(videoeventId);
-            var window = new Window
-            {
-                Title = "Design Image",
-                Content = designImagerUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                Height = 500,
-                Width = 850,
-                RenderSize = designImagerUserControl.RenderSize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-            if (result.HasValue && designImagerUserControl.dtVideoSegment != null && designImagerUserControl.dtVideoSegment.Rows.Count > 0)
-            {
-                if (designImagerUserControl.UserConsent || MessageBox.Show("Do you want save all Image??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    // We need to insert the Data to server here and once it is success, then to local DB
-                    var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
-                    var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
-                    if(postResponse.Status == "error")
-                        MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
-                    var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
-                    if (insertedVideoSegmentId > 0)
-                    {
-                        RefreshOrLoadComboBoxes();
-                        TimelineUserConrol.ClearTimeline();
-                        TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                        FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                        //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
-                        MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
+            await HandleCalloutLogic();
         }
+
+        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, EventArgs e)
+        {
+            await HandleCalloutLogic();
+        }
+
+
 
         #endregion
 

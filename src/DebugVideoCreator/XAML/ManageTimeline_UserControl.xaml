@@ -61,7 +61,6 @@
                         <MenuItem Header="Add from File" Click="ContextMenuAddAudioFromFileClickEvent"/>
                         <MenuItem Header="Record Audio" Click="ContextMenuRecordAudioClickEvent"/>
                         <MenuItem Header="Manage Audio" IsEnabled="False" Click="ContextMenuManageAudioClickEvent"/>
-                        <MenuItem Header="Add Video Event to Selected Timeline" Click="OpenScreenRecorderForVideoEvent_Click" />
                     </ContextMenu>
                 </local:Audio_UserControl.ContextMenu>
             </local:Audio_UserControl>

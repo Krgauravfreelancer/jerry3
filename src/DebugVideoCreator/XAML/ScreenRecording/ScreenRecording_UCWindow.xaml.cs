@@ -26,9 +26,9 @@ using VoiceScripter_UserControl.Classes;
 namespace VideoCreator.XAML
 {
     /// <summary>
-    /// Interaction logic for ScreenRecorderWindow2.xaml
+    /// Interaction logic for ScreenRecording_UCWindow.xaml
     /// </summary>
-    public partial class ScreenRecorderWindow2 : UserControl
+    public partial class ScreenRecording_UCWindow : UserControl
     {
         //int selectionIndex = 0;
         bool showMessageBoxes = false;
@@ -40,20 +40,32 @@ namespace VideoCreator.XAML
 
         public event Action<DataTable> BtnSaveClickedEvent;
 
-        public ScreenRecorderWindow2(Window mainWindow, int trackId, int projectID)
+        public ScreenRecording_UCWindow(Window mainWindow, int trackId, int projectID)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
             _trackID = trackId;
-
             _projectID = projectID;
-
             SetProjectID(_projectID);
 
 
             //RefreshOrLoadComboBoxes(EnumEntity.ALL);
 
 
+        }
+
+        public ScreenRecording_UCWindow(int trackId, int projectID)
+        {
+            InitializeComponent();
+            _trackID = trackId;
+            _projectID = projectID;
+            SetProjectID(_projectID);
+            //RefreshOrLoadComboBoxes(EnumEntity.ALL);
+        }
+
+        public void Show()
+        {
+            _mainWindow.ShowDialog();
         }
 
 
@@ -427,10 +439,7 @@ namespace VideoCreator.XAML
         private void ForwardDataTable(DataTable dataTable)
         {
             if (BtnSaveClickedEvent != null)
-            {
                 BtnSaveClickedEvent(dataTable);
-                //this.Close();
-            }
         }
 
         #endregion

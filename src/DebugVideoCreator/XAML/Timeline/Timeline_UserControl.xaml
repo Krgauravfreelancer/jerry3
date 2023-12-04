@@ -3,9 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:VideoCreator.XAML"
-        xmlns:wpfx="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit/extended"
-        xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
+             xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
@@ -16,7 +14,6 @@
             <MenuItem Header="Add Audio Event to Timeline" Click="AddAudioEvent_Click" IsEnabled="False"/>
             <MenuItem Header="Add Callout 1 to Timeline" Click="AddCallout1_Click" />
             <MenuItem Header="Add Callout 2 to Timeline" Click="AddCallout2_Click" />
-            <!--<MenuItem Header="Add Form Event to Timeline" Click="ContextMenuAddFormEventDataClickEvent"/>-->
             <MenuItem Header="Add Video Event to Timeline" Click="AddVideoEvent_Click" />
             <Separator></Separator>
             <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>

@@ -279,6 +279,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\CallOutHandlerHelper.cs" />
     <Compile Include="Helpers\MediaEventHandlerHelper.cs" />
     <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
     <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
