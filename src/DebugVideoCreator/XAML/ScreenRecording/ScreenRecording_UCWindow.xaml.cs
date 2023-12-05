@@ -252,7 +252,10 @@ namespace VideoCreator.XAML
 
             if (VideoEventData.Count > 0)
             {
-                TimeSpan StartTime = TimeSpan.ParseExact(VideoEventData.LastOrDefault().videoevent_start, @"hh\:mm\:ss", CultureInfo.InvariantCulture);
+
+                var startime = VideoEventData.LastOrDefault().videoevent_start;
+                if(startime?.Length == 8) startime = startime + ".000";
+                TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
                 TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
             }
 
@@ -298,7 +301,7 @@ namespace VideoCreator.XAML
                 noteRow["notes_line"] = element.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
-                noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss");
+                noteRow["notes_start"] =  element.Start.ToString(@"hh\:mm\:ss\.FFF");
                 noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

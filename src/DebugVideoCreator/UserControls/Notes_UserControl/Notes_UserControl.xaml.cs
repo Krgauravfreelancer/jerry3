@@ -334,7 +334,7 @@ namespace Notes_UserControl
             dRow["notes_index"] = 0;
             dRow["notes_id"] = notesId;
             dRow["notes_line"] = notesLine;
-            dRow["notes_start"] = "00:00:00";
+            dRow["notes_start"] = "00:00:00.000";
             dRow["notes_duration"] = 0;
             dRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             dRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

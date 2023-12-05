@@ -69,7 +69,7 @@ namespace VideoCreator.Helpers
                 dRow["notes_index"] = item.notes_index;
                 dRow["notes_id"] = -1;
                 dRow["notes_line"] = item.notes_line;
-                dRow["notes_start"] = "00:00:00";
+                dRow["notes_start"] = "00:00:00.000";
                 dRow["notes_duration"] = 0;
                 dRow["notes_createdate"] = item.notes_createdate;
                 dRow["notes_modifydate"] = item.notes_modifydate;

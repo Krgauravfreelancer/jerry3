@@ -277,7 +277,7 @@ namespace Sqllite_Library.Data
                 'notes_line' TEXT(255) NOT NULL  DEFAULT 'NULL',
                 'notes_wordcount' INTEGER NOT NULL  DEFAULT 0,
                 'notes_index' INTEGER NOT NULL DEFAULT 0,
-                'notes_start' TEXT(8) NOT NULL DEFAULT 'NULL',
+                'notes_start' TEXT(12) NOT NULL DEFAULT '00.00.00.000',
                 'notes_duration' INTEGER NOT NULL DEFAULT 1,
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
@@ -562,19 +562,23 @@ namespace Sqllite_Library.Data
                 throw e;
             }
 
-            return string.IsNullOrEmpty(result) ? "00:00:00": result;
+            return string.IsNullOrEmpty(result) ? "00:00:00.000": result;
         }
 
         private static string CalcNextEnd(string start, int duration)
         {
-            var array = start.Split(':');
+            if (string.IsNullOrEmpty(start))
+                return "00:00:00.000";
+
+            var ms = start.Length > 8 ? start.Split('.')[1] : "000";
+            var array = start.Length > 8 ? start.Remove(8).Split(':'): start.Split(':');
             var time = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
             var endTime = time + duration;
             int s = endTime % 60;
             endTime /= 60;
             int mins = endTime % 60;
             int hours = endTime / 60;
-            return string.Format("{0:D2}:{1:D2}:{2:D2}", hours, mins, s);
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3}", hours, mins, s, ms);
         }
 
         public static int InsertRowsToVideoEvent(DataRow dr)
