@@ -290,9 +290,6 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
-
-        
-
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu_AddCallout1_Clicked.Invoke(sender, e);

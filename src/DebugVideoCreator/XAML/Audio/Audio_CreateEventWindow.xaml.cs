@@ -49,7 +49,7 @@ namespace VideoCreator.XAML
                 row["videoevent_track"] = 1;
                 //row["videoevent_start"] = $"00:{SMinTxt.Text}:{SSecTxt.Text}";
                 //row["videoevent_duration"] = (Convert.ToInt32(DMinTxt.Text) * 60) + Convert.ToInt32(DSecTxt.Text);
-                row["videoevent_start"] = $"00:00:00";
+                row["videoevent_start"] = $"00:00:00.000";
                 row["videoevent_duration"] = 10;
                 row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

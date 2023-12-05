@@ -143,7 +143,7 @@ namespace VideoCreator.XAML
             {
                 DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, addedData.videoevent.videoevent_id, authApiViewModel.GetError());
                 if (videoEvent?.videosegment_data?.Count > 0)
-                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment[0].videosegment_id, authApiViewModel.GetError());
+                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment.videosegment_id, authApiViewModel.GetError());
             }
             else
             {
@@ -246,11 +246,12 @@ namespace VideoCreator.XAML
             // Step 1. Save to server
             var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
             var savedNotes =  await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
-
-            // Step 2. Now save the notes to local DB
-            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
-            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
-
+            if (savedNotes != null)
+            {
+                // Step 2. Now save the notes to local DB
+                var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+                DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+            }
             NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
         }
 
@@ -416,7 +417,7 @@ namespace VideoCreator.XAML
             {
                 var videoEventId = insertedVideoEventIds[0];
                 var blob = row["media"] as byte[];
-                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment[0]);
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
                 var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
                 if (insertedVideoSegmentId > 0)
                 {
@@ -758,7 +759,7 @@ namespace VideoCreator.XAML
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
             dataTable.Columns.Add("videoevent_duration", typeof(int));
-            dataTable.Columns.Add("videoevent_end", typeof(int));
+            dataTable.Columns.Add("videoevent_end", typeof(string));
             dataTable.Columns.Add("videoevent_createdate", typeof(string));
             dataTable.Columns.Add("videoevent_modifydate", typeof(string));
             //optional column
@@ -1022,11 +1023,14 @@ namespace VideoCreator.XAML
         private void SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
         {
             var downloadUrl = videosegment.videosegment_download_url;
-            using (var webClient = new WebClient())
+            if (!string.IsNullOrEmpty(downloadUrl))
             {
-                byte[] bytes = webClient.DownloadData(downloadUrl);
-                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
+                using (var webClient = new WebClient())
+                {
+                    byte[] bytes = webClient.DownloadData(downloadUrl);
+                    var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
+                    var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
+                }
             }
         }
 

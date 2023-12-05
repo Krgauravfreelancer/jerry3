@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoCreator.XAML"
         xmlns:DesignImager="clr-namespace:DesignImagerNp.controls;assembly=DesignImager"
-        mc:Ignorable="d" Height="450" Width="800">
+        mc:Ignorable="d">
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="350"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1.5*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

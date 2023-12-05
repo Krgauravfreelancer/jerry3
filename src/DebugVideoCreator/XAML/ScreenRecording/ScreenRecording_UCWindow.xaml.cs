@@ -134,7 +134,7 @@ namespace VideoCreator.XAML
 
         private void Recorder_CloseWindow(object sender, EventArgs e)
         {
-            ForwardDataTable(null);
+            // ForwardDataTable(null);
             //this.Close();
         }
 
@@ -157,8 +157,6 @@ namespace VideoCreator.XAML
 
         private void ScreenRecorder_Control_SaveClicked2(object sender, MediaRecordingCompletedEventArgs e)
         {
-
-
             if (e.MediaItem != null)
             {
                 try
@@ -180,6 +178,9 @@ namespace VideoCreator.XAML
                     dataTable.Columns.Add("videoevent_issynced", typeof(bool));
                     dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
                     dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+
+
+                    dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
 
                     // Since this table has Referential Integrity, so lets push one by one
                     dataTable.Rows.Clear();

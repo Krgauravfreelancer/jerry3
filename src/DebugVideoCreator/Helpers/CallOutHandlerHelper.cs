@@ -33,7 +33,7 @@ namespace VideoCreator.Helpers
             var designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
             var window = new Window
             {
-                Title = "Designer",
+                Title = string.IsNullOrEmpty(title) ? "Designer" : title,
                 Content = designerUserControl,
                 ResizeMode = ResizeMode.NoResize,
                 Height = 500,

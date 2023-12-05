@@ -31,7 +31,7 @@ namespace VideoCreator.Helpers
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)row["fk_videoevent_media"];
             objToSync.videoevent_track = 1; // TBD
-            objToSync.videoevent_start = "00:00:00"; // TBD
+            objToSync.videoevent_start = "00:00:00.000"; // TBD
             objToSync.videoevent_duration = (int)row["videoevent_duration"];
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = (byte[])row["media"];
@@ -123,7 +123,7 @@ namespace VideoCreator.Helpers
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
             row["fk_videoevent_project"] = selectedProjectId;
-            row["videoevent_start"] = "00:00:00"; // TBD
+            row["videoevent_start"] = "00:00:00.000"; // TBD
             row["videoevent_track"] = 1; // TBD
             row["videoevent_duration"] = (int)datarow["videoevent_duration"];
             row["fk_videoevent_media"] = (int)datarow["fk_videoevent_media"];

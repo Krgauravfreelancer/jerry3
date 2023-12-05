@@ -44,7 +44,7 @@ namespace VideoCreator.Helpers
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
             objToSync.videoevent_track = 1; // TBD
-            objToSync.videoevent_start = "00:00:00"; // TBD
+            objToSync.videoevent_start = "00:00:00.000"; // TBD
             objToSync.videoevent_duration = 10;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
