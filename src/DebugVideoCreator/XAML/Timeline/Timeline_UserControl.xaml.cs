@@ -201,10 +201,11 @@ namespace VideoCreator.XAML
             {
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
+                TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss"));
 
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-                //listView_trackbarEvents.ItemsSource = trackbarEvents;
+                listView_trackbarEvents.ItemsSource = trackbarEvents;
             };
 
 
@@ -233,15 +234,16 @@ namespace VideoCreator.XAML
 
         private void MoveTrackbar(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    var timeInputDate = (DateTime)TrackbarTimepicker.Value;
-            //    _timelineGridControl.MoveTrackbar(timeInputDate);
-            //}
-            //catch
-            //{
+            try
+            {
+                //var timeInputDate = (DateTime)TrackbarTimepicker.Value;
+                var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss", null);
+                _timelineGridControl.MoveTrackbar(timeInputDate);
+            }
+            catch
+            {
 
-            //}
+            }
 
         }
 
@@ -279,6 +281,47 @@ namespace VideoCreator.XAML
         }
 
 
+        //private void RefreshOrLoadComboBoxes(EnumEntity entity = EnumEntity.ALL)
+        //{
+        //    if (entity == EnumEntity.ALL || entity == EnumEntity.PROJECT)
+        //    {
+        //        var data = DataManagerSqlLite.GetProjects(false);
+        //        RefreshComboBoxes<CBVProject>(ProjectCmbBox, data, "project_name");
+        //        if (ProjectCmbBox.Items.Count > 0)
+        //        {
+        //            ProjectCmbBox.SelectedIndex = 0;
+        //        }
+        //    }
+        //}
+
+        //private void RefreshComboBoxes<T>(System.Windows.Controls.ComboBox combo, List<T> source, string columnNameToShow)
+        //{
+        //    combo.SelectedItem = null;
+        //    combo.DisplayMemberPath = columnNameToShow;
+        //    combo.Items.Clear();
+        //    foreach (var item in source)
+        //    {
+        //        combo.Items.Add(item);
+        //    }
+
+        //}
+
+        //private void ProjectCmbBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+
+        //    if (ProjectCmbBox.SelectedItem != null)
+        //    {
+        //        int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+
+        //        if (ProjectCmbBox.SelectedIndex != -1)
+        //        {
+
+        //            if (_timelineGridControl != null)
+        //                LoadVideoEventsFromDb(Selected_ID);
+        //        }
+        //    }
+        //}
+
         #endregion
 
 
@@ -307,13 +350,15 @@ namespace VideoCreator.XAML
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
+            //show a warning here that user will lose all changes if the changes are not saved
+            //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectId);
         }
 
         private void ClearTimelines(object sender, RoutedEventArgs e)
         {
             _timelineGridControl.ClearTimeline();
-            //listView_trackbarEvents.ItemsSource = null;
+            listView_trackbarEvents.ItemsSource = null;
         }
 
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
@@ -330,11 +375,11 @@ namespace VideoCreator.XAML
         {
             var selectedEvent = _timelineGridControl.GetSelectedEvent();
 
-            //if (selectedEvent == null)
-            //    lblSelectedEvent.Content = "No selected event";
+            if (selectedEvent == null)
+                lblSelectedEvent.Content = "No selected event";
 
-            //else
-            //    lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
+            else
+                lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
         }
 
         private void SaveTimeline(object sender, RoutedEventArgs e)
@@ -371,18 +416,9 @@ namespace VideoCreator.XAML
             MessageBox.Show("Save Successful!");
         }
 
-        private void ZoomIn(object sender, RoutedEventArgs e)
-        {
-            _timelineGridControl.ZoomIn();
-        }
 
-        private void ZoomOut(object sender, RoutedEventArgs e)
-        {
-            _timelineGridControl.ZoomOut();
-        }
 
         #endregion
-
 
 
     }

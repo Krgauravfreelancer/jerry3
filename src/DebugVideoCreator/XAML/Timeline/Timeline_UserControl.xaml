@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
+        xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
+        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl"
         mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
@@ -15,6 +16,7 @@
             <MenuItem Header="Add Callout 1 to Timeline" Click="AddCallout1_Click" />
             <MenuItem Header="Add Callout 2 to Timeline" Click="AddCallout2_Click" />
             <MenuItem Header="Add Video Event to Timeline" Click="AddVideoEvent_Click" />
+            <MenuItem Header="Add Form Event to Timeline" IsEnabled="False"/>
             <Separator></Separator>
             <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False"></MenuItem>
@@ -22,10 +24,10 @@
             <!--<MenuItem Header="Run" x:Name="MenuItem_Run" Click="ContextMenuRunClickEvent"></MenuItem>-->
         </ContextMenu>
     </UserControl.Resources>
-
-    <Grid>
-        <DockPanel  DockPanel.Dock="Top">
-            <!--<Border Background="#FFE6E6E6" DockPanel.Dock="Top">
+    <ScrollViewer>
+        <Grid>
+            <DockPanel  DockPanel.Dock="Top">
+                <!--<Border Background="#FFE6E6E6" DockPanel.Dock="Top">
                 <Grid>
                     <StackPanel Margin="25,0,25,10" HorizontalAlignment="Left" Orientation="Horizontal">
                         <StackPanel>
@@ -37,50 +39,52 @@
 
                 </Grid>
             </Border>-->
-            <Grid  Background="Transparent" DockPanel.Dock="Top" ContextMenu="{StaticResource TimelineMenu}" ContextMenuOpening="Button_ContextMenuOpening">
-                <Label Content="Use Right click to add Audio/Video Event" Margin="50,0,0,0" VerticalAlignment="Top" ></Label>
+                <Grid  Background="Transparent" DockPanel.Dock="Top" ContextMenu="{StaticResource TimelineMenu}" ContextMenuOpening="Button_ContextMenuOpening">
+                    <Label Content="Use Right click to add Audio/Video Event" Margin="50,0,0,0" VerticalAlignment="Top" ></Label>
 
-                <StackPanel Margin="50,30,50,0" VerticalAlignment="Top">
-                    <GroupBox Header="Timeline User Control">
-                        <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
+                    <StackPanel Margin="50,30,50,0" VerticalAlignment="Top">
+                        <GroupBox Header="Timeline User Control">
+                            <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
 
-                    </GroupBox>
-                    <!--<GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
-                        <ListView Height="NaN"  x:Name="listView_trackbarEvents">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="EventMediaName" DisplayMemberBinding="{Binding EventMediaName}"/>
-                                    <GridViewColumn Header="Start" DisplayMemberBinding="{Binding videoevent_start}"/>
-                                    <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding videoevent_duration}"/>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </GroupBox>
+                        </GroupBox>
+                        <GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
+                            <ListView Height="NaN"  x:Name="listView_trackbarEvents">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="EventMediaName" DisplayMemberBinding="{Binding EventMediaName}"/>
+                                        <GridViewColumn Header="Start" DisplayMemberBinding="{Binding videoevent_start}"/>
+                                        <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding videoevent_duration}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </GroupBox>
 
-                    <GroupBox Header="Timeline User Control Wrapper Methods" Margin="0,10,0,0" Padding="10">
-                        <Grid>
-                            <DockPanel HorizontalAlignment="Left">
-                                <Button Width="130" Height="30" Content="Move Trackbar to Time" Click="MoveTrackbar"></Button>
-                                <wpfx:DateTimeUpDown x:Name="TrackbarTimepicker" Height="30" Format="Custom" FormatString="HH:mm:ss" 
-                                     HorizontalAlignment="Left"  VerticalAlignment="Top" Width="120"  />
+                        <GroupBox Header="Timeline User Control Wrapper Methods" Margin="0,10,0,0" Padding="10">
+                            <Grid>
+                                <DockPanel HorizontalAlignment="Left">
+                                    <Button Width="130" Height="30" Content="Move Trackbar to Time" Click="MoveTrackbar"></Button>
+                                    <!--<wpfx:DateTimeUpDown x:Name="TrackbarTimepicker" Height="30" Format="Custom" FormatString="HH:mm:ss" 
+                                     HorizontalAlignment="Left"  VerticalAlignment="Top" Width="120"  />-->
 
-                                <Button Margin="15,0,0,0" Content="Get Selected Event" Click="GetSelectedEvent"></Button>
-                                <Label x:Name="lblSelectedEvent"  ></Label>
+                                    <timepicker:TimePicker_UserControl x:Name="TrackbarTimepicker" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
-                            </DockPanel>
+                                    <Button Margin="15,0,0,0" Content="Get Selected Event" Click="GetSelectedEvent"></Button>
+                                    <Label x:Name="lblSelectedEvent"  ></Label>
 
-                        </Grid>
+                                </DockPanel>
 
-                    </GroupBox>-->
+                            </Grid>
 
-
-
-
-                </StackPanel>
-            </Grid>
-        </DockPanel>
+                        </GroupBox>
 
 
-    </Grid>
 
+
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+
+
+        </Grid>
+    </ScrollViewer>
 </UserControl>
