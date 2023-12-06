@@ -21,7 +21,6 @@ using Timeline.UserControls.Models;
 using Timeline.UserControls;
 using System.Windows.Controls.Primitives;
 using VideoCreator.XAML;
-using VoiceScripter_UserControl.Classes;
 
 namespace VideoCreator.XAML
 {
@@ -30,7 +29,6 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class ScreenRecording_UCWindow : UserControl
     {
-        //int selectionIndex = 0;
         bool showMessageBoxes = false;
 
         private readonly Window _mainWindow;
@@ -45,11 +43,12 @@ namespace VideoCreator.XAML
             InitializeComponent();
             _mainWindow = mainWindow;
             _trackID = trackId;
+
             _projectID = projectID;
+
             SetProjectID(_projectID);
 
 
-            //RefreshOrLoadComboBoxes(EnumEntity.ALL);
 
 
         }
@@ -134,7 +133,7 @@ namespace VideoCreator.XAML
 
         private void Recorder_CloseWindow(object sender, EventArgs e)
         {
-            // ForwardDataTable(null);
+            //ForwardDataTable(null);
             //this.Close();
         }
 
@@ -144,19 +143,20 @@ namespace VideoCreator.XAML
         }
 
 
-        //private void Recorder_TextReceived(object sender, TextReceivedEventArgs e)
-        //{
-        //    TextTestBox.Text += $"{Environment.NewLine}Start: {e.TextItem.Start.TotalSeconds} - Duration: {e.TextItem.Duration.TotalSeconds} - Text: {e.TextItem.Text}";
-        //}
+
+
+
 
         private void ScreenRecorder_Control_CancelClicked(object sender, EventArgs e)
         {
             /// Here we will close the ScreenRecorder and ignore any video or changes made.
-            // Close();
+            //Close();
         }
 
         private void ScreenRecorder_Control_SaveClicked2(object sender, MediaRecordingCompletedEventArgs e)
         {
+
+
             if (e.MediaItem != null)
             {
                 try
@@ -179,9 +179,9 @@ namespace VideoCreator.XAML
                     dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
                     dataTable.Columns.Add("videoevent_syncerror", typeof(string));
 
-
+                    
                     dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
-
+                    
                     // Since this table has Referential Integrity, so lets push one by one
                     dataTable.Rows.Clear();
 
@@ -212,8 +212,11 @@ namespace VideoCreator.XAML
                     }
 
                     row["videoevent_duration"] = element.Duration.TotalSeconds;
+
                     row["fk_videoevent_media"] = mediaId;
+
                     row["fk_videoevent_screen"] = -1; // Not needed for this case
+
                     row["media"] = element.mediaData;
 
                     row["videoevent_notes"] = GetNotesDataTable(element);
@@ -301,7 +304,7 @@ namespace VideoCreator.XAML
                 noteRow["notes_line"] = element.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
-                noteRow["notes_start"] =  element.Start.ToString(@"hh\:mm\:ss\.FFF");
+                noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss\.FFF");
                 noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -443,7 +446,10 @@ namespace VideoCreator.XAML
         private void ForwardDataTable(DataTable dataTable)
         {
             if (BtnSaveClickedEvent != null)
+            {
                 BtnSaveClickedEvent(dataTable);
+                //this.Close();
+            }
         }
 
         #endregion
