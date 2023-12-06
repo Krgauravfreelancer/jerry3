@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using VideoCreator.Auth;
 using System.Windows.Media;
 using dbTransferUser_UserControl.ResponseObjects.Projects;
+using dbTransferUser_UserControl.ResponseObjects.Background;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Sqllite_Library.Models;
@@ -22,36 +23,27 @@ namespace VideoCreator.XAML
     {
         private readonly AuthAPIViewModel authApiViewModel;
         private List<ProjectModel> pendingProjects;
-        private bool checkVideo2Image;
         public MainWindow()
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
-            checkVideo2Image = false;
         }
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (checkVideo2Image)
-                {
-                    TryImageFromVideo();
-                    return;
-                }
-                else
-                {
-                    await Login();
-                    await SyncApp();
-                    await SyncMedia();
-                    await SyncScreens();
-                    await SyncCompany();
-                    await SyncBackground();
+                await Login();
+                await SyncApp();
+                await SyncMedia();
+                await SyncScreens();
+                await SyncCompany();
+                await SyncBackground();
 
-                    rbWIP.IsChecked = true;
-                    InitialiseAndRefreshScreen();
-                    //await PopulateProjects();
-                }
+                rbWIP.IsChecked = true;
+                InitialiseAndRefreshScreen();
+                //await PopulateProjects();
+                
             }
             catch (Exception ex)
             {
@@ -62,40 +54,7 @@ namespace VideoCreator.XAML
 
         }
 
-        private void TryImageFromVideo()
-        {
-            //var currentDirectory = Directory.GetCurrentDirectory();
-            //var VideoFileName = $"{currentDirectory}\\Media\\Screencast1.mp4";
-            ////ShellFile shellFile = ShellFile.FromFilePath(VideoFileName);
-            ////System.Drawing.Bitmap bm = shellFile.Thumbnail.ExtraLargeBitmap;
-            //var filename = $"C:\\commercialBase\\{DateTime.Now.ToString("yyyymmddHHMMss")}.png";
-            //var v2i = new VideoToImage_UserControl.VideoToImage_UserControl();
-
-            //var window = new Window
-            //{
-            //    //Title = "Manage Timeline",
-            //    //Content = manageTimeline_UserControl,
-            //    //WindowState = WindowState.Maximized,
-            //    //ResizeMode = ResizeMode.CanResize,
-            //    //WindowStartupLocation = WindowStartupLocation.CenterScreen
-            //    Title = "Video To Image",
-            //    Content = v2i,
-            //    SizeToContent = SizeToContent.WidthAndHeight,
-            //    ResizeMode = ResizeMode.NoResize,
-            //    RenderSize = v2i.RenderSize,
-            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
-            //};
-
-            //try
-            //{
-            //    var result = window.ShowDialog();
-            //}
-            //catch (Exception)
-            //{ }
-
-            //bm.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
-        }
-
+        
         private void InitialiseAndRefreshScreen()
         {
             lblLoading.Visibility = Visibility.Hidden;
@@ -113,7 +72,6 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllApp();
             if (data == null) return;
             SyncDbHelper.SyncApp(data);
-            //MessageBox.Show("App Data Synchronised", "Apps Data", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async Task SyncMedia()
@@ -121,7 +79,6 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllMedia();
             if (data == null) return;
             SyncDbHelper.SyncMedia(data);
-            //MessageBox.Show("Media Data Synchronised", "Media Data", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async Task SyncScreens()
@@ -129,7 +86,6 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllScreens();
             if (data == null) return;
             SyncDbHelper.SyncScreen(data);
-            //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async Task SyncCompany()
@@ -137,17 +93,15 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllCompany();
             if (data == null) return;
             SyncDbHelper.SyncCompany(data);
-            //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async Task SyncBackground()
         {
             var data = await authApiViewModel.GetAllBackground();
             if (data == null) return;
-            //foreach(var item in data)
-            //    item.backgrounds_media = await authApiViewModel.DownloadBackground(item.backgrounds_id, "png");
-            SyncDbHelper.SyncBackground(data);
-            //MessageBox.Show("Screen Data Synchronised", "Screen Data", MessageBoxButton.OK, MessageBoxImage.Information);
+            var result = new List<BackgroundModel>();
+            result.Add(data);
+            SyncDbHelper.SyncBackground(result, authApiViewModel);
         }
 
 

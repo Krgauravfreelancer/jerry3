@@ -223,8 +223,6 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<AppModel>(url);
             if (result != null)
                 return result;
-            //else
-            //    MessageBox.Show($"No data found", "Synchronising Apps Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -234,8 +232,6 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<ParentDataList<MediaModel>>(url);
             if (result?.Data?.Count > 0)
                 return result.Data;
-            //else
-            //    MessageBox.Show($"No data Found", "Synchronising Media Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -245,8 +241,6 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<ParentDataList<ScreenModel>>(url);
             if (result?.Data?.Count > 0)
                 return result.Data;
-            //else
-            //    MessageBox.Show($"No data Found", "Synchronising screen Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
@@ -257,15 +251,13 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Get<List<CompanyModel>>(url);
             if (result != null)
                 return result;
-            //else
-            //    MessageBox.Show($"No Company Found", "Synchronising company Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
 
-        public async Task<List<BackgroundModel>> GetAllBackground()
+        public async Task<BackgroundModel> GetAllBackground()
         {
             var url = $"api/connect/background";
-            var result = await _apiClientHelper.Get<ParentData<List<BackgroundModel>>>(url);
+            var result = await _apiClientHelper.Get<ParentData<BackgroundModel>>(url);
             if (result != null)
                 return result?.Data;
             //else
@@ -280,6 +272,12 @@ namespace VideoCreator.Auth
             await _apiClientHelper.GetFile(url, filename);
             var filepath = $@"{Directory.GetCurrentDirectory()}\\{filename}";
             return filepath;
+        }
+
+        public async Task<byte[]> GetSecuredFileByteArray(string url)
+        {
+            var result = await _apiClientHelper.GetSecuredFileByteArray(url);
+            return result;
         }
 
 
@@ -464,6 +462,10 @@ namespace VideoCreator.Auth
             var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration.ToString());
             requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
             multipart.Add(requestbodyContent_duration);
+            // Start
+            var requestbodyContent_end = new StringContent(videoEventModel.videoevent_end.ToString());
+            requestbodyContent_end.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_end\"");
+            multipart.Add(requestbodyContent_end);
             // LOC DATE
             var requestbodyContent_LOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
             requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");

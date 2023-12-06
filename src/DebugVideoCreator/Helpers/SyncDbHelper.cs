@@ -15,6 +15,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using System.Windows.Shapes;
+using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
 {
@@ -144,7 +146,7 @@ namespace VideoCreator.Helpers
             }
         }
 
-        public static async void SyncBackground(List<BackgroundModel> data)
+        public static async void SyncBackground(List<BackgroundModel> data, AuthAPIViewModel authApiViewModel)
         {
             try
             {
@@ -162,10 +164,8 @@ namespace VideoCreator.Helpers
                     row["background_id"] = item.backgrounds_id;
                     row["fk_background_company"] = item.fk_backgrounds_company;
                     row["background_active"] = item.backgrounds_active;
-                    using (WebClient client = new WebClient())
-                    {
-                        row["background_media"] = await client.DownloadDataTaskAsync(item.backgrounds_url);
-                    }
+                    if(!string.IsNullOrEmpty(item.backgrounds_url) && item.backgrounds_url.IndexOf('.') > -1)
+                        row["background_media"] = await authApiViewModel.GetSecuredFileByteArray(item.backgrounds_url);//GetSecuredFileByteArray
                     dataTable.Rows.Add(row);
                 }
                 DataManagerSqlLite.UpsertRowsToBackground(dataTable);

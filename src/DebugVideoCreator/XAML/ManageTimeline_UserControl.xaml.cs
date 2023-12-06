@@ -998,7 +998,7 @@ namespace VideoCreator.XAML
                     if (videoEvent?.notes?.Count > 0)
                         SaveNotes(localVideoEventId, videoEvent?.notes);
                     if (videoEvent?.videosegment != null)
-                        SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
+                        await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
                 }
             }
             var confirm = MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -1020,17 +1020,16 @@ namespace VideoCreator.XAML
             DataManagerSqlLite.InsertRowsToDesign(dtDesign);
         }
 
-        private void SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
+        private async Task SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
         {
             var downloadUrl = videosegment.videosegment_download_url;
+            
             if (!string.IsNullOrEmpty(downloadUrl))
             {
-                using (var webClient = new WebClient())
-                {
-                    byte[] bytes = webClient.DownloadData(downloadUrl);
-                    var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
-                    var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
-                }
+                byte[] bytes = await authApiViewModel.GetSecuredFileByteArray(downloadUrl);
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
+                
             }
         }
 

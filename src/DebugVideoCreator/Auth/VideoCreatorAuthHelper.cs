@@ -169,6 +169,34 @@ namespace VideoCreator.Auth
             return default;
         }
 
+        public async Task<byte[]> GetSecuredFileByteArray(string url)
+        {
+            try
+            {
+                ErrorMessage = string.Empty;
+                InitializeOrResetDbTransferControl();
+                var byteArray = await dbTransferCtrl.GetFileByteArray(url);
+                return byteArray;
+            }
+            catch (DllNotFoundException dllex)
+            {
+                ErrorMessage = dllex.Message;
+            }
+            catch (NullReferenceException)
+            {
+                ErrorMessage = NO_LOGIN_MESSAGE;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+            return null;
+        }
+
         public async Task GetFile(string url, string fileToWriteTo)
         {
             try
