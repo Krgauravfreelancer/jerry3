@@ -35,6 +35,9 @@ namespace VideoCreator.Helpers
                 notesModel.notes_line = Convert.ToString(note["notes_line"]);
                 notesModel.notes_wordcount = Convert.ToInt16(note["notes_wordcount"]);
                 notesModel.notes_index = Convert.ToString(note["notes_index"]);
+                notesModel.notes_start = Convert.ToString(note["notes_start"]);
+                notesModel.notes_duration = int.Parse(Convert.ToString(note["notes_duration"]));
+                notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 data.Add(notesModel);
             }
             return data;

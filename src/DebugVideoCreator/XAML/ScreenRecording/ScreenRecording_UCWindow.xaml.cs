@@ -196,7 +196,7 @@ namespace VideoCreator.XAML
                     row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     row["videoevent_isdeleted"] = false;
                     row["videoevent_issynced"] = false;
-                    row["videoevent_serverid"] = 100;
+                    row["videoevent_serverid"] = e.MediaItem.VideoEventID;
                     row["videoevent_syncerror"] = string.Empty;
 
                     var mediaId = 0;
