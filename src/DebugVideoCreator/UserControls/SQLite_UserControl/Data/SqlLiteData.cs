@@ -529,7 +529,7 @@ namespace Sqllite_Library.Data
         
         #region == Video Event and Depenedent Tables ==
 
-        private static string GetNextStart(int fk_videoevent_media)
+        private static string GetNextStart(int fk_videoevent_media, int projectId)
         {
             // Check if database is created
             if (false == IsDbCreated())
@@ -548,8 +548,11 @@ namespace Sqllite_Library.Data
                 string sqlQueryString = $@"Select max(videoevent_end) from cbv_videoevent ";
                 var whereClause = string.Empty;
 
-                if (fk_videoevent_media <= 4) whereClause = " where fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4";
+                if (fk_videoevent_media <= 4) whereClause = " where (fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4) ";
                 else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
+
+
+                whereClause += $" and fk_videoevent_project = {projectId}";
 
                 var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
                 result = Convert.ToString(sqlQuery.ExecuteScalar());
@@ -593,7 +596,7 @@ namespace Sqllite_Library.Data
             if (string.IsNullOrEmpty(modifyDate))
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]));
+            var start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_project"]));
             var end = CalcNextEnd(start, Convert.ToInt32(dr["videoevent_duration"]));
 
             var issynced = Convert.ToInt16(dr["videoevent_issynced"]);

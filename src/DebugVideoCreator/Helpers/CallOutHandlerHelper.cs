@@ -27,7 +27,7 @@ namespace VideoCreator.Helpers
     public static class CallOutHandlerHelper
     {
         #region === Form/Design Functions ==
-        public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track)
         {
             var data = DataManagerSqlLite.GetBackground();
             var designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
@@ -46,7 +46,7 @@ namespace VideoCreator.Helpers
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
                         // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, authApiViewModel);
+                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, track, authApiViewModel);
                         // Now we have to save the data locally
                         if (addedData != null)
                         {

@@ -24,4 +24,12 @@
         AUDIO,
         FORM
     }
+
+    public enum EnumTrack
+    {
+        AUDIO = 1,
+        IMAGEORVIDEO = 2,
+        CALLOUT1,
+        CALLOUT2
+    }
 }

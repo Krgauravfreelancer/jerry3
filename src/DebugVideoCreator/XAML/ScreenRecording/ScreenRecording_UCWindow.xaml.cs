@@ -155,8 +155,6 @@ namespace VideoCreator.XAML
 
         private void ScreenRecorder_Control_SaveClicked2(object sender, MediaRecordingCompletedEventArgs e)
         {
-
-
             if (e.MediaItem != null)
             {
                 try
@@ -222,12 +220,12 @@ namespace VideoCreator.XAML
                     row["videoevent_notes"] = GetNotesDataTable(element);
                     dataTable.Rows.Add(row);
 
-                    List<int> InsertedIDs = CreateMediaEvents(dataTable);
-
-                    if (InsertedIDs.Count > 0)
-                    {
-                        SaveNotes(InsertedIDs[0], element);
-                    }
+                    //List<int> InsertedIDs = CreateMediaEvents(dataTable);
+                    BtnSaveClickedEvent.Invoke(dataTable);
+                    //if (InsertedIDs.Count > 0)
+                    //{
+                    //    SaveNotes(InsertedIDs[0], element);
+                    //}
                 }
                 catch (Exception ex)
                 {

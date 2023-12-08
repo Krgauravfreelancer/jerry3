@@ -39,11 +39,11 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
-            objToSync.videoevent_track = 1; // TBD
+            objToSync.videoevent_track = (int)track;
             objToSync.videoevent_start = "00:00:00.000"; // TBD
             objToSync.videoevent_duration = 10;
             objToSync.videoevent_end = "00:00:10.000"; // TBD

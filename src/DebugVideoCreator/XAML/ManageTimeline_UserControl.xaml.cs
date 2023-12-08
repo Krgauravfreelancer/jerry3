@@ -471,16 +471,15 @@ namespace VideoCreator.XAML
 
         #region == Design/Form Context Menu Option ==
 
-        private async Task HandleCalloutLogic()
+        private async Task HandleCalloutLogic(EnumTrack track)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel);
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track);
             if (isSuccess)
             {
                 RefreshOrLoadComboBoxes();
-                TimelineUserConrol.ClearTimeline();
                 TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
                 FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             //else
@@ -489,12 +488,12 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, EventArgs e)
         {
-            await HandleCalloutLogic();
+            await HandleCalloutLogic(EnumTrack.CALLOUT1);
         }
 
         private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, EventArgs e)
         {
-            await HandleCalloutLogic();
+            await HandleCalloutLogic(EnumTrack.CALLOUT2);
         }
 
 
