@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using Newtonsoft.Json;
 using Sqllite_Library.Models;
+using System.Windows.Threading;
 
 namespace VideoCreator.XAML
 {
@@ -84,7 +85,7 @@ namespace VideoCreator.XAML
             // This can come from database
             // designer.LoadDesign(LoadFromDB());
 
-            if(!toggleFlag)
+            if (!toggleFlag)
             {
                 designer.Visibility = Visibility.Visible;
                 designViewer.Visibility = Visibility.Hidden;
@@ -94,7 +95,7 @@ namespace VideoCreator.XAML
                 designer.Visibility = Visibility.Hidden;
                 designViewer.Visibility = Visibility.Visible;
             }
-            
+
             toggleFlag = !toggleFlag;
         }
 

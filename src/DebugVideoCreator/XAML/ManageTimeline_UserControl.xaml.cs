@@ -483,8 +483,8 @@ namespace VideoCreator.XAML
                 //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            else
-                MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //else
+            //    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, EventArgs e)

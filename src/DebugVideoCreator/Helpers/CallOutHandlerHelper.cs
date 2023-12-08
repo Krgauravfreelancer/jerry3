@@ -35,10 +35,7 @@ namespace VideoCreator.Helpers
             {
                 Title = string.IsNullOrEmpty(title) ? "Designer" : title,
                 Content = designerUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                Height = 500,
-                Width = 1000,
-                RenderSize = designerUserControl.RenderSize,
+                WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
@@ -66,14 +63,14 @@ namespace VideoCreator.Helpers
                             }
                             else
                             {
-                                MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                //MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                             }
                         }
                     }
                 }
                 else
                 {
-                    MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    //MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             return false;
