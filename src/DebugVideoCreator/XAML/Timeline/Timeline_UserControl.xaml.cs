@@ -348,6 +348,11 @@ namespace VideoCreator.XAML
             ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
         }
 
+        private void RunEvent_Click(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_Run_Clicked.Invoke(sender, e);
+        }
+
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
             //show a warning here that user will lose all changes if the changes are not saved

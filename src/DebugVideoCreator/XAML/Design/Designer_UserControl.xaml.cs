@@ -11,6 +11,9 @@ using System.Windows.Media;
 using Newtonsoft.Json;
 using Sqllite_Library.Models;
 using System.Windows.Threading;
+using System.ComponentModel;
+using System.IO;
+using System.Xml;
 
 namespace VideoCreator.XAML
 {
@@ -32,7 +35,6 @@ namespace VideoCreator.XAML
             InitializeComponent();
             selectedProjectId = _selectedProjectId;
             BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
-            LoadComboBoxesBackground();
 
             dataTableAdd = createDesignDbDataTable();
             dataTableUpdate = createDesignDbDataTable();
@@ -44,7 +46,13 @@ namespace VideoCreator.XAML
             designer.propertyWindow = propertyWindow;
             designer.shapeBar = shapeBar;
             designViewer.Visibility = Visibility.Visible;
-            btnSave.IsEnabled = false;
+
+            designer.Visibility = Visibility.Hidden;
+            designViewer.Visibility = Visibility.Visible;
+            DataTable designElements = designer.GetDesign();
+            designViewer.LoadDesign(designElements);
+
+            //designer.
         }
 
         private DataTable createDesignDbDataTable()
@@ -60,30 +68,66 @@ namespace VideoCreator.XAML
             return dtDesign;
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private void BtnProceed_Click(object sender, RoutedEventArgs e)
         {
-            designer.Visibility = Visibility.Hidden;
-            designViewer.Visibility = Visibility.Visible;
-
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
 
-            if (designElements.Rows.Count < 1)
+            if (designElements.Rows.Count <= 1)
             {
                 System.Windows.MessageBox.Show("Nothing to save, please create some design", "Information", (MessageBoxButton)MessageBoxButtons.OK, (MessageBoxImage)MessageBoxIcon.Error);
                 return;
             }
-
-            AddToDatabase(designElements);
-            UserConsent = true;
-            var myWindow = Window.GetWindow(this);
-            myWindow.Close();
+            else
+            {
+                AddToDatabase(designElements);
+                UserConsent = true;
+                var myWindow = Window.GetWindow(this);
+                myWindow.Close();
+            }
         }
 
-        private void BtnToggleDesigner_Click(object sender, RoutedEventArgs e)
+        private string GetBackgroundElement()
+        {
+            if (BackgroundImagesData != null && BackgroundImagesData.Count > 0)
+            {
+                var height = stackDesigner.ActualHeight;
+                var width = stackDesigner.ActualWidth;    
+                // Process 
+                byte[] blob = (byte[])BackgroundImagesData[0].background_media;
+                using (var ms = new MemoryStream(blob))
+                {
+                    var filename = $"image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffffff")}.jpg";
+                    var filepath = $@"{Directory.GetCurrentDirectory()}\{filename}";
+                    using (var fs = new FileStream(filepath, FileMode.Create))
+                    {
+                        ms.WriteTo(fs);
+                    }
+                    return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
+                }
+            }
+            return null;
+        }
+
+        private DataTable LoadBackgroundFromDB(string bgImageXAML)
+        {
+            var dataTable = designer.InitDataTable();
+            dataTable.Clear();
+            if (!string.IsNullOrEmpty(bgImageXAML))
+            {
+                DataRow dataRow = dataTable.NewRow();
+                dataRow["id"] = 1;
+                dataRow["xaml"] = bgImageXAML;
+                dataTable.Rows.Add(dataRow);
+            }
+            return dataTable;
+        }
+
+        private void BtnInitialiseDesigner_Click(object sender, RoutedEventArgs e)
         {
             // This can come from database
-            // designer.LoadDesign(LoadFromDB());
+            var bgImageXAML = GetBackgroundElement();
+            designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
 
             if (!toggleFlag)
             {
@@ -97,17 +141,32 @@ namespace VideoCreator.XAML
             }
 
             toggleFlag = !toggleFlag;
+            BtnInitialiseDesigner.IsEnabled = false;
         }
 
-        private void cmbBackground_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //private void cmbBackground_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    selectedBGItem = ((CBVBackground)cmbBackground?.SelectedItem);
+
+        //    // Process 
+        //    byte[] blob = (byte[])selectedBGItem.background_media;
+        //    BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
+        //    imgBackground.Source = x;
+        //    btnSave.IsEnabled = selectedBGItem?.background_id >= 0;
+        //}
+
+        private void LoadComboBoxesBackground()
         {
-            selectedBGItem = ((CBVBackground)cmbBackground?.SelectedItem);
-            
-            // Process 
-            byte[] blob = (byte[])selectedBGItem.background_media;
-            BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
-            imgBackground.Source = x;
-            btnSave.IsEnabled = selectedBGItem?.background_id >= 0;
+
+            //cmbBackground.SelectedItem = null;
+            //cmbBackground.DisplayMemberPath = "background_image_name";
+            //cmbBackground.Items.Clear();
+            //int i = 1;
+            //foreach (var item in BackgroundImagesData)
+            //{
+            //    item.background_image_name = "background-" + i++;
+            //    cmbBackground.Items.Add(item);
+            //}
         }
 
         private void AddToDatabase(DataTable dtElements)
@@ -115,55 +174,27 @@ namespace VideoCreator.XAML
             // For now only Add is supported.
             foreach (DataRow row in dtElements.Rows)
             {
-                var rowDesign = (int)row["id"]  == - 1  ? dataTableAdd.NewRow(): dataTableUpdate.NewRow();
+                //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
+
+                var rowDesign = dataTableAdd.NewRow();
 
                 rowDesign["design_id"] = row["id"];
                 rowDesign["fk_design_videoevent"] = -1;
                 rowDesign["fk_design_screen"] = 1;
-                rowDesign["fk_design_background"] = selectedBGItem.background_id;
+                rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_xml"] = row["xaml"];
-
-                if (-1 == (int)row["id"])
-                {
-                    dataTableAdd.Rows.Add(rowDesign);
-                }
-                else
-                {
-                    dataTableUpdate.Rows.Add(rowDesign);
-                }
+                dataTableAdd.Rows.Add(rowDesign);
+                //if (-1 == (int)row["id"])
+                //{
+                //    dataTableAdd.Rows.Add(rowDesign);
+                //}
+                //else
+                //{
+                //    dataTableUpdate.Rows.Add(rowDesign);
+                //}
             }
         }
-
-        private void LoadComboBoxesBackground()
-        {
-
-            cmbBackground.SelectedItem = null;
-            cmbBackground.DisplayMemberPath = "background_image_name";
-            cmbBackground.Items.Clear();
-            int i = 1;
-            foreach (var item in BackgroundImagesData)
-            {
-                item.background_image_name = "background-" + i++;
-                cmbBackground.Items.Add(item);
-            }
-        }
-
-        //private DataTable LoadFromDB()
-        //{
-        //    var dataTable = designer.InitDataTable();
-        //    dataTable.Clear();
-        //    List<CBVDesign> cBVDesigns = DataManagerSqlLite.GetDesign(1);
-        //    foreach (CBVDesign cBVDesign in cBVDesigns)
-        //    {
-        //        DataRow dataRow = dataTable.NewRow();
-        //        dataRow["id"] = cBVDesign.design_id;
-        //        dataRow["xaml"] = cBVDesign.design_xml;
-        //        dataTable.Rows.Add(dataRow);
-        //    }
-
-        //    return dataTable;
-        //}
     }
 }

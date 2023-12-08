@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" />
@@ -24,20 +24,17 @@
         <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="1" />
         <!--<Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="2" Grid.Row="1" />-->
         <StackPanel Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Margin="10" x:Name="btnToggleDesigner" Content="Toggle Designer" Click="BtnToggleDesigner_Click" Width="200" Height="25"></Button>
-            <Label Content="Choose Background" VerticalAlignment="Center" Margin="50,0,0,0" />
-            <ComboBox x:Name="cmbBackground" VerticalAlignment="Center" Margin="10,0,0,0" Width="200" Height="25" SelectionChanged="cmbBackground_SelectionChanged"                         />
+            <Button Margin="2" x:Name="BtnInitialiseDesigner" Content="Initialize" Click="BtnInitialiseDesigner_Click" Width="200" Height="25"></Button>
         </StackPanel>
-
-        <designer:ShapeBar Grid.Column="0" Grid.Row="1" Margin="10" x:Name="shapeBar"  ></designer:ShapeBar>
-        <Image Grid.Column="1" Grid.Row="1" Stretch="Fill" Margin="5" x:Name="imgBackground"></Image>
-        <designer:Designer Grid.Column="1" Grid.Row="1" Margin="10" x:Name="designer" />
-        <DesignViewer:DesignViewer Grid.Column="1" Grid.Row="1" Margin="10" x:Name="designViewer" Visibility="Visible"/>
-        <designer:PropertyWindow Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" Margin="10" x:Name="propertyWindow" MaxHeight="450"></designer:PropertyWindow>
-
-
+        
+        <designer:ShapeBar Grid.Column="0" Grid.Row="1" Margin="2" x:Name="shapeBar"  ></designer:ShapeBar>
+        <StackPanel x:Name="stackDesigner"  Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <designer:Designer x:Name="designer" />
+        </StackPanel>
+        <DesignViewer:DesignViewer Grid.Column="1" Grid.Row="1" Margin="2" x:Name="designViewer" Visibility="Visible"/>
+        <designer:PropertyWindow Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" Margin="2" x:Name="propertyWindow" MaxHeight="450"></designer:PropertyWindow>
         <StackPanel Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Margin="10" x:Name="btnSave" Click="BtnSave_Click" Width="200" Height="25">Save Design And Proceed</Button>
+            <Button Margin="2" x:Name="btnSave" Click="BtnProceed_Click" Width="200" Height="25">Proceed</Button>
         </StackPanel>
 
     </Grid>

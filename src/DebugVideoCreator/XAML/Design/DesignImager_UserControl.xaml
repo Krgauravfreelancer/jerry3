@@ -3,26 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:VideoCreator.XAML"
-        xmlns:DesignImager="clr-namespace:DesignImagerNp.controls;assembly=DesignImager"
-        mc:Ignorable="d">
-
+        xmlns:DesignImager="clr-namespace:DesignImagerNp.controls;assembly=DesignImager">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1.5*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <DesignImager:DesignImager x:Name="designImager" Margin="10"  Grid.Row="0" Grid.Column="0"/>
-        <Label Content="Canvas" FontSize="20" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0"/>
+        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="0"/>
+        <DesignImager:DesignImager x:Name="designImager" Margin="2" Grid.Row="0" Grid.Column="0" />
+        <Image x:Name="imgDesign" Margin="2" Grid.Row="0" Visibility="Hidden" Grid.Column="1" />
+        <!--<Label Content="DESIGN" FontSize="20" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
         <!--<Button x:Name="btnLoad" Content="Load Design" Width="150" Height="25" Click="btnLoad_Click" Grid.Row="2" Grid.ColumnSpan="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
-        <Image x:Name="imgDesign" Margin="10" Grid.Row="0" Grid.Column="1" />
-        <Label Content="Image" FontSize="20" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Button x:Name="btnConvert" Content="Convert To Image And Save" Width="200" Height="25" Click="btnConvert_Click" Grid.Row="2" Grid.ColumnSpan="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <!--<Label Content="MEDIA" FontSize="20" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
+        <Button x:Name="btnConvert" Content="Convert To Image And Save" Width="200" Height="25" Click="btnConvert_Click" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         
     </Grid>
 </UserControl>

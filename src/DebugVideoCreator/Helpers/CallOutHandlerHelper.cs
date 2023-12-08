@@ -84,10 +84,7 @@ namespace VideoCreator.Helpers
             {
                 Title = "Design Image",
                 Content = designImagerUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                Height = 500,
-                Width = 850,
-                RenderSize = designImagerUserControl.RenderSize,
+                WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = window.ShowDialog();
