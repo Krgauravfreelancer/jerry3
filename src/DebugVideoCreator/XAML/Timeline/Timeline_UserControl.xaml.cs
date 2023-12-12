@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using DebugVideoCreator.Models;
+using Newtonsoft.Json;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
@@ -24,8 +25,11 @@ namespace VideoCreator.XAML
         private AuthAPIViewModel authApiViewModel;
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
         public event EventHandler ContextMenu_AddVideoEvent_Success;
-        public event EventHandler ContextMenu_AddCallout1_Clicked;
-        public event EventHandler ContextMenu_AddCallout2_Clicked;
+
+
+
+        public event EventHandler<CalloutEvent> ContextMenu_AddCallout1_Clicked;
+        public event EventHandler<CalloutEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler ContextMenu_Run_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
@@ -333,14 +337,58 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
+        private CalloutEvent CalloutPreprocessing()
+        {
+            TimelineVideoEvent selectedEvent;
+            var trackbarTime = TrackbarTimepicker.Get();
+            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+            if (trackbarEvents != null && trackbarEvents?.Count > 0)
+                selectedEvent = trackbarEvents[0];
+            else
+                selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if (trackbarTime == "00:00:00" && selectedEvent == null)
+            {
+                var emptyPayload = new CalloutEvent();
+                emptyPayload.timelineVideoEvent = selectedEvent;
+                emptyPayload.timeAtTheMoment = trackbarTime;
+                return emptyPayload;
+            }
+            else
+            {
+                //if (trackbarTime == "00:00:00")
+                //{
+                //    var result = MessageBox.Show($"Move Trackbar to desired point of time. This will add callout event at the end of the timeline. {Environment.NewLine}" +
+                //        $"Press OK if you want to add Callout to End of Timeline. {Environment.NewLine}" +
+                //        $"Press Cancel for Retry. {Environment.NewLine}", "Confirm?", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                //    if (result == MessageBoxResult.Cancel)
+                //        return;
+                //}
+
+                //if (selectedEvent == null)
+                //{
+                //    var result = MessageBox.Show($"No Event is selected. Do you want to select an event for Callout and try again. {Environment.NewLine}" +
+                //        $"Press OK for Retry. {Environment.NewLine}" +
+                //        $"Press Cancel for Default Background. {Environment.NewLine}", "Confirm?", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                //    if (result == MessageBoxResult.OK)
+                //        return;
+                //}
+            }
+            var payload = new CalloutEvent();
+            payload.timelineVideoEvent = selectedEvent;
+            payload.timeAtTheMoment = trackbarTime;
+            return payload;
+        }
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_AddCallout1_Clicked.Invoke(sender, e);
+            var payload = CalloutPreprocessing();
+            ContextMenu_AddCallout1_Clicked.Invoke(sender, payload);
         }
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_AddCallout2_Clicked.Invoke(sender, e);
+            var payload = CalloutPreprocessing();
+            ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
         }
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)

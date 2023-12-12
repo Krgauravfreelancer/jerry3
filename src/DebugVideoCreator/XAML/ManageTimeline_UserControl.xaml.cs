@@ -23,6 +23,8 @@ using System.Windows.Controls;
 using System.Net;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using DebugVideoCreator.Models;
+using System.IO;
 
 namespace VideoCreator.XAML
 {
@@ -471,9 +473,9 @@ namespace VideoCreator.XAML
 
         #region == Design/Form Context Menu Option ==
 
-        private async Task HandleCalloutLogic(EnumTrack track)
+        private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track);
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, imagePath);
             if (isSuccess)
             {
                 RefreshOrLoadComboBoxes();
@@ -486,14 +488,26 @@ namespace VideoCreator.XAML
             //    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, EventArgs e)
+        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutEvent calloutEvent)
         {
-            await HandleCalloutLogic(EnumTrack.CALLOUT1);
+            if(calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
+            {
+                var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
+                await HandleCalloutLogic(EnumTrack.CALLOUT1, convertedImage);
+            }
+            else
+                await HandleCalloutLogic(EnumTrack.CALLOUT1, null);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, EventArgs e)
+        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutEvent calloutEvent)
         {
-            await HandleCalloutLogic(EnumTrack.CALLOUT2);
+            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
+            {
+                var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
+                await HandleCalloutLogic(EnumTrack.CALLOUT2, convertedImage);
+            }
+            else
+                await HandleCalloutLogic(EnumTrack.CALLOUT2, null);
         }
 
 

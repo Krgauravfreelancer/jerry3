@@ -37,12 +37,23 @@ namespace VideoToImage_UserControl
             CancelSignal = false;
         }
 
+        public VideoToImage_UserControl(string pathToVideo, string outputFilenamePrefix, string timeAtTheMoment)
+        {
+            InitializeComponent();
+            txtVideo.Text = pathToVideo;
+            txtOutput.Text = outputFilenamePrefix;
+            CancelSignal = false;
+            var timeArray = timeAtTheMoment.Split(':');
+            txtTime.Text = (((int.Parse(timeArray[0]) * 3600) + (int.Parse(timeArray[1]) * 60) + timeArray[2]).ToString());
+            Initiate();
+        }
+
         private void Initiate()
         {
             if (string.IsNullOrEmpty(txtVideo.Text) || string.IsNullOrEmpty(txtOutput.Text))
                 return;
 
-            Period = int.Parse(txtTime.Text) > 0 ? int.Parse(txtTime.Text): 1;
+            Period = int.Parse(txtTime.Text) > 0 ? int.Parse(txtTime.Text) : 1;
             try
             {
                 Mp4Media = new MediaFile { Filename = txtVideo.Text };
@@ -58,10 +69,10 @@ namespace VideoToImage_UserControl
                 TitleLabel.Content = "Title : " + Path.GetFileNameWithoutExtension(txtVideo.Text);
                 FrameRateLabel.Content = "Frame Rate : " + fps.ToString() + " FPS";
                 DurationLabel.Content = "Duration : " + Mp4Media.Metadata.Duration.ToString();
-                ExpectedFramesLabel.Content = $"Expected Images at an interval of {Period} seconds : " + (int)(TotalFrames/(Period* fps));
+                ExpectedFramesLabel.Content = $"Expected Images at an interval of {Period} seconds : " + (int)(TotalFrames / (Period * fps));
                 btnCreateImage.IsEnabled = true;
             }
-            catch 
+            catch
             {
                 btnCreateImage.IsEnabled = false;
 
@@ -71,7 +82,7 @@ namespace VideoToImage_UserControl
                 DurationLabel.Content = string.Empty;
                 ExpectedFramesLabel.Content = string.Empty;
             }
-            
+
         }
 
         private void txtOutput_TextChanged(object sender, TextChangedEventArgs e)
@@ -98,19 +109,20 @@ namespace VideoToImage_UserControl
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private async void btnCreateImage_Click(object sender, EventArgs e)
+        public async Task<string> ConvertVideoToImage()
         {
             if (Period <= 0 || (int)(TotalFrames / (Period * fps)) < 1)
             {
                 MessageBox.Show($"Video Duration is not that long. Max Length is - {Mp4Media.Metadata.Duration}", "Error");
-                return;
+                return null;
             }
             Directory.CreateDirectory(txtOutput.Text);
             txtOutput.IsEnabled = false;
             txtVideo.IsEnabled = false;
             txtTime.IsEnabled = false;
 
-            await StartExtraction();
+            var imageFileName = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.png";
+            await StartExtraction(imageFileName);
 
             txtOutput.IsEnabled = true;
             txtVideo.IsEnabled = true;
@@ -120,36 +132,43 @@ namespace VideoToImage_UserControl
             {
                 CancelSignal = false;
                 MessageBox.Show("Operation was aborted.", "Aborted", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                return null;
             }
-            else
+            return imageFileName;
+        }
+
+        private async void btnCreateImage_Click(object sender, EventArgs e)
+        {
+            var filename = await ConvertVideoToImage();
+            if (filename != null)
             {
-                var r = MessageBox.Show("Extracted Image successfully, do you want to open folder?", "Operation Completed Successfully", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                var r = MessageBox.Show("Extracted Image successfully, do you want to open file?", "Operation Completed Successfully", MessageBoxButton.YesNo, MessageBoxImage.Information);
                 if (r == MessageBoxResult.Yes)
-                    System.Diagnostics.Process.Start(OutputFolder);
+                    System.Diagnostics.Process.Start(filename);
             }
         }
 
-        private async Task StartExtraction()
+        private async Task StartExtraction(string imageFileName)
         {
             await Task.Run(delegate
             {
                 using (var engine = new Engine())
                 {
                     var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period) };
-                    var outputFile = new MediaFile { Filename = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.png" };
+                    var outputFile = new MediaFile { Filename = imageFileName };
                     engine.Convert(Mp4Media, outputFile, options);
                 }
             });
-            
+
         }
 
-        
+
 
         private bool Validations()
         {
             try
             {
-                if(btnCreateImage == null) return false;
+                if (btnCreateImage == null) return false;
                 if (string.IsNullOrEmpty(txtVideo.Text) || string.IsNullOrEmpty(txtOutput.Text) || string.IsNullOrEmpty(txtTime.Text))
                 {
                     btnCreateImage.IsEnabled = false;
@@ -160,7 +179,8 @@ namespace VideoToImage_UserControl
                     btnCreateImage.IsEnabled = true;
                     return true;
                 }
-            }catch(Exception) { }
+            }
+            catch (Exception) { }
             return false;
         }
     }

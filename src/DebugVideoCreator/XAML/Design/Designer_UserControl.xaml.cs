@@ -30,12 +30,21 @@ namespace VideoCreator.XAML
         private readonly List<CBVBackground> BackgroundImagesData;
         private bool toggleFlag = false;
         private CBVBackground selectedBGItem;
-        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring)
+        private string imagePath;
+        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, bool isImagePathGiven = false)
         {
             InitializeComponent();
             selectedProjectId = _selectedProjectId;
-            BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
+            if(isImagePathGiven ) 
+                imagePath = _backgroundDatastring;
+            else
+                BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
 
+            InitialSetup();
+        }
+
+        private void InitialSetup()
+        {
             dataTableAdd = createDesignDbDataTable();
             dataTableUpdate = createDesignDbDataTable();
 
@@ -51,8 +60,6 @@ namespace VideoCreator.XAML
             designViewer.Visibility = Visibility.Visible;
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
-
-            //designer.
         }
 
         private DataTable createDesignDbDataTable()
@@ -89,22 +96,30 @@ namespace VideoCreator.XAML
 
         private string GetBackgroundElement()
         {
-            if (BackgroundImagesData != null && BackgroundImagesData.Count > 0)
+            var height = stackDesigner.ActualHeight;
+            var width = stackDesigner.ActualWidth;
+            if (string.IsNullOrEmpty(imagePath))
             {
-                var height = stackDesigner.ActualHeight;
-                var width = stackDesigner.ActualWidth;    
-                // Process 
-                byte[] blob = (byte[])BackgroundImagesData[0].background_media;
-                using (var ms = new MemoryStream(blob))
+                if (BackgroundImagesData != null && BackgroundImagesData.Count > 0)
                 {
-                    var filename = $"image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffffff")}.jpg";
-                    var filepath = $@"{Directory.GetCurrentDirectory()}\{filename}";
-                    using (var fs = new FileStream(filepath, FileMode.Create))
+                    // Process 
+                    byte[] blob = (byte[])BackgroundImagesData[0].background_media;
+                    using (var ms = new MemoryStream(blob))
                     {
-                        ms.WriteTo(fs);
+                        var filename = $"image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffffff")}.jpg";
+                        var filepath = $@"{Directory.GetCurrentDirectory()}\{filename}";
+                        using (var fs = new FileStream(filepath, FileMode.Create))
+                        {
+                            ms.WriteTo(fs);
+                        }
+                        return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
                     }
-                    return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
                 }
+            }
+            else
+            {
+                return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{imagePath}\" Panel.ZIndex=\"0\"/>";
+
             }
             return null;
         }

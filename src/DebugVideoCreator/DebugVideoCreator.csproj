@@ -291,6 +291,7 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
+    <Compile Include="Models\CalloutEvent.cs" />
     <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
       <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
@@ -502,6 +503,10 @@
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
+      <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
+      <Name>VideoToImage_UserControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
