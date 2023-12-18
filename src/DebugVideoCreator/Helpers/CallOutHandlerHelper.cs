@@ -72,7 +72,7 @@ namespace VideoCreator.Helpers
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
                         // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, track, authApiViewModel);
+                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, track, authApiViewModel, string.IsNullOrEmpty(imagePath) ? "00:00:00.000" : "00:00:03.000");
                         // Now we have to save the data locally
                         if (addedData != null)
                         {

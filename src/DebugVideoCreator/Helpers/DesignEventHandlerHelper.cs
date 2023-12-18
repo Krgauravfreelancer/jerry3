@@ -39,18 +39,30 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", int duration = 10)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
             objToSync.videoevent_track = (int)track;
-            objToSync.videoevent_start = "00:00:00.000"; // TBD
-            objToSync.videoevent_duration = 10;
-            objToSync.videoevent_end = "00:00:10.000"; // TBD
+            objToSync.videoevent_start = startTime;
+            objToSync.videoevent_duration = duration;
+            objToSync.videoevent_end = GetEndTime(startTime, duration); // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
+        }
+
+        private static string GetEndTime(string startTime, int duration = 10)
+        {
+            if (string.IsNullOrEmpty(startTime)) return "00:00:10.000";
+
+            var timeonly = startTime.Split('.')[0];
+            var timeArray = timeonly.Split(':');
+            var time = (int.Parse(timeArray[0]) * 3600) + (int.Parse(timeArray[1]) * 60) + int.Parse(timeArray[2]);
+            var endTime = time + duration;
+            TimeSpan endTimeSpan = TimeSpan.FromSeconds(endTime);
+            return endTimeSpan.ToString(@"hh\:mm\:ss") + "." + Convert.ToString(startTime.Split('.')[1]);
         }
 
         public static DataTable GetVideoEventDataTableForDesign(VideoEventResponseModel addedData, int selectedProjectId)
