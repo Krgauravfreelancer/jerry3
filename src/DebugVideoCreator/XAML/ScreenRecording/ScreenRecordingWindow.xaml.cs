@@ -25,9 +25,9 @@ using VideoCreator.XAML;
 namespace VideoCreator.XAML
 {
     /// <summary>
-    /// Interaction logic for ScreenRecording_UCWindow.xaml
+    /// Interaction logic for ScreenRecordingWindow.xaml
     /// </summary>
-    public partial class ScreenRecording_UCWindow : UserControl
+    public partial class ScreenRecordingWindow : UserControl
     {
         bool showMessageBoxes = false;
 
@@ -38,7 +38,7 @@ namespace VideoCreator.XAML
 
         public event Action<DataTable> BtnSaveClickedEvent;
 
-        public ScreenRecording_UCWindow(Window mainWindow, int trackId, int projectID)
+        public ScreenRecordingWindow(Window mainWindow, int trackId, int projectID)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
@@ -53,7 +53,7 @@ namespace VideoCreator.XAML
 
         }
 
-        public ScreenRecording_UCWindow(int trackId, int projectID)
+        public ScreenRecordingWindow(int trackId, int projectID)
         {
             InitializeComponent();
             _trackID = trackId;

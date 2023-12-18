@@ -363,7 +363,7 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
-            var screenRecordingUserControl = new ScreenRecording_UCWindow(1, selectedProjectId);
+            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectId);
             screenRecordingUserControl.BtnSaveClickedEvent += ScreenRecordingUserControl_BtnSaveClickedEvent; //+= ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
             var screenRecorderWindow = new System.Windows.Window
             {
