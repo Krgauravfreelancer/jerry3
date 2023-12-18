@@ -369,8 +369,8 @@ namespace VideoCreator.XAML
             {
                 Title = "Screen Recorder",
                 Content = screenRecordingUserControl,
-                ResizeMode = ResizeMode.NoResize,
-                RenderSize = screenRecordingUserControl.RenderSize,
+                ResizeMode = ResizeMode.CanResize,
+                WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             var result = screenRecorderWindow.ShowDialog();
