@@ -34,12 +34,17 @@ namespace TimePicker_UserControl
 		{
 			if(!string.IsNullOrEmpty(time))
 			{
-				var TimeBreakupArray = time.Split(':');
-				if(TimeBreakupArray.Length == 3)
+				var arr = time.Split('.');
+				if (arr.Length > 0)
 				{
-                    HrTxt.Text = TimeBreakupArray[0];
-					MinTxt.Text = TimeBreakupArray[1];
-					SecTxt.Text = TimeBreakupArray[2];
+                    var TimeBreakupArray = arr[0].Split(':');
+                    if (TimeBreakupArray.Length == 3)
+                    {
+                        HrTxt.Text = TimeBreakupArray[0];
+                        MinTxt.Text = TimeBreakupArray[1];
+                        SecTxt.Text = TimeBreakupArray[2];
+                        millisecTxt.Text = arr.Length > 1 ? arr[1] : "000";
+                    }
                 }
             }
 			
@@ -47,7 +52,7 @@ namespace TimePicker_UserControl
 
 		public string Get()
 		{
-			return $"{HrTxt.Text}:{MinTxt.Text}:{SecTxt.Text}";
+			return $"{HrTxt.Text}:{MinTxt.Text}:{SecTxt.Text}.{millisecTxt.Text}";
 		}
 
 
@@ -103,18 +108,29 @@ namespace TimePicker_UserControl
 					SecTxt.Text = sec.ToString();
 				}
 			}
-			//else if (AmPmBtn.IsChecked == true)
-			//{
-			//	if(AmPmTxt.Text == "AM")
-			//	{
-			//		AmPmTxt.Text = "PM";
-			//	}
-			//	else
-			//	{
-			//		AmPmTxt.Text = "AM";
-			//	}
-			//}
-			else 
+            else if (millisecBtn.IsChecked == true)
+            {
+                int ms = int.Parse(millisecTxt.Text);
+
+                if (ms == 999)
+                    ms = -1;
+
+                ms++;
+
+                if (ms.ToString().Length == 1)
+                {
+                    millisecTxt.Text = "00" + ms.ToString();
+                }
+				else if (ms.ToString().Length == 2)
+                {
+                    millisecTxt.Text = "0" + ms.ToString();
+                }
+                else
+                {
+                    millisecTxt.Text = ms.ToString();
+                }
+            }
+            else 
 			{
 				MessageBox.Show("Please select either Hour, Minute or Seconds to Toggle", "Warning", MessageBoxButton.OK, MessageBoxImage.Stop);
 			}
@@ -172,18 +188,29 @@ namespace TimePicker_UserControl
 				}
 
 			}
-			//else if (AmPmBtn.IsChecked == true)
-			//{
-			//	if(AmPmTxt.Text == "AM")
-			//	{
-			//		AmPmTxt.Text = "PM";
-			//	}
-			//	else
-			//	{
-			//		AmPmTxt.Text = "AM";
-			//	}
-			//}
-			else
+            else if (millisecBtn.IsChecked == true)
+            {
+                int ms = int.Parse(millisecTxt.Text);
+
+                if (ms == 0)
+                    ms = 1000;
+
+                ms--;
+
+                if (ms.ToString().Length == 1)
+                {
+                    millisecTxt.Text = "00" + ms.ToString();
+                }
+                else if (ms.ToString().Length == 2)
+                {
+                    millisecTxt.Text = "0" + ms.ToString();
+                }
+                else
+                {
+                    millisecTxt.Text = ms.ToString();
+                }
+            }
+            else
 			{
 				MessageBox.Show("Please select either Hour, Minute or Seconds to Toggle", "Warning", MessageBoxButton.OK, MessageBoxImage.Stop);
 			}

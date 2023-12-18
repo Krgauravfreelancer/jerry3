@@ -205,7 +205,7 @@ namespace VideoCreator.XAML
             {
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
-                TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss"));
+                TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss.fff"));
 
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
@@ -241,7 +241,7 @@ namespace VideoCreator.XAML
             try
             {
                 //var timeInputDate = (DateTime)TrackbarTimepicker.Value;
-                var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss", null);
+                var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss.fff", null);
                 _timelineGridControl.MoveTrackbar(timeInputDate);
             }
             catch
@@ -349,34 +349,18 @@ namespace VideoCreator.XAML
 
             if (trackbarTime == "00:00:00" && selectedEvent == null)
             {
-                var emptyPayload = new CalloutEvent();
-                emptyPayload.timelineVideoEvent = selectedEvent;
-                emptyPayload.timeAtTheMoment = trackbarTime;
+                var emptyPayload = new CalloutEvent
+                {
+                    timelineVideoEvent = selectedEvent,
+                    timeAtTheMoment = trackbarTime
+                };
                 return emptyPayload;
             }
-            else
+            var payload = new CalloutEvent
             {
-                //if (trackbarTime == "00:00:00")
-                //{
-                //    var result = MessageBox.Show($"Move Trackbar to desired point of time. This will add callout event at the end of the timeline. {Environment.NewLine}" +
-                //        $"Press OK if you want to add Callout to End of Timeline. {Environment.NewLine}" +
-                //        $"Press Cancel for Retry. {Environment.NewLine}", "Confirm?", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-                //    if (result == MessageBoxResult.Cancel)
-                //        return;
-                //}
-
-                //if (selectedEvent == null)
-                //{
-                //    var result = MessageBox.Show($"No Event is selected. Do you want to select an event for Callout and try again. {Environment.NewLine}" +
-                //        $"Press OK for Retry. {Environment.NewLine}" +
-                //        $"Press Cancel for Default Background. {Environment.NewLine}", "Confirm?", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-                //    if (result == MessageBoxResult.OK)
-                //        return;
-                //}
-            }
-            var payload = new CalloutEvent();
-            payload.timelineVideoEvent = selectedEvent;
-            payload.timeAtTheMoment = trackbarTime;
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
             return payload;
         }
         private void AddCallout1_Click(object sender, RoutedEventArgs e)

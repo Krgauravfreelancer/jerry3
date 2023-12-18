@@ -99,13 +99,13 @@
 					</DiscreteObjectKeyFrame.Value>
 				</DiscreteObjectKeyFrame>
 			</ObjectAnimationUsingKeyFrames>
-			<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>-->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="millisecBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
 		</Storyboard>
 		<Storyboard x:Key="OnClick2">
 			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="MinBtn">
@@ -129,13 +129,13 @@
 					</DiscreteObjectKeyFrame.Value>
 				</DiscreteObjectKeyFrame>
 			</ObjectAnimationUsingKeyFrames>
-			<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>-->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="millisecBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
 		</Storyboard>
 		<Storyboard x:Key="OnClick3">
 			<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="SecBtn">
@@ -159,16 +159,16 @@
 					</DiscreteObjectKeyFrame.Value>
 				</DiscreteObjectKeyFrame>
 			</ObjectAnimationUsingKeyFrames>
-			<!--<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
-				<DiscreteObjectKeyFrame KeyTime="0">
-					<DiscreteObjectKeyFrame.Value>
-						<System:Boolean>False</System:Boolean>
-					</DiscreteObjectKeyFrame.Value>
-				</DiscreteObjectKeyFrame>
-			</ObjectAnimationUsingKeyFrames>-->
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="millisecBtn">
+                <DiscreteObjectKeyFrame KeyTime="0">
+                    <DiscreteObjectKeyFrame.Value>
+                        <System:Boolean>False</System:Boolean>
+                    </DiscreteObjectKeyFrame.Value>
+                </DiscreteObjectKeyFrame>
+            </ObjectAnimationUsingKeyFrames>
 		</Storyboard>
-        <!--<Storyboard x:Key="OnClick4">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="AmPmBtn">
+        <Storyboard x:Key="OnClick4">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToggleButton.IsChecked)" Storyboard.TargetName="millisecBtn">
                 <DiscreteObjectKeyFrame KeyTime="0">
                     <DiscreteObjectKeyFrame.Value>
                         <System:Boolean>True</System:Boolean>
@@ -196,7 +196,7 @@
                     </DiscreteObjectKeyFrame.Value>
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
-        </Storyboard>-->
+        </Storyboard>
     </UserControl.Resources>
 	<UserControl.Triggers>
 		<EventTrigger RoutedEvent="ButtonBase.Click" SourceName="HrBtn">
@@ -208,39 +208,50 @@
 		<EventTrigger RoutedEvent="ButtonBase.Click" SourceName="MinBtn">
 			<BeginStoryboard x:Name="OnClick2_BeginStoryboard" Storyboard="{StaticResource OnClick2}"/>
 		</EventTrigger>
-		<!--<EventTrigger RoutedEvent="ButtonBase.Click" SourceName="AmPmBtn">
+        <EventTrigger RoutedEvent="ButtonBase.Click" SourceName="millisecBtn">
 			<BeginStoryboard x:Name="OnClick4_BeginStoryboard" Storyboard="{StaticResource OnClick4}"/>
-		</EventTrigger>-->
+		</EventTrigger>
 	</UserControl.Triggers>
 
     <Grid x:Name="LayoutRoot">
         <Border BorderBrush="Beige">
 			<Grid Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-            
-					<StackPanel Orientation="Horizontal" Background="White">
-						<ToggleButton x:Name="HrBtn" Width="40" Height="40" Style="{DynamicResource ToggleButtonStyle1}" Margin="10,0,10,0">
-							<TextBlock x:Name="HrTxt" TextWrapping="Wrap" Text="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</ToggleButton>
-						<TextBlock TextWrapping="Wrap" Text=":" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe Condensed"/>
-						<ToggleButton x:Name="MinBtn" Width="40" Height="40" Style="{DynamicResource ToggleButtonStyle1}" VerticalAlignment="Bottom" Margin="10,0,10,0">
-							<TextBlock x:Name="MinTxt" TextWrapping="Wrap" Text="00" HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</ToggleButton>
-						<TextBlock TextWrapping="Wrap" Text=":" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Condensed" />
-						<ToggleButton x:Name="SecBtn" Width="40" Height="40" Style="{DynamicResource ToggleButtonStyle1}" Margin="10,0,10,0">
-							<TextBlock x:Name="SecTxt" TextWrapping="Wrap" Text="00" HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</ToggleButton>
-						<!--<ToggleButton x:Name="AmPmBtn" Width="50.5" Height="40" Style="{DynamicResource ToggleButtonStyle1}">
-							<TextBlock x:Name="AmPmTxt" TextWrapping="Wrap" Text="AM" HorizontalAlignment="Center" VerticalAlignment="Center" />
-						</ToggleButton>-->
-						<Button x:Name="upBtn" Width="40" Height="20" Click="BtnUp_Click" Margin="0,-20,0,0">
-							<Path Fill="Black" Data="M 0 6 L 12 6 L 6 0 Z"/>
-						</Button>
-						<Button x:Name="downBtn" Width="40" Height="20" Margin="-40,20,0,0" Click="btnDown_Click">
-							<Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
-						</Button>
-					</StackPanel>
-            
-			</Grid>
+                <DockPanel Margin="0">
+                    <Border BorderBrush="Gray" Background="LightGray" BorderThickness="1" DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal" Background="White">
+							<ToggleButton x:Name="HrBtn" Width="30" Height="30" Style="{DynamicResource ToggleButtonStyle1}" Margin="2,0,2,0">
+								<TextBlock x:Name="HrTxt" TextWrapping="Wrap" Text="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</ToggleButton>
+
+							<TextBlock TextWrapping="Wrap" Text=":" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Segoe Condensed"/>
+							<ToggleButton x:Name="MinBtn" Width="30" Height="30" Style="{DynamicResource ToggleButtonStyle1}" Margin="2,0,2,0">
+								<TextBlock x:Name="MinTxt" TextWrapping="Wrap" Text="00" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</ToggleButton>
+
+							<TextBlock TextWrapping="Wrap" Text=":" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Condensed" />
+							<ToggleButton x:Name="SecBtn" Width="30" Height="30" Style="{DynamicResource ToggleButtonStyle1}" Margin="2,0,2,0">
+								<TextBlock x:Name="SecTxt" TextWrapping="Wrap" Text="00" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</ToggleButton>
+
+							<TextBlock TextWrapping="Wrap" Text="." VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Segoe Condensed" />
+							<ToggleButton x:Name="millisecBtn" Width="30" Height="30" Style="{DynamicResource ToggleButtonStyle1}" Margin="2,0,2,0">
+								<TextBlock x:Name="millisecTxt" TextWrapping="Wrap" Text="000" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</ToggleButton>
+
+							<!--<ToggleButton x:Name="AmPmBtn" Width="50.5" Height="40" Style="{DynamicResource ToggleButtonStyle1}">
+								<TextBlock x:Name="AmPmTxt" TextWrapping="Wrap" Text="AM" HorizontalAlignment="Center" VerticalAlignment="Center" />
+							</ToggleButton>-->
+
+							<Button x:Name="upBtn" Width="40" Height="15" Click="BtnUp_Click" Margin="0,-15,0,0">
+								<Path Fill="Black" Data="M 0 6 L 12 6 L 6 0 Z"/>
+							</Button>
+                            <Button x:Name="downBtn" Width="40" Height="15" Margin="-40,15,0,0" Click="btnDown_Click">
+                                <Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </DockPanel>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

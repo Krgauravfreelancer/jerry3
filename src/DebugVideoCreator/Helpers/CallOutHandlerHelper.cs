@@ -55,9 +55,7 @@ namespace VideoCreator.Helpers
                 designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
             }
             else
-            {
                 designerUserControl = new Designer_UserControl(selectedProjectId, imagePath, true);
-            }
 
             var window = new Window
             {

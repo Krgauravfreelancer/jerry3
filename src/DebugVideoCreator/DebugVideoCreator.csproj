@@ -239,10 +239,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\Timeline.UserControls.dll</HintPath>
     </Reference>
-    <Reference Include="TimePicker_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\TimePicker_UserControl.dll</HintPath>
-    </Reference>
     <Reference Include="VoiceScripter_UserControl">
       <HintPath>Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
@@ -503,6 +499,10 @@
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\TimePicker_UserControl\TimePicker_UserControl\TimePicker_UserControl.csproj">
+      <Project>{78a1300d-fcb5-42f1-a58e-ac682f5f28ca}</Project>
+      <Name>TimePicker_UserControl</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
       <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>

@@ -121,7 +121,7 @@ namespace VideoToImage_UserControl
             txtVideo.IsEnabled = false;
             txtTime.IsEnabled = false;
 
-            var imageFileName = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmm")}.png";
+            var imageFileName = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.png";
             await StartExtraction(imageFileName);
 
             txtOutput.IsEnabled = true;

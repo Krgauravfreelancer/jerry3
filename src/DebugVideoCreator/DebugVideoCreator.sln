@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoToImage_UserControl", "UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj", "{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimePicker_UserControl", "UserControls\TimePicker_UserControl\TimePicker_UserControl\TimePicker_UserControl.csproj", "{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +118,18 @@ Global
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|ARM64.Build.0 = Release|Any CPU
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.ActiveCfg = Release|Any CPU
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.Build.0 = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Debug|x64.Build.0 = Debug|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|ARM64.Build.0 = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|x64.ActiveCfg = Release|Any CPU
+		{78A1300D-FCB5-42F1-A58E-AC682F5F28CA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

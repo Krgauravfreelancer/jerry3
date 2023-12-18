@@ -94,7 +94,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private string GetBackgroundElement()
+        private string GetBackgroundImageElement()
         {
             var height = stackDesigner.ActualHeight;
             var width = stackDesigner.ActualWidth;
@@ -106,7 +106,7 @@ namespace VideoCreator.XAML
                     byte[] blob = (byte[])BackgroundImagesData[0].background_media;
                     using (var ms = new MemoryStream(blob))
                     {
-                        var filename = $"image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss-ffffff")}.jpg";
+                        var filename = $"image_{DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-ffffff")}.jpg";
                         var filepath = $@"{Directory.GetCurrentDirectory()}\{filename}";
                         using (var fs = new FileStream(filepath, FileMode.Create))
                         {
@@ -119,7 +119,6 @@ namespace VideoCreator.XAML
             else
             {
                 return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{imagePath}\" Panel.ZIndex=\"0\"/>";
-
             }
             return null;
         }
@@ -141,7 +140,7 @@ namespace VideoCreator.XAML
         private void BtnInitialiseDesigner_Click(object sender, RoutedEventArgs e)
         {
             // This can come from database
-            var bgImageXAML = GetBackgroundElement();
+            var bgImageXAML = GetBackgroundImageElement();
             designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
 
             if (!toggleFlag)
@@ -190,6 +189,8 @@ namespace VideoCreator.XAML
             foreach (DataRow row in dtElements.Rows)
             {
                 //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
+                if (!string.IsNullOrEmpty(imagePath) && row["xaml"].ToString().StartsWith("<Image"))
+                    continue;
 
                 var rowDesign = dataTableAdd.NewRow();
 
