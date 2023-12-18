@@ -43,14 +43,8 @@ namespace VideoCreator.XAML
             InitializeComponent();
             _mainWindow = mainWindow;
             _trackID = trackId;
-
             _projectID = projectID;
-
             SetProjectID(_projectID);
-
-
-
-
         }
 
         public ScreenRecordingWindow(int trackId, int projectID)
@@ -67,6 +61,99 @@ namespace VideoCreator.XAML
             _mainWindow.ShowDialog();
         }
 
+        private void Recorder_Loaded(object sender, RoutedEventArgs e)
+        {
+            var displays = Recorder.GetDisplays();
+
+            int i = 1;
+            foreach (var display in displays)
+            {
+                Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
+                i++;
+            }
+        }
+
+        public void SetProjectID(int projectID)
+        {
+
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(projectID, true);
+
+            TimeSpan TotalTime = TimeSpan.Zero;
+
+            if (VideoEventData.Count > 0)
+            {
+
+                var startime = VideoEventData.LastOrDefault().videoevent_start;
+                if (startime?.Length == 8) startime = startime + ".000";
+                TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
+                TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
+            }
+
+            Recorder.SetProjectInfo(projectID, _trackID, TotalTime);
+
+            RefreshData();
+        }
+
+        private void RefreshData()
+        {
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(_projectID, true);
+
+
+            List<Media> mediaList = new List<Media>();
+            foreach (var item in VideoEventData)
+            {
+                Media media = new Media();
+
+                if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 1)
+                {
+                    media.mediaType = MediaType.Image;
+                    media.mediaData = item.videosegment_data[0].videosegment_media;
+                }
+                else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == 2)
+                {
+                    media.mediaType = MediaType.Video;
+                    media.mediaData = item.videosegment_data[0].videosegment_media;
+                }
+
+                media.VideoEventID = item.videoevent_id;
+                media.ProjectId = _projectID;
+                media.TrackId = item.videoevent_track;
+                if (item.notes_data != null)
+                {
+                    List<TextItem> textItems = new List<TextItem>();
+                    foreach (var note in item.notes_data)
+                    {
+                        TextItem textItem = new TextItem();
+                        textItem.Text = note.notes_line;
+                        textItem.Start = TimeSpan.Parse(note.notes_start);
+                        textItem.Duration = TimeSpan.FromSeconds(note.notes_duration);
+
+                        textItems.Add(textItem);
+                    }
+                    media.RecordedTextList = textItems;
+                }
+                media.Duration = TimeSpan.FromSeconds(item.videoevent_duration);
+                media.StartTime = TimeSpan.Parse(item.videoevent_start);
+
+                mediaList.Add(media);
+            }
+
+            Recorder.LoadEvents(mediaList);
+        }
+
+        private void Recorder_CloseWindow(object sender, EventArgs e)
+        {
+            //this.Close();
+            var myWindow = Window.GetWindow(this);
+            myWindow.Close();
+        }
+
+        private void Recorder_DeleteMedia(object sender, MediaDeleteEventArgs e)
+        {
+            DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
+            RefreshData();
+        }
+
 
         private List<int> CreateMediaEvents(DataTable dataTable)
         {
@@ -77,9 +164,7 @@ namespace VideoCreator.XAML
                 insertedId = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
 
                 if (showMessageBoxes)
-                {
                     MessageBox.Show("VideoEvent Table populated to Database");
-                }
             }
             catch (Exception ex)
             {
@@ -131,11 +216,7 @@ namespace VideoCreator.XAML
 
 
 
-        private void Recorder_CloseWindow(object sender, EventArgs e)
-        {
-            //ForwardDataTable(null);
-            //this.Close();
-        }
+        
 
         private void ScreenRecorderWindow_Closed(object sender, EventArgs e)
         {
@@ -240,38 +321,6 @@ namespace VideoCreator.XAML
 
         }
 
-
-
-
-
-        public void SetProjectID(int projectID)
-        {
-
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(projectID, true)?.Where(e => e.videoevent_track == _trackID)?.ToList();
-
-            TimeSpan TotalTime = TimeSpan.Zero;
-
-            if (VideoEventData.Count > 0)
-            {
-
-                var startime = VideoEventData.LastOrDefault().videoevent_start;
-                if(startime?.Length == 8) startime = startime + ".000";
-                TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
-                TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
-            }
-
-            Recorder.SetProjectInfo(projectID, _trackID, TotalTime);
-
-            RefreshData();
-        }
-
-
-        private void Recorder_DeleteMedia(object sender, MediaDeleteEventArgs e)
-        {
-            DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
-            RefreshData();
-        }
-
         private DataTable GetNotesDataTable(Media media)
         {
             var notesDataTable = new DataTable();
@@ -317,120 +366,13 @@ namespace VideoCreator.XAML
             }
             return notesDataTable;
         }
-        private void Recorder_Loaded(object sender, RoutedEventArgs e)
-        {
-            var displays = Recorder.GetDisplays();
-
-            int i = 1;
-            foreach (var display in displays)
-            {
-                Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
-                i++;
-            }
-        }
-
-        private void RefreshData()
-        {
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(_projectID, true);
-
-
-            List<Media> mediaList = new List<Media>();
-            foreach (var item in VideoEventData)
-            {
-                if (item.videoevent_track == _trackID)
-                {
-                    Media media = new Media();
-
-                    if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == (int)MediaType.Image)
-                    {
-                        media.mediaType = MediaType.Image;
-                        media.mediaData = item.videosegment_data[0].videosegment_media;
-                    }
-                    else if (item.videosegment_data != null && item.videosegment_data.Count > 0 && item.fk_videoevent_media == (int)MediaType.Video)
-                    {
-                        media.mediaType = MediaType.Video;
-                        media.mediaData = item.videosegment_data[0].videosegment_media;
-                    }
-
-                    media.VideoEventID = item.videoevent_id;
-                    media.ProjectId = _projectID;
-                    media.TrackId = item.videoevent_track;
-                    if (item.notes_data != null)
-                    {
-                        List<TextItem> textItems = new List<TextItem>();
-                        foreach (var note in item.notes_data)
-                        {
-                            TextItem textItem = new TextItem();
-                            textItem.Text = note.notes_line;
-                            textItem.Start = TimeSpan.Parse(note.notes_start);
-                            textItem.Duration = TimeSpan.FromSeconds(note.notes_duration);
-
-                            textItems.Add(textItem);
-                        }
-                        media.RecordedTextList = textItems;
-                    }
-                    media.Duration = TimeSpan.FromSeconds(item.videoevent_duration);
-                    media.StartTime = TimeSpan.Parse(item.videoevent_start);
-
-
-
-                    mediaList.Add(media);
-                }
-
-            }
-
-            Recorder.LoadEvents(mediaList);
-        }
+       
 
 
         private void SaveNotes(int InsertedID, Media media)
         {
-
             bool InsertNotes = false;
-
-            var notedataTable = new DataTable();
-            notedataTable.Columns.Add("notes_id", typeof(int));
-            notedataTable.Columns.Add("fk_notes_videoevent", typeof(int));
-            notedataTable.Columns.Add("notes_line", typeof(string));
-            notedataTable.Columns.Add("notes_wordcount", typeof(int));
-            notedataTable.Columns.Add("notes_index", typeof(int));
-            notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(int));
-            notedataTable.Columns.Add("notes_createdate", typeof(string));
-            notedataTable.Columns.Add("notes_modifydate", typeof(string));
-            notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
-            notedataTable.Columns.Add("notes_issynced", typeof(bool));
-            notedataTable.Columns.Add("notes_serverid", typeof(long));
-            notedataTable.Columns.Add("notes_syncerror", typeof(string));
-
-            notedataTable.Rows.Clear();
-
-
-            int NotesIndex = 0;
-            foreach (var element in media.RecordedTextList)
-            {
-                InsertNotes = true;
-                var noteRow = notedataTable.NewRow();
-
-                noteRow["notes_id"] = -1;
-                noteRow["fk_notes_videoevent"] = InsertedID;
-                noteRow["notes_line"] = element.Text.Replace("'", "''"); ;
-                noteRow["notes_wordcount"] = element.WordCount;
-                noteRow["notes_index"] = NotesIndex;
-                noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss");
-                noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
-                noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                noteRow["notes_isdeleted"] = false;
-                noteRow["notes_issynced"] = false;
-                noteRow["notes_serverid"] = 1;
-                noteRow["notes_syncerror"] = string.Empty;
-
-                notedataTable.Rows.Add(noteRow);
-                NotesIndex++;
-
-            }
-
+            var notedataTable = GetNotesDataTable(media);
             if (InsertNotes == true)
             {
                 CreateNotes(notedataTable);
@@ -451,20 +393,5 @@ namespace VideoCreator.XAML
         }
 
         #endregion
-
-
-        public class VideoEventExtended : CBVVideoEvent
-        {
-            public string MediaName { get; set; }
-            public string Start { get; set; }
-            public string ClipDuration { get; set; }
-            public VideoEventExtended(CBVVideoEvent ch)
-            {
-                foreach (var prop in ch.GetType().GetProperties())
-                {
-                    this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(ch, null), null);
-                }
-            }
-        }
     }
 }

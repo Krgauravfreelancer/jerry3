@@ -178,7 +178,7 @@ namespace VideoCreator.XAML
 
 
             // Reload Control
-            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
             AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             ResetAudioContextMenu();
@@ -426,7 +426,7 @@ namespace VideoCreator.XAML
                     RefreshOrLoadComboBoxes();
                     TimelineUserConrol.ClearTimeline();
                     TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                    //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                     //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                     MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -451,7 +451,7 @@ namespace VideoCreator.XAML
                     RefreshOrLoadComboBoxes();
                     TimelineUserConrol.ClearTimeline();
                     TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                    FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                    //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                     //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
                     MessageBox.Show($"videosegment record saved locally, background process will try to sync at an interval of {RetryIntervalInSeconds / 60} min.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -466,7 +466,7 @@ namespace VideoCreator.XAML
         {
             RefreshOrLoadComboBoxes();
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-            FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
         }
         #endregion
@@ -480,7 +480,7 @@ namespace VideoCreator.XAML
             {
                 RefreshOrLoadComboBoxes();
                 TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+                //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }

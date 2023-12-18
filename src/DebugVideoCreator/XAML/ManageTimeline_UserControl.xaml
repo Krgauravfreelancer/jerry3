@@ -44,13 +44,13 @@
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-            <local:FullScreen_UserControl  Margin="2" Grid.Row="0" Grid.Column="0" x:Name="FSPUserConrol" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <!--<local:FullScreen_UserControl  Margin="2" Grid.Row="0" Grid.Column="0" x:Name="FSPUserConrol" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <local:FullScreen_UserControl.ContextMenu >
                     <ContextMenu StaysOpen="true">
                         <MenuItem Header="Manage Design"/>
                     </ContextMenu>
                 </local:FullScreen_UserControl.ContextMenu>
-            </local:FullScreen_UserControl>
+            </local:FullScreen_UserControl>-->
 
             <notesuc:Notes_UserControl Grid.Row="0" Grid.Column="1" Margin="0" x:Name="NotesUserConrol" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
 
