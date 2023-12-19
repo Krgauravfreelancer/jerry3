@@ -16,6 +16,7 @@ using Sqllite_Library.Models;
 using System.IO;
 using Authentication_UserControl.Helpers;
 using System.Windows.Input;
+using VideoCreator.PaginatedListView;
 
 namespace VideoCreator.XAML
 {
@@ -279,6 +280,14 @@ namespace VideoCreator.XAML
                 }
             }
         }
+        
+        private void BtnShowPaginatedListView_Click(object sender, RoutedEventArgs e)
+        {
+            var f = new frmLsvPage();
+            f.ShowDialog();
+            //MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private void BtnManageAudio_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);

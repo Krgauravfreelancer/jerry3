@@ -288,6 +288,12 @@
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="Models\CalloutEvent.cs" />
+    <Compile Include="PaginatedListView\frmLsvPage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PaginatedListView\frmLsvPage.Designer.cs">
+      <DependentUpon>frmLsvPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
       <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
@@ -400,6 +406,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Content Include="Media\Screencast1.mp4" />
+    <EmbeddedResource Include="PaginatedListView\Resources\first.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaginatedListView\Resources\last.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaginatedListView\Resources\next.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaginatedListView\Resources\previous.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaginatedListView\DataBase.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PaginatedListView\frmLsvPage.resx">
+      <DependentUpon>frmLsvPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
