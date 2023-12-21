@@ -11,6 +11,7 @@ using dbTransferUser_UserControl.ResponseObjects.Screen;
 using dbTransferUser_UserControl.ResponseObjects.App;
 using dbTransferUser_UserControl.ResponseObjects;
 using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+using dbTransferUser_UserControl.ResponseObjects.MediaLibrary;
 using System.Net.Http;
 using System.Windows;
 using System.Text;
@@ -87,6 +88,19 @@ namespace VideoCreator.Auth
         public string GetLoggedInUser()
         {
             return _apiClientHelper.authCtrl.GetLoggedInUser();
+        }
+
+        public async Task<MediaLibraryParent<MediaLibrary>> GetImagesLibraryData(int pagesize = 10, int? page = null, string tags = null)
+        {
+            var parameters = $"per_page={pagesize}";
+            if (page != null)
+                parameters += $"&page={page}";
+            if (tags != null)
+                parameters += $"&tags={tags}";
+            var url = $"api/connect/media-library?{parameters}";
+
+            var result = await _apiClientHelper.Get<MediaLibraryParent<MediaLibrary>>(url);
+            return result;
         }
 
 

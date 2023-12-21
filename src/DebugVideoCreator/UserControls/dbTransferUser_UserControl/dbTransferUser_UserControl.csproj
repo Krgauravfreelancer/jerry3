@@ -79,6 +79,7 @@
     <Compile Include="ResponseObjects\FinalMp4\FinalMp4Model.cs" />
     <Compile Include="ResponseObjects\Company\CompanyModel.cs" />
     <Compile Include="ResponseObjects\Background\BackgroundModel.cs" />
+    <Compile Include="ResponseObjects\MediaLibrary\MediaLibrary.cs" />
     <Compile Include="ResponseObjects\ParentData.cs" />
     <Compile Include="ResponseObjects\ParentDataList.cs" />
     <Compile Include="ResponseObjects\Media\MediaModel.cs" />

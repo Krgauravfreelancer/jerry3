@@ -296,6 +296,9 @@
     </Compile>
     <Compile Include="PaginatedListView\LsvPageFunc.cs" />
     <Compile Include="PaginatedListView\LsvPageGlobVar.cs" />
+    <Compile Include="PaginatedListView\MediaLibrary_UserControl.xaml.cs">
+      <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
       <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
@@ -333,6 +336,10 @@
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="PaginatedListView\MediaLibrary_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -408,6 +415,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Content Include="Media\Screencast1.mp4" />
+    <Resource Include="PaginatedListView\last.png" />
+    <Resource Include="PaginatedListView\next.png" />
+    <Resource Include="PaginatedListView\previous.png" />
+    <Resource Include="PaginatedListView\first.png" />
     <EmbeddedResource Include="PaginatedListView\Resources\first.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>

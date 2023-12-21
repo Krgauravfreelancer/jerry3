@@ -283,8 +283,42 @@ namespace VideoCreator.XAML
         
         private void BtnShowPaginatedListView_Click(object sender, RoutedEventArgs e)
         {
-            var f = new frmLsvPage();
-            f.ShowDialog();
+            //var f = new frmLsvPage(authApiViewModel);
+            //f.ShowDialog();
+
+
+            int selectedProjectId;
+            Int64 selectedServerProjectId;
+            if (PreValidations())
+            {
+                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
+                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
+            }
+            else return;
+
+            //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
+
+            var uc = new MediaLibrary_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
+
+            var window = new Window
+            {
+                Title = "Media Library",
+                Content = uc,
+                WindowState = WindowState.Maximized,
+            };
+
+            
+            try
+            {
+                var result = window.ShowDialog();
+                if (result.HasValue)
+                {
+                    //datagrid.SelectedItem = null;
+                    uc.Dispose();
+                }
+            }
+            catch (Exception)
+            { }
             //MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
