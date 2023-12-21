@@ -95,7 +95,7 @@ namespace VideoCreator.Auth
             var parameters = $"per_page={pagesize}";
             if (page != null)
                 parameters += $"&page={page}";
-            if (tags != null)
+            if (!string.IsNullOrEmpty(tags))
                 parameters += $"&tags={tags}";
             var url = $"api/connect/media-library?{parameters}";
 

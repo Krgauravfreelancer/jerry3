@@ -304,7 +304,8 @@ namespace VideoCreator.XAML
             {
                 Title = "Media Library",
                 Content = uc,
-                WindowState = WindowState.Maximized,
+                WindowState = WindowState.Normal,
+                
             };
 
             

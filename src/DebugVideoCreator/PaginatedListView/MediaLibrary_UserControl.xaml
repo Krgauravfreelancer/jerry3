@@ -16,36 +16,44 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel x:Name="stckImageContainer" Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" HorizontalAlignment="Stretch"/>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch">
-            <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="30"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Background="White" HorizontalAlignment="Right" Margin="5" Grid.Row="1" Grid.Column="1">
-            <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="30"/>
-            <ComboBox x:Name="cmbRecordsPerPag" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="50" Visibility="Visible" Margin="5" Height="30"/>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" Background="White" Margin="5" Grid.Row="1" Grid.Column="2">
-            <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
-                <Button.Background>
-                    <ImageBrush ImageSource="/PaginatedListView/first.png"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
-                <Button.Background>
-                    <ImageBrush ImageSource="/PaginatedListView/previous.png"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
-                <Button.Background>
-                    <ImageBrush ImageSource="/PaginatedListView/next.png"/>
-                </Button.Background>
-            </Button>
-            <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
-                <Button.Background>
-                    <ImageBrush ImageSource="/PaginatedListView/last.png"/>
-                </Button.Background>
-            </Button>
-        </StackPanel>
+        <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" >
+            <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Center" VerticalAlignment="Top" Background="#ececec"/>
+        </ScrollViewer>
+        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="0" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="30"/>
+            </StackPanel>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="1">
+            <StackPanel Orientation="Horizontal" Background="White" HorizontalAlignment="Right">
+                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="30"/>
+                <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="50" Visibility="Visible" Margin="5,0,5,0" Height="30"/>
+            </StackPanel>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="2">
+            <StackPanel Orientation="Horizontal" Background="White">
+                <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/PaginatedListView/first.png"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/PaginatedListView/previous.png"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/PaginatedListView/next.png"/>
+                    </Button.Background>
+                </Button>
+                <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/PaginatedListView/last.png"/>
+                    </Button.Background>
+                </Button>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
         
