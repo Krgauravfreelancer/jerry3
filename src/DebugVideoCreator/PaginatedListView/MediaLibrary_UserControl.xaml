@@ -9,45 +9,47 @@
     <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="280"></ColumnDefinition>
             <ColumnDefinition Width="180"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-        <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" >
+        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="45"/>
+        <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
             <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Center" VerticalAlignment="Top" Background="#ececec"/>
         </ScrollViewer>
-        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="0" >
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="30"/>
+        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="0" >
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="20" Foreground="#3381CC"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="1">
+        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="1">
             <StackPanel Orientation="Horizontal" Background="White" HorizontalAlignment="Right">
-                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="30"/>
-                <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="50" Visibility="Visible" Margin="5,0,5,0" Height="30"/>
+                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="20" Foreground="#3381CC"/>
+                <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="80" Visibility="Visible" Margin="5,0,5,0" Height="30" FontWeight="Bold" FontSize="18" Foreground="#3381CC"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="Blue" Margin="0,5,0,5" Grid.Row="1" Grid.Column="2">
+        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="2">
             <StackPanel Orientation="Horizontal" Background="White">
-                <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/PaginatedListView/first.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/PaginatedListView/previous.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/PaginatedListView/next.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5">
+                <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/PaginatedListView/last.png"/>
                     </Button.Background>

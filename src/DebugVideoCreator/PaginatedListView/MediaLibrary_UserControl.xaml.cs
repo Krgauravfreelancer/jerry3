@@ -26,7 +26,6 @@ using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using DebugVideoCreator.Models;
 using System.IO;
 using Xceed.Wpf.Toolkit.Panels;
-using DebugVideoCreator.PaginatedListView;
 using dbTransferUser_UserControl.ResponseObjects.MediaLibrary;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
@@ -115,10 +114,12 @@ namespace VideoCreator.PaginatedListView
                 //Add Tage if there are any
                 if (item.tags?.Count > 0)
                 {
-                    var tagLbl = new Label
+                    var tagLbl = new TextBlock
                     {
-                        Content = $"Tags: {String.Join(", ", item.tags?.ToArray())}",
+                        Text = $"TAGS : {String.Join(",   ", item.tags?.ToArray())}",
                         Height = 50,
+                        MaxWidth = 200,
+                        TextWrapping = TextWrapping.Wrap,
                         Margin = new Thickness(5, 0, 5, 0),
                         HorizontalAlignment = HorizontalAlignment.Center,
                     };
@@ -154,6 +155,7 @@ namespace VideoCreator.PaginatedListView
         private async void cmbRecordsPerPag_SelectionChanged(object sender, Windows.SelectionChangedEventArgs e)
         {
             PAGESIZE = (int)cmbRecordsPerPage?.SelectedItem;
+            PAGENUMBER = 1;
             await FetchMediaLibraryData();
         }
 
