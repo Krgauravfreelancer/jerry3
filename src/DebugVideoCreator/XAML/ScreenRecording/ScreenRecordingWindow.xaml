@@ -7,6 +7,6 @@
         xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl"
         mc:Ignorable="d">
     <Grid>
-        <screenrecorder_usercontrol:ScreenRecorder_Control Name="Recorder" Loaded="Recorder_Loaded" CloseWindow="Recorder_CloseWindow" DeleteMedia="Recorder_DeleteMedia" MediaRecordingCompleted="ScreenRecorder_Control_SaveClicked2"/>
+        <screenrecorder_usercontrol:ScreenRecorder_Control Name="Recorder" Loaded="Recorder_Loaded" CloseWindow="Recorder_CloseWindow" DeleteMedia="Recorder_DeleteMedia" MediaRecordingCompleted="Recorder_MediaRecordingCompleted"/>
     </Grid>
 </UserControl>

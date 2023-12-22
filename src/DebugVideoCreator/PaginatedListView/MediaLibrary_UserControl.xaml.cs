@@ -29,6 +29,7 @@ using Xceed.Wpf.Toolkit.Panels;
 using dbTransferUser_UserControl.ResponseObjects.MediaLibrary;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Linq;
 
 namespace VideoCreator.PaginatedListView
 {
@@ -53,15 +54,24 @@ namespace VideoCreator.PaginatedListView
         public MediaLibrary_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
             InitializeComponent();
-            
+
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
 
 
+            FetchAndFillTags();
             FillComboBoxes();
-            
-            
+
+        }
+
+        private async void FetchAndFillTags()
+        {
+            var tags = await authApiViewModel.GetTags();
+            foreach (var tag in tags)
+            {
+                listBoxtags.Items.Add(tag);
+            }
         }
 
         private void FillComboBoxes()
@@ -81,7 +91,7 @@ namespace VideoCreator.PaginatedListView
             var result = await authApiViewModel.GetImagesLibraryData(PAGESIZE, PAGENUMBER, TAGS);
             if(result == null) return;
             TOTALPAGES = result.Meta.last_page;
-            lblinfo.Content = $"Record Shown: {result.Meta.from} to {result.Meta.to}                      Page {result.Meta.current_page} of {result.Meta.last_page}";
+            lblinfo.Content = $"Record Shown: {result.Meta.from} to {result.Meta.to}    |    Total: {result.Meta.total} Records    |    Page: {result.Meta.current_page} of {result.Meta.last_page}";
             await fillItems(result.Data);
         }
 
@@ -138,14 +148,18 @@ namespace VideoCreator.PaginatedListView
                 {
                     if (e.ClickCount >= 1)
                     {
-                        if(stackPanelBorder.BorderThickness == new Thickness(1))
+                        if (stackPanelBorder.BorderThickness == new Thickness(1))
                         {
                             foreach (Border childBorder in wrapImageContainer.Children)
-                                childBorder.BorderThickness = new Thickness(1); 
+                                childBorder.BorderThickness = new Thickness(1);
                             stackPanelBorder.BorderThickness = new Thickness(3);
+                            btnSelecAndUsethisImage.IsEnabled = true;
                         }
-                        else
+                        else 
+                        { 
                             stackPanelBorder.BorderThickness = new Thickness(1);
+                            btnSelecAndUsethisImage.IsEnabled = false;
+                        }
                     }
                 };
                 wrapImageContainer.Children.Add(stackPanelBorder);
@@ -155,6 +169,19 @@ namespace VideoCreator.PaginatedListView
         private async void cmbRecordsPerPag_SelectionChanged(object sender, Windows.SelectionChangedEventArgs e)
         {
             PAGESIZE = (int)cmbRecordsPerPage?.SelectedItem;
+            PAGENUMBER = 1;
+            await FetchMediaLibraryData();
+        }
+
+        private async void listBoxtags_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TAGS = string.Empty;
+            var items = listBoxtags.SelectedItems;
+            foreach(var item in items )
+            {
+                TAGS += item + ",";
+            }
+            TAGS = TAGS.Length > 0 ? TAGS.Remove(TAGS.Length - 1): TAGS;
             PAGENUMBER = 1;
             await FetchMediaLibraryData();
         }
@@ -192,6 +219,16 @@ namespace VideoCreator.PaginatedListView
             }
         }
 
+        private void btnSelecAndUsethisImage_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            var myWindow = Window.GetWindow(this);
+            myWindow.Close();
+        }
 
         public void Dispose()
         {

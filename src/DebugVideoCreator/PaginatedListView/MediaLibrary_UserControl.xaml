@@ -13,26 +13,34 @@
             <ColumnDefinition Width="180"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="45"/>
-        <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
-            <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Center" VerticalAlignment="Top" Background="#ececec"/>
-        </ScrollViewer>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="0" >
+        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Center" Height="40"/>
+
+        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
+            <Label Content="Select Tags : " HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="15" Foreground="#3381CC" />
+            <ListBox x:Name="listBoxtags" SelectionChanged="listBoxtags_SelectionChanged" Width="300" Margin="0,0,10,0" HorizontalAlignment="Right" SelectionMode="Multiple" Height="70" />
+        </StackPanel>
+        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
+            <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10">
+                <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Center" VerticalAlignment="Top" Background="#ececec"/>
+            </ScrollViewer>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="20" Foreground="#3381CC"/>
+                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="17" Foreground="#3381CC"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="1">
+        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="1">
             <StackPanel Orientation="Horizontal" Background="White" HorizontalAlignment="Right">
-                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="20" Foreground="#3381CC"/>
+                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="40" FontWeight="Bold" FontSize="17" Foreground="#3381CC"/>
                 <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="80" Visibility="Visible" Margin="5,0,5,0" Height="30" FontWeight="Bold" FontSize="18" Foreground="#3381CC"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Margin="0,5,0,5" Grid.Row="2" Grid.Column="2">
+        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="2">
             <StackPanel Orientation="Horizontal" Background="White">
                 <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
@@ -54,6 +62,12 @@
                         <ImageBrush ImageSource="/PaginatedListView/last.png"/>
                     </Button.Background>
                 </Button>
+            </StackPanel>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Background="White" Margin="5">
+                <Button x:Name="btnSelecAndUsethisImage" Width="200" IsEnabled="False" Content="Use Selected Image" Margin="5" FontWeight="Bold" FontSize="15" Foreground="#3381CC" Click="btnSelecAndUsethisImage_Click" />
+                <Button x:Name="btnCancel" Width="200" Content="Cancel" Margin="5" FontWeight="Bold" FontSize="15" Foreground="#3381CC" Click="btnCancel_Click" />
             </StackPanel>
         </Border>
     </Grid>

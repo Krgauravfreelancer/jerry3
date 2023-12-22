@@ -309,9 +309,6 @@
     <Compile Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml.cs">
       <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XAML\LocalVoice\LocalVoice_UserControl.xaml.cs">
-      <DependentUpon>LocalVoice_UserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="XAML\PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
@@ -353,10 +350,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\LocalVoice\LocalVoice_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -524,7 +517,9 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="XAML\LocalVoice\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

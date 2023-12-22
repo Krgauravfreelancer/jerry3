@@ -103,6 +103,13 @@ namespace VideoCreator.Auth
             return result;
         }
 
+        public async Task<List<string>> GetTags()
+        {
+            var url = $"api/connect/media-library-tags";
+            var result = await _apiClientHelper.Get<List<string>>(url);
+            return result;
+        }
+
 
         #region == Project API Calls ==
 

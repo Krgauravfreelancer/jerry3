@@ -21,6 +21,7 @@ using Timeline.UserControls.Models;
 using Timeline.UserControls;
 using System.Windows.Controls.Primitives;
 using VideoCreator.XAML;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace VideoCreator.XAML
 {
@@ -82,7 +83,7 @@ namespace VideoCreator.XAML
 
             if (VideoEventData.Count > 0)
             {
-
+                
                 var startime = VideoEventData.LastOrDefault().videoevent_start;
                 if (startime?.Length == 8) startime = startime + ".000";
                 TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
@@ -214,27 +215,13 @@ namespace VideoCreator.XAML
         }
 
 
-
-
-        
-
-        private void ScreenRecorderWindow_Closed(object sender, EventArgs e)
-        {
-            _mainWindow.Show(); // Show the main window when the NewWindow is closed
-        }
-
-
-
-
-
-
         private void ScreenRecorder_Control_CancelClicked(object sender, EventArgs e)
         {
             /// Here we will close the ScreenRecorder and ignore any video or changes made.
             //Close();
         }
 
-        private void ScreenRecorder_Control_SaveClicked2(object sender, MediaRecordingCompletedEventArgs e)
+        private void Recorder_MediaRecordingCompleted(object sender, ScreenRecorder_UserControl.MediaRecordingCompletedEventArgs e)
         {
             if (e.MediaItem != null)
             {
@@ -258,9 +245,9 @@ namespace VideoCreator.XAML
                     dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
                     dataTable.Columns.Add("videoevent_syncerror", typeof(string));
 
-                    
+
                     dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
-                    
+
                     // Since this table has Referential Integrity, so lets push one by one
                     dataTable.Rows.Clear();
 
@@ -316,8 +303,6 @@ namespace VideoCreator.XAML
                 RefreshData();
 
             }
-
-
 
         }
 
