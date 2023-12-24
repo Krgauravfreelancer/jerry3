@@ -15,7 +15,7 @@
         <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
 
 
-        <Label x:Name="lblLoading" Content="Please wait.. Logging you in and doing initial setup.." HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC" VerticalAlignment="Center" Height="55"/>
+        <Label x:Name="lblLoading" Visibility="Hidden" Content="Please wait.. Logging you in and doing initial setup.." HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC" VerticalAlignment="Center" Height="55"/>
 
 
 

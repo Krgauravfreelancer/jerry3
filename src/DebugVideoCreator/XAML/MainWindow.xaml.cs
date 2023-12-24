@@ -60,7 +60,7 @@ namespace VideoCreator.XAML
 
         private void InitialiseAndRefreshScreen()
         {
-            lblLoading.Visibility = Visibility.Hidden;
+            //lblLoading.Visibility = Visibility.Hidden;
             stackRadioButtons.Visibility = Visibility.Visible;
             rbWIP_Click(null, null);
         }

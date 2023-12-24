@@ -369,8 +369,11 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
+            Console.WriteLine(DateTime.Now);
             var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectId);
+            Console.WriteLine(DateTime.Now);
             screenRecordingUserControl.BtnSaveClickedEvent += ScreenRecordingUserControl_BtnSaveClickedEvent; //+= ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
+            Console.WriteLine(DateTime.Now);
             var screenRecorderWindow = new System.Windows.Window
             {
                 Title = "Screen Recorder",
@@ -379,7 +382,9 @@ namespace VideoCreator.XAML
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+            Console.WriteLine(DateTime.Now);
             var result = screenRecorderWindow.ShowDialog();
+            Console.WriteLine(DateTime.Now);
             if (result.HasValue)
             {
                 TimelineUserConrol_ContextMenu_AddVideoEvent_Success(this, new EventArgs());
