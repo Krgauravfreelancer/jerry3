@@ -54,7 +54,6 @@ namespace VideoCreator.XAML
         public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
             InitializeComponent();
-            loader.Visibility = Visibility.Visible;
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
@@ -1033,11 +1032,13 @@ namespace VideoCreator.XAML
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if(confirm == MessageBoxResult.Yes)
             {
-                loader.Visibility = Visibility.Visible;
+                LoaderHelper.ShowLoader(Window.GetWindow(this), loader);
                 await SyncServerDataToLocalDB();
+                
             }
             InitializeChildren();
-            loader.Visibility = Visibility.Hidden;
+            LoaderHelper.HideLoader(Window.GetWindow(this), loader);
+            MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
         private async Task SyncServerDataToLocalDB()
@@ -1063,9 +1064,6 @@ namespace VideoCreator.XAML
                         await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
                 }
             }
-            var confirm = MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-
-
         }
 
 

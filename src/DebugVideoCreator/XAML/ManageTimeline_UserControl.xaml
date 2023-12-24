@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:VideoCreator.XAML"
              xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl" 
              xmlns:loader="clr-namespace:VideoCreator.Loader"
+            
             mc:Ignorable="d">
 
     <Grid Background="Transparent">
