@@ -30,28 +30,49 @@ namespace VideoCreator.Helpers
 {
     public static class LoaderHelper
     {
-
-        //<loader:LoadingAnimation Grid.ColumnSpan="2" Grid.RowSpan= "3" x:Name= "loader" HorizontalAlignment= "Center" VerticalAlignment= "Center" Visibility= "Hidden" />
-
-
-        public static void ShowLoader(Window window, LoadingAnimation loader)
+        public static void ShowLoader(Window mywindow, LoadingAnimation loader)
         {
-            if (window == null) 
-            { 
-                return; 
-            }
-            loader.Visibility = Visibility.Visible;
-            //window.IsEnabled = false;
-        }
-
-        public static void HideLoader(Window window, LoadingAnimation loader)
-        {
-            if (window == null)
-            {
+            if (mywindow == null)
                 return;
-            }
-            loader.Visibility = Visibility.Hidden;
-            //window.IsEnabled = true;
+
+            loader.Visibility = Visibility.Visible;
+            mywindow.IsEnabled = false;
         }
+
+        public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader)
+        {
+            if (usercontrol == null) 
+                return;
+            var mywindow = Window.GetWindow(usercontrol);
+            if (mywindow == null)
+                return;
+
+            loader.Visibility = Visibility.Visible;
+            mywindow.IsEnabled = false;
+        }
+
+        public static void HideLoader(Window mywindow, LoadingAnimation loader)
+        {
+            if (mywindow == null)
+                return;
+
+            loader.Visibility = Visibility.Hidden;
+            mywindow.IsEnabled = true;
+        }
+
+        public static void HideLoader(UserControl usercontrol, LoadingAnimation loader)
+        {
+            if (usercontrol == null)
+                return;
+            var mywindow = Window.GetWindow(usercontrol);
+            if (mywindow == null)
+                return;
+
+            loader.Visibility = Visibility.Hidden;
+            mywindow.IsEnabled = true;
+        }
+
+
+        
     }
 }

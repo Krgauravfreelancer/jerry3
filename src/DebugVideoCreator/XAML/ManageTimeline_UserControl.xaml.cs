@@ -1032,12 +1032,12 @@ namespace VideoCreator.XAML
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if(confirm == MessageBoxResult.Yes)
             {
-                LoaderHelper.ShowLoader(Window.GetWindow(this), loader);
+                LoaderHelper.ShowLoader(this, loader);
                 await SyncServerDataToLocalDB();
                 
             }
             InitializeChildren();
-            LoaderHelper.HideLoader(Window.GetWindow(this), loader);
+            LoaderHelper.HideLoader(this, loader);
             MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
