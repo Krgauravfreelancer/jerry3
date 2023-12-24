@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 
 namespace VideoCreator.XAML
 {
@@ -156,6 +157,7 @@ namespace VideoCreator.XAML
 
             toggleFlag = !toggleFlag;
             BtnInitialiseDesigner.IsEnabled = false;
+            cbUseBackground.IsEnabled = true;
         }
 
         //private void cmbBackground_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -211,6 +213,54 @@ namespace VideoCreator.XAML
                 //    dataTableUpdate.Rows.Add(rowDesign);
                 //}
             }
+        }
+
+        private void cbUseBackground_Checked(object sender, RoutedEventArgs e)
+        {
+            if (designer == null) return;
+            DataTable designElements = designer.GetDesign();
+            if (designElements.Rows.Count > 0)
+            {
+                foreach (DataRow row in designElements.Rows)
+                {
+                    if (row[1].ToString().StartsWith("<Image ") == false)
+                    {
+                        var bgImageXAML = GetBackgroundImageElement();
+                        if (!string.IsNullOrEmpty(bgImageXAML))
+                        {
+                            DataRow dataRow = designElements.NewRow();
+                            dataRow["id"] = 1;
+                            dataRow["xaml"] = bgImageXAML;
+                            designElements.Rows.InsertAt(dataRow, 0);
+                            break;
+                        }
+                    }
+                }
+                designer.LoadDesign(designElements);
+
+            }
+            else
+            {
+                var bgImageXAML = GetBackgroundImageElement();
+                designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+            }
+        }
+
+        private void cbUseBackground_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (designer == null) return;
+            DataTable designElements = designer.GetDesign();
+            foreach (DataRow row in designElements.Rows)
+            {
+                if (row[1].ToString().StartsWith("<Image "))
+                {
+                    designElements.Rows.Remove(row);
+                    break;
+                }
+            }
+
+
+            designer.LoadDesign(designElements);
         }
     }
 }

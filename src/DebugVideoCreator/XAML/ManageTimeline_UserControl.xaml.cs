@@ -526,15 +526,18 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, imagePath);
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
             if (isSuccess)
             {
                 RefreshOrLoadComboBoxes();
                 TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
                 //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
                 NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+                LoaderHelper.HideLoader(this, loader);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            LoaderHelper.HideLoader(this, loader);
+
             //else
             //    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }

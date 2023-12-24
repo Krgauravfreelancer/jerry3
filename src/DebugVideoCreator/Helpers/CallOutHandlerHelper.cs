@@ -18,9 +18,11 @@ using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Markup;
 using VideoCreator.Auth;
+using VideoCreator.Loader;
 using VideoCreator.XAML;
 
 namespace VideoCreator.Helpers
@@ -46,7 +48,7 @@ namespace VideoCreator.Helpers
             return convertedImage;
         }
 
-        public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, string imagePath = null)
+        public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
             Designer_UserControl designerUserControl;
             if (string.IsNullOrEmpty(imagePath))
@@ -84,7 +86,7 @@ namespace VideoCreator.Helpers
                                 var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
                                 DataManagerSqlLite.InsertRowsToDesign(dtDesign);
                                 var totalRows = dtDesign.Rows.Count;
-                                var isSuccess = await CallOut_Step2(videoEventId, addedData.videoevent.videoevent_id, authApiViewModel);
+                                var isSuccess = await CallOut_Step2(videoEventId, addedData.videoevent.videoevent_id, authApiViewModel, uc, loader);
                                 return isSuccess;
                             }
                             else
@@ -103,8 +105,10 @@ namespace VideoCreator.Helpers
 
         }
 
-        public static async Task<bool> CallOut_Step2(int videoeventId, int videoevent_serverid, AuthAPIViewModel authApiViewModel)
+        public static async Task<bool> CallOut_Step2(int videoeventId, int videoevent_serverid, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader)
         {
+            
+
             var designImagerUserControl = new DesignImager_UserControl(videoeventId);
             var window = new Window
             {
@@ -116,6 +120,7 @@ namespace VideoCreator.Helpers
             var result = window.ShowDialog();
             if (result.HasValue && designImagerUserControl.dtVideoSegment != null && designImagerUserControl.dtVideoSegment.Rows.Count > 0)
             {
+                LoaderHelper.ShowLoader(uc, loader);
                 if (designImagerUserControl.UserConsent || MessageBox.Show("Do you want save all Image??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     // We need to insert the Data to server here and once it is success, then to local DB
