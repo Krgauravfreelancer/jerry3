@@ -287,6 +287,12 @@
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
+    <Compile Include="Loader\Block.xaml.cs">
+      <DependentUpon>Block.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loader\LoadingAnimation.xaml.cs">
+      <DependentUpon>LoadingAnimation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\CalloutEvent.cs" />
     <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
       <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
@@ -325,6 +331,14 @@
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
+    <Page Include="Loader\Block.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Loader\LoadingAnimation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MediaLibraryData\MediaLibrary_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

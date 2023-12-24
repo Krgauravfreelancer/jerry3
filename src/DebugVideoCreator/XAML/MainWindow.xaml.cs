@@ -34,6 +34,7 @@ namespace VideoCreator.XAML
         {
             try
             {
+                loader.Visibility = Visibility.Visible;
                 await Login();
                 await SyncApp();
                 await SyncMedia();
@@ -52,6 +53,7 @@ namespace VideoCreator.XAML
                 this.Close();
             }
             SetWelcomeMessage();
+            loader.Visibility = Visibility.Hidden;
 
         }
 
