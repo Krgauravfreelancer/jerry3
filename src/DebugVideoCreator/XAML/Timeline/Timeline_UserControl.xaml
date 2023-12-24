@@ -16,8 +16,8 @@
             <MenuItem Header="Add Callout 1 to Timeline" Click="AddCallout1_Click" />
             <MenuItem Header="Add Callout 2 to Timeline" Click="AddCallout2_Click" />
             <MenuItem Header="Add Video Event to Timeline" Click="AddVideoEvent_Click" />
-            <!--<MenuItem Header="Add Form Event to Timeline" IsEnabled="False"/>-->
-            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click"></MenuItem>
+            <MenuItem Header="Add Image Event to Timeline using CB Library" Click="AddImageEventUsingCBLibrary_Click"/>
+            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" IsEnabled="False"></MenuItem>
             <Separator></Separator>
             <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False"></MenuItem>

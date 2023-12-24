@@ -25,6 +25,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using DebugVideoCreator.Models;
 using System.IO;
+using VideoCreator.MediaLibraryData;
 
 namespace VideoCreator.XAML
 {
@@ -168,6 +169,11 @@ namespace VideoCreator.XAML
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
+
+            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
+            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Success += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success;
+
+
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
@@ -469,6 +475,46 @@ namespace VideoCreator.XAML
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
         }
+        #endregion
+
+
+        #region == ContextMenu > AddImageEvent > Using CB Library ==
+        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked(object sender, EventArgs e)
+        {
+            var mediaLibraryUserControl = new MediaLibrary_UserControl(2, selectedProjectId, selectedServerProjectId, authApiViewModel);
+            mediaLibraryUserControl.BtnUseAndSaveClickedEvent += MediaLibraryUserControl_BtnUseAndSaveClickedEvent;
+            var window = new Window
+            {
+                Title = "Media Library",
+                Content = mediaLibraryUserControl,
+                WindowState = WindowState.Normal,
+                ResizeMode = ResizeMode.CanResize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            var result = window.ShowDialog();
+            if (result.HasValue)
+            {
+                TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(this, new EventArgs());
+                mediaLibraryUserControl.Dispose();
+            }
+        }
+
+        private async void MediaLibraryUserControl_BtnUseAndSaveClickedEvent(DataTable dataTable)
+        {
+            // We need to insert the Data to server here and once it is success, then to local DB
+            foreach (DataRow row in dataTable.Rows)
+                await ProcessVideoSegmentDataRowByRow(row);
+        }
+
+        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(object sender, EventArgs e)
+        {
+            RefreshOrLoadComboBoxes();
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+        }
+
+
         #endregion
 
         #region == Design/Form Context Menu Option ==

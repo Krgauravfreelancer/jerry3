@@ -23,14 +23,19 @@ namespace VideoCreator.XAML
         private int selectedProjectId;
 
         private AuthAPIViewModel authApiViewModel;
+        
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
         public event EventHandler ContextMenu_AddVideoEvent_Success;
 
+        public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Clicked;
+        public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Success;
 
 
         public event EventHandler<CalloutEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<CalloutEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler ContextMenu_Run_Clicked;
+        
+
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -373,6 +378,11 @@ namespace VideoCreator.XAML
         {
             var payload = CalloutPreprocessing();
             ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
+        }
+
+        private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, e);
         }
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)

@@ -11,7 +11,7 @@ using dbTransferUser_UserControl.ResponseObjects.Screen;
 using dbTransferUser_UserControl.ResponseObjects.App;
 using dbTransferUser_UserControl.ResponseObjects;
 using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
-using dbTransferUser_UserControl.ResponseObjects.MediaLibrary;
+using dbTransferUser_UserControl.ResponseObjects.MediaLibraryModels;
 using System.Net.Http;
 using System.Windows;
 using System.Text;

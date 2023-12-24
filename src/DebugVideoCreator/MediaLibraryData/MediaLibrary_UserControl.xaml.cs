@@ -26,12 +26,12 @@ using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using DebugVideoCreator.Models;
 using System.IO;
 using Xceed.Wpf.Toolkit.Panels;
-using dbTransferUser_UserControl.ResponseObjects.MediaLibrary;
+using dbTransferUser_UserControl.ResponseObjects.MediaLibraryModels;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Linq;
 
-namespace VideoCreator.PaginatedListView
+namespace VideoCreator.MediaLibraryData
 {
     /// <summary>
     /// Interaction logic for ManageTimeline.xaml
@@ -41,20 +41,24 @@ namespace VideoCreator.PaginatedListView
         private int selectedProjectId;
         private Int64 selectedServerProjectId;
         private readonly AuthAPIViewModel authApiViewModel;
-        int PAGESIZE = 10;
-        int PAGENUMBER = 1;
-        string TAGS = string.Empty;
-        int TOTALPAGES = 0;
+        private string TAGS = string.Empty;
+        private int PAGESIZE = 10;
+        private int PAGENUMBER = 1;
+        private int TOTALPAGES = 0;
+        private int _trackId;
+        public event Action<DataTable> BtnUseAndSaveClickedEvent;
+        public MediaLibrary selectedImage;
 
         public MediaLibrary_UserControl()
         {
             InitializeComponent();
         }
 
-        public MediaLibrary_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
+        public MediaLibrary_UserControl(int trackId, int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
             InitializeComponent();
 
+            _trackId = trackId;
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
@@ -154,11 +158,13 @@ namespace VideoCreator.PaginatedListView
                                 childBorder.BorderThickness = new Thickness(1);
                             stackPanelBorder.BorderThickness = new Thickness(3);
                             btnSelecAndUsethisImage.IsEnabled = true;
+                            selectedImage = item;
                         }
                         else 
                         { 
                             stackPanelBorder.BorderThickness = new Thickness(1);
                             btnSelecAndUsethisImage.IsEnabled = false;
+                            selectedImage = null;
                         }
                     }
                 };
@@ -219,9 +225,59 @@ namespace VideoCreator.PaginatedListView
             }
         }
 
-        private void btnSelecAndUsethisImage_Click(object sender, RoutedEventArgs e)
+        private async void btnSelecAndUsethisImage_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("videoevent_id", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+                dataTable.Columns.Add("videoevent_track", typeof(int));
+                dataTable.Columns.Add("videoevent_start", typeof(string));
+                dataTable.Columns.Add("videoevent_duration", typeof(int));
+                dataTable.Columns.Add("videoevent_createdate", typeof(string));
+                dataTable.Columns.Add("videoevent_modifydate", typeof(string));
 
+                dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+                dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen    
+
+                dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
+                dataTable.Columns.Add("videoevent_issynced", typeof(bool));
+                dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+                dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+
+
+                dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
+
+                // Since this table has Referential Integrity, so lets push one by one
+                dataTable.Rows.Clear();
+
+                var row = dataTable.NewRow();
+                //row["videoevent_id"] = -1;
+                row["fk_videoevent_project"] = selectedProjectId;
+                row["videoevent_track"] = _trackId;
+                row["videoevent_start"] = "00:00:00.000";
+                row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["videoevent_isdeleted"] = false;
+                row["videoevent_issynced"] = false;
+                row["videoevent_serverid"] = -1;
+                row["videoevent_syncerror"] = string.Empty;
+                row["videoevent_duration"] = 10; // TBD
+
+                row["fk_videoevent_media"] = 1;
+
+                row["fk_videoevent_screen"] = -1; // Not needed for this case
+                var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
+                row["media"] = byteArrayIn;
+                dataTable.Rows.Add(row);
+                BtnUseAndSaveClickedEvent.Invoke(dataTable);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

@@ -288,7 +288,7 @@
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="Models\CalloutEvent.cs" />
-    <Compile Include="PaginatedListView\MediaLibrary_UserControl.xaml.cs">
+    <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
       <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
@@ -325,7 +325,7 @@
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
-    <Page Include="PaginatedListView\MediaLibrary_UserControl.xaml">
+    <Page Include="MediaLibraryData\MediaLibrary_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -400,10 +400,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Content Include="Media\Screencast1.mp4" />
-    <Resource Include="PaginatedListView\last.png" />
-    <Resource Include="PaginatedListView\next.png" />
-    <Resource Include="PaginatedListView\previous.png" />
-    <Resource Include="PaginatedListView\first.png" />
+    <Resource Include="MediaLibraryData\last.png" />
+    <Resource Include="MediaLibraryData\next.png" />
+    <Resource Include="MediaLibraryData\previous.png" />
+    <Resource Include="MediaLibraryData\first.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
