@@ -183,6 +183,12 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NotesManage_UserControl">
+      <HintPath>Libraries\NotesManage_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Notes_UserControl">
+      <HintPath>Libraries\Notes_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="ScreenRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ScreenRecorder_UserControl.dll</HintPath>
@@ -424,10 +430,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Content Include="Media\Screencast1.mp4" />
-    <Resource Include="MediaLibraryData\last.png" />
-    <Resource Include="MediaLibraryData\next.png" />
-    <Resource Include="MediaLibraryData\previous.png" />
-    <Resource Include="MediaLibraryData\first.png" />
+    <Resource Include="MediaLibraryData\Resources\last.png" />
+    <Resource Include="MediaLibraryData\Resources\next.png" />
+    <Resource Include="MediaLibraryData\Resources\previous.png" />
+    <Resource Include="MediaLibraryData\Resources\first.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -513,10 +519,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
-      <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
-      <Name>Notes_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="UserControls\ServerApiCall_UserControl\ServerApiCall_UserControl.csproj">
       <Project>{67adc641-ec67-44cf-a9ad-2444a90be6d4}</Project>
       <Name>ServerApiCall_UserControl</Name>

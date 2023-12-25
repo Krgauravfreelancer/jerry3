@@ -30,7 +30,7 @@ namespace VideoCreator.XAML
         private readonly int selectedProjectId;
         private readonly List<CBVBackground> BackgroundImagesData;
         private bool toggleFlag = false;
-        private CBVBackground selectedBGItem;
+        //private CBVBackground selectedBGItem;
         private string imagePath;
         public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, bool isImagePathGiven = false)
         {

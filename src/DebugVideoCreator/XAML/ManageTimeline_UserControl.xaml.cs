@@ -496,12 +496,15 @@ namespace VideoCreator.XAML
                 ResizeMode = ResizeMode.CanResize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+            LoaderHelper.ShowLoader(this, loader);
+            LoaderHelper.ShowLoader(window, loader);
             var result = window.ShowDialog();
             if (result.HasValue)
             {
                 TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(this, new EventArgs());
                 mediaLibraryUserControl.Dispose();
             }
+            
         }
 
         private async void MediaLibraryUserControl_BtnUseAndSaveClickedEvent(DataTable dataTable)
@@ -509,6 +512,7 @@ namespace VideoCreator.XAML
             // We need to insert the Data to server here and once it is success, then to local DB
             foreach (DataRow row in dataTable.Rows)
                 await ProcessVideoSegmentDataRowByRow(row);
+            LoaderHelper.HideLoader(this, loader);
         }
 
         private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(object sender, EventArgs e)

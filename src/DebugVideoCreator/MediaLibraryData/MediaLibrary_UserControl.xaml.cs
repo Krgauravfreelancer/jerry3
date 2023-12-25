@@ -62,8 +62,7 @@ namespace VideoCreator.MediaLibraryData
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
-
-
+            loader.Visibility = Visibility.Visible;
             FetchAndFillTags();
             FillComboBoxes();
 
@@ -92,11 +91,13 @@ namespace VideoCreator.MediaLibraryData
 
         private async Task FetchMediaLibraryData()
         {
+            LoaderHelper.ShowLoader(this, loader);
             var result = await authApiViewModel.GetImagesLibraryData(PAGESIZE, PAGENUMBER, TAGS);
             if(result == null) return;
             TOTALPAGES = result.Meta.last_page;
             lblinfo.Content = $"Record Shown: {result.Meta.from} to {result.Meta.to}    |    Total: {result.Meta.total} Records    |    Page: {result.Meta.current_page} of {result.Meta.last_page}";
             await fillItems(result.Data);
+            LoaderHelper.HideLoader(this, loader);
         }
 
         private async Task fillItems(List<MediaLibrary> data)
@@ -229,6 +230,7 @@ namespace VideoCreator.MediaLibraryData
         {
             try
             {
+                LoaderHelper.ShowLoader(this, loader);
                 var dataTable = new DataTable();
                 dataTable.Columns.Add("videoevent_id", typeof(int));
                 dataTable.Columns.Add("fk_videoevent_project", typeof(int));
@@ -272,7 +274,10 @@ namespace VideoCreator.MediaLibraryData
                 var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
                 row["media"] = byteArrayIn;
                 dataTable.Rows.Add(row);
+
                 BtnUseAndSaveClickedEvent.Invoke(dataTable);
+                var myWindow = Window.GetWindow(this);
+                myWindow.Close();
             }
             catch (Exception ex)
             {
