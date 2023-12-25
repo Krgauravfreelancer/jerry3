@@ -1,5 +1,5 @@
 ﻿//using Renci.SshNet.Sftp;
-using Authentication_UserControl.DTO;
+using ServerApiCall_UserControl.DTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,12 +8,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Authentication_UserControl
+namespace ServerApiCall_UserControl
 {
     public interface IAuthControl
     {
-        void InitConnection();
-        void InitConnection(string baseURI);
+        string InitConnection();
+        string InitConnection(string baseURI);
         Task<LoginResponseModel> Login(string macAddress, string accessKey);
         Task<LogoutResponseModel> Logout();
         void SetToken(string token);

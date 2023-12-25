@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Authentication_UserControl.DTO
+namespace ServerApiCall_UserControl.DTO
 {
     public class LogoutResponseModel
     {

@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notes_UserControl", "UserCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj", "{623A80C5-B24C-40CC-A96B-582E8B61099A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication_UserControl", "UserControls\Authentication_UserControl\Authentication_UserControl.csproj", "{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31AF915D-14F9-47C6-80D1-C4B5D8762910}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -78,18 +76,6 @@ Global
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|ARM64.Build.0 = Release|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|x64.ActiveCfg = Release|Any CPU
 		{623A80C5-B24C-40CC-A96B-582E8B61099A}.Release|x64.Build.0 = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Debug|x64.Build.0 = Debug|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|ARM64.Build.0 = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|x64.ActiveCfg = Release|Any CPU
-		{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}.Release|x64.Build.0 = Release|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|ARM64.ActiveCfg = Debug|Any CPU

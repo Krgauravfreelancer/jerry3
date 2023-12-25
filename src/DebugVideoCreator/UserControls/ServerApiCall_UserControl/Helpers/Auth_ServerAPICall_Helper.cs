@@ -2,24 +2,17 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Authentication_UserControl.Helpers
+namespace ServerApiCall_UserControl.Helpers
 {
-    public class Authentication_UC_Helper
+    public class Auth_ServerAPICall_Helper
     {
         private readonly static string baseAddress = "https://sftp.commercial-base.com/";
         public static HttpClient HttpApiClient { get; set; }
-        public static void InitializeClient()
+        
+        public static void InitializeClient(string baseURI = null)
         {
-            HttpApiClient = new HttpClient
-            {
-                BaseAddress = new Uri(baseAddress)
-            };
-            HttpApiClient.DefaultRequestHeaders.Accept.Clear();
-            HttpApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
-
-        public static void InitializeClient(string baseURI)
-        {
+            if (string.IsNullOrEmpty(baseURI))
+                baseURI = baseAddress;
             HttpApiClient = new HttpClient
             {
                 BaseAddress = new Uri(baseURI)

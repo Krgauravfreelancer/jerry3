@@ -513,10 +513,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="UserControls\Authentication_UserControl\Authentication_UserControl.csproj">
-      <Project>{759b1a0f-fc55-42f9-a9db-bd140de040aa}</Project>
-      <Name>Authentication_UserControl</Name>
-    </ProjectReference>
     <ProjectReference Include="UserControls\Notes_UserControl\Notes_UserControl.csproj">
       <Project>{1b6e3a74-8b6c-443a-9bd5-c75e7da51918}</Project>
       <Name>Notes_UserControl</Name>

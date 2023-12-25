@@ -1,7 +1,7 @@
 //using Renci.SshNet;
 //using Renci.SshNet.Sftp;
-using Authentication_UserControl.Helpers;
-using Authentication_UserControl.DTO;
+using ServerApiCall_UserControl.Helpers;
+using ServerApiCall_UserControl.DTO;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Authentication_UserControl
+namespace ServerApiCall_UserControl
 {
     public class AuthControl : IAuthControl
     {
@@ -20,23 +20,26 @@ namespace Authentication_UserControl
         public AuthControl()
         { }
 
-        public void InitConnection()
+        public string InitConnection()
         {
-            Authentication_UC_Helper.InitializeClient();
-            ReadCredentialsFromRegistry();
+            Auth_ServerAPICall_Helper.InitializeClient();
+            var failureMessage = ReadCredentialsFromRegistry();
+            return failureMessage;
         }
 
-        public void InitConnection(string baseURI)
+        public string InitConnection(string baseURI)
         {
-            Authentication_UC_Helper.InitializeClient(baseURI);
-            ReadCredentialsFromRegistry();
+            Auth_ServerAPICall_Helper.InitializeClient(baseURI);
+            var failureMessage = ReadCredentialsFromRegistry();
+            return failureMessage;
+            
         }
         public HttpClient GetHttpClient()
         {
             HttpClient client = null;
-            if(Authentication_UC_Helper.HttpApiClient.DefaultRequestHeaders.Contains("X-CBU-Access-Key"))
+            if(Auth_ServerAPICall_Helper.HttpApiClient.DefaultRequestHeaders.Contains("X-CBU-Access-Key"))
             {
-                client = Authentication_UC_Helper.HttpApiClient;
+                client = Auth_ServerAPICall_Helper.HttpApiClient;
             }
             return client;
         }
@@ -52,7 +55,7 @@ namespace Authentication_UserControl
             var parameters = new Dictionary<string, string> { { "username", this.UserName }, { "password", this.Password },{ "mac", macAddress }};
             var encodedContent = new FormUrlEncodedContent(parameters);
             SetAccessKey(accessKey);
-            using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.PostAsync(url, encodedContent))
+            using (HttpResponseMessage response = await Auth_ServerAPICall_Helper.HttpApiClient.PostAsync(url, encodedContent))
             {
                 if (response.IsSuccessStatusCode)
                 {
@@ -94,7 +97,7 @@ namespace Authentication_UserControl
         public async Task<LogoutResponseModel> Logout()
         {
              var url = "employee/logout";
-            using (HttpResponseMessage response = await Authentication_UC_Helper.HttpApiClient.GetAsync(url))
+            using (HttpResponseMessage response = await Auth_ServerAPICall_Helper.HttpApiClient.GetAsync(url))
             {
                 response.EnsureSuccessStatusCode();
                 if (response.IsSuccessStatusCode)
@@ -113,15 +116,15 @@ namespace Authentication_UserControl
         
         public void SetToken(string token) 
         {
-            Authentication_UC_Helper.SetToken(token);
+            Auth_ServerAPICall_Helper.SetToken(token);
         }
         public void SetMACAddress(string macAddress)
         {
-            Authentication_UC_Helper.SetMacAddress(macAddress);
+            Auth_ServerAPICall_Helper.SetMacAddress(macAddress);
         }
         public void SetAccessKey(string accessKey)
         {
-            Authentication_UC_Helper.SetAccessKey(accessKey);
+            Auth_ServerAPICall_Helper.SetAccessKey(accessKey);
         }
 
         public string ReadApiKeyFromRegistry()
@@ -134,24 +137,23 @@ namespace Authentication_UserControl
                     var api_key = EncryptionHelper.DecryptString(EncryptionHelper.SecuredKey, Convert.ToString(key.GetValue("reg5")));
                     key.Close();
                     if (string.IsNullOrEmpty(api_key))
-                        ExitApplication("Unable to read or decrypt API Key");
+                        return "Error - Unable to read or decrypt API Key";
                     return api_key;
                 }
                 else
-                    ExitApplication("API Key not found in the registry");
+                    return "Error - API Key not found in the registry";
             }
             catch (Exception ex)
             {
-                ExitApplication(ex.Message);
+                return  $"Error - {ex.Message}";
             }
             finally
             {
                 key.Close();
             }
-            return string.Empty;
         }
 
-        private void ReadCredentialsFromRegistry()
+        private string ReadCredentialsFromRegistry()
         {
             RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\CommercialBase");
             try
@@ -167,28 +169,21 @@ namespace Authentication_UserControl
 
                     key.Close(); 
                     if (string.IsNullOrEmpty(this.UserName) || string.IsNullOrEmpty(this.Password))
-                        ExitApplication("Unable to read or decrypt credentials");
+                        return "Error - Unable to read or decrypt credentials";
                     
                 }
                 else
-                    ExitApplication("Credentials not found in the registry");
+                    return "Error - Credentials not found in the registry";
             }
             catch (Exception ex)
             {
-                ExitApplication(ex.Message);
+                return $"Error - {ex.Message}";
             }
             finally
             {
                 key.Close();
             }
-        }
-
-       
-
-        private void ExitApplication(string message)
-        {
-            MessageBox.Show(message, "Credentials Issue", MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown();
+            return string.Empty;
         }
     }
 }

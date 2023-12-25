@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Authentication_UserControl.Helpers
+namespace ServerApiCall_UserControl.Helpers
 {
     public static class EncryptionHelper
     {

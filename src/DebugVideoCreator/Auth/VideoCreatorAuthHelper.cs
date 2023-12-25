@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Windows;
 using GalaSoft.MvvmLight;
-using Authentication_UserControl;
 using ServerApiCall_UserControl;
 using System.Net.NetworkInformation;
 using System.Net.Http;
@@ -52,7 +51,18 @@ namespace VideoCreator.Auth
             ReadMACAddress();
             authCtrl = new AuthControl();
             AccessKey = authCtrl.ReadApiKeyFromRegistry();
-            authCtrl.InitConnection();
+            if(string.IsNullOrEmpty(AccessKey) || AccessKey.StartsWith("Error "))
+            {
+                MessageBox.Show(AccessKey, "Credentials Issue", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            }
+
+            var failureMessage = authCtrl.InitConnection();
+            if (!string.IsNullOrEmpty(failureMessage))
+            {
+                MessageBox.Show(failureMessage, "Ini tConnection", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            }
         }
 
         private void ReadMACAddress()
