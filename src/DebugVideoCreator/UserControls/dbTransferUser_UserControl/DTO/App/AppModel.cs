@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects.App
+namespace ServerApiCall_UserControl.DTO.App
 {
     public class AppModel
     {

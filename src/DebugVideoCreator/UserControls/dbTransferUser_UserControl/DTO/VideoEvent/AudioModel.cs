@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects.VideoEvent
+namespace ServerApiCall_UserControl.DTO.VideoEvent
 {
     public class AudioModel
     {

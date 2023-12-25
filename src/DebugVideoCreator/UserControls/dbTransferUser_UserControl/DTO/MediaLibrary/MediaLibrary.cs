@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace dbTransferUser_UserControl.ResponseObjects.MediaLibraryModels
+namespace ServerApiCall_UserControl.DTO.MediaLibraryModels
 {
     public class MediaLibrary
     {

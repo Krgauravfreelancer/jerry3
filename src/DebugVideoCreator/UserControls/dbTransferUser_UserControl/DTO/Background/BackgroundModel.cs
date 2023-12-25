@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects.Background
+namespace ServerApiCall_UserControl.DTO.Background
 {
     public class BackgroundModel
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace dbTransferUser_UserControl.ResponseObjects
+namespace ServerApiCall_UserControl.DTO
 {
     public class AppPermissionModel
     {

@@ -1,5 +1,5 @@
 ﻿//using Renci.SshNet.Sftp;
-using Authentication_UserControl.ResponseObjects;
+using Authentication_UserControl.DTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;

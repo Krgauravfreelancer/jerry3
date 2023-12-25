@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesManage_UserControl", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authentication_UserControl", "UserControls\Authentication_UserControl\Authentication_UserControl.csproj", "{759B1A0F-FC55-42F9-A9DB-BD140DE040AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dbTransferUser_UserControl", "UserControls\dbTransferUser_UserControl\dbTransferUser_UserControl.csproj", "{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerApiCall_UserControl", "UserControls\dbTransferUser_UserControl\ServerApiCall_UserControl.csproj", "{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31AF915D-14F9-47C6-80D1-C4B5D8762910}"
 	ProjectSection(SolutionItems) = preProject

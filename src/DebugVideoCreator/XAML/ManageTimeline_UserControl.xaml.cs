@@ -12,7 +12,7 @@ using Forms = System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 using AudioPlayer_UserControl;
-using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using VideoCreator.Auth;
 using System.Threading.Tasks;
 using NAudio.CoreAudioApi.Interfaces;

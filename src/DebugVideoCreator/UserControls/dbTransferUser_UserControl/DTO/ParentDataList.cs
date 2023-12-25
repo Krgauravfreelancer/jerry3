@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects
+namespace ServerApiCall_UserControl.DTO
 {
     public class ParentDataList<T>
     {

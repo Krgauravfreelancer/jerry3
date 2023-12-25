@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects.Projects
+namespace ServerApiCall_UserControl.DTO.Projects
 {
     public class ProjectCountModel
     {

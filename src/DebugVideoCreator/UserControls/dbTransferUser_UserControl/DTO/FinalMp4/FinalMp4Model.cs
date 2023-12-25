@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace dbTransferUser_UserControl.ResponseObjects.FinalMp4
+namespace ServerApiCall_UserControl.DTO.FinalMp4
 {
     public class FinalMp4Model
     {

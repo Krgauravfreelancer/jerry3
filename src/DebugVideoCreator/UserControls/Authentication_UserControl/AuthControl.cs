@@ -1,7 +1,7 @@
 //using Renci.SshNet;
 //using Renci.SshNet.Sftp;
 using Authentication_UserControl.Helpers;
-using Authentication_UserControl.ResponseObjects;
+using Authentication_UserControl.DTO;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 
-namespace dbTransferUser_UserControl.Helpers
+namespace ServerApiCall_UserControl.Helpers
 {
     public static class UriExtensions
     {

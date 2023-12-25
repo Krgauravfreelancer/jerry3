@@ -1,10 +1,10 @@
-﻿using dbTransferUser_UserControl.ResponseObjects.App;
-using dbTransferUser_UserControl.ResponseObjects.Background;
-using dbTransferUser_UserControl.ResponseObjects.Company;
-using dbTransferUser_UserControl.ResponseObjects.Media;
-using dbTransferUser_UserControl.ResponseObjects.Projects;
-using dbTransferUser_UserControl.ResponseObjects.Screen;
-using dbTransferUser_UserControl.ResponseObjects.VideoEvent;
+﻿using ServerApiCall_UserControl.DTO.App;
+using ServerApiCall_UserControl.DTO.Background;
+using ServerApiCall_UserControl.DTO.Company;
+using ServerApiCall_UserControl.DTO.Media;
+using ServerApiCall_UserControl.DTO.Projects;
+using ServerApiCall_UserControl.DTO.Screen;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;

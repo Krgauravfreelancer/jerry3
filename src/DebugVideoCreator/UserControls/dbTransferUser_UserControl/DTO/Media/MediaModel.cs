@@ -1,4 +1,4 @@
-﻿namespace dbTransferUser_UserControl.ResponseObjects.Media
+﻿namespace ServerApiCall_UserControl.DTO.Media
 {
     public class MediaModel
     {

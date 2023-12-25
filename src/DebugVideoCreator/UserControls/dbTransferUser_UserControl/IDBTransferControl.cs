@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace dbTransferUser_UserControl
+namespace ServerApiCall_UserControl
 {
     public interface IDBTransferControl
     {

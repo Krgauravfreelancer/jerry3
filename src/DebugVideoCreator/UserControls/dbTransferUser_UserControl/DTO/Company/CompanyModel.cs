@@ -1,4 +1,4 @@
-﻿namespace dbTransferUser_UserControl.ResponseObjects.Company
+﻿namespace ServerApiCall_UserControl.DTO.Company
 {
     public class CompanyModel
     {

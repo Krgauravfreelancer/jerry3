@@ -1,4 +1,4 @@
-﻿namespace dbTransferUser_UserControl.ResponseObjects.Screen
+﻿namespace ServerApiCall_UserControl.DTO.Screen
 {
     public class ScreenModel
     {
