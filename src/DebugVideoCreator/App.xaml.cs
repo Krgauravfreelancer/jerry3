@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NLog.Config;
+using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +15,9 @@ namespace VideoCreator
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            LogManager.Configuration = new XmlLoggingConfiguration(@".\\NLog.config");
+        }
     }
 }

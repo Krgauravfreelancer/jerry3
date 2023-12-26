@@ -17,6 +17,8 @@ using System.IO;
 using ServerApiCall_UserControl.Helpers;
 using System.Windows.Input;
 using VideoCreator.MediaLibraryData;
+using NLog;
+using NLog.Config;
 
 namespace VideoCreator.XAML
 {
@@ -24,6 +26,7 @@ namespace VideoCreator.XAML
     {
         private readonly AuthAPIViewModel authApiViewModel;
         private List<ProjectModel> pendingProjects;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         public MainWindow()
         {
             InitializeComponent();
@@ -34,6 +37,7 @@ namespace VideoCreator.XAML
         {
             try
             {
+                logger.Debug("Starting !!!!!", this, DateTime.Now);
                 LoaderHelper.ShowLoader(this, loader);
                 await Login();
                 await SyncApp();
@@ -54,6 +58,7 @@ namespace VideoCreator.XAML
             }
             SetWelcomeMessage();
             LoaderHelper.HideLoader(this, loader);
+            logger.Debug("Ending !!!!!", this, DateTime.Now);
 
         }
 
