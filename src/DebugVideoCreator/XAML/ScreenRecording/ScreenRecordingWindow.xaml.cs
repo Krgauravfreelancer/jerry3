@@ -22,6 +22,7 @@ using Timeline.UserControls;
 using System.Windows.Controls.Primitives;
 using VideoCreator.XAML;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -72,6 +73,7 @@ namespace VideoCreator.XAML
                 Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
                 i++;
             }
+            LoaderHelper.HideLoader(this, loader);
         }
 
         public void SetProjectID(int projectID)

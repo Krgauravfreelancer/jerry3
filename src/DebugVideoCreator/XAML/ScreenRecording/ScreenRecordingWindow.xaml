@@ -4,9 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VideoCreator.XAML"
+        xmlns:loader="clr-namespace:VideoCreator.Loader"
         xmlns:screenrecorder_usercontrol="clr-namespace:ScreenRecorder_UserControl;assembly=ScreenRecorder_UserControl"
         mc:Ignorable="d">
     <Grid>
         <screenrecorder_usercontrol:ScreenRecorder_Control Name="Recorder" Loaded="Recorder_Loaded" CloseWindow="Recorder_CloseWindow" DeleteMedia="Recorder_DeleteMedia" MediaRecordingCompleted="Recorder_MediaRecordingCompleted"/>
+        <loader:LoadingAnimation x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
     </Grid>
 </UserControl>
