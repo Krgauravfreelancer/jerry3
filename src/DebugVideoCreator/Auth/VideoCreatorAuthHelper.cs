@@ -51,7 +51,7 @@ namespace VideoCreator.Auth
             ReadMACAddress();
             authCtrl = new AuthControl();
             AccessKey = authCtrl.ReadApiKeyFromRegistry();
-            if(string.IsNullOrEmpty(AccessKey) || AccessKey.StartsWith("Error "))
+            if (string.IsNullOrEmpty(AccessKey) || AccessKey.StartsWith("Error "))
             {
                 MessageBox.Show(AccessKey, "Credentials Issue", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
@@ -94,328 +94,139 @@ namespace VideoCreator.Auth
 
         public async Task ExecuteLoginAsync()
         {
-            try
+            ErrorMessage = string.Empty;
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            var loginRes = await authCtrl.Login(MacAddress?.Trim(), AccessKey?.Trim());
+            if (!string.IsNullOrEmpty(loginRes.Token))
             {
-                ErrorMessage = string.Empty;
-                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-                var loginRes = await authCtrl.Login(MacAddress?.Trim(), AccessKey?.Trim());
-                if (!string.IsNullOrEmpty(loginRes.Token))
-                {
-                    TokenNumber = loginRes.Token;
-                    dbTransferCtrl = new DBTransferControl(authCtrl.GetHttpClient());
-                }
-                else
-                    ErrorMessage = "No Token returned";
+                TokenNumber = loginRes.Token;
+                dbTransferCtrl = new DBTransferControl(authCtrl.GetHttpClient());
             }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            else
+                ErrorMessage = "No Token returned";
+            IsBusy = false;
         }
 
         public async Task ExecuteLogoutAsync()
         {
-            try
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            var result = await authCtrl.Logout();
+            if (!string.IsNullOrEmpty(result?.Status))
             {
-                IsBusy = true;
-                ErrorMessage = string.Empty;
-                var result = await authCtrl.Logout();
-                if (!string.IsNullOrEmpty(result?.Status))
-                {
-                    ErrorMessage = result?.Status;
-                    TokenNumber = string.Empty;
-                }
+                ErrorMessage = result?.Status;
+                TokenNumber = string.Empty;
             }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            IsBusy = false;
         }
 
 
         public async Task<T> Get<T>(string url)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-                var result = await dbTransferCtrl.Get(url);
-                var data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.Get(url);
+            var data = JsonConvert.DeserializeObject<T>(result);
+            return data;
+
         }
 
         public async Task<byte[]> GetSecuredFileByteArray(string url)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-                var byteArray = await dbTransferCtrl.GetFileByteArray(url);
-                return byteArray;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return null;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var byteArray = await dbTransferCtrl.GetFileByteArray(url);
+            IsBusy = false;
+            return byteArray;
         }
 
         public async Task GetFile(string url, string fileToWriteTo)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-                var byteArray = await dbTransferCtrl.GetFileByteArray(url);
-                var memoryStream = new MemoryStream(byteArray);
-                Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.CreateNew);
-                memoryStream.Position = 0;
-                await memoryStream.CopyToAsync(streamToWriteTo);
-                streamToWriteTo.Dispose();
-                memoryStream.Dispose();
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var byteArray = await dbTransferCtrl.GetFileByteArray(url);
+            var memoryStream = new MemoryStream(byteArray);
+            Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.CreateNew);
+            memoryStream.Position = 0;
+            await memoryStream.CopyToAsync(streamToWriteTo);
+            streamToWriteTo.Dispose();
+            memoryStream.Dispose();
+            IsBusy = false;
+
         }
 
         public async Task<T> Create<T>(string url, FormUrlEncodedContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-
-                var result = await dbTransferCtrl.Create(url, payload);
-                T data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.Create(url, payload);
+            T data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
         }
 
         public async Task<T> CreateWithMultipart<T>(string url, MultipartFormDataContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-                var result = await dbTransferCtrl.CreateWithFile(url, payload);
-                var data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.CreateWithFile(url, payload);
+            var data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
+
         }
 
         public async Task<T> Update<T>(string url, FormUrlEncodedContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
 
-                var result = await dbTransferCtrl.Update(url, payload);
-                var data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+
+            var result = await dbTransferCtrl.Update(url, payload);
+            var data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
+
         }
 
         public async Task<T> UpdateWithMultipart<T>(string url, MultipartFormDataContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-
-                var result = await dbTransferCtrl.UpdateWithFile(url, payload);
-                var data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.UpdateWithFile(url, payload);
+            var data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
         }
 
         public async Task<T> Patch<T>(string url, FormUrlEncodedContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-
-                var result = await dbTransferCtrl.Patch(url, payload);
-                var data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.Patch(url, payload);
+            var data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
         }
 
         public async Task<T> Delete<T>(string url, FormUrlEncodedContent payload)
         {
-            try
-            {
-                ErrorMessage = string.Empty;
-                InitializeOrResetDbTransferControl();
-
-                var result = await dbTransferCtrl.Delete(url, payload);
-                T data = JsonConvert.DeserializeObject<T>(result);
-                return data;
-            }
-            catch (DllNotFoundException dllex)
-            {
-                ErrorMessage = dllex.Message;
-            }
-            catch (NullReferenceException)
-            {
-                ErrorMessage = NO_LOGIN_MESSAGE;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-            return default;
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+            InitializeOrResetDbTransferControl();
+            var result = await dbTransferCtrl.Delete(url, payload);
+            T data = JsonConvert.DeserializeObject<T>(result);
+            IsBusy = false;
+            return data;
         }
 
     }

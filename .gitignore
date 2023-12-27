@@ -368,3 +368,9 @@
 /src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/bin/Debug
 /src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/obj/Debug
 /src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/packages
+/src/DebugVideoCreator/bin/Release
+/src/DebugVideoCreator/obj/Release
+/src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/bin/Release
+/src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/obj/Release
+/src/DebugVideoCreator/UserControls/TimePicker_UserControl/TimePicker_UserControl/obj/Release
+/src/DebugVideoCreator/UserControls/TimePicker_UserControl/TimePicker_UserControl/bin/Release

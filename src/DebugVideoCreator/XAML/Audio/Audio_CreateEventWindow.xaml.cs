@@ -25,54 +25,49 @@ namespace VideoCreator.XAML
 
             //AudioUserControl Mwindow = ((AudioUserControl)Application.Current.MainWindow);
 
-            try
-            {
 
-                var dataTable = new DataTable();
-                dataTable.Columns.Add("videoevent_id", typeof(int));
-                dataTable.Columns.Add("fk_videoevent_project", typeof(int));
-                dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-                dataTable.Columns.Add("videoevent_track", typeof(int));
-                dataTable.Columns.Add("videoevent_start", typeof(string));
-                dataTable.Columns.Add("videoevent_duration", typeof(int));
-                dataTable.Columns.Add("videoevent_createdate", typeof(string));
-                dataTable.Columns.Add("videoevent_modifydate", typeof(string));
-                //optional column
-                dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-                dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
 
-                // Since this table has Referential Integrity, so lets push one by one
-                dataTable.Rows.Clear();
-                var row = dataTable.NewRow();
-                row["videoevent_id"] = -1;
-                row["fk_videoevent_project"] = selectedProjectId;
-                row["videoevent_track"] = 1;
-                //row["videoevent_start"] = $"00:{SMinTxt.Text}:{SSecTxt.Text}";
-                //row["videoevent_duration"] = (Convert.ToInt32(DMinTxt.Text) * 60) + Convert.ToInt32(DSecTxt.Text);
-                row["videoevent_start"] = $"00:00:00.000";
-                row["videoevent_duration"] = 10;
-                row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["fk_videoevent_media"] = 3; // For Audio
-                
-                //Fill Media in case image, video or audio is selected
-                row["fk_videoevent_screen"] = -1; // Not needed for this case
-                var path = PathTxt.Text;
-                using (var fileStream = new FileStream(path, FileMode.Open))
-                {
-                    byte[] mediaByte = StreamToByteArray(fileStream, 0);
-                    row["media"] = mediaByte;
-                }
-                
-                dataTable.Rows.Add(row);
-                var insertedId = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
-                MessageBox.Show($"VideoEvent Table populated to Database for selected Audio with Id - {insertedId[0]}");
-                this.Close();
-            }
-            catch (Exception ex)
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("videoevent_id", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+            dataTable.Columns.Add("videoevent_track", typeof(int));
+            dataTable.Columns.Add("videoevent_start", typeof(string));
+            dataTable.Columns.Add("videoevent_duration", typeof(int));
+            dataTable.Columns.Add("videoevent_createdate", typeof(string));
+            dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+            //optional column
+            dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+            dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen
+
+            // Since this table has Referential Integrity, so lets push one by one
+            dataTable.Rows.Clear();
+            var row = dataTable.NewRow();
+            row["videoevent_id"] = -1;
+            row["fk_videoevent_project"] = selectedProjectId;
+            row["videoevent_track"] = 1;
+            //row["videoevent_start"] = $"00:{SMinTxt.Text}:{SSecTxt.Text}";
+            //row["videoevent_duration"] = (Convert.ToInt32(DMinTxt.Text) * 60) + Convert.ToInt32(DSecTxt.Text);
+            row["videoevent_start"] = $"00:00:00.000";
+            row["videoevent_duration"] = 10;
+            row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            row["fk_videoevent_media"] = 3; // For Audio
+
+            //Fill Media in case image, video or audio is selected
+            row["fk_videoevent_screen"] = -1; // Not needed for this case
+            var path = PathTxt.Text;
+            using (var fileStream = new FileStream(path, FileMode.Open))
             {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                byte[] mediaByte = StreamToByteArray(fileStream, 0);
+                row["media"] = mediaByte;
             }
+
+            dataTable.Rows.Add(row);
+            var insertedId = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
+            MessageBox.Show($"VideoEvent Table populated to Database for selected Audio with Id - {insertedId[0]}");
+            this.Close();
+
         }
 
         private static byte[] StreamToByteArray(Stream stream, int initialLength)
@@ -116,7 +111,7 @@ namespace VideoCreator.XAML
 
         private void CancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();   
+            this.Close();
             //((MainWindow)Application.Current.MainWindow).Create_Canceled();
         }
 

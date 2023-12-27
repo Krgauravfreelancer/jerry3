@@ -74,7 +74,7 @@ namespace VideoCreator.XAML
             // Logic to invoke the BG thread to send not saved data from local DATA to server and update the server Id.
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(RunBackgroundProcess);
-            dispatcherTimer.Interval = TimeSpan.FromSeconds(RetryIntervalInSeconds); 
+            dispatcherTimer.Interval = TimeSpan.FromSeconds(RetryIntervalInSeconds);
             dispatcherTimer.Start();
             loader.Visibility = Visibility.Hidden;
         }
@@ -119,12 +119,12 @@ namespace VideoCreator.XAML
                 var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectId, true);
                 foreach (var notSyncedRow in notSyncedData)
                 {
-                    if(notSyncedRow.fk_videoevent_media == (int)EnumMedia.IMAGE || notSyncedRow.fk_videoevent_media == (int)EnumMedia.VIDEO) // for image or video
+                    if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.IMAGE || notSyncedRow.fk_videoevent_media == (int)EnumMedia.VIDEO) // for image or video
                     {
                         await ProcessVideoSegmentDataRowByRowInBackground(notSyncedRow);
 
                     }
-                    else if(notSyncedRow.fk_videoevent_media == (int)EnumMedia.AUDIO) // for Audio
+                    else if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.AUDIO) // for Audio
                     {
                         // Coming Soon !!!
                     }
@@ -134,7 +134,7 @@ namespace VideoCreator.XAML
                     }
                 }
             }
-            catch(Exception) { }
+            catch (Exception) { }
             finally { isBackgroundProcessRunning = false; }
 
         }
@@ -157,7 +157,7 @@ namespace VideoCreator.XAML
             }
 
         }
-        
+
         private void InitializeChildren()
         {
             popup = new PopupWindow();
@@ -200,7 +200,7 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
-        
+
         private void ResetAudioContextMenu()
         {
             if (ReadOnly)
@@ -222,7 +222,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        
+
         private async void checkIfProjectIsLocked()
         {
             var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
@@ -243,17 +243,17 @@ namespace VideoCreator.XAML
                 //closeTheEditWindow.Invoke(null, null);
                 InitializeChildren();
             }
-            
+
         }
 
-        
+
         #region === Notes Event Handler event ==
 
         private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
         {
             // Step 1. Save to server
             var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-            var savedNotes =  await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+            var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
             if (savedNotes != null)
             {
                 // Step 2. Now save the notes to local DB
@@ -266,7 +266,7 @@ namespace VideoCreator.XAML
         private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
         {
             var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
-            if(result?.Status == "success")
+            if (result?.Status == "success")
             {
                 DataManagerSqlLite.DeleteNotesById(notes.notes_id);
                 NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
@@ -419,7 +419,7 @@ namespace VideoCreator.XAML
         }
 
 
-        private void SuccessFlowForSaveImageorVideo(DataRow row,  VideoEventResponseModel addedData)
+        private void SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
         {
             var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
@@ -501,7 +501,7 @@ namespace VideoCreator.XAML
                 TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(this, new EventArgs());
                 mediaLibraryUserControl.Dispose();
             }
-            
+
         }
 
         private async void MediaLibraryUserControl_BtnUseAndSaveClickedEvent(DataTable dataTable)
@@ -545,7 +545,7 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutEvent calloutEvent)
         {
-            if(calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
+            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
                 await HandleCalloutLogic(EnumTrack.CALLOUT1, convertedImage);
@@ -850,62 +850,56 @@ namespace VideoCreator.XAML
 
         private void SaveAudioToDatabase(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var dataTable = GetVideoEventTableForAudio();
-                var row = dataTable.NewRow();
-                row["videoevent_id"] = audioSaveButtonText == "Save" ? -1 : selectedVideoEvent.videoevent_id;
-                row["fk_videoevent_project"] = selectedProjectId;
-                row["videoevent_track"] = 1;
 
-                audioMinutetext = audioMinutetext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[1].ToString());
-                audioSecondtext = audioSecondtext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[2].ToString());
+            var dataTable = GetVideoEventTableForAudio();
+            var row = dataTable.NewRow();
+            row["videoevent_id"] = audioSaveButtonText == "Save" ? -1 : selectedVideoEvent.videoevent_id;
+            row["fk_videoevent_project"] = selectedProjectId;
+            row["videoevent_track"] = 1;
 
-                row["videoevent_start"] = $"00:{audioMinutetext}:{audioSecondtext}";
-                row["videoevent_duration"] = 0;
-                row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["fk_videoevent_screen"] = -1; // Not needed for this case
-                var mediaId = 3;
-                row["fk_videoevent_media"] = mediaId;
-                //Fill Media in case image, video or audio is selected
-                byte[] mediaByte;
-                if (isWavAudio == true)
-                    mediaByte = editor.GetAudioSelectionAsWav();
-                else
-                    mediaByte = editor.GetAudioSelectionAsMp3();
-                row["media"] = mediaByte;
+            audioMinutetext = audioMinutetext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[1].ToString());
+            audioSecondtext = audioSecondtext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[2].ToString());
 
-                dataTable.Rows.Add(row);
-                //if (audioSaveButtonText == "Save")
-                //{
-                //    var inserted = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
-                //    if (inserted?.Count > 0 && inserted[0] > 0)
-                //        MessageBox.Show("Audio Successfully saved to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                //    popup.Close();
-                //}
-                //else
-                //{
-                //    var audioDataTable = GetAudioTableForAudio();
-                //    var audioRow = audioDataTable.NewRow();
-                //    audioRow["audio_id"] = selectedVideoEvent.audio_data[0]?.audio_id;
-                //    audioRow["audio_media"] = mediaByte;
-                //    audioRow["audio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                //    audioDataTable.Rows.Add(audioRow);
-                //    DataManagerSqlLite.UpdateRowsToVideoEvent(dataTable);
-                //    DataManagerSqlLite.UpdateRowsToAudio(audioDataTable);
-                //    MessageBox.Show("Audio Successfully updated to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                //    popup.Close();
-                //}
-                //RefreshOrLoadComboBoxes();
-                //TimelineUserConrol.LoadTimelineDataFromDb_Click();
-                MessageBox.Show("Not saved to DB, Coming Soon", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                popup.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            row["videoevent_start"] = $"00:{audioMinutetext}:{audioSecondtext}";
+            row["videoevent_duration"] = 0;
+            row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            row["fk_videoevent_screen"] = -1; // Not needed for this case
+            var mediaId = 3;
+            row["fk_videoevent_media"] = mediaId;
+            //Fill Media in case image, video or audio is selected
+            byte[] mediaByte;
+            if (isWavAudio == true)
+                mediaByte = editor.GetAudioSelectionAsWav();
+            else
+                mediaByte = editor.GetAudioSelectionAsMp3();
+            row["media"] = mediaByte;
+
+            dataTable.Rows.Add(row);
+            //if (audioSaveButtonText == "Save")
+            //{
+            //    var inserted = DataManagerSqlLite.InsertRowsToVideoEvent(dataTable);
+            //    if (inserted?.Count > 0 && inserted[0] > 0)
+            //        MessageBox.Show("Audio Successfully saved to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    popup.Close();
+            //}
+            //else
+            //{
+            //    var audioDataTable = GetAudioTableForAudio();
+            //    var audioRow = audioDataTable.NewRow();
+            //    audioRow["audio_id"] = selectedVideoEvent.audio_data[0]?.audio_id;
+            //    audioRow["audio_media"] = mediaByte;
+            //    audioRow["audio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            //    audioDataTable.Rows.Add(audioRow);
+            //    DataManagerSqlLite.UpdateRowsToVideoEvent(dataTable);
+            //    DataManagerSqlLite.UpdateRowsToAudio(audioDataTable);
+            //    MessageBox.Show("Audio Successfully updated to DB", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    popup.Close();
+            //}
+            //RefreshOrLoadComboBoxes();
+            //TimelineUserConrol.LoadTimelineDataFromDb_Click();
+            MessageBox.Show("Not saved to DB, Coming Soon", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            popup.Close();
 
         }
 
@@ -917,42 +911,30 @@ namespace VideoCreator.XAML
 
         private int SaveVoiceAverageToDatabase(string average)
         {
-            try
-            {
-                var dataTable = new DataTable();
-                dataTable.Columns.Add("voiceaverage_id", typeof(int));
-                dataTable.Columns.Add("voiceaverage_average", typeof(string));
-                var row = dataTable.NewRow();
-                row["voiceaverage_id"] = -1;
-                row["voiceaverage_average"] = average;
-                dataTable.Rows.Add(row);
-                var insertedId = DataManagerSqlLite.InsertRowsToVoiceAverage(dataTable);
-                return insertedId[0];
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("voiceaverage_id", typeof(int));
+            dataTable.Columns.Add("voiceaverage_average", typeof(string));
+            var row = dataTable.NewRow();
+            row["voiceaverage_id"] = -1;
+            row["voiceaverage_average"] = average;
+            dataTable.Rows.Add(row);
+            var insertedId = DataManagerSqlLite.InsertRowsToVoiceAverage(dataTable);
+            return insertedId[0];
+
         }
 
         private bool UpdateVoiceAverageToDatabase(string average)
         {
-            try
-            {
-                var dataTable = new DataTable();
-                dataTable.Columns.Add("voiceaverage_id", typeof(int));
-                dataTable.Columns.Add("voiceaverage_average", typeof(string));
-                var row = dataTable.NewRow();
-                row["voiceaverage_id"] = 1;
-                row["voiceaverage_average"] = average;
-                dataTable.Rows.Add(row);
-                DataManagerSqlLite.UpdateRowsToVoiceAverage(dataTable);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("voiceaverage_id", typeof(int));
+            dataTable.Columns.Add("voiceaverage_average", typeof(string));
+            var row = dataTable.NewRow();
+            row["voiceaverage_id"] = 1;
+            row["voiceaverage_average"] = average;
+            dataTable.Rows.Add(row);
+            DataManagerSqlLite.UpdateRowsToVoiceAverage(dataTable);
+            return true;
         }
 
         #endregion 
@@ -991,7 +973,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        
+
 
         private async void btnReleaseLock_Click(object sender, RoutedEventArgs e)
         {
@@ -1004,7 +986,7 @@ namespace VideoCreator.XAML
                 btnunlock.IsEnabled = false;
                 InitializeChildren();
             }
-            
+
         }
 
         private async void btnLockForEdit_Click(object sender, RoutedEventArgs e)
@@ -1012,7 +994,7 @@ namespace VideoCreator.XAML
             var response = await authApiViewModel.LockProject(selectedServerProjectId, true);
             if (response?.Status == "success")
             {
-                MessageBox.Show($"Project with Id - {selectedServerProjectId} is locked successfully, waiting for sync","Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Project with Id - {selectedServerProjectId} is locked successfully, waiting for sync", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
                 ReadOnly = false;
                 btnlock.IsEnabled = false;
                 btnunlock.IsEnabled = true;
@@ -1039,11 +1021,11 @@ namespace VideoCreator.XAML
         private async void btnDownloadServer_Click(object sender, RoutedEventArgs e)
         {
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if(confirm == MessageBoxResult.Yes)
+            if (confirm == MessageBoxResult.Yes)
             {
                 LoaderHelper.ShowLoader(this, loader);
                 await SyncServerDataToLocalDB();
-                
+
             }
             InitializeChildren();
             LoaderHelper.HideLoader(this, loader);
@@ -1080,7 +1062,7 @@ namespace VideoCreator.XAML
         {
             var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectId, videoevent);
             var result = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-            return result?.Count > 0 ? result[0]: -1;
+            return result?.Count > 0 ? result[0] : -1;
         }
 
         private void SaveDesign(int localVideoEventId, List<DesignModel> allDesigns)
@@ -1092,13 +1074,13 @@ namespace VideoCreator.XAML
         private async Task SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
         {
             var downloadUrl = videosegment.videosegment_download_url;
-            
+
             if (!string.IsNullOrEmpty(downloadUrl))
             {
                 byte[] bytes = await authApiViewModel.GetSecuredFileByteArray(downloadUrl);
                 var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
                 var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
-                
+
             }
         }
 
@@ -1108,7 +1090,7 @@ namespace VideoCreator.XAML
             DataManagerSqlLite.InsertRowsToNotes(dtNotes);
         }
 
-        
+
         private void ResetAudio()
         {
             AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);

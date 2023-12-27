@@ -35,31 +35,18 @@ namespace VideoCreator.XAML
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                logger.Debug("Starting !!!!!", this, DateTime.Now);
-                LoaderHelper.ShowLoader(this, loader);
-                await Login();
-                await SyncApp();
-                await SyncMedia();
-                await SyncScreens();
-                await SyncCompany();
-                await SyncBackground();
+            LoaderHelper.ShowLoader(this, loader);
+            await Login();
+            await SyncApp();
+            await SyncMedia();
+            await SyncScreens();
+            await SyncCompany();
+            await SyncBackground();
 
-                rbWIP.IsChecked = true;
-                InitialiseAndRefreshScreen();
-                //await PopulateProjects();
-                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                this.Close();
-            }
+            rbWIP.IsChecked = true;
+            InitialiseAndRefreshScreen();
             SetWelcomeMessage();
             LoaderHelper.HideLoader(this, loader);
-            logger.Debug("Ending !!!!!", this, DateTime.Now);
-
         }
 
 
@@ -236,17 +223,14 @@ namespace VideoCreator.XAML
             {
                 window.Close();
             };
-            try
+            
+            var result = window.ShowDialog();
+            if (result.HasValue)
             {
-                var result = window.ShowDialog();
-                if (result.HasValue)
-                {
-                    datagrid.SelectedItem = null;
-                    manageTimeline_UserControl.Dispose();
-                }
+                datagrid.SelectedItem = null;
+                manageTimeline_UserControl.Dispose();
             }
-            catch (Exception)
-            { }
+            
             InitialiseAndRefreshScreen();
         }
 

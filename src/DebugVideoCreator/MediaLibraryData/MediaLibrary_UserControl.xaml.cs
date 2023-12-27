@@ -93,7 +93,7 @@ namespace VideoCreator.MediaLibraryData
         {
             LoaderHelper.ShowLoader(this, loader);
             var result = await authApiViewModel.GetImagesLibraryData(PAGESIZE, PAGENUMBER, TAGS);
-            if(result == null) return;
+            if (result == null) return;
             TOTALPAGES = result.Meta.last_page;
             lblinfo.Content = $"Record Shown: {result.Meta.from} to {result.Meta.to}    |    Total: {result.Meta.total} Records    |    Page: {result.Meta.current_page} of {result.Meta.last_page}";
             await fillItems(result.Data);
@@ -161,8 +161,8 @@ namespace VideoCreator.MediaLibraryData
                             btnSelecAndUsethisImage.IsEnabled = true;
                             selectedImage = item;
                         }
-                        else 
-                        { 
+                        else
+                        {
                             stackPanelBorder.BorderThickness = new Thickness(1);
                             btnSelecAndUsethisImage.IsEnabled = false;
                             selectedImage = null;
@@ -184,11 +184,11 @@ namespace VideoCreator.MediaLibraryData
         {
             TAGS = string.Empty;
             var items = listBoxtags.SelectedItems;
-            foreach(var item in items )
+            foreach (var item in items)
             {
                 TAGS += item + ",";
             }
-            TAGS = TAGS.Length > 0 ? TAGS.Remove(TAGS.Length - 1): TAGS;
+            TAGS = TAGS.Length > 0 ? TAGS.Remove(TAGS.Length - 1) : TAGS;
             PAGENUMBER = 1;
             await FetchMediaLibraryData();
         }
@@ -210,7 +210,7 @@ namespace VideoCreator.MediaLibraryData
 
         private async void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            if(PAGENUMBER < TOTALPAGES)
+            if (PAGENUMBER < TOTALPAGES)
             {
                 PAGENUMBER++;
                 await FetchMediaLibraryData();
@@ -228,61 +228,55 @@ namespace VideoCreator.MediaLibraryData
 
         private async void btnSelecAndUsethisImage_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                LoaderHelper.ShowLoader(this, loader);
-                var dataTable = new DataTable();
-                dataTable.Columns.Add("videoevent_id", typeof(int));
-                dataTable.Columns.Add("fk_videoevent_project", typeof(int));
-                dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-                dataTable.Columns.Add("videoevent_track", typeof(int));
-                dataTable.Columns.Add("videoevent_start", typeof(string));
-                dataTable.Columns.Add("videoevent_duration", typeof(int));
-                dataTable.Columns.Add("videoevent_createdate", typeof(string));
-                dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+            LoaderHelper.ShowLoader(this, loader);
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("videoevent_id", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+            dataTable.Columns.Add("videoevent_track", typeof(int));
+            dataTable.Columns.Add("videoevent_start", typeof(string));
+            dataTable.Columns.Add("videoevent_duration", typeof(int));
+            dataTable.Columns.Add("videoevent_createdate", typeof(string));
+            dataTable.Columns.Add("videoevent_modifydate", typeof(string));
 
-                dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-                dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen    
+            dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+            dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen    
 
-                dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
-                dataTable.Columns.Add("videoevent_issynced", typeof(bool));
-                dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
-                dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+            dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
+            dataTable.Columns.Add("videoevent_issynced", typeof(bool));
+            dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+            dataTable.Columns.Add("videoevent_syncerror", typeof(string));
 
 
-                dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
+            dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
 
-                // Since this table has Referential Integrity, so lets push one by one
-                dataTable.Rows.Clear();
+            // Since this table has Referential Integrity, so lets push one by one
+            dataTable.Rows.Clear();
 
-                var row = dataTable.NewRow();
-                //row["videoevent_id"] = -1;
-                row["fk_videoevent_project"] = selectedProjectId;
-                row["videoevent_track"] = _trackId;
-                row["videoevent_start"] = "00:00:00.000";
-                row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                row["videoevent_isdeleted"] = false;
-                row["videoevent_issynced"] = false;
-                row["videoevent_serverid"] = -1;
-                row["videoevent_syncerror"] = string.Empty;
-                row["videoevent_duration"] = 10; // TBD
+            var row = dataTable.NewRow();
+            //row["videoevent_id"] = -1;
+            row["fk_videoevent_project"] = selectedProjectId;
+            row["videoevent_track"] = _trackId;
+            row["videoevent_start"] = "00:00:00.000";
+            row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["videoevent_isdeleted"] = false;
+            row["videoevent_issynced"] = false;
+            row["videoevent_serverid"] = -1;
+            row["videoevent_syncerror"] = string.Empty;
+            row["videoevent_duration"] = 10; // TBD
 
-                row["fk_videoevent_media"] = 1;
+            row["fk_videoevent_media"] = 1;
 
-                row["fk_videoevent_screen"] = -1; // Not needed for this case
-                var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
-                row["media"] = byteArrayIn;
-                dataTable.Rows.Add(row);
+            row["fk_videoevent_screen"] = -1; // Not needed for this case
+            var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
+            row["media"] = byteArrayIn;
+            dataTable.Rows.Add(row);
 
-                BtnUseAndSaveClickedEvent.Invoke(dataTable);
-                var myWindow = Window.GetWindow(this);
-                myWindow.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            BtnUseAndSaveClickedEvent.Invoke(dataTable);
+            var myWindow = Window.GetWindow(this);
+            myWindow.Close();
+
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)

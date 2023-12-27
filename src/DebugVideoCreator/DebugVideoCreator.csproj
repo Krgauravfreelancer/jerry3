@@ -461,6 +461,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Libraries\MediaToolkit.dll" />
+    <Content Include="Libraries\NotesManage_UserControl.dll" />
+    <Content Include="Libraries\Notes_UserControl.dll" />
+    <Content Include="Libraries\TimePicker_UserControl.dll" />
+    <Content Include="Libraries\VideoToImage_UserControl.dll" />
     <Content Include="Media\Screencast1.mp4" />
     <Resource Include="MediaLibraryData\Resources\last.png" />
     <Resource Include="MediaLibraryData\Resources\next.png" />

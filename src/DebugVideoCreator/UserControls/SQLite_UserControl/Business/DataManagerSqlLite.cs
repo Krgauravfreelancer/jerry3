@@ -14,38 +14,25 @@ namespace Sqllite_Library.Business
         public static string CreateDatabaseIfNotExist(bool encryptFlag, bool canCreateRegistryIfNotExists = false)
         {
             string message;
-            try
+            if (SqlLiteData.IsDbCreated())
             {
-                if (SqlLiteData.IsDbCreated())
-                {
-                    message = $"{RegisteryHelper.GetFileName()} database already exists!!";
-                }
-                else
-                {
-                    SqlLiteData.CreateDatabaseIfNotExist(encryptFlag, canCreateRegistryIfNotExists);
-                    message = $"{RegisteryHelper.GetFileName()} database created successfully!!";
-                }
+                message = $"{RegisteryHelper.GetFileName()} database already exists!!";
             }
-            catch (Exception ex)
+            else
             {
-                throw ex;
+                SqlLiteData.CreateDatabaseIfNotExist(encryptFlag, canCreateRegistryIfNotExists);
+                message = $"{RegisteryHelper.GetFileName()} database created successfully!!";
             }
+
             return message;
         }
 
         public static string ClearRegistryAndDeleteDB()
         {
             string message;
-            try
-            {
-                SqlLiteData.DeleteDB();
-                RegisteryHelper.ClearRegistry();
-                message = $"Registry Cleaned successfully !!";
-            }
-            catch (Exception err)
-            {
-                message = $"Error - {err.Message} !!";
-            }
+            SqlLiteData.DeleteDB();
+            RegisteryHelper.ClearRegistry();
+            message = $"Registry Cleaned successfully !!";
             return message;
         }
 
@@ -91,7 +78,7 @@ namespace Sqllite_Library.Business
                     var modifyDate = Convert.ToString(rowMain["videoevent_modifydate"]);
                     if (string.IsNullOrEmpty(modifyDate))
                         modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    
+
                     if (mediaId == 1 || mediaId == 2) // Image or video
                     {
                         // Insert into cbv_videosegment
@@ -474,7 +461,7 @@ namespace Sqllite_Library.Business
         {
             SqlLiteData.UpdateServerId("videosegment", localId, serverId, ErrorMessage);
         }
-        
+
 
         /*
         public static void UpdateRowsToAudio(DataTable dataTable)

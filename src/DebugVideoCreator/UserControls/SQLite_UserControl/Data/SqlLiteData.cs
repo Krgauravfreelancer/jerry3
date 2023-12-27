@@ -15,68 +15,45 @@ namespace Sqllite_Library.Data
         #region == Database Methods ==
         public static void CreateDatabaseIfNotExist(bool encryptFlag, bool canCreateRegistryIfNotExists)
         {
-            try
-            {
-                // Open Database connection 
-                var completeFileName = RegisteryHelper.GetFileName();
-                if (completeFileName == null)
+            // Open Database connection 
+            var completeFileName = RegisteryHelper.GetFileName();
+            if (completeFileName == null)
 
-                {
-                    if (canCreateRegistryIfNotExists)
-                    {
-                        RegisteryHelper.StoreFileName();
-                        completeFileName = RegisteryHelper.GetFileName();
-                    }
-                    else
-                        throw new Exception("Registry keys not present, please run the installer first !!");
-                }
-                string connectionString = string.Format("Data Source={0};Version=3;", completeFileName);
-                //if (encryptFlag) connectionString += "Password=mypassword";
-                var sqlCon = new SQLiteConnection(connectionString);
-                //if (encryptFlag) sqlCon.SetPassword("mypassword");
-                sqlCon.Open();
-                CreateAllTables(sqlCon);
-                //if (encryptFlag) sqlCon.SetPassword("mypassword");
-                // else sqlCon.SetPassword(); // We need to decrypt only if the DB is encrypted.
-                // Close connection
-                sqlCon?.Close();
-            }
-            catch (Exception ex)
             {
-                throw ex;
+                if (canCreateRegistryIfNotExists)
+                {
+                    RegisteryHelper.StoreFileName();
+                    completeFileName = RegisteryHelper.GetFileName();
+                }
+                else
+                    throw new Exception("Registry keys not present, please run the installer first !!");
             }
+            string connectionString = string.Format("Data Source={0};Version=3;", completeFileName);
+            //if (encryptFlag) connectionString += "Password=mypassword";
+            var sqlCon = new SQLiteConnection(connectionString);
+            //if (encryptFlag) sqlCon.SetPassword("mypassword");
+            sqlCon.Open();
+            CreateAllTables(sqlCon);
+            //if (encryptFlag) sqlCon.SetPassword("mypassword");
+            // else sqlCon.SetPassword(); // We need to decrypt only if the DB is encrypted.
+            // Close connection
+            sqlCon?.Close();
         }
 
         public static bool IsDbCreated()
         {
             bool fileExists;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
-                fileExists = File.Exists(fileName);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
+            string fileName = RegisteryHelper.GetFileName();
+            fileExists = File.Exists(fileName);
             return fileExists;
         }
 
         public static void DeleteDB()
         {
-            try
-            {
-                // First delete DB recursively
-                var filename = RegisteryHelper.GetFileName();
-                File.Delete(filename);
-                MessageBox.Show($"DB Deleted Succesfully !!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                // MessageBox.Show($"Error in DB deletion - {ex.Message}");
-                throw ex;
-            }
+            // First delete DB recursively
+            var filename = RegisteryHelper.GetFileName();
+            File.Delete(filename);
+            MessageBox.Show($"DB Deleted Succesfully !!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         #endregion
@@ -85,16 +62,10 @@ namespace Sqllite_Library.Data
         #region == Create Table Region ==
         private static void CreateTableHelper(string sqlQueryString, SQLiteConnection sqlCon)
         {
-            try
-            {
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                sqlQuery.ExecuteNonQuery();
-                sqlQuery.Dispose();
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            sqlQuery.ExecuteNonQuery();
+            sqlQuery.Dispose();
+
         }
 
         private static void CreateAllTables(SQLiteConnection sqlCon)
@@ -108,15 +79,15 @@ namespace Sqllite_Library.Data
             CreateAppTable(sqlCon);
             CreateMediaTable(sqlCon);
             CreateScreenTable(sqlCon);
-            
+
             CreateProjectTable(sqlCon);
             CreateVideoEventTable(sqlCon);
-            
+
             CreateVideoSegmentTable(sqlCon);
             //CreateAudioTable(sqlCon);
             CreateNotesTable(sqlCon);
             CreateDesignTable(sqlCon);
-            
+
             CreateLivAudioTable(sqlCon);
             CreateLocAudioTable(sqlCon);
 
@@ -174,7 +145,7 @@ namespace Sqllite_Library.Data
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
-        
+
         private static void CreateMediaTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_media' (
@@ -185,7 +156,7 @@ namespace Sqllite_Library.Data
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
-        
+
         private static void CreateScreenTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_screen' (
@@ -196,7 +167,7 @@ namespace Sqllite_Library.Data
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
-        
+
         private static void CreateProjectTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_project' (
@@ -218,7 +189,7 @@ namespace Sqllite_Library.Data
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
-        
+
         private static void CreateVideoEventTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_videoevent'(
@@ -489,7 +460,7 @@ namespace Sqllite_Library.Data
             foreach (DataRow dr in dataTable.Rows)
             {
                 var projectUploaded = Convert.ToBoolean(dr["project_uploaded"]);
-               
+
                 var projectDate = Convert.ToString(dr["project_date"]);
                 if (string.IsNullOrEmpty(projectDate))
                     projectDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -526,7 +497,7 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
-        
+
         #region == Video Event and Depenedent Tables ==
 
         private static string GetNextStart(int fk_videoevent_media, int projectId)
@@ -537,35 +508,27 @@ namespace Sqllite_Library.Data
 
             SQLiteConnection sqlCon = null;
             string result;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
 
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
+            string fileName = RegisteryHelper.GetFileName();
 
-                string sqlQueryString = $@"Select max(videoevent_end) from cbv_videoevent ";
-                var whereClause = string.Empty;
+            // Open Database connection 
+            sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+            sqlCon.Open();
 
-                if (fk_videoevent_media <= 4) whereClause = " where (fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4) ";
-                else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
+            string sqlQueryString = $@"Select max(videoevent_end) from cbv_videoevent ";
+            var whereClause = string.Empty;
+
+            if (fk_videoevent_media <= 4) whereClause = " where (fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4) ";
+            else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
 
 
-                whereClause += $" and fk_videoevent_project = {projectId}";
+            whereClause += $" and fk_videoevent_project = {projectId}";
 
-                var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
-                result = Convert.ToString(sqlQuery.ExecuteScalar());
-                sqlQuery.Dispose();
-                sqlCon.Close();
-            }
-            catch (Exception e)
-            {
-                sqlCon?.Close();
-                throw e;
-            }
-
-            return string.IsNullOrEmpty(result) ? "00:00:00.000": result;
+            var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
+            result = Convert.ToString(sqlQuery.ExecuteScalar());
+            sqlQuery.Dispose();
+            sqlCon.Close();
+            return string.IsNullOrEmpty(result) ? "00:00:00.000" : result;
         }
 
         private static string CalcNextEnd(string start, int duration)
@@ -574,7 +537,7 @@ namespace Sqllite_Library.Data
                 return "00:00:00.000";
 
             var ms = start.Length > 8 ? start.Split('.')[1] : "000";
-            var array = start.Length > 8 ? start.Remove(8).Split(':'): start.Split(':');
+            var array = start.Length > 8 ? start.Remove(8).Split(':') : start.Split(':');
             var time = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
             var endTime = time + duration;
             int s = endTime % 60;
@@ -587,7 +550,7 @@ namespace Sqllite_Library.Data
         public static int InsertRowsToVideoEvent(DataRow dr)
         {
             var values = new List<string>();
-            
+
             var createDate = Convert.ToString(dr["videoevent_createdate"]);
             if (string.IsNullOrEmpty(createDate))
                 createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -607,7 +570,7 @@ namespace Sqllite_Library.Data
 
             values.Add($"({dr["fk_videoevent_project"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
                 $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
-           
+
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO cbv_videoevent 
@@ -638,7 +601,7 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["videosegment_serverid"]);
                 var syncErrorString = Convert.ToString(dr["videosegment_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
-                
+
                 values.Add($"({dr["videosegment_id"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
@@ -700,7 +663,7 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["design_serverid"]);
                 var syncErrorString = Convert.ToString(dr["design_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
-               
+
                 values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}'" +
                             $", 0, {issynced}, {serverid}, '{syncerror}')");
             }
@@ -737,7 +700,7 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["notes_serverid"]);
                 var syncErrorString = Convert.ToString(dr["notes_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
-                
+
                 var values = new List<string>();
                 values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
                          $"{dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
@@ -809,7 +772,7 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["finalmp4_serverid"]);
                 var syncErrorString = Convert.ToString(dr["finalmp4_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
-                
+
                 values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', " +
                     $"0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
@@ -823,7 +786,7 @@ namespace Sqllite_Library.Data
 
                 insertedId = InsertBlobRecordsInTable("cbv_finalmp4", sqlQueryString, dr["finalmp4_media"] as byte[]);
             }
-            
+
             return insertedId;
         }
 
@@ -922,13 +885,11 @@ namespace Sqllite_Library.Data
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
-                {
                     sqlCon.Close();
-                }
-                throw e;
+                throw;
             }
             finally
             {
@@ -979,10 +940,10 @@ namespace Sqllite_Library.Data
                 command.Dispose();
                 sqlCon?.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
             return id;
         }
@@ -1000,7 +961,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            SQLiteConnection sqlCon = null; 
+            SQLiteConnection sqlCon = null;
             int count;
             try
             {
@@ -1016,10 +977,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return count;
@@ -1047,10 +1008,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return count;
@@ -1092,11 +1053,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
                     sqlCon.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1141,10 +1102,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1187,11 +1148,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
                     sqlCon.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1234,11 +1195,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
                     sqlCon.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1281,11 +1242,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
                     sqlCon.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1299,7 +1260,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
             string sqlQueryString = "SELECT * FROM cbv_project ";
-           
+
             if (startedFlag)
             {
                 sqlQueryString = $@"
@@ -1336,7 +1297,7 @@ namespace Sqllite_Library.Data
             }
             if (!includeArchived)
                 sqlQueryString += $@" WHERE project_archived=false";
-          
+
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1383,13 +1344,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
-                {
                     sqlCon.Close();
-                }
-                throw e;
+                throw;
             }
 
             return projects;
@@ -1433,13 +1392,11 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
-                {
                     sqlCon.Close();
-                }
-                throw e;
+                throw;
             }
 
             return projects;
@@ -1476,7 +1433,7 @@ namespace Sqllite_Library.Data
 			                    group by fk_videoevent_project
                                 ) as VECount on VECount.fk_videoevent_project = P.project_id
 					";
-            
+
             sqlQueryString += $@" WHERE project_archived={archivedFlag} and project_isdeleted = 0";
 
             SQLiteConnection sqlCon = null;
@@ -1513,18 +1470,16 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
-                {
                     sqlCon.Close();
-                }
-                throw e;
+                throw;
             }
 
             return projects;
         }
-        
+
 
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false)
         {
@@ -1588,15 +1543,15 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
         }
-        
+
 
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projectId, bool dependentDataFlag = true)
         {
@@ -1660,10 +1615,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1731,10 +1686,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1783,10 +1738,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
             return data;
         }
@@ -1799,14 +1754,14 @@ namespace Sqllite_Library.Data
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
-            
+
             string sqlQueryString = $@"SELECT * FROM cbv_videosegment ";
 
             if (issyncedFlag == false)
                 sqlQueryString += $@" where videosegment_issynced = 0 and videosegment_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
             else
                 sqlQueryString += $@" where videosegment_isdeleted = 0";
-            
+
             if (videoEventId > -1)
                 sqlQueryString += $@" and videosegment_id = {videoEventId};";
             SQLiteConnection sqlCon = null;
@@ -1842,10 +1797,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1859,7 +1814,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-           
+
             string sqlQueryString = $@"SELECT * FROM cbv_design ";
 
             if (issyncedFlag == false)
@@ -1904,15 +1859,15 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
         }
-        
+
         public static List<CBVNotes> GetNotes(int videoEventId, bool issyncedFlag = true)
         {
             var data = new List<CBVNotes>();
@@ -1967,10 +1922,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -1985,8 +1940,8 @@ namespace Sqllite_Library.Data
                 throw new Exception("Database is not present.");
 
             string sqlQueryString = $@"SELECT * FROM cbv_notes where notes_id = {notesId} and notes_isdeleted = 0 order by notes_index";
-            
-                sqlQueryString += $@"";
+
+            sqlQueryString += $@"";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -2024,10 +1979,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -2075,10 +2030,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
             return data;
         }
@@ -2137,10 +2092,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -2183,10 +2138,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -2227,10 +2182,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return data;
@@ -2269,10 +2224,10 @@ namespace Sqllite_Library.Data
                 sqlQuery.Dispose();
                 sqlCon.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
 
             return flag;
@@ -2326,10 +2281,10 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
         }
 
@@ -2360,10 +2315,10 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
         }
 
@@ -2393,13 +2348,11 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (null != sqlCon)
-                {
                     sqlCon.Close();
-                }
-                throw e;
+                throw;
             }
         }
 
@@ -2435,7 +2388,7 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
             }
         }
-        
+
         public static void UpdateRowsToVideoEvent(DataTable dataTable)
         {
             foreach (DataRow dr in dataTable.Rows)
@@ -2467,7 +2420,7 @@ namespace Sqllite_Library.Data
         {
             var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-            
+
             var updateQueryString = $@" UPDATE cbv_{table} 
                                         SET 
                                             {table}_issynced = {string.IsNullOrEmpty(ErrorMessage)},
@@ -2594,7 +2547,7 @@ namespace Sqllite_Library.Data
                 Console.WriteLine($@"cbv_locaudio table update status for id - {locaudio_id} result - {updateFlag}");
             }
         }
-        
+
 
         public static void UpdateRowsToFinalMp4(DataTable dataTable)
         {
@@ -2687,7 +2640,7 @@ namespace Sqllite_Library.Data
                                             videoevent_id = {videoeventId};
                                         ";
 
-            if(cascadeDelete == true)
+            if (cascadeDelete == true)
                 deleteQueryString = $@" update cbv_design
                                         Set 
                                            design_isdeleted = 1 
@@ -2782,10 +2735,10 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 sqlCon?.Close();
-                throw e;
+                throw;
             }
         }
         #endregion
@@ -2808,7 +2761,7 @@ namespace Sqllite_Library.Data
                                                 DO UPDATE 
                                                 SET
                                                     app_active = excluded.app_active;";
-                
+
                 var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
                 Console.WriteLine($@"cbv_app table upsert status for id - {app_id} result - {upsertFlag}");
             }
@@ -2892,7 +2845,7 @@ namespace Sqllite_Library.Data
         }
 
 
-        
+
 
         public static int UpsertRowsToProject(DataTable dataTable)
         {
