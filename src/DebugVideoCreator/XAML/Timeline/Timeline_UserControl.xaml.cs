@@ -431,6 +431,7 @@ namespace VideoCreator.XAML
 
         private void SaveTimeline(object sender, RoutedEventArgs e)
         {
+
             var addedEvents = _timelineGridControl.GetAddedTimelineEvents();
 
             foreach (var newEvent in addedEvents)
