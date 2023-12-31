@@ -8,7 +8,7 @@ using Timeline.UserControls.Models;
 
 namespace DebugVideoCreator.Models
 {
-    public class CalloutEvent
+    public class CalloutOrCloneEvent
     {
         public TimelineVideoEvent timelineVideoEvent;
         public string timeAtTheMoment;

@@ -31,11 +31,12 @@ namespace VideoCreator.XAML
         public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Success;
 
 
-        public event EventHandler<CalloutEvent> ContextMenu_AddCallout1_Clicked;
-        public event EventHandler<CalloutEvent> ContextMenu_AddCallout2_Clicked;
+        public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout1_Clicked;
+        public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler ContextMenu_Run_Clicked;
-        
 
+
+        public event EventHandler<CalloutOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -272,6 +273,9 @@ namespace VideoCreator.XAML
 
                 var MenuItem_EditEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_EditEvent");
                 MenuItem_EditEvent.IsEnabled = (selectedEvent != null);
+                
+                var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
+                MenuItem_CloneItems.IsEnabled = (selectedEvent != null);
             }
             else
             {
@@ -286,6 +290,10 @@ namespace VideoCreator.XAML
 
                 var MenuItem_EditEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_EditEvent");
                 MenuItem_EditEvent.IsEnabled = false;
+
+
+                var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
+                MenuItem_CloneItems.IsEnabled = false;
             }
         }
 
@@ -342,7 +350,7 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
-        private CalloutEvent CalloutPreprocessing()
+        private CalloutOrCloneEvent CalloutPreprocessing()
         {
             TimelineVideoEvent selectedEvent;
             var trackbarTime = TrackbarTimepicker.Get();
@@ -354,14 +362,14 @@ namespace VideoCreator.XAML
 
             if (trackbarTime == "00:00:00" && selectedEvent == null)
             {
-                var emptyPayload = new CalloutEvent
+                var emptyPayload = new CalloutOrCloneEvent
                 {
                     timelineVideoEvent = selectedEvent,
                     timeAtTheMoment = trackbarTime
                 };
                 return emptyPayload;
             }
-            var payload = new CalloutEvent
+            var payload = new CalloutOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
                 timeAtTheMoment = trackbarTime
@@ -466,8 +474,33 @@ namespace VideoCreator.XAML
 
 
 
+
         #endregion
 
+        private void CloneEvent_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
 
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+            if (trackbarEvents != null && trackbarEvents?.Count > 0)
+            {
+                MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarTime = TrackbarTimepicker.Get();
+
+            var payload = new CalloutOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+            
+        }
     }
 }

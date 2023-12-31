@@ -22,6 +22,7 @@
             <MenuItem Header="Edit Selected Event" x:Name="MenuItem_EditEvent" Click="EditSelectedEvent"></MenuItem>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False"></MenuItem>
             <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline"></MenuItem>
+            <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
         </ContextMenu>
     </UserControl.Resources>
     <ScrollViewer>

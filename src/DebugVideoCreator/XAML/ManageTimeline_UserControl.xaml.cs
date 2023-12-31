@@ -178,6 +178,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
+            TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
+
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
             NotesUserConrol.Visibility = Visibility.Visible;
@@ -200,7 +202,7 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
-
+        
         private void ResetAudioContextMenu()
         {
             if (ReadOnly)
@@ -523,6 +525,15 @@ namespace VideoCreator.XAML
 
         #endregion
 
+        #region == ContextMenu > CloneEvent ==
+
+        private void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
+        {
+            var videoEvent = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
+        }
+
+        #endregion
+
         #region == Design/Form Context Menu Option ==
 
         private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
@@ -543,7 +554,7 @@ namespace VideoCreator.XAML
             //    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutEvent calloutEvent)
+        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
             {
@@ -554,7 +565,7 @@ namespace VideoCreator.XAML
                 await HandleCalloutLogic(EnumTrack.CALLOUT1, null);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutEvent calloutEvent)
+        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
             {

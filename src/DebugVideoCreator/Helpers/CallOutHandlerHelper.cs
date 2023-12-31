@@ -31,7 +31,7 @@ namespace VideoCreator.Helpers
     {
         #region === Form/Design Functions ==
 
-        public static async Task<string> Preprocess(CalloutEvent calloutEvent)
+        public static async Task<string> Preprocess(CalloutOrCloneEvent calloutEvent)
         {
             var videoEvent = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
             var currentDirectory = Directory.GetCurrentDirectory();
