@@ -27,7 +27,7 @@ namespace VideoCreator.XAML
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
         public event EventHandler ContextMenu_AddVideoEvent_Success;
 
-        public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Clicked;
+        public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
         public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Success;
 
 
@@ -360,8 +360,8 @@ namespace VideoCreator.XAML
             else
                 selectedEvent = _timelineGridControl.GetSelectedEvent();
 
-            if (trackbarTime == "00:00:00" && selectedEvent == null)
-            {
+            if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)
+            { 
                 var emptyPayload = new CalloutOrCloneEvent
                 {
                     timelineVideoEvent = selectedEvent,
@@ -390,7 +390,8 @@ namespace VideoCreator.XAML
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, e);
+            var trackbarTime = TrackbarTimepicker.Get();
+            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
         }
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
@@ -401,6 +402,32 @@ namespace VideoCreator.XAML
         private void RunEvent_Click(object sender, RoutedEventArgs e)
         {
             ContextMenu_Run_Clicked.Invoke(sender, e);
+        }
+
+        private void CloneEvent_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+            if (trackbarEvents != null && trackbarEvents?.Count > 0)
+            {
+                MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarTime = TrackbarTimepicker.Get();
+
+            var payload = new CalloutOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+
         }
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
@@ -477,30 +504,6 @@ namespace VideoCreator.XAML
 
         #endregion
 
-        private void CloneEvent_Click(object sender, RoutedEventArgs e)
-        {
-            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            if (selectedEvent == null)
-            {
-                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-            if (trackbarEvents != null && trackbarEvents?.Count > 0)
-            {
-                MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var trackbarTime = TrackbarTimepicker.Get();
-
-            var payload = new CalloutOrCloneEvent
-            {
-                timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = trackbarTime
-            };
-            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
-            
-        }
+        
     }
 }

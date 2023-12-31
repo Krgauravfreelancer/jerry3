@@ -382,6 +382,7 @@ namespace VideoCreator.XAML
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+            LoaderHelper.ShowLoader(this, loader);
             LoaderHelper.ShowLoader(screenRecorderWindow, loader);
             var result = screenRecorderWindow.ShowDialog();
             if (result.HasValue)
@@ -483,9 +484,9 @@ namespace VideoCreator.XAML
 
 
         #region == ContextMenu > AddImageEvent > Using CB Library ==
-        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked(object sender, EventArgs e)
+        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
         {
-            var mediaLibraryUserControl = new MediaLibrary_UserControl(2, selectedProjectId, selectedServerProjectId, authApiViewModel);
+            var mediaLibraryUserControl = new MediaLibrary_UserControl(2, selectedProjectId, selectedServerProjectId, authApiViewModel, startTime);
             mediaLibraryUserControl.BtnUseAndSaveClickedEvent += MediaLibraryUserControl_BtnUseAndSaveClickedEvent;
             var window = new Window
             {
@@ -498,12 +499,13 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader);
             LoaderHelper.ShowLoader(window, loader);
             var result = window.ShowDialog();
-            if (result.HasValue)
+            if (result.HasValue && mediaLibraryUserControl.isEventAdded)
             {
                 TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(this, new EventArgs());
                 mediaLibraryUserControl.Dispose();
             }
-
+            else
+                LoaderHelper.HideLoader(this, loader);
         }
 
         private async void MediaLibraryUserControl_BtnUseAndSaveClickedEvent(DataTable dataTable)
@@ -527,9 +529,83 @@ namespace VideoCreator.XAML
 
         #region == ContextMenu > CloneEvent ==
 
-        private void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
+        private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
         {
-            var videoEvent = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
+            LoaderHelper.ShowLoader(this, loader);
+            int i = 1;
+            var showErrorMessage = false;
+
+            var message = string.Empty;
+
+            var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
+            var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedServerProjectId, -1);
+            var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
+            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedServerProjectId, authApiViewModel, payload.timeAtTheMoment);
+
+            if (videoEventResponse != null)
+            {
+                message += $"{i++}. Successfully cloned event to server !!" + Environment.NewLine;
+
+                var dtVideoEvent = CloneEventHandlerHelper.GetVideoEventDataTableServer(videoEventResponse, selectedProjectId);
+                var videoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dtVideoEvent, false);
+                var insertedVideoEventId = videoEventIds?.Count > 0 ? videoEventIds[0] : -1;
+                if (insertedVideoEventId > 0)
+                {
+                    message += $"{i++}. Successfully saved cloned videoevent to local DB !!" + Environment.NewLine;
+
+
+                    // Insert VideoSegment
+                    if (videoEventResponse.videosegment != null)
+                    {
+                        var dtVS = CloneEventHandlerHelper.GetVideoSegmentDataTableServer(blob, videoEventResponse.videosegment, insertedVideoEventId);
+                        var insertedVSId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVS, insertedVideoEventId);
+                        if (insertedVSId > 0)
+                            message += $"{i++}. Successfully saved cloned videosegment to local DB !!" + Environment.NewLine;
+                    }
+
+                    // Insert Design
+                    if (videoEventResponse.design?.Count > 0)
+                    {
+                        var dtDesigns = CloneEventHandlerHelper.GetDesignDataTableServer(videoEventResponse.design, insertedVideoEventId);
+                        var insertedDesignsIdLast = DataManagerSqlLite.InsertRowsToDesign(dtDesigns);
+                        if (insertedDesignsIdLast > 0)
+                            message += $"{i++}. Successfully saved cloned design [{dtDesigns?.Rows?.Count}] to local DB !!" + Environment.NewLine;
+                    }
+
+                    // Insert Notes
+                    if (videoEventResponse.notes?.Count > 0)
+                    {
+                        var dtNotes = CloneEventHandlerHelper.GetNotesDataTableServer(videoEventResponse.notes, insertedVideoEventId);
+                        var insertedNotesIdLast = DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+                        if (insertedNotesIdLast > 0)
+                            message += $"{i++}. Successfully saved cloned notes [{dtNotes?.Rows?.Count}] to local DB !!" + Environment.NewLine;
+                    }
+                }
+                else
+                {
+                    showErrorMessage = true || showErrorMessage;
+                    message += $"{i++}. Failed in saving cloned videoevent to local DB !!" + Environment.NewLine;
+                }
+            }
+            else
+            {
+                showErrorMessage = true || showErrorMessage;
+                message += $"{i++}. Failed in cloning event to server !!" + Environment.NewLine;
+            }
+            if (showErrorMessage)
+            {
+                LoaderHelper.HideLoader(this, loader);
+                MessageBox.Show($"Something went wrong, please see below for details {Environment.NewLine} {message}", "Failure !!!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                LoaderHelper.HideLoader(this, loader);
+                RefreshOrLoadComboBoxes();
+                TimelineUserConrol.ClearTimeline();
+                TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+                MessageBox.Show($"Successfully Cloned Event, please see below for details {Environment.NewLine}{Environment.NewLine}{message}", "Success !!!", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            LoaderHelper.HideLoader(this, loader);
         }
 
         #endregion

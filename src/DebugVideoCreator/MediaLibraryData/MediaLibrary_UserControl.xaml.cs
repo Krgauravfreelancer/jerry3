@@ -48,13 +48,16 @@ namespace VideoCreator.MediaLibraryData
         private int _trackId;
         public event Action<DataTable> BtnUseAndSaveClickedEvent;
         public MediaLibrary selectedImage;
+        public bool isEventAdded = false;
+        private string videoevent_start;
 
         public MediaLibrary_UserControl()
         {
             InitializeComponent();
+            videoevent_start = "00:00:00.000";
         }
 
-        public MediaLibrary_UserControl(int trackId, int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
+        public MediaLibrary_UserControl(int trackId, int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, string start = "00:00:00.000")
         {
             InitializeComponent();
 
@@ -63,6 +66,7 @@ namespace VideoCreator.MediaLibraryData
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
             loader.Visibility = Visibility.Visible;
+            videoevent_start = start;
             FetchAndFillTags();
             FillComboBoxes();
 
@@ -257,7 +261,7 @@ namespace VideoCreator.MediaLibraryData
             //row["videoevent_id"] = -1;
             row["fk_videoevent_project"] = selectedProjectId;
             row["videoevent_track"] = _trackId;
-            row["videoevent_start"] = "00:00:00.000";
+            row["videoevent_start"] = videoevent_start;
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_isdeleted"] = false;
@@ -274,6 +278,7 @@ namespace VideoCreator.MediaLibraryData
             dataTable.Rows.Add(row);
 
             BtnUseAndSaveClickedEvent.Invoke(dataTable);
+            isEventAdded = true;
             var myWindow = Window.GetWindow(this);
             myWindow.Close();
 
@@ -281,6 +286,7 @@ namespace VideoCreator.MediaLibraryData
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
+            isEventAdded = false;
             var myWindow = Window.GetWindow(this);
             myWindow.Close();
         }

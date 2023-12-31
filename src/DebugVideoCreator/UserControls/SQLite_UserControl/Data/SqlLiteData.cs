@@ -559,7 +559,10 @@ namespace Sqllite_Library.Data
             if (string.IsNullOrEmpty(modifyDate))
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_project"]));
+            var start = Convert.ToString(dr["videoevent_start"]);
+            if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
+                start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_project"]));
+
             var end = CalcNextEnd(start, Convert.ToInt32(dr["videoevent_duration"]));
 
             var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
