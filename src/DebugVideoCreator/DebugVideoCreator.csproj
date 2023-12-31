@@ -328,6 +328,7 @@
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
+    <Compile Include="Helpers\LogManagerHelper.cs" />
     <Compile Include="Helpers\LoaderHelper.cs" />
     <Compile Include="Helpers\CallOutHandlerHelper.cs" />
     <Compile Include="Helpers\MediaEventHandlerHelper.cs" />

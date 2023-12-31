@@ -29,11 +29,7 @@ namespace VideoCreator
 
         void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            //#if DEBUG   // In debug mode do not custom-handle the exception, let Visual Studio handle it
-            //            e.Handled = false;
-            //#else
             ShowUnhandledException(e);    
-            //#endif
         }
 
         void ShowUnhandledException(DispatcherUnhandledExceptionEventArgs e)

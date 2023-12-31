@@ -26,16 +26,18 @@ namespace VideoCreator.XAML
     {
         private readonly AuthAPIViewModel authApiViewModel;
         private List<ProjectModel> pendingProjects;
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        
         public MainWindow()
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
+            
         }
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
+            LogManagerHelper.WriteVerboseLog(this, "Starting the windows application !! Inside OnControlLoaded...");
             await Login();
             await SyncApp();
             await SyncMedia();
