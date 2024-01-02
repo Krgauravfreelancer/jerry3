@@ -24,6 +24,7 @@ using System.Windows.Markup;
 using VideoCreator.Auth;
 using VideoCreator.Loader;
 using VideoCreator.XAML;
+using System.Linq;
 
 namespace VideoCreator.Helpers
 {
@@ -33,19 +34,25 @@ namespace VideoCreator.Helpers
 
         public static async Task<string> Preprocess(CalloutOrCloneEvent calloutEvent)
         {
-            var videoEvent = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
-            var outputFolder = $"C:\\commercialBase\\ExtractedImages";
+            var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
 
-            Stream t = new FileStream(VideoFileName, FileMode.Create);
-            BinaryWriter b = new BinaryWriter(t);
-            b.Write(videoEvent[0].videosegment_data[0].videosegment_media);
-            t.Close();
+            var videoEvent = videoEvents.Where(x => x.fk_videoevent_media <= 2).FirstOrDefault();
+            if (videoEvent != null)
+            {
+                var currentDirectory = Directory.GetCurrentDirectory();
+                var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
+                var outputFolder = $"C:\\commercialBase\\ExtractedImages";
 
-            var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
-            var convertedImage = await video2image.ConvertVideoToImage();
-            return convertedImage;
+                Stream t = new FileStream(VideoFileName, FileMode.Create);
+                BinaryWriter b = new BinaryWriter(t);
+                b.Write(videoEvent.videosegment_data[0].videosegment_media);
+                t.Close();
+
+                var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
+                var convertedImage = await video2image.ConvertVideoToImage();
+                return convertedImage;
+            }
+            return null;
         }
 
         public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)

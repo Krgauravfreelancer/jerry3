@@ -632,7 +632,7 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
-            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
+            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
                 await HandleCalloutLogic(EnumTrack.CALLOUT1, convertedImage);
@@ -643,7 +643,7 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
-            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00")
+            if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
                 await HandleCalloutLogic(EnumTrack.CALLOUT2, convertedImage);

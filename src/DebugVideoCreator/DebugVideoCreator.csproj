@@ -119,8 +119,16 @@
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="designer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\designer.dll</HintPath>
+    </Reference>
     <Reference Include="DesignImager">
       <HintPath>Libraries\DesignImager.dll</HintPath>
+    </Reference>
+    <Reference Include="DesignViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\DesignViewer.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
@@ -274,9 +282,6 @@
     </Reference>
     <Reference Include="TimePicker_UserControl">
       <HintPath>Libraries\TimePicker_UserControl.dll</HintPath>
-    </Reference>
-    <Reference Include="VideoToImage_UserControl">
-      <HintPath>Libraries\VideoToImage_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="VoiceScripter_UserControl">
       <HintPath>Libraries\VoiceScripter_UserControl.dll</HintPath>
@@ -555,14 +560,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="UserControls\Designer-UserControl\designer\designer.csproj">
-      <Project>{e7717082-151e-4ce2-96f7-fff228ea8854}</Project>
-      <Name>designer</Name>
-    </ProjectReference>
-    <ProjectReference Include="UserControls\Designer-UserControl\DesignViewer\DesignViewer.csproj">
-      <Project>{81e1ac70-ce77-49e9-8261-8c094c4ac1c3}</Project>
-      <Name>DesignViewer</Name>
-    </ProjectReference>
     <ProjectReference Include="UserControls\ServerApiCall_UserControl\ServerApiCall_UserControl.csproj">
       <Project>{67adc641-ec67-44cf-a9ad-2444a90be6d4}</Project>
       <Name>ServerApiCall_UserControl</Name>
@@ -570,6 +567,10 @@
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
+      <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
+      <Name>VideoToImage_UserControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
