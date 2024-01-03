@@ -9,12 +9,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Timeline.UserControls.Config;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
-
 namespace VideoCreator.XAML
 {
     public partial class Timeline_UserControl : UserControl
@@ -219,13 +219,13 @@ namespace VideoCreator.XAML
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
                 listView_trackbarEvents.ItemsSource = trackbarEvents;
-
+                Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
                 {
                     timeAtTheMoment = trackBarPosition.ToString("HH:mm:ss.fff"),
                     videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList()
                 };
-
+                
                 TrackbarMouse_Moved.Invoke(sender, payload);
             };
 

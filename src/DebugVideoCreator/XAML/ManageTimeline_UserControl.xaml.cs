@@ -54,6 +54,7 @@ namespace VideoCreator.XAML
         private readonly DispatcherTimer dispatcherTimer;
         private readonly DispatcherTimer dispatcherTimerToCheckIfUnSyncDataPresent;
         private bool isBackgroundProcessRunning = false;
+        private TrackbarMouseMoveEvent mouseEventToProcess;
 
         public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
@@ -499,7 +500,8 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
         {
-            PreviewUserControl.Process(e);
+            mouseEventToProcess = e;
+            PreviewUserControl.Process(mouseEventToProcess);
         }
 
         private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)

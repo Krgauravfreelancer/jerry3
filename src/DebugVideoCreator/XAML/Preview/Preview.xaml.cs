@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -24,28 +25,75 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class Preview : UserControl
     {
+        string imageOutputFolder = $"{Directory.GetCurrentDirectory()}\\ExtractedImages";
+        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Media";
+        public bool isProcessing = false;
         public Preview()
         {
             InitializeComponent();
+            CleanUp();
         }
 
-        public void Process(TrackbarMouseMoveEvent mouseMovedEvent)
+        private void CleanUp()
         {
+            if (Directory.Exists(imageOutputFolder))
+            {
+                var diImage = new DirectoryInfo(imageOutputFolder);
+                foreach (FileInfo file in diImage?.GetFiles())
+                    file.Delete();
+                foreach (DirectoryInfo dir in diImage?.GetDirectories())
+                    dir.Delete(true);
+            }
+
+            if (Directory.Exists(videoOutputFolder))
+            {
+                var diVideo = new DirectoryInfo(videoOutputFolder);
+                foreach (FileInfo file in diVideo?.GetFiles())
+                    file.Delete();
+                foreach (DirectoryInfo dir in diVideo?.GetDirectories())
+                    dir.Delete(true);
+            }
+        }
+
+        public async void Process(TrackbarMouseMoveEvent mouseMovedEvent)
+        {
+            isProcessing = true;
+            LoaderHelper.ShowLoader(this, loader);
+            //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
+
             var bmps = new List<System.Drawing.Bitmap>();
             foreach (var id in mouseMovedEvent.videoeventIds)
             {
                 var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true).FirstOrDefault();
-                if (videoevent != null && (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4))
+                if (videoevent != null) 
                 {
-                    //Image case
-                    var imageBytes = videoevent?.videosegment_data[0]?.videosegment_media;
-                    if (imageBytes != null)
+                    if (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4)
                     {
-                        using (var ms = new MemoryStream(imageBytes))
+                        //Image case
+                        var imageBytes = videoevent?.videosegment_data[0]?.videosegment_media;
+                        if (imageBytes != null)
                         {
-                            var bmp = new Bitmap(ms);
-                            bmps.Add(bmp);
+                            using (var ms = new MemoryStream(imageBytes))
+                            {
+                                var bmp = new Bitmap(ms);
+                                bmps.Add(bmp);
+                            }
                         }
+                    }
+                    else
+                    {
+                        var VideoFileName = $"{videoOutputFolder}\\video_{videoevent?.videoevent_id}.mp4";
+                        if (!File.Exists(VideoFileName))
+                        {
+                            Stream t = new FileStream(VideoFileName, FileMode.Create);
+                            BinaryWriter b = new BinaryWriter(t);
+                            b.Write(videoevent.videosegment_data[0].videosegment_media);
+                            t.Close();
+                        }
+                        var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder);
+                        var convertedImage = await video2image.ConvertVideoToImage();
+                        var bmp = new Bitmap(convertedImage);
+                        bmps.Add(bmp);
                     }
                 }
             }
@@ -54,7 +102,9 @@ namespace VideoCreator.XAML
 
             if (finalImage != null)
                 previewImage.Source = Convert(finalImage);
-            // finalImage.Dispose();
+             finalImage.Dispose();
+            LoaderHelper.HideLoader(this, loader);
+            isProcessing = false;
         }
 
         private static System.Drawing.Bitmap CombineBitmap(List<System.Drawing.Bitmap> images)
