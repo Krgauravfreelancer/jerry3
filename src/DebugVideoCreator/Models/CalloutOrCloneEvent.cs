@@ -13,4 +13,11 @@ namespace DebugVideoCreator.Models
         public TimelineVideoEvent timelineVideoEvent;
         public string timeAtTheMoment;
     }
+
+
+    public class TrackbarMouseMoveEvent
+    {
+        public List<int> videoeventIds;
+        public string timeAtTheMoment;
+    }
 }

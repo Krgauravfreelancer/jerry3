@@ -33,6 +33,9 @@ namespace VideoCreator.XAML
 
         public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout2_Clicked;
+
+        public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
+
         public event EventHandler ContextMenu_Run_Clicked;
 
 
@@ -216,6 +219,14 @@ namespace VideoCreator.XAML
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
                 listView_trackbarEvents.ItemsSource = trackbarEvents;
+
+                var payload = new TrackbarMouseMoveEvent
+                {
+                    timeAtTheMoment = trackBarPosition.ToString("HH:mm:ss.fff"),
+                    videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList()
+                };
+
+                TrackbarMouse_Moved.Invoke(sender, payload);
             };
 
 

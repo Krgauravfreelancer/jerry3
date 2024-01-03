@@ -26,6 +26,10 @@ using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using DebugVideoCreator.Models;
 using System.IO;
 using VideoCreator.MediaLibraryData;
+using System.Linq;
+using System.Windows.Media;
+using ServerApiCall_UserControl.DTO.MediaLibraryModels;
+using System.Drawing;
 
 namespace VideoCreator.XAML
 {
@@ -161,7 +165,7 @@ namespace VideoCreator.XAML
         private void InitializeChildren()
         {
             popup = new PopupWindow();
-            ResetAudioMenuOptions();
+            //ResetAudioMenuOptions();
             RefreshOrLoadComboBoxes();
 
             //Timeline
@@ -177,8 +181,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
-
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
+            TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
@@ -188,8 +192,8 @@ namespace VideoCreator.XAML
             // Reload Control
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-            AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
-            ResetAudioContextMenu();
+            //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
+            //ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
             NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
             NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
@@ -203,27 +207,6 @@ namespace VideoCreator.XAML
         }
 
         
-        private void ResetAudioContextMenu()
-        {
-            if (ReadOnly)
-            {
-                var contextMenu = AudioUserConrol.ContextMenu as ContextMenu;
-                for (int i = 0; i < contextMenu.Items.Count; i++)
-                {
-                    MenuItem item = contextMenu.Items[i] as MenuItem;
-                    if (item != null)
-                    {
-                        if (item?.Name != null && item?.Name == "MenuItem_Run")
-                        {
-                            item.IsEnabled = true; //.Visibility = Visibility.Hidden
-                        }
-                        else
-                            item.IsEnabled = false;
-                    }
-                }
-            }
-        }
-
 
         private async void checkIfProjectIsLocked()
         {
@@ -329,24 +312,9 @@ namespace VideoCreator.XAML
             //NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
         }
 
-        private void ResetAudioMenuOptions()
-        {
-            voiceAvgCount = DataManagerSqlLite.GetVoiceAverageCount();
-            if (voiceAvgCount > 0)
-            {
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = true;
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Re-Calculate Voice Average";
-            }
-            else
-            {
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = false;
-                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Calculate Voice Average";
-            }
-        }
-
         private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
         {
-            ResetAudio();
+            //ResetAudio();
         }
 
 
@@ -529,6 +497,86 @@ namespace VideoCreator.XAML
 
         #region == ContextMenu > CloneEvent ==
 
+        private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
+        {
+            var bmps = new List<System.Drawing.Bitmap>();
+            foreach(var id in e.videoeventIds)
+            {
+                var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true).FirstOrDefault();
+                if(videoevent != null  && (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4))
+                {
+                    //Image case
+                    var imageBytes = videoevent?.videosegment_data[0]?.videosegment_media;
+                    if (imageBytes != null)
+                    {
+                        using (var ms = new MemoryStream(imageBytes))
+                        {
+                            var bmp = new Bitmap(ms);
+                            bmps.Add(bmp);
+                        }
+                    }
+                }
+            }
+            Console.WriteLine($"Time - {e.timeAtTheMoment} and events - {string.Join(", ", e.videoeventIds)} and blobs Found - {bmps?.Count}");
+            var finalImage = CombineBitmap(bmps); 
+
+            if(finalImage != null)
+            {
+                PreviewUserControl?.setImageSource(finalImage);
+            }
+
+            // finalImage.Dispose();
+        }
+
+        public static System.Drawing.Bitmap CombineBitmap(List<System.Drawing.Bitmap> images)
+        {
+            //read all images into memory
+            //List<System.Drawing.Bitmap> images = new List<System.Drawing.Bitmap>();
+            System.Drawing.Bitmap finalImage = null;
+
+            try
+            {
+                int width = 1920;
+                int height = 1080;
+
+                //create a bitmap to hold the combined image
+                finalImage = new System.Drawing.Bitmap(width, height);
+
+                //get a graphics object from the image so we can draw on it
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(finalImage))
+                {
+                    //set background color
+                    g.Clear(System.Drawing.Color.White);
+
+                    //go through each image and draw it on the final image
+                    int offset = 0;
+                    foreach (System.Drawing.Bitmap image in images)
+                    {
+                        g.DrawImage(image,
+                          new System.Drawing.Rectangle(offset, 0, image.Width, image.Height));
+                        //offset += image.Width;
+                    }
+                }
+
+                return finalImage;
+            }
+            catch (Exception ex)
+            {
+                if (finalImage != null)
+                    finalImage.Dispose();
+
+                throw ex;
+            }
+            finally
+            {
+                //clean up memory
+                foreach (System.Drawing.Bitmap image in images)
+                {
+                    image.Dispose();
+                }
+            }
+        }
+
         private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -658,6 +706,64 @@ namespace VideoCreator.XAML
 
         #region == Audio Context Menu ==
 
+        /*
+        
+        private void ResetAudio()
+        {
+            //AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
+            //((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
+
+            //if (selectedVideoEvent?.fk_videoevent_media == 3)
+            //{
+            //    AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
+            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
+            //}
+            //else
+            //{
+            //    //AudioUserConrol.LoadSelectedAudio(null);
+            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
+
+            //}
+        }
+        
+        private void ResetAudioMenuOptions()
+        {
+            voiceAvgCount = DataManagerSqlLite.GetVoiceAverageCount();
+            if (voiceAvgCount > 0)
+            {
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = true;
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Re-Calculate Voice Average";
+            }
+            else
+            {
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[1]).IsEnabled = false;
+                ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[0]).Header = "Calculate Voice Average";
+            }
+        }
+        
+        private void ResetAudioContextMenu()
+        {
+            if (ReadOnly)
+            {
+                var contextMenu = AudioUserConrol.ContextMenu as ContextMenu;
+                for (int i = 0; i < contextMenu.Items.Count; i++)
+                {
+                    MenuItem item = contextMenu.Items[i] as MenuItem;
+                    if (item != null)
+                    {
+                        if (item?.Name != null && item?.Name == "MenuItem_Run")
+                        {
+                            item.IsEnabled = true; //.Visibility = Visibility.Hidden
+                        }
+                        else
+                            item.IsEnabled = false;
+                    }
+                }
+            }
+        }
+
+
+        
         private void ContextMenuAddAudioFromFileClickEvent(object sender, RoutedEventArgs e)
         {
             var window = AudioUserConrol.GetCreateEventWindow(selectedProjectId);
@@ -933,8 +1039,6 @@ namespace VideoCreator.XAML
             return dataTable;
         }
 
-
-
         private void SaveAudioToDatabase(object sender, RoutedEventArgs e)
         {
 
@@ -1023,7 +1127,7 @@ namespace VideoCreator.XAML
             DataManagerSqlLite.UpdateRowsToVoiceAverage(dataTable);
             return true;
         }
-
+        */
         #endregion 
 
 
@@ -1056,7 +1160,7 @@ namespace VideoCreator.XAML
             {
                 selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
                 NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
-                ResetAudio();
+                //ResetAudio();
             }
         }
 
@@ -1177,24 +1281,6 @@ namespace VideoCreator.XAML
             DataManagerSqlLite.InsertRowsToNotes(dtNotes);
         }
 
-
-        private void ResetAudio()
-        {
-            AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-            ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
-
-            //if (selectedVideoEvent?.fk_videoevent_media == 3)
-            //{
-            //    AudioUserConrol.LoadSelectedAudio(selectedVideoEvent);
-            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = true;
-            //}
-            //else
-            //{
-            //    //AudioUserConrol.LoadSelectedAudio(null);
-            //    ((Windows.MenuItem)AudioUserConrol.ContextMenu.Items[3]).IsEnabled = false;
-
-            //}
-        }
 
         public void Dispose()
         {
