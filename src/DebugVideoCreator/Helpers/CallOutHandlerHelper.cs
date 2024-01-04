@@ -34,12 +34,12 @@ namespace VideoCreator.Helpers
 
         public static async Task<string> Preprocess(CalloutOrCloneEvent calloutEvent)
         {
+            var currentDirectory = Directory.GetCurrentDirectory();
             var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
 
-            var videoEvent = videoEvents.Where(x => x.fk_videoevent_media <= 2).FirstOrDefault();
+            var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {
-                var currentDirectory = Directory.GetCurrentDirectory();
                 var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
                 var outputFolder = $"C:\\commercialBase\\ExtractedImages";
 
@@ -51,6 +51,19 @@ namespace VideoCreator.Helpers
                 var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
                 var convertedImage = await video2image.ConvertVideoToImage();
                 return convertedImage;
+            }
+
+
+            var imageEvent = videoEvents.Where(x => x.fk_videoevent_media == 1 || x.fk_videoevent_media == 4).FirstOrDefault();
+            if (imageEvent != null)
+            {
+                var imagePath = $"C:\\commercialBase\\ExtractedImages\\image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
+
+                Stream t = new FileStream(imagePath, FileMode.Create);
+                BinaryWriter b = new BinaryWriter(t);
+                b.Write(imageEvent.videosegment_data[0].videosegment_media);
+                t.Close();
+                return imagePath;
             }
             return null;
         }
@@ -78,6 +91,7 @@ namespace VideoCreator.Helpers
             {
                 if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
+                    LoaderHelper.ShowLoader(uc, loader);
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
                         // We need to insert the Data to server here and once it is success, then to local DB
@@ -115,7 +129,7 @@ namespace VideoCreator.Helpers
         public static async Task<bool> CallOut_Step2(int videoeventId, int videoevent_serverid, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader)
         {
             
-
+            
             var designImagerUserControl = new DesignImager_UserControl(videoeventId);
             var window = new Window
             {
@@ -124,6 +138,7 @@ namespace VideoCreator.Helpers
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
+            LoaderHelper.HideLoader(uc, loader);
             var result = window.ShowDialog();
             if (result.HasValue && designImagerUserControl.dtVideoSegment != null && designImagerUserControl.dtVideoSegment.Rows.Count > 0)
             {
@@ -138,14 +153,7 @@ namespace VideoCreator.Helpers
                     var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
                     var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
                     if (insertedVideoSegmentId > 0)
-                    {
                         return true;
-
-                    }
-                }
-                else
-                {
-
                 }
             }
             return false;

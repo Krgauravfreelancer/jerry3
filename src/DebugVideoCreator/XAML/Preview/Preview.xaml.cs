@@ -65,7 +65,7 @@ namespace VideoCreator.XAML
             foreach (var id in mouseMovedEvent.videoeventIds)
             {
                 var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true).FirstOrDefault();
-                if (videoevent != null) 
+                if (videoevent != null && videoevent?.videosegment_data?.Count > 0) 
                 {
                     if (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4)
                     {

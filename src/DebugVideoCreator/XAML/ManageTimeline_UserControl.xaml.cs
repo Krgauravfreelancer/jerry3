@@ -177,6 +177,7 @@ namespace VideoCreator.XAML
 
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Success += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success;
+            TimelineUserConrol.ContextMenu_AddCallOut_Success += TimelineUserConrol_ContextMenu_AddCallOut_Success;
 
 
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
@@ -207,7 +208,14 @@ namespace VideoCreator.XAML
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
         }
 
-        
+        private void Refresh()
+        {
+            RefreshOrLoadComboBoxes();
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
+            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+        }
+
 
         private async void checkIfProjectIsLocked()
         {
@@ -403,11 +411,7 @@ namespace VideoCreator.XAML
                 var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
                 if (insertedVideoSegmentId > 0)
                 {
-                    RefreshOrLoadComboBoxes();
-                    TimelineUserConrol.ClearTimeline();
-                    TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                    //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                    //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    Refresh();
                     MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -428,11 +432,7 @@ namespace VideoCreator.XAML
                 var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, videoEventId);
                 if (insertedVideoSegmentId > 0)
                 {
-                    RefreshOrLoadComboBoxes();
-                    TimelineUserConrol.ClearTimeline();
-                    TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                    //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                    //NotesUserConrol.SetSelectedProjectId(selectedProjectId, selectedVideoEventId);
+                    Refresh();
                     MessageBox.Show($"videosegment record saved locally, background process will try to sync at an interval of {RetryIntervalInSeconds / 60} min.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -444,11 +444,17 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Success(object sender, EventArgs e)
         {
-            RefreshOrLoadComboBoxes();
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+            Refresh();
         }
+
+        private void TimelineUserConrol_ContextMenu_AddCallOut_Success(object sender, EventArgs e)
+        {
+            Refresh();
+        }
+
+        
+
+        
         #endregion
 
 
@@ -487,10 +493,7 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(object sender, EventArgs e)
         {
-            RefreshOrLoadComboBoxes();
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-            //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+            Refresh();
         }
 
 
@@ -575,9 +578,7 @@ namespace VideoCreator.XAML
             else
             {
                 LoaderHelper.HideLoader(this, loader);
-                RefreshOrLoadComboBoxes();
-                TimelineUserConrol.ClearTimeline();
-                TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+                Refresh();
                 MessageBox.Show($"Successfully Cloned Event, please see below for details {Environment.NewLine}{Environment.NewLine}{message}", "Success !!!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             LoaderHelper.HideLoader(this, loader);
@@ -589,13 +590,10 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath );
             if (isSuccess)
             {
-                RefreshOrLoadComboBoxes();
-                TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
-                //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-                NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+                TimelineUserConrol.InvokeSuccess();
                 LoaderHelper.HideLoader(this, loader);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
