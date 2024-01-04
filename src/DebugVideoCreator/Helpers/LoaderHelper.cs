@@ -39,16 +39,18 @@ namespace VideoCreator.Helpers
             mywindow.IsEnabled = false;
         }
 
-        public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader)
+        public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader, bool disableParentWindow = true)
         {
             if (usercontrol == null) 
                 return;
+            
             var mywindow = Window.GetWindow(usercontrol);
             if (mywindow == null)
                 return;
 
             loader.Visibility = Visibility.Visible;
-            mywindow.IsEnabled = false;
+            if (disableParentWindow)
+                mywindow.IsEnabled = false;
         }
 
         public static void HideLoader(Window mywindow, LoadingAnimation loader)

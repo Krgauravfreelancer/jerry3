@@ -74,7 +74,7 @@ namespace VideoCreator.XAML
         public async void Process(TrackbarMouseMoveEvent mouseMovedEvent)
         {
             isProcessing = true;
-            LoaderHelper.ShowLoader(this, loader);
+            LoaderHelper.ShowLoader(this, loader, false);
             //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
 
             var bmps = new List<System.Drawing.Bitmap>();
