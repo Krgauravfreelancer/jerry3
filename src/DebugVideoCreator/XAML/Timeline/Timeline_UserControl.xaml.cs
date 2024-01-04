@@ -42,6 +42,8 @@ namespace VideoCreator.XAML
 
         public event EventHandler<CalloutOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
+        public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
+
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
         private bool ReadOnly;
@@ -207,7 +209,9 @@ namespace VideoCreator.XAML
             TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
             {
                 HasData = _timelineGridControl.HasData();
-                ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
+                var selectedEvent = _timelineGridControl.GetSelectedEvent();
+                ResetMenuItems(HasData, selectedEvent);
+                VideoEventSelectionChanged.Invoke(sender, selectedEvent);
             };
 
             /// use this event handler when the trackbar was moved by mouse action
@@ -215,11 +219,11 @@ namespace VideoCreator.XAML
             {
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
-                TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss.fff"));
+                //TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss.fff"));
 
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-                listView_trackbarEvents.ItemsSource = trackbarEvents;
+                //listView_trackbarEvents.ItemsSource = trackbarEvents;
                 Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
                 {
@@ -259,8 +263,8 @@ namespace VideoCreator.XAML
             try
             {
                 //var timeInputDate = (DateTime)TrackbarTimepicker.Value;
-                var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss.fff", null);
-                _timelineGridControl.MoveTrackbar(timeInputDate);
+                //var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss.fff", null);
+                //_timelineGridControl.MoveTrackbar(timeInputDate);
             }
             catch
             {
@@ -277,8 +281,8 @@ namespace VideoCreator.XAML
                 var MenuItem_ClearAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ClearAllTimelines");
                 MenuItem_ClearAllTimelines.IsEnabled = true;
 
-                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                MenuItem_SaveAllTimelines.IsEnabled = true;
+                //var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+                //MenuItem_SaveAllTimelines.IsEnabled = true;
 
                 var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
                 MenuItem_DeleteEvent.IsEnabled = (selectedEvent != null);
@@ -294,8 +298,8 @@ namespace VideoCreator.XAML
                 var MenuItem_ClearAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ClearAllTimelines");
                 MenuItem_ClearAllTimelines.IsEnabled = false;
 
-                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                MenuItem_SaveAllTimelines.IsEnabled = false;
+                //var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+                //MenuItem_SaveAllTimelines.IsEnabled = false;
 
                 var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
                 MenuItem_DeleteEvent.IsEnabled = false;
@@ -365,7 +369,8 @@ namespace VideoCreator.XAML
         private CalloutOrCloneEvent CalloutPreprocessing()
         {
             TimelineVideoEvent selectedEvent;
-            var trackbarTime = TrackbarTimepicker.Get();
+            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
             var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
             if (trackbarEvents != null && trackbarEvents?.Count > 0)
                 selectedEvent = trackbarEvents[0];
@@ -408,7 +413,8 @@ namespace VideoCreator.XAML
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TrackbarTimepicker.Get();
+            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
             ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
         }
 
@@ -437,8 +443,8 @@ namespace VideoCreator.XAML
                 MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var trackbarTime = TrackbarTimepicker.Get();
-
+            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
             var payload = new CalloutOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
@@ -458,7 +464,7 @@ namespace VideoCreator.XAML
         private void ClearTimelines(object sender, RoutedEventArgs e)
         {
             _timelineGridControl.ClearTimeline();
-            listView_trackbarEvents.ItemsSource = null;
+            //listView_trackbarEvents.ItemsSource = null;
         }
 
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
@@ -473,13 +479,13 @@ namespace VideoCreator.XAML
 
         private void GetSelectedEvent(object sender, RoutedEventArgs e)
         {
-            var selectedEvent = _timelineGridControl.GetSelectedEvent();
+            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
 
-            if (selectedEvent == null)
-                lblSelectedEvent.Content = "No selected event";
+            //if (selectedEvent == null)
+            //    lblSelectedEvent.Content = "No selected event";
 
-            else
-                lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
+            //else
+            //    lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
         }
 
         private void SaveTimeline(object sender, RoutedEventArgs e)

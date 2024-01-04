@@ -1,5 +1,7 @@
 ﻿using DebugVideoCreator.Models;
+using GalaSoft.MvvmLight.Messaging;
 using Sqllite_Library.Business;
+using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -32,6 +34,20 @@ namespace VideoCreator.XAML
         {
             InitializeComponent();
             CleanUp();
+            FillResolutionCombo();
+        }
+
+        private void FillResolutionCombo()
+        {
+            cmbResolution.Items.Clear();
+            cmbResolution.Items.Add("Resolution | 4K | 3840:2160");
+            cmbResolution.Items.Add("Resolution | Full HD | 1920:1080");
+            cmbResolution.Items.Add("Resolution | 1/2 | 960:540");
+            cmbResolution.Items.Add("Resolution | 1/4 | 430:270");
+            cmbResolution.Items.Add("Resolution | 1/6 | 320:180");
+            cmbResolution.Items.Add("Resolution | 1/8 | 215:125");
+            cmbResolution.Items.Add("Resolution | 1/10 | 192:108");
+            cmbResolution.SelectedIndex = 4;
         }
 
         private void CleanUp()
@@ -76,6 +92,8 @@ namespace VideoCreator.XAML
                             using (var ms = new MemoryStream(imageBytes))
                             {
                                 var bmp = new Bitmap(ms);
+                                
+                                
                                 bmps.Add(bmp);
                             }
                         }
@@ -91,7 +109,7 @@ namespace VideoCreator.XAML
                             t.Close();
                         }
                         var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder);
-                        var convertedImage = await video2image.ConvertVideoToImage();
+                        var convertedImage = await video2image.ConvertVideoToImage(true);
                         var bmp = new Bitmap(convertedImage);
                         bmps.Add(bmp);
                     }
@@ -106,8 +124,9 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
             isProcessing = false;
         }
+        
 
-        private static System.Drawing.Bitmap CombineBitmap(List<System.Drawing.Bitmap> images)
+        private System.Drawing.Bitmap CombineBitmap(List<System.Drawing.Bitmap> images)
         {
             //read all images into memory
             //List<System.Drawing.Bitmap> images = new List<System.Drawing.Bitmap>();
@@ -115,8 +134,39 @@ namespace VideoCreator.XAML
 
             try
             {
-                int width = 1920;
-                int height = 1080;
+                int width = 320;
+                int height = 180;
+                if (cmbResolution.SelectedIndex == 0)
+                {
+                    width = 3840;
+                    height = 2160;
+                }
+                else if (cmbResolution.SelectedIndex == 1)
+                {
+                    width = 1920;
+                    height = 1080;
+                }
+                else if (cmbResolution.SelectedIndex == 2)
+                {
+                    width = 960;
+                    height = 540;
+                }
+                else if (cmbResolution.SelectedIndex == 3)
+                {
+                    width = 430; 
+                    height = 270;
+                }
+                else if (cmbResolution.SelectedIndex == 5)
+                {
+                    width = 215;
+                    height = 125;
+                }
+                else if (cmbResolution.SelectedIndex == 6)
+                {
+                    width = 192;
+                    height = 108;
+                }
+
 
                 //create a bitmap to hold the combined image
                 finalImage = new System.Drawing.Bitmap(width, height);
@@ -124,15 +174,18 @@ namespace VideoCreator.XAML
                 //get a graphics object from the image so we can draw on it
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(finalImage))
                 {
+
+
                     //set background color
                     g.Clear(System.Drawing.Color.White);
 
                     //go through each image and draw it on the final image
                     int offset = 0;
-                    foreach (System.Drawing.Bitmap image in images)
+                    foreach (System.Drawing.Bitmap bmp in images)
                     {
-                        g.DrawImage(image,
-                          new System.Drawing.Rectangle(offset, 0, image.Width, image.Height));
+                        System.Drawing.Image.GetThumbnailImageAbort myCallback = new System.Drawing.Image.GetThumbnailImageAbort(() => false);
+                        System.Drawing.Image myThumbnail = bmp.GetThumbnailImage(width, height, myCallback, IntPtr.Zero);
+                        g.DrawImage(myThumbnail, new System.Drawing.Rectangle(offset, 0, width, height));
                         //offset += image.Width;
                     }
                 }

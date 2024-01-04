@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerApiCall_UserControl", "UserControls\ServerApiCall_UserControl\ServerApiCall_UserControl.csproj", "{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoToImage_UserControl", "UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj", "{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,18 @@ Global
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Release|ARM64.Build.0 = Release|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Release|x64.ActiveCfg = Release|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Release|x64.Build.0 = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Debug|x64.Build.0 = Debug|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|ARM64.Build.0 = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.ActiveCfg = Release|Any CPU
+		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

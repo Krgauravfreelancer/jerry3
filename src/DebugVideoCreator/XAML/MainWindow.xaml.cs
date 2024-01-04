@@ -47,7 +47,6 @@ namespace VideoCreator.XAML
 
             rbWIP.IsChecked = true;
             InitialiseAndRefreshScreen();
-            SetWelcomeMessage();
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -114,6 +113,7 @@ namespace VideoCreator.XAML
         {
             await authApiViewModel.ExecuteLoginAsync();
             ResetTokenOrError();
+            SetWelcomeMessage(false);
         }
         private async void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
@@ -124,6 +124,8 @@ namespace VideoCreator.XAML
         {
             await authApiViewModel.ExecuteLogoutAsync();
             ResetTokenOrError();
+            SetWelcomeMessage(true);
+            rbWIP_Click(null, null);
         }
 
         private void ResetTokenOrError()
@@ -132,25 +134,25 @@ namespace VideoCreator.XAML
             {
                 txtError.Text = authApiViewModel.GetError();
                 txtError.Foreground = Brushes.Red;
-                btnLogin.IsEnabled = true;
+                btnLogin.Visibility = Visibility.Visible;
             }
             else
             {
                 txtError.Text = "";
                 txtError.Foreground = Brushes.Green;
-                btnLogin.IsEnabled = false;
+                btnLogin.Visibility = Visibility.Hidden;
             }
 
             if (!string.IsNullOrEmpty(authApiViewModel.GetToken()))
             {
-                txtToken.Text = "Logged In with Token - " + authApiViewModel.GetToken();
-                txtToken.Foreground = Brushes.Green;
+                //txtToken.Text = "Logged In with Token - " + authApiViewModel.GetToken();
+                //txtToken.Foreground = Brushes.Green;
                 btnLogout.IsEnabled = true;
             }
             else
             {
-                txtToken.Text = "";
-                txtToken.Foreground = Brushes.Red;
+                //txtToken.Text = "";
+                //txtToken.Foreground = Brushes.Red;
                 btnLogout.IsEnabled = false;
             }
         }
@@ -164,11 +166,12 @@ namespace VideoCreator.XAML
             MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void SetWelcomeMessage()
+        private void SetWelcomeMessage(bool isLogOut = false)
         {
+            if(isLogOut) { this.Title = "Video Creator"; return;  }
             var userId = authApiViewModel.GetLoggedInUser();
             if (string.IsNullOrEmpty(userId))
-                this.Title = "Video Creator, Not Logged in - Username not present in registry !!!";
+                this.Title = "Video Creator";
             else
             {
                 this.Title = $"Video Creator, Logged in as - {userId}";
@@ -274,19 +277,6 @@ namespace VideoCreator.XAML
             }
         }
         
-        private void BtnManageAudio_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        private void BtnManageVideo_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-        private void BtnDownloadProject_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Coming Soon !!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
         private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
         {
             InitialiseDbHelper.PopulateLOCAudioTable();

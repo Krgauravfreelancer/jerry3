@@ -23,7 +23,6 @@ namespace ServerApiCall_UserControl
         {
             using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
             {
-                response.EnsureSuccessStatusCode();
                 if (response.IsSuccessStatusCode)
                 {
                     var result = await response.Content.ReadAsStringAsync();

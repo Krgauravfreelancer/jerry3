@@ -283,10 +283,6 @@
     <Reference Include="TimePicker_UserControl">
       <HintPath>Libraries\TimePicker_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="VideoToImage_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\VideoToImage_UserControl.dll</HintPath>
-    </Reference>
     <Reference Include="VoiceScripter_UserControl">
       <HintPath>Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
@@ -578,6 +574,10 @@
     <ProjectReference Include="UserControls\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
+      <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
+      <Name>VideoToImage_UserControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

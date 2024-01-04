@@ -30,6 +30,7 @@ using System.Linq;
 using System.Windows.Media;
 using ServerApiCall_UserControl.DTO.MediaLibraryModels;
 using System.Drawing;
+using Timeline.UserControls.Models;
 
 namespace VideoCreator.XAML
 {
@@ -40,11 +41,10 @@ namespace VideoCreator.XAML
     {
         private int selectedProjectId;
         private Int64 selectedServerProjectId;
-        private int selectedVideoEventId = -1;
+        
         private int voiceAvgCount = -1;
         private string audioMinutetext, audioSecondtext, audioSaveButtonText;
         private bool isWavAudio = true;
-        private CBVVideoEvent selectedVideoEvent;
         private PopupWindow popup;
         private AudioEditor editor;
         private readonly AuthAPIViewModel authApiViewModel;
@@ -55,6 +55,8 @@ namespace VideoCreator.XAML
         private readonly DispatcherTimer dispatcherTimerToCheckIfUnSyncDataPresent;
         private bool isBackgroundProcessRunning = false;
         private TrackbarMouseMoveEvent mouseEventToProcess;
+        private TimelineVideoEvent selectedVideoEvent;
+        private int selectedVideoEventId = -1;
 
         public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
         {
@@ -62,7 +64,7 @@ namespace VideoCreator.XAML
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
-            var subjectText = "Selected Project Id - " + selectedProjectId;
+            var subjectText = "Project Id - " + selectedProjectId;
             lblSelectedProjectId.Content = subjectText;
             //Task.Run(async () => { await checkIfProjectIsLocked(); });
 
@@ -167,7 +169,6 @@ namespace VideoCreator.XAML
         {
             popup = new PopupWindow();
             //ResetAudioMenuOptions();
-            RefreshOrLoadComboBoxes();
 
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectId, authApiViewModel, ReadOnly);
@@ -185,6 +186,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
+            TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
@@ -210,7 +212,6 @@ namespace VideoCreator.XAML
 
         private void Refresh()
         {
-            RefreshOrLoadComboBoxes();
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
@@ -245,41 +246,48 @@ namespace VideoCreator.XAML
 
         private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
         {
-            // Step 1. Save to server
-            var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-            var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
-            if (savedNotes != null)
+            if (selectedVideoEvent != null)
             {
-                // Step 2. Now save the notes to local DB
-                var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
-                DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                // Step 1. Save to server
+                var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+                var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+                if (savedNotes != null)
+                {
+                    // Step 2. Now save the notes to local DB
+                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+                    DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                }
+                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
             }
-            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
         }
 
         private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
         {
-            var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
-            if (result?.Status == "success")
+            if (selectedVideoEvent != null)
             {
-                DataManagerSqlLite.DeleteNotesById(notes.notes_id);
-                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+                var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
+                if (result?.Status == "success")
+                {
+                    DataManagerSqlLite.DeleteNotesById(notes.notes_id);
+                    NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+                }
             }
-
         }
 
 
         private async void NotesUserConrol_saveSingleNoteEvent(object sender, DataTable datatable)
         {
-            // Step 1. Save to server
-            var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-            var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+            if (selectedVideoEvent != null)
+            {// Step 1. Save to server
+                var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+                var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
 
-            // Step 2. Now save the notes to local DB
-            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
-            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                // Step 2. Now save the notes to local DB
+                var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+                DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
 
-            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+            }
         }
 
         private void NotesUserConrol_updateSingleNoteEvent(object sender, DataTable datatable)
@@ -500,6 +508,27 @@ namespace VideoCreator.XAML
         #endregion
 
         #region == ContextMenu > CloneEvent ==
+
+        
+        private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineVideoEvent selectedEvent)
+        {
+            selectedVideoEvent = selectedEvent;
+            if (selectedVideoEvent != null)
+            {
+                selectedVideoEventId = selectedVideoEvent.videoevent_id;
+                lblSelectedVideoeventId.Content = $"[Selected VideoEvent Id - {selectedVideoEventId}]";
+            }
+            else
+            {
+                selectedVideoEventId = -1;
+                lblSelectedVideoeventId.Content = $"";
+            }
+            NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
+
+
+
+
+        }
 
         private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
         {
@@ -1056,37 +1085,15 @@ namespace VideoCreator.XAML
         #endregion 
 
 
-        private void RefreshOrLoadComboBoxes(EnumEntity entity = EnumEntity.ALL)
-        {
-            if (entity == EnumEntity.ALL || entity == EnumEntity.VIDEOEVENT)
-            {
-                var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
-                RefreshComboBoxes(cmbVideoEvent, data, "videoevent_id");
-                selectedVideoEvent = selectedVideoEvent != null ? selectedVideoEvent : (data?.Count > 0 ? data[0] : null);
-                cmbVideoEvent.SelectedItem = selectedVideoEvent;
-            }
-        }
-
-        private void RefreshComboBoxes<T>(System.Windows.Controls.ComboBox combo, List<T> source, string columnNameToShow)
-        {
-            combo.SelectedItem = null;
-            combo.DisplayMemberPath = columnNameToShow;
-            combo.Items.Clear();
-            foreach (var item in source)
-            {
-                combo.Items.Add(item);
-            }
-        }
-
         private void cmbVideoEvent_SelectionChanged(object sender, Windows.SelectionChangedEventArgs e)
         {
-            selectedVideoEvent = (CBVVideoEvent)cmbVideoEvent?.SelectedItem;
-            if (selectedVideoEvent != null)
-            {
-                selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
-                NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
-                //ResetAudio();
-            }
+            //selectedVideoEvent = (CBVVideoEvent)cmbVideoEvent?.SelectedItem;
+            //if (selectedVideoEvent != null)
+            //{
+            //    selectedVideoEventId = ((CBVVideoEvent)cmbVideoEvent?.SelectedItem).videoevent_id;
+            //    NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
+            //    //ResetAudio();
+            //}
         }
 
 

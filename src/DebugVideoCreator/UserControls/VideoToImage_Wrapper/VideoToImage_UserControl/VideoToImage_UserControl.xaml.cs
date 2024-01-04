@@ -109,7 +109,7 @@ namespace VideoToImage_UserControl
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        public async Task<string> ConvertVideoToImage()
+        public async Task<string> ConvertVideoToImage(bool isPreview = false)
         {
             if (Period <= 0 || (int)(TotalFrames / (Period * fps)) < 1)
             {
@@ -122,7 +122,7 @@ namespace VideoToImage_UserControl
             txtTime.IsEnabled = false;
 
             var imageFileName = $"{OutputFolder}\\Image_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.png";
-            await StartExtraction(imageFileName);
+            await StartExtraction(imageFileName, isPreview);
 
             txtOutput.IsEnabled = true;
             txtVideo.IsEnabled = true;
@@ -148,15 +148,19 @@ namespace VideoToImage_UserControl
             }
         }
 
-        private async Task StartExtraction(string imageFileName)
+        private async Task StartExtraction(string imageFileName, bool isPreview = false)
         {
             await Task.Run(delegate
             {
                 using (var engine = new Engine())
                 {
-                    var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period) };
+                    var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period)};
                     var outputFile = new MediaFile { Filename = imageFileName };
-                    engine.Convert(Mp4Media, outputFile, options);
+                    if(isPreview)
+                        engine.GetThumbnail(Mp4Media, outputFile, options);
+                    else
+                        engine.Convert(Mp4Media, outputFile, options);
+                    
                 }
             });
 
