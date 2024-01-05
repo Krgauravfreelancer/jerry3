@@ -1,45 +1,23 @@
-﻿using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using DebugVideoCreator.Models;
-using Newtonsoft.Json;
-using Sqllite_Library.Business;
-using Sqllite_Library.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using System.Xml.Linq;
-using VideoCreator.Auth;
 using VideoCreator.Loader;
-using VideoCreator.XAML;
 
 namespace VideoCreator.Helpers
 {
     public static class LoaderHelper
     {
-        public static void ShowLoader(Window mywindow, LoadingAnimation loader)
+        private static string DefaultLoadingText = "";
+        public static void ShowLoader(Window mywindow, LoadingAnimation loader, string message = "")
         {
             if (mywindow == null)
                 return;
 
+            loader.setTextBlockMessage(message);
             loader.Visibility = Visibility.Visible;
             mywindow.IsEnabled = false;
         }
 
-        public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader, bool disableParentWindow = true)
+        public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader, string message = "", bool disableParentWindow = true)
         {
             if (usercontrol == null) 
                 return;
@@ -48,6 +26,7 @@ namespace VideoCreator.Helpers
             if (mywindow == null)
                 return;
 
+            loader.setTextBlockMessage(message);
             loader.Visibility = Visibility.Visible;
             if (disableParentWindow)
                 mywindow.IsEnabled = false;
@@ -59,6 +38,7 @@ namespace VideoCreator.Helpers
                 return;
 
             loader.Visibility = Visibility.Hidden;
+            loader.setTextBlockMessage(DefaultLoadingText);
             mywindow.IsEnabled = true;
         }
 
@@ -71,10 +51,8 @@ namespace VideoCreator.Helpers
                 return;
 
             loader.Visibility = Visibility.Hidden;
+            loader.setTextBlockMessage(DefaultLoadingText);
             mywindow.IsEnabled = true;
         }
-
-
-        
     }
 }

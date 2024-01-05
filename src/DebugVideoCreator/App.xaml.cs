@@ -24,7 +24,7 @@ namespace VideoCreator
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Application.Current.DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(AppDispatcherUnhandledException);
+            //Application.Current.DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(AppDispatcherUnhandledException);
         }
 
         void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -34,7 +34,13 @@ namespace VideoCreator
 
         void ShowUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            e.Handled = true;
+            if (CheckNet())
+                e.Handled = true;
+            else
+            {
+                e.Handled = false;
+                return;
+            }
             var exception = $"{Environment.NewLine}Exception : {e.Exception.Message}{Environment.NewLine}Inner Exception : {(e.Exception.InnerException != null ? e.Exception.InnerException.Message : "NA")}";
             string errorMessage = $"An application error occurred." +
                 $"\nPlease check whether your data is correct and repeat the action. If this error occurs again there seems to be a more serious malfunction in the application, and you better close it." +
@@ -50,6 +56,16 @@ namespace VideoCreator
                     Application.Current.Shutdown();
                 }
             }
+        }
+
+        private bool CheckNet()
+        {
+            bool stats;
+            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable() == true)
+                stats = true;
+            else
+                stats = false;
+            return stats;
         }
     }
             

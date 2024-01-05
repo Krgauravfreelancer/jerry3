@@ -95,7 +95,8 @@ namespace VideoCreator.MediaLibraryData
 
         private async Task FetchMediaLibraryData()
         {
-            LoaderHelper.ShowLoader(this, loader);
+            LoaderHelper.HideLoader(this, loader); 
+            LoaderHelper.ShowLoader(this, loader, "Fetching and loading data ...");
             var result = await authApiViewModel.GetImagesLibraryData(PAGESIZE, PAGENUMBER, TAGS);
             if (result == null) return;
             TOTALPAGES = result.Meta.last_page;
@@ -124,7 +125,7 @@ namespace VideoCreator.MediaLibraryData
                 {
                     using (var ms = new MemoryStream(byteArrayIn))
                     {
-                        var decoder = BitmapDecoder.Create(ms, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
+                        var decoder = BitmapDecoder.Create(ms, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
                         var bitmapSource = decoder.Frames[0];
                         var image = new Image { Source = bitmapSource, Height = 150, MaxWidth = 200, Margin = new Thickness(5) };
                         stackPanel.Children.Add(image);
@@ -232,7 +233,7 @@ namespace VideoCreator.MediaLibraryData
 
         private async void btnSelecAndUsethisImage_Click(object sender, RoutedEventArgs e)
         {
-            LoaderHelper.ShowLoader(this, loader);
+            LoaderHelper.ShowLoader(this, loader, "Downloading full file ..");
             var dataTable = new DataTable();
             dataTable.Columns.Add("videoevent_id", typeof(int));
             dataTable.Columns.Add("fk_videoevent_project", typeof(int));

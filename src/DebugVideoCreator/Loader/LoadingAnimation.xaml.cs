@@ -23,5 +23,10 @@ namespace VideoCreator.Loader
         {
             InitializeComponent();
         }
+
+        public void setTextBlockMessage(string message = "")
+        {
+            txtBlock.Text = string.IsNullOrEmpty(message) ? "" : message;
+        }
     }
 }

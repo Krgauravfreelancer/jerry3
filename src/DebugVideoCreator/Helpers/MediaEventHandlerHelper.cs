@@ -35,7 +35,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_duration = (int)row["videoevent_duration"];
             objToSync.videoevent_end = "00:00:00.000"; // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            objToSync.videosegment_media_bytes = (byte[])row["media"];
+            objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0]:  (byte[])row["media"];
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
         }

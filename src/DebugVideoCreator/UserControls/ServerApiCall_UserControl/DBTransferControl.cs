@@ -21,164 +21,203 @@ namespace ServerApiCall_UserControl
 
         public async Task<string> Get(string url)
         {
-            using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
+            try
             {
-                if (response.IsSuccessStatusCode)
+                using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result;
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
 
         public async Task<byte[]> GetFileByteArray(string url)
         {
-            using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
+            try
             {
-                response.EnsureSuccessStatusCode();
-                if (response.IsSuccessStatusCode)
+                using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
                 {
-                    var contentAsByteArray = await response.Content.ReadAsByteArrayAsync(); // get the actual content stream
-                    return contentAsByteArray;
+                    response.EnsureSuccessStatusCode();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var contentAsByteArray = await response.Content.ReadAsByteArrayAsync(); // get the actual content stream
+                        return contentAsByteArray;
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException();
+                    }
                 }
-                else
-                {
-                    throw new FileNotFoundException();
-                }
-
             }
+            catch { }
+            return null;
         }
 
         public async Task<string> Create(string url, FormUrlEncodedContent encodedPayload)
         {
-            using (HttpResponseMessage response = await apiHttpClient.PostAsync(url, encodedPayload))
+            try
             {
-                if (response.IsSuccessStatusCode)
+                using (HttpResponseMessage response = await apiHttpClient.PostAsync(url, encodedPayload))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result;
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
-        
+
         public async Task<string> CreateWithFile(string url, MultipartFormDataContent encodedPayload)
         {
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+            try
             {
-                Content = encodedPayload
-            };
-            using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
-            {
-                if (response.IsSuccessStatusCode)
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, url)
                 {
-                    var inputResponseStream = await response.Content.ReadAsStreamAsync();
-                    var outputStream = new MemoryStream();
-                    byte[] inputBuffer = new byte[65535];
-                    int readAmount;
-                    while ((readAmount = inputResponseStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
-                        outputStream.Write(inputBuffer, 0, readAmount);
-                    var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
-                    return result;
-                }
-                else
+                    Content = encodedPayload
+                };
+                using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var inputResponseStream = await response.Content.ReadAsStreamAsync();
+                        var outputStream = new MemoryStream();
+                        byte[] inputBuffer = new byte[65535];
+                        int readAmount;
+                        while ((readAmount = inputResponseStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
+                            outputStream.Write(inputBuffer, 0, readAmount);
+                        var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
 
         public async Task<string> UpdateWithFile(string url, MultipartFormDataContent encodedPayload)
         {
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url)
+            try
             {
-                Content = encodedPayload
-            };
-            using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
-            {
-                if (response.IsSuccessStatusCode)
+                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Put, url)
                 {
-                    var inputResponseStream = await response.Content.ReadAsStreamAsync();
-                    var outputStream = new MemoryStream();
-                    byte[] inputBuffer = new byte[65535];
-                    int readAmount;
-                    while ((readAmount = inputResponseStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
-                        outputStream.Write(inputBuffer, 0, readAmount);
-                    var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
-                    return result;
-                }
-                else
+                    Content = encodedPayload
+                };
+                using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var inputResponseStream = await response.Content.ReadAsStreamAsync();
+                        var outputStream = new MemoryStream();
+                        byte[] inputBuffer = new byte[65535];
+                        int readAmount;
+                        while ((readAmount = inputResponseStream.Read(inputBuffer, 0, inputBuffer.Length)) > 0)
+                            outputStream.Write(inputBuffer, 0, readAmount);
+                        var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
 
         public async Task<string> Update(string url, FormUrlEncodedContent encodedPayload)
         {
-            using (HttpResponseMessage response = await apiHttpClient.PutAsync(url, encodedPayload))
+            try
             {
-                if (response.IsSuccessStatusCode)
+                using (HttpResponseMessage response = await apiHttpClient.PutAsync(url, encodedPayload))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result;
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
 
         public async Task<string> Patch(string url, FormUrlEncodedContent encodedPayload)
         {
-            var method = new HttpMethod("PATCH");
-            var request = new HttpRequestMessage(method, url)
+            try
             {
-                Content = encodedPayload
-            };
-            using (HttpResponseMessage response = await apiHttpClient.SendAsync(request))
-            {
-                if (response.IsSuccessStatusCode)
+                var method = new HttpMethod("PATCH");
+                var request = new HttpRequestMessage(method, url)
                 {
-                    var result = response.Content.ReadAsStringAsync().Result;
-                    return result;
-                }
-                else
+                    Content = encodedPayload
+                };
+                using (HttpResponseMessage response = await apiHttpClient.SendAsync(request))
                 {
-                    throw new Exception(response.ReasonPhrase);
-                }
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = response.Content.ReadAsStringAsync().Result;
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
 
         public async Task<string> Delete(string url, FormUrlEncodedContent encodedPayload)
         {
-            using (HttpResponseMessage response = await apiHttpClient.DeleteAsync(url))
+            try
             {
-                if (response.IsSuccessStatusCode)
+                using (HttpResponseMessage response = await apiHttpClient.DeleteAsync(url))
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return result;
-                }
-                else
-                {
-                    throw new Exception(response.ReasonPhrase);
-}
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var result = await response.Content.ReadAsStringAsync();
+                        return result;
+                    }
+                    else
+                    {
+                        throw new Exception(response.ReasonPhrase);
+                    }
 
+                }
             }
+            catch { }
+            return null;
         }
     }
 }
