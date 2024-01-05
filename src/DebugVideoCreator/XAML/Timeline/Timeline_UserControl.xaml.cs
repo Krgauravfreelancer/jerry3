@@ -228,7 +228,8 @@ namespace VideoCreator.XAML
                 var payload = new TrackbarMouseMoveEvent
                 {
                     timeAtTheMoment = trackBarPosition.ToString("HH:mm:ss.fff"),
-                    videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList()
+                    videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList(),
+                    isAnyVideo = trackbarEvents?.Find(x=>x.fk_videoevent_media == 2) != null,
                 };
                 
                 TrackbarMouse_Moved.Invoke(sender, payload);

@@ -19,5 +19,6 @@ namespace DebugVideoCreator.Models
     {
         public List<int> videoeventIds;
         public string timeAtTheMoment;
+        public bool isAnyVideo;
     }
 }

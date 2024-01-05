@@ -530,10 +530,25 @@ namespace VideoCreator.XAML
 
         }
 
+        private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)
+        {
+            if (e.isAnyVideo) return true;
+            if (e?.videoeventIds?.Count != mouseEventToProcess.videoeventIds?.Count) return true;
+            foreach(var id in e?.videoeventIds)
+            {
+                if(mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;
+            }
+            return false;
+        }
+
+
         private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
         {
-            mouseEventToProcess = e;
-            PreviewUserControl.Process(mouseEventToProcess);
+            if (IfNeedToReProcess(e))
+            {
+                mouseEventToProcess = e;
+                PreviewUserControl.Process(mouseEventToProcess);
+            }
         }
 
         private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
