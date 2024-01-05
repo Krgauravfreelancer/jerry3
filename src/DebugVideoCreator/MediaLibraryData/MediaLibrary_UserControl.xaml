@@ -16,59 +16,59 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Center" Height="40"/>
+        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" FontSize="20"  VerticalAlignment="Center" Height="40"/>
 
         <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
-            <Label Content="Select Tags : " HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15" Foreground="#3381CC" />
+            <Label Content="Select Tags : " HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15" />
             <ListBox x:Name="listBoxtags" SelectionChanged="listBoxtags_SelectionChanged" Width="300" Margin="0,0,10,0" HorizontalAlignment="Right" SelectionMode="Multiple" Height="70" />
         </StackPanel>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
+        <Border BorderThickness="1" BorderBrush="#ececec" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" >
             <ScrollViewer x:Name="MyScrollViewer" VerticalScrollBarVisibility="Auto" Margin="10">
-                <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Center" VerticalAlignment="Top" Background="#ececec"/>
+                <WrapPanel x:Name="wrapImageContainer" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#f5f5f5"/>
             </ScrollViewer>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left" Height="40" FontSize="17" Foreground="#3381CC"/>
+        <Border BorderThickness="1" BorderBrush="#ececec" Background="#ececec" Grid.Row="2" Grid.Column="0">
+            <StackPanel Orientation="Horizontal" Background="#ececec" HorizontalAlignment="Center">
+                <Label x:Name="lblinfo" Content="" HorizontalAlignment="Left"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="1">
-            <StackPanel Orientation="Horizontal" Background="White" HorizontalAlignment="Right">
-                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left" Height="40" FontSize="17" Foreground="#3381CC"/>
-                <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="80" Visibility="Visible" Margin="5,0,5,0" Height="30" FontSize="18" Foreground="#3381CC"/>
+        <Border BorderThickness="1" Background="#ececec" BorderBrush="#ececec" Grid.Row="2" Grid.Column="1">
+            <StackPanel Orientation="Horizontal" Background="#ececec" HorizontalAlignment="Right">
+                <Label x:Name="lblRecordsPerPage" Content="Records Per Page : " HorizontalAlignment="Left"/>
+                <ComboBox x:Name="cmbRecordsPerPage" SelectionChanged="cmbRecordsPerPag_SelectionChanged" Width="80" Visibility="Visible" Margin="5,0,5,0"/>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="2" Grid.Column="2">
-            <StackPanel Orientation="Horizontal" Background="White">
-                <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
+        <Border BorderThickness="1" Background="#ececec" BorderBrush="#ececec" Grid.Row="2" Grid.Column="2">
+            <StackPanel Orientation="Horizontal" Background="#ececec" Margin="0,0,20,0">
+                <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/MediaLibraryData/Resources/first.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
+                <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/MediaLibraryData/Resources/previous.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
+                <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/MediaLibraryData/Resources/next.png"/>
                     </Button.Background>
                 </Button>
-                <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="30" Height="30" Margin="5,2,5,2" Padding="3">
+                <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
                         <ImageBrush ImageSource="/MediaLibraryData/Resources/last.png"/>
                     </Button.Background>
                 </Button>
             </StackPanel>
         </Border>
-        <Border BorderThickness="1" BorderBrush="#3381CC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+        <Border BorderThickness="1" BorderBrush="#ececec" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Background="White" Margin="5">
-                <Button x:Name="btnSelecAndUsethisImage" Width="200" IsEnabled="False" Content="Use Selected Image" Margin="5" FontSize="15" Foreground="#3381CC" Click="btnSelecAndUsethisImage_Click" />
-                <Button x:Name="btnCancel" Width="200" Content="Cancel" Margin="5" FontSize="15" Foreground="#3381CC" Click="btnCancel_Click" />
+                <Button x:Name="btnSelecAndUsethisImage" Width="200" IsEnabled="False" Content="Use Selected Image" Margin="5" Click="btnSelecAndUsethisImage_Click" />
+                <Button x:Name="btnCancel" Width="200" Content="Cancel" Margin="5" Click="btnCancel_Click" />
             </StackPanel>
         </Border>
         <loader:LoadingAnimation Grid.ColumnSpan="3" Grid.RowSpan="4" x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>

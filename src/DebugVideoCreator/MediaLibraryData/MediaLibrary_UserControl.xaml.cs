@@ -86,10 +86,10 @@ namespace VideoCreator.MediaLibraryData
             cmbRecordsPerPage.Items.Add(10);
             cmbRecordsPerPage.Items.Add(20);
             cmbRecordsPerPage.Items.Add(30);
-            cmbRecordsPerPage.Items.Add(50);
-            cmbRecordsPerPage.Items.Add(100);
-            cmbRecordsPerPage.Items.Add(250);
-            cmbRecordsPerPage.Items.Add(500);
+            //cmbRecordsPerPage.Items.Add(50);
+            //cmbRecordsPerPage.Items.Add(100);
+            //cmbRecordsPerPage.Items.Add(250);
+            //cmbRecordsPerPage.Items.Add(500);
             cmbRecordsPerPage.SelectedIndex = 0;
         }
 
@@ -124,7 +124,7 @@ namespace VideoCreator.MediaLibraryData
                 {
                     using (var ms = new MemoryStream(byteArrayIn))
                     {
-                        var decoder = BitmapDecoder.Create(ms, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                        var decoder = BitmapDecoder.Create(ms, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.Default);
                         var bitmapSource = decoder.Frames[0];
                         var image = new Image { Source = bitmapSource, Height = 150, MaxWidth = 200, Margin = new Thickness(5) };
                         stackPanel.Children.Add(image);
@@ -147,8 +147,8 @@ namespace VideoCreator.MediaLibraryData
                 //Add Border
                 Border stackPanelBorder = new Border
                 {
-                    BorderBrush = Brushes.Blue,
-                    BorderThickness = new Thickness(1),
+                    BorderBrush = Brushes.Transparent,
+                    BorderThickness = new Thickness(3),
                     Child = stackPanel,
                     Margin = new Thickness(5)
                 };
@@ -157,17 +157,17 @@ namespace VideoCreator.MediaLibraryData
                 {
                     if (e.ClickCount >= 1)
                     {
-                        if (stackPanelBorder.BorderThickness == new Thickness(1))
+                        if (stackPanelBorder.BorderBrush == Brushes.Transparent)
                         {
                             foreach (Border childBorder in wrapImageContainer.Children)
-                                childBorder.BorderThickness = new Thickness(1);
-                            stackPanelBorder.BorderThickness = new Thickness(3);
+                                childBorder.BorderBrush = Brushes.Transparent;
+                            stackPanelBorder.BorderBrush = Brushes.DarkGray;
                             btnSelecAndUsethisImage.IsEnabled = true;
                             selectedImage = item;
                         }
                         else
                         {
-                            stackPanelBorder.BorderThickness = new Thickness(1);
+                            stackPanelBorder.BorderBrush = Brushes.Transparent;
                             btnSelecAndUsethisImage.IsEnabled = false;
                             selectedImage = null;
                         }

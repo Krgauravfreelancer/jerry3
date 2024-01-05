@@ -532,8 +532,8 @@ namespace VideoCreator.XAML
 
         private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)
         {
-            if (e.isAnyVideo) return true;
-            if (e?.videoeventIds?.Count != mouseEventToProcess.videoeventIds?.Count) return true;
+            if (e != null && e.isAnyVideo) return true;
+            if (e?.videoeventIds?.Count != mouseEventToProcess?.videoeventIds?.Count) return true;
             foreach(var id in e?.videoeventIds)
             {
                 if(mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;

@@ -40,7 +40,7 @@ namespace VideoCreator.Helpers
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {
-                var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
+                var VideoFileName = $"{currentDirectory}\\Video\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
                 var outputFolder = $"C:\\commercialBase\\ExtractedImages";
 
                 Stream t = new FileStream(VideoFileName, FileMode.Create);
