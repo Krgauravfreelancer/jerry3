@@ -9,6 +9,9 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Net;
 using System.Drawing.Printing;
+using NAudio.CoreAudioApi;
+using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace VideoCreator.Auth
 {
@@ -60,7 +63,7 @@ namespace VideoCreator.Auth
             var failureMessage = authCtrl.InitConnection();
             if (!string.IsNullOrEmpty(failureMessage))
             {
-                MessageBox.Show(failureMessage, "Ini tConnection", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(failureMessage, "VideoCreatorAuthHelper > InitConnection", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
         }
@@ -91,6 +94,22 @@ namespace VideoCreator.Auth
             dbTransferCtrl.SetClient(authCtrl.GetHttpClient());
         }
 
+        private T HandleAndShowMessage<T>(string Message, bool ShowErrorMessage = true)
+        {
+            if (ShowErrorMessage)
+                MessageBox.Show(Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return default(T);
+        }
+
+        private async Task WriteBytesToFile(string fileToWriteTo, byte[] byteArray)
+        {
+            var memoryStream = new MemoryStream(byteArray);
+            Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.CreateNew);
+            memoryStream.Position = 0;
+            await memoryStream.CopyToAsync(streamToWriteTo);
+            streamToWriteTo.Dispose();
+            memoryStream.Dispose();
+        }
 
         public async Task ExecuteLoginAsync()
         {
@@ -127,9 +146,9 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.Get(url);
-            var data = JsonConvert.DeserializeObject<T>(result);
-            return data;
-
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<byte[]> GetSecuredFileByteArray(string url)
@@ -138,35 +157,34 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var byteArray = await dbTransferCtrl.GetFileByteArray(url);
+            if (byteArray == null) return null;
             IsBusy = false;
             return byteArray;
         }
 
-        public async Task GetFile(string url, string fileToWriteTo)
+        public async Task<bool> GetFile(string url, string fileToWriteTo)
         {
             IsBusy = true;
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var byteArray = await dbTransferCtrl.GetFileByteArray(url);
-            var memoryStream = new MemoryStream(byteArray);
-            Stream streamToWriteTo = File.Open(fileToWriteTo, FileMode.CreateNew);
-            memoryStream.Position = 0;
-            await memoryStream.CopyToAsync(streamToWriteTo);
-            streamToWriteTo.Dispose();
-            memoryStream.Dispose();
+            if (byteArray == null) return false;
+            await WriteBytesToFile(fileToWriteTo, byteArray);
             IsBusy = false;
-
+            return true;
         }
 
+        
         public async Task<T> Create<T>(string url, FormUrlEncodedContent payload)
         {
             IsBusy = true;
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.Create(url, payload);
-            T data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<T> CreateWithMultipart<T>(string url, MultipartFormDataContent payload)
@@ -176,10 +194,10 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.CreateWithFile(url, payload);
-            var data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
-
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<T> Update<T>(string url, FormUrlEncodedContent payload)
@@ -188,12 +206,11 @@ namespace VideoCreator.Auth
             IsBusy = true;
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
-
             var result = await dbTransferCtrl.Update(url, payload);
-            var data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
-
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<T> UpdateWithMultipart<T>(string url, MultipartFormDataContent payload)
@@ -202,9 +219,10 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.UpdateWithFile(url, payload);
-            var data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<T> Patch<T>(string url, FormUrlEncodedContent payload)
@@ -213,9 +231,10 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.Patch(url, payload);
-            var data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
         public async Task<T> Delete<T>(string url, FormUrlEncodedContent payload)
@@ -224,9 +243,10 @@ namespace VideoCreator.Auth
             ErrorMessage = string.Empty;
             InitializeOrResetDbTransferControl();
             var result = await dbTransferCtrl.Delete(url, payload);
-            T data = JsonConvert.DeserializeObject<T>(result);
             IsBusy = false;
-            return data;
+            if (result == null) return default(T);
+            else if (result.StartsWith("Exception")) return HandleAndShowMessage<T>(result);
+            else return JsonConvert.DeserializeObject<T>(result);
         }
 
     }

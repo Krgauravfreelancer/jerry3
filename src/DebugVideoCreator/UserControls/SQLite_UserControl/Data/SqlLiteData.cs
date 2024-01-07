@@ -1564,7 +1564,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where fk_videoevent_project = {projectId} and videoevent_issynced = 0 and videoevent_serverid > {DateTime.UtcNow.ToString("yyyyMMddHHmmss")}";
+            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where fk_videoevent_project = {projectId} and videoevent_issynced = 0 and videoevent_serverid > {DateTime.UtcNow.ToString("yyyyMMdd")}";
             SQLiteConnection sqlCon = null;
             try
             {

@@ -28,7 +28,7 @@ namespace VideoCreator.XAML
     public partial class Preview : UserControl
     {
         string imageOutputFolder = $"{Directory.GetCurrentDirectory()}\\ExtractedImages";
-        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Media";
+        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\VideoMedia";
         public bool isProcessing = false;
         public Preview()
         {

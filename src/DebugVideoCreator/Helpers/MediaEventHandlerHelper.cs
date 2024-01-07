@@ -47,6 +47,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_track = videoEvent.videoevent_track; // TBD
             objToSync.videoevent_start = videoEvent.videoevent_start; // TBD
             objToSync.videoevent_duration = videoEvent.videoevent_duration;
+            objToSync.videoevent_end = "00:00:00.000"; // TBD
             objToSync.videoevent_modifylocdate = videoEvent.videoevent_createdate.ToString("yyyy-MM-dd HH:mm:ss");
             if(videoEvent?.videosegment_data?.Count > 0)
                 objToSync.videosegment_media_bytes = (byte[])videoEvent?.videosegment_data[0]?.videosegment_media;
@@ -125,7 +126,7 @@ namespace VideoCreator.Helpers
             row["videoevent_id"] = -1;
             row["fk_videoevent_project"] = selectedProjectId;
             row["videoevent_start"] = "00:00:00.000"; // TBD
-            row["videoevent_track"] = 1; // TBD
+            row["videoevent_track"] = 2; // TBD
             row["videoevent_duration"] = (int)datarow["videoevent_duration"];
             row["fk_videoevent_media"] = (int)datarow["fk_videoevent_media"];
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");

@@ -69,6 +69,7 @@ namespace VideoCreator.MediaLibraryData
             videoevent_start = start;
             FetchAndFillTags();
             FillComboBoxes();
+            LoaderHelper.ShowLoader(this, loader, "Fetching and loading data ...");
 
         }
 
@@ -95,7 +96,6 @@ namespace VideoCreator.MediaLibraryData
 
         private async Task FetchMediaLibraryData()
         {
-            LoaderHelper.HideLoader(this, loader); 
             LoaderHelper.ShowLoader(this, loader, "Fetching and loading data ...");
             var result = await authApiViewModel.GetImagesLibraryData(PAGESIZE, PAGENUMBER, TAGS);
             if (result == null) return;

@@ -25,19 +25,15 @@ namespace ServerApiCall_UserControl
             {
                 using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -53,13 +49,9 @@ namespace ServerApiCall_UserControl
                         var contentAsByteArray = await response.Content.ReadAsByteArrayAsync(); // get the actual content stream
                         return contentAsByteArray;
                     }
-                    else
-                    {
-                        throw new FileNotFoundException();
-                    }
                 }
             }
-            catch { }
+            catch { return null; }
             return null;
         }
 
@@ -69,19 +61,15 @@ namespace ServerApiCall_UserControl
             {
                 using (HttpResponseMessage response = await apiHttpClient.PostAsync(url, encodedPayload))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -95,6 +83,7 @@ namespace ServerApiCall_UserControl
                 };
                 using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var inputResponseStream = await response.Content.ReadAsStreamAsync();
@@ -106,14 +95,9 @@ namespace ServerApiCall_UserControl
                         var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -127,6 +111,7 @@ namespace ServerApiCall_UserControl
                 };
                 using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var inputResponseStream = await response.Content.ReadAsStreamAsync();
@@ -138,14 +123,9 @@ namespace ServerApiCall_UserControl
                         var result = Encoding.UTF8.GetString(outputStream.GetBuffer(), 0, (int)inputResponseStream.Length);
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -155,19 +135,15 @@ namespace ServerApiCall_UserControl
             {
                 using (HttpResponseMessage response = await apiHttpClient.PutAsync(url, encodedPayload))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -182,19 +158,15 @@ namespace ServerApiCall_UserControl
                 };
                 using (HttpResponseMessage response = await apiHttpClient.SendAsync(request))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = response.Content.ReadAsStringAsync().Result;
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
             return null;
         }
 
@@ -204,19 +176,15 @@ namespace ServerApiCall_UserControl
             {
                 using (HttpResponseMessage response = await apiHttpClient.DeleteAsync(url))
                 {
+                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
                         return result;
                     }
-                    else
-                    {
-                        throw new Exception(response.ReasonPhrase);
-                    }
-
                 }
             }
-            catch { }
+            catch { return null; }
             return null;
         }
     }

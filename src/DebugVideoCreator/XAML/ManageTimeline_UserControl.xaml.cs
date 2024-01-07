@@ -42,7 +42,7 @@ namespace VideoCreator.XAML
     {
         private int selectedProjectId;
         private Int64 selectedServerProjectId;
-        
+
         private int voiceAvgCount = -1;
         private string audioMinutetext, audioSecondtext, audioSaveButtonText;
         private bool isWavAudio = true;
@@ -52,9 +52,9 @@ namespace VideoCreator.XAML
         public event EventHandler closeTheEditWindow;
         private bool ReadOnly;
         private int RetryIntervalInSeconds = 300;
-        
-        
-        
+
+
+
         private TrackbarMouseMoveEvent mouseEventToProcess;
         private TimelineVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
@@ -70,12 +70,12 @@ namespace VideoCreator.XAML
             //Task.Run(async () => { await checkIfProjectIsLocked(); });
 
             checkIfProjectIsLocked();
-            
+
             BackgroundProcessHelper.SetBackgroundProcess(selectedProjectId, selectedServerProjectId, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
             loader.Visibility = Visibility.Hidden;
         }
 
-       
+
 
         private void InitializeChildren()
         {
@@ -372,9 +372,9 @@ namespace VideoCreator.XAML
             Refresh();
         }
 
-        
 
-        
+
+
         #endregion
 
 
@@ -391,7 +391,6 @@ namespace VideoCreator.XAML
                 ResizeMode = ResizeMode.CanResize,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            LoaderHelper.ShowLoader(this, loader, "Processing ...");
             LoaderHelper.ShowLoader(window, loader, "Processing...");
             var result = window.ShowDialog();
             if (result.HasValue && mediaLibraryUserControl.isEventAdded)
@@ -421,7 +420,7 @@ namespace VideoCreator.XAML
 
         #region == ContextMenu > CloneEvent ==
 
-        
+
         private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineVideoEvent selectedEvent)
         {
             selectedVideoEvent = selectedEvent;
@@ -446,9 +445,9 @@ namespace VideoCreator.XAML
         {
             if (e != null && e.isAnyVideo) return true;
             if (e?.videoeventIds?.Count != mouseEventToProcess?.videoeventIds?.Count) return true;
-            foreach(var id in e?.videoeventIds)
+            foreach (var id in e?.videoeventIds)
             {
-                if(mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;
+                if (mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;
             }
             return false;
         }
@@ -546,7 +545,7 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath );
+            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
             if (isSuccess)
             {
                 TimelineUserConrol.InvokeSuccess();
@@ -1053,7 +1052,6 @@ namespace VideoCreator.XAML
             }
             else
             {
-                MessageBox.Show($"{response?.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 ReadOnly = true;
                 btnlock.IsEnabled = true;
                 btnunlock.IsEnabled = false;
@@ -1064,7 +1062,13 @@ namespace VideoCreator.XAML
 
         private async void btnUploadNotSyncedData_Click(object sender, RoutedEventArgs e)
         {
+            LoaderHelper.ShowLoader(this, loader, "Processing in Background");
             await BackgroundProcessHelper.PeriodicallyCheckOfflineDataAndSync();
+            LoaderHelper.HideLoader(this, loader);
+            btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
+            btnUploadNotSyncedData.Width = 160;
+            btnUploadNotSyncedData.IsEnabled = false;
+            btnDownloadServerData.IsEnabled = true;
         }
 
 
@@ -1075,7 +1079,6 @@ namespace VideoCreator.XAML
             {
                 LoaderHelper.ShowLoader(this, loader);
                 await SyncServerDataToLocalDB();
-
             }
             InitializeChildren();
             LoaderHelper.HideLoader(this, loader);
