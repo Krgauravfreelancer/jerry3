@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +29,7 @@ namespace VideoCreator.XAML
     public partial class Preview : UserControl
     {
         string imageOutputFolder = $"{Directory.GetCurrentDirectory()}\\ExtractedImages";
-        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\VideoMedia";
+        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Media";
         public bool isProcessing = false;
         public Preview()
         {
@@ -75,8 +76,6 @@ namespace VideoCreator.XAML
         {
             isProcessing = true;
             LoaderHelper.ShowLoader(this, loader, "Processing Preview ..." ,false);
-            //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
-
             var bmps = new List<System.Drawing.Bitmap>();
             foreach (var id in mouseMovedEvent.videoeventIds)
             {
@@ -92,8 +91,6 @@ namespace VideoCreator.XAML
                             using (var ms = new MemoryStream(imageBytes))
                             {
                                 var bmp = new Bitmap(ms);
-                                
-                                
                                 bmps.Add(bmp);
                             }
                         }

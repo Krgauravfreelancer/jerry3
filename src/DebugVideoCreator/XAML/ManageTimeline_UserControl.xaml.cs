@@ -43,13 +43,13 @@ namespace VideoCreator.XAML
         private int selectedProjectId;
         private Int64 selectedServerProjectId;
 
-        private int voiceAvgCount = -1;
-        private string audioMinutetext, audioSecondtext, audioSaveButtonText;
-        private bool isWavAudio = true;
+        //private int voiceAvgCount = -1;
+        //private string audioMinutetext, audioSecondtext, audioSaveButtonText;
+        //private bool isWavAudio = true;
         private PopupWindow popup;
-        private AudioEditor editor;
+        //private AudioEditor editor;
         private readonly AuthAPIViewModel authApiViewModel;
-        public event EventHandler closeTheEditWindow;
+        //public event EventHandler closeTheEditWindow;
         private bool ReadOnly;
         private int RetryIntervalInSeconds = 300;
 
@@ -86,10 +86,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.SetSelectedProjectId(selectedProjectId, authApiViewModel, ReadOnly);
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
-            TimelineUserConrol.ContextMenu_AddVideoEvent_Success += TimelineUserConrol_ContextMenu_AddVideoEvent_Success;
 
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
-            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Success += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success;
             TimelineUserConrol.ContextMenu_AddCallOut_Success += TimelineUserConrol_ContextMenu_AddCallOut_Success;
 
 
@@ -284,7 +282,7 @@ namespace VideoCreator.XAML
             var result = screenRecorderWindow.ShowDialog();
             if (result.HasValue)
             {
-                TimelineUserConrol_ContextMenu_AddVideoEvent_Success(this, new EventArgs());
+                Refresh();
             }
             LoaderHelper.HideLoader(this, loader);
         }
@@ -362,11 +360,6 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void TimelineUserConrol_ContextMenu_AddVideoEvent_Success(object sender, EventArgs e)
-        {
-            Refresh();
-        }
-
         private void TimelineUserConrol_ContextMenu_AddCallOut_Success(object sender, EventArgs e)
         {
             Refresh();
@@ -395,7 +388,7 @@ namespace VideoCreator.XAML
             var result = window.ShowDialog();
             if (result.HasValue && mediaLibraryUserControl.isEventAdded)
             {
-                TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(this, new EventArgs());
+                Refresh();
                 mediaLibraryUserControl.Dispose();
             }
             else
@@ -409,12 +402,6 @@ namespace VideoCreator.XAML
                 await ProcessVideoSegmentDataRowByRow(row);
             LoaderHelper.HideLoader(this, loader);
         }
-
-        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Success(object sender, EventArgs e)
-        {
-            Refresh();
-        }
-
 
         #endregion
 
@@ -441,21 +428,21 @@ namespace VideoCreator.XAML
 
         }
 
-        private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)
-        {
-            if (e != null && e.isAnyVideo) return true;
-            if (e?.videoeventIds?.Count != mouseEventToProcess?.videoeventIds?.Count) return true;
-            foreach (var id in e?.videoeventIds)
-            {
-                if (mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;
-            }
-            return false;
-        }
+        //private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)
+        //{
+        //    if (e != null && e.isAnyVideo) return true;
+        //    if (e?.videoeventIds?.Count != mouseEventToProcess?.videoeventIds?.Count) return true;
+        //    foreach (var id in e?.videoeventIds)
+        //    {
+        //        if (mouseEventToProcess?.videoeventIds?.Contains(id) == false) return true;
+        //    }
+        //    return false;
+        //}
 
 
         private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
         {
-            if (IfNeedToReProcess(e))
+            //if (IfNeedToReProcess(e))
             {
                 mouseEventToProcess = e;
                 PreviewUserControl.Process(mouseEventToProcess);

@@ -5,11 +5,14 @@ using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Timeline.UserControls.Config;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
@@ -25,10 +28,9 @@ namespace VideoCreator.XAML
         private AuthAPIViewModel authApiViewModel;
         
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
-        public event EventHandler ContextMenu_AddVideoEvent_Success;
+        //public event EventHandler ContextMenu_AddVideoEvent_Success;
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
-        public event EventHandler ContextMenu_AddImageEventUsingCBLibrary_Success;
         public event EventHandler ContextMenu_AddCallOut_Success;
 
 
@@ -47,7 +49,8 @@ namespace VideoCreator.XAML
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
         private bool ReadOnly;
-
+        DispatcherTimer dispatcherTimer = new DispatcherTimer();
+        int i = 0;
         public Timeline_UserControl()
         {
             InitializeComponent();
@@ -217,6 +220,22 @@ namespace VideoCreator.XAML
             /// use this event handler when the trackbar was moved by mouse action
             TimelineGridCtrl2.TrackbarMouseMoved += (sender, e) =>
             {
+                dispatcherTimer.Tick -= TrackBarMouseMovedAndStopped;
+                i = 0;
+                dispatcherTimer.Tick += new EventHandler(TrackBarMouseMovedAndStopped);
+                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
+                dispatcherTimer.Start();
+                
+            };
+        }
+
+        private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
+        {
+            Console.WriteLine($"{i++}.Here !!! {TimelineGridCtrl2._isTrackbarLineDragInProg}");
+            if (TimelineGridCtrl2._isTrackbarLineDragInProg == false)
+            {
+
+                dispatcherTimer.Stop();
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
                 //TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss.fff"));
@@ -224,19 +243,25 @@ namespace VideoCreator.XAML
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
                 //listView_trackbarEvents.ItemsSource = trackbarEvents;
-                Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
+                //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
                 {
                     timeAtTheMoment = trackBarPosition.ToString("HH:mm:ss.fff"),
                     videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList(),
-                    isAnyVideo = trackbarEvents?.Find(x=>x.fk_videoevent_media == 2) != null,
+                    isAnyVideo = trackbarEvents?.Find(x => x.fk_videoevent_media == 2) != null,
                 };
-                
                 TrackbarMouse_Moved.Invoke(sender, payload);
-            };
+            }
+        }
+        private static void NOP(double durationSeconds)
+        {
+            //var durationTicks = Math.Round(durationSeconds * Stopwatch.Frequency);
+            //var sw = Stopwatch.StartNew();
 
-
-
+            //while (sw.ElapsedTicks < durationTicks)
+            //{
+            //    Console.WriteLine(TimelineGridCtrl2._isTrackbarLineDragInProg);
+            //}
         }
 
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)

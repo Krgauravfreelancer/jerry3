@@ -89,34 +89,34 @@ namespace VideoCreator.XAML
                 List<CBVVideoSegment> videoSegments = item.videosegment_data;
                 List<CBVAudio> AudioSegments = item.audio_data;
 
-                MediaType mediaType = MediaType.Image;
+                //MediaType mediaType = MediaType.Image;
 
-                if (item.fk_videoevent_media == 1)
-                {
-                    //Its an image
-                    mediaType = MediaType.Image;
-                }
+                //if (item.fk_videoevent_media == 1)
+                //{
+                //    //Its an image
+                //    mediaType = MediaType.Image;
+                //}
 
-                if (item.fk_videoevent_media == 2)
-                {
-                    //Its a video
-                    mediaType = MediaType.Video;
-                }
+                //if (item.fk_videoevent_media == 2)
+                //{
+                //    //Its a video
+                //    mediaType = MediaType.Video;
+                //}
 
-                if (item.fk_videoevent_media == 3)
-                {
-                    //Its an audio
-                    mediaType = MediaType.Audio;
-                }
+                //if (item.fk_videoevent_media == 3)
+                //{
+                //    //Its an audio
+                //    mediaType = MediaType.Audio;
+                //}
 
-                if (videoSegments.Count > 0)
-                {
-                    byte[] MediaData = videoSegments[0].videosegment_media;
+                //if (videoSegments.Count > 0)
+                //{
+                //    byte[] MediaData = videoSegments[0].videosegment_media;
 
                     //PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
 
                     //playlist.Add(playlistItem);
-                }
+                //}
 
 
                 var allNotes = DataManagerSqlLite.GetNotes(item.videoevent_id);

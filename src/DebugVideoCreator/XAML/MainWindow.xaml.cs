@@ -224,10 +224,10 @@ namespace VideoCreator.XAML
                 WindowState = WindowState.Maximized,
             };
 
-            manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
-            {
-                window.Close();
-            };
+            //manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
+            //{
+            //    window.Close();
+            //};
             
             var result = window.ShowDialog();
             if (result.HasValue)
