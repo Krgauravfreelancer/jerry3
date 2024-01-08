@@ -136,7 +136,7 @@ namespace Notes_UserControl
                 if (updateSingleNoteEvent != null)
                     updateSingleNoteEvent.Invoke(this, dtNotes);
                 else
-                    DelayAction(1000, new Action(() => { updateSingleNoteEvent.Invoke(this, dtNotes); }));
+                    DelayAction(3000, new Action(() => { updateSingleNoteEvent?.Invoke(this, dtNotes); }));
             }
 
             

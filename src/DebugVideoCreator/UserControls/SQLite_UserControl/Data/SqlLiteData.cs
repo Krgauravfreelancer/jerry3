@@ -703,9 +703,10 @@ namespace Sqllite_Library.Data
                 var serverid = Convert.ToInt64(dr["notes_serverid"]);
                 var syncErrorString = Convert.ToString(dr["notes_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                var notes_line = Convert.ToString(dr["notes_line"]).Trim('\'');
 
                 var values = new List<string>();
-                values.Add($"({dr["fk_notes_videoevent"]}, '{dr["notes_line"]}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
+                values.Add($"({dr["fk_notes_videoevent"]}, '{notes_line}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
                          $"{dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
 
@@ -1906,7 +1907,7 @@ namespace Sqllite_Library.Data
                         {
                             notes_id = Convert.ToInt32(sqlReader["notes_id"]),
                             fk_notes_videoevent = Convert.ToInt32(sqlReader["fk_notes_videoevent"]),
-                            notes_line = Convert.ToString(sqlReader["notes_line"]),
+                            notes_line = Convert.ToString(sqlReader["notes_line"]).Trim('\''),
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
                             notes_start = Convert.ToString(sqlReader["notes_start"]),
@@ -1963,7 +1964,7 @@ namespace Sqllite_Library.Data
                         {
                             notes_id = Convert.ToInt32(sqlReader["notes_id"]),
                             fk_notes_videoevent = Convert.ToInt32(sqlReader["fk_notes_videoevent"]),
-                            notes_line = Convert.ToString(sqlReader["notes_line"]),
+                            notes_line = Convert.ToString(sqlReader["notes_line"]).Trim('\''),
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
                             notes_start = Convert.ToString(sqlReader["notes_start"]),
@@ -2516,7 +2517,7 @@ namespace Sqllite_Library.Data
                 var updateQueryString = $@" UPDATE cbv_notes
                                         SET 
                                             notes_index = {Convert.ToInt32(dr["notes_index"])},
-                                            notes_line = '{Convert.ToString(dr["notes_line"])}',
+                                            notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
                                             notes_start = '{Convert.ToString(dr["notes_start"])}',
                                             notes_duration = {Convert.ToInt32(dr["notes_duration"])},
