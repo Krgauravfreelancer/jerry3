@@ -32,6 +32,7 @@ namespace VideoCreator.Helpers
     {
         #region === Form/Design Functions ==
 
+        private static int localVideoEventId = -1;
         public static async Task<string> Preprocess(CalloutOrCloneEvent calloutEvent)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
@@ -40,7 +41,7 @@ namespace VideoCreator.Helpers
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {
-                var VideoFileName = $"{currentDirectory}\\Video\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
+                var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
                 var outputFolder = $"C:\\commercialBase\\ExtractedImages";
 
                 Stream t = new FileStream(VideoFileName, FileMode.Create);
@@ -52,7 +53,6 @@ namespace VideoCreator.Helpers
                 var convertedImage = await video2image.ConvertVideoToImage();
                 return convertedImage;
             }
-
 
             var imageEvent = videoEvents.Where(x => x.fk_videoevent_media == 1 || x.fk_videoevent_media == 4).FirstOrDefault();
             if (imageEvent != null)
@@ -68,7 +68,7 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        public static async Task<bool> CallOut(string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
+        public static async Task<bool> CallOut(CalloutOrCloneEvent calloutEvent, string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
             Designer_UserControl designerUserControl;
             if (string.IsNullOrEmpty(imagePath))
@@ -79,58 +79,41 @@ namespace VideoCreator.Helpers
             else
                 designerUserControl = new Designer_UserControl(selectedProjectId, imagePath, true);
 
-            var window = new Window
+            var designUCWindow = new Window
             {
                 Title = string.IsNullOrEmpty(title) ? "Designer" : title,
                 Content = designerUserControl,
                 WindowState = WindowState.Maximized,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
-            var result = window.ShowDialog();
+            LoaderHelper.ShowLoader(uc, loader, "Another window is opened ..");
+            var result = designUCWindow.ShowDialog();
             if (result.HasValue && designerUserControl.dataTableAdd.Rows.Count > 0 || designerUserControl.dataTableUpdate.Rows.Count > 0)
             {
                 if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    LoaderHelper.ShowLoader(uc, loader);
                     if (designerUserControl.dataTableAdd.Rows.Count > 0)
                     {
-                        // We need to insert the Data to server here and once it is success, then to local DB
-                        var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, track, authApiViewModel, string.IsNullOrEmpty(imagePath) ? "00:00:00.000" : "00:00:03.000");
-                        // Now we have to save the data locally
-                        if (addedData != null)
+                        var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableAdd, uc, loader);
+                        if (designImagerUserControl != null)
                         {
-                            var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
-                            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-                            if (insertedVideoEventIds?.Count > 0)
+                            var addedData = await CalloutStep1(designerUserControl, calloutEvent, selectedProjectId, selectedServerProjectId, authApiViewModel, track);
+                            if (addedData != null)
                             {
-                                var videoEventId = insertedVideoEventIds[0];
-                                var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(addedData.design, videoEventId);
-                                DataManagerSqlLite.InsertRowsToDesign(dtDesign);
-                                var totalRows = dtDesign.Rows.Count;
-                                var isSuccess = await CallOut_Step2(videoEventId, addedData.videoevent.videoevent_id, authApiViewModel, uc, loader);
-                                return isSuccess;
-                            }
-                            else
-                            {
-                                //MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                LoaderHelper.ShowLoader(uc, loader);
+                                return await CalloutStep2(designImagerUserControl, authApiViewModel, addedData.videoevent.videoevent_id);
                             }
                         }
                     }
-                }
-                else
-                {
-                    //MessageBox.Show($"No data added to database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             return false;
 
         }
 
-        public static async Task<bool> CallOut_Step2(int videoeventId, int videoevent_serverid, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader)
+        private static DesignImager_UserControl CallOut_XML2Image(DataTable designDataTable, UserControl uc, LoadingAnimation loader)
         {
-            
-            
-            var designImagerUserControl = new DesignImager_UserControl(videoeventId);
+            var designImagerUserControl = new DesignImager_UserControl(designDataTable);
             var window = new Window
             {
                 Title = "Design Image",
@@ -141,20 +124,38 @@ namespace VideoCreator.Helpers
             LoaderHelper.HideLoader(uc, loader);
             var result = window.ShowDialog();
             if (result.HasValue && designImagerUserControl.dtVideoSegment != null && designImagerUserControl.dtVideoSegment.Rows.Count > 0)
+                return designImagerUserControl;
+            return null;
+        }
+
+        private static async Task<VideoEventResponseModel> CalloutStep1(Designer_UserControl designerUserControl, CalloutOrCloneEvent calloutEvent, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track)
+        {
+            var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, selectedServerProjectId, track, authApiViewModel, calloutEvent?.timeAtTheMoment, 10);
+            var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            if (insertedVideoEventIds?.Count > 0)
             {
-                LoaderHelper.ShowLoader(uc, loader);
-                if (designImagerUserControl.UserConsent || MessageBox.Show("Do you want save all Image??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    // We need to insert the Data to server here and once it is success, then to local DB
-                    var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
-                    var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
-                    if (postResponse.Status == "error")
-                        MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, videoeventId, postResponse.Data);
-                    var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
-                    if (insertedVideoSegmentId > 0)
-                        return true;
-                }
+                localVideoEventId = insertedVideoEventIds[0];
+                var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(addedData.design, localVideoEventId);
+                DataManagerSqlLite.InsertRowsToDesign(dtDesign);
+                return addedData;
+            }
+            return null;
+        }
+
+        private static async Task<bool> CalloutStep2(DesignImager_UserControl designImagerUserControl, AuthAPIViewModel authApiViewModel, int videoevent_serverid)
+        {
+            if (designImagerUserControl.UserConsent || MessageBox.Show("Do you want save all Image??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                // We need to insert the Data to server here and once it is success, then to local DB
+                var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
+                var postResponse = await authApiViewModel.PostVideoSegment(videoevent_serverid, EnumMedia.FORM, blob);
+                if (postResponse.Status == "error")
+                    MessageBox.Show($"{postResponse.Status}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForDesign(blob, localVideoEventId, postResponse.Data);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, postResponse.Data.VideoSegment.videosegment_id);
+                if (insertedVideoSegmentId > 0)
+                    return true;
             }
             return false;
         }

@@ -22,6 +22,13 @@ namespace VideoCreator.XAML
             InitializeTable();
         }
 
+        public DesignImager_UserControl(DataTable designTable)
+        {
+            InitializeComponent();
+            LoadDesign(designTable);
+            InitializeTable();
+        }
+
         #region == Events ==
         private void btnConvert_Click(object sender, RoutedEventArgs e)
         {
@@ -38,12 +45,23 @@ namespace VideoCreator.XAML
             myWindow.Close();
         }
 
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            LoadDesign(1);
-        }
-
         #endregion
+
+        private void LoadDesign(DataTable designTable)
+        {
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("id", typeof(int));
+            dataTable.Columns.Add("xaml", typeof(string));
+
+            foreach(DataRow row in designTable.Rows)
+            {
+                var dataRow = dataTable.NewRow();
+                dataRow["id"] = -1;
+                dataRow["xaml"] = Convert.ToString(row["design_xml"]);
+                dataTable.Rows.Add(dataRow);
+            }
+            designImager.LoadDesign(dataTable);
+        }
 
         private void LoadDesign(int videoEvent = 1)
         {
@@ -55,14 +73,7 @@ namespace VideoCreator.XAML
             List<CBVDesign> cBVDesigns = DataManagerSqlLite.GetDesign(videoEvent);
             foreach (CBVDesign cBVDesign in cBVDesigns)
             {
-                Console.WriteLine(cBVDesign.design_id);
-                Console.WriteLine(cBVDesign.fk_design_videoevent);
-                Console.WriteLine(cBVDesign.fk_design_screen);
-                Console.WriteLine(cBVDesign.design_xml);
-                Console.WriteLine(cBVDesign.design_createdate);
-                Console.WriteLine(cBVDesign.design_modifydate);
-
-                DataRow dataRow = dataTable.NewRow();
+                var dataRow = dataTable.NewRow();
                 dataRow["id"] = -1;
                 dataRow["xaml"] = cBVDesign.design_xml;
                 dataTable.Rows.Add(dataRow);

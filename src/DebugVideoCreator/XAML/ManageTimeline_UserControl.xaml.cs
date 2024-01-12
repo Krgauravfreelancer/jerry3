@@ -530,9 +530,9 @@ namespace VideoCreator.XAML
 
         #region == Design/Form Context Menu Option ==
 
-        private async Task HandleCalloutLogic(EnumTrack track, string imagePath)
+        private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut("Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
+            var isSuccess = await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
             if (isSuccess)
             {
                 TimelineUserConrol.InvokeSuccess();
@@ -547,24 +547,26 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
+            LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
-                await HandleCalloutLogic(EnumTrack.CALLOUT1, convertedImage);
+                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT1, convertedImage);
             }
             else
-                await HandleCalloutLogic(EnumTrack.CALLOUT1, null);
+                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT1, null);
         }
 
         private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
         {
+            LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
-                await HandleCalloutLogic(EnumTrack.CALLOUT2, convertedImage);
+                await HandleCalloutLogic(calloutEvent,EnumTrack.CALLOUT2, convertedImage);
             }
             else
-                await HandleCalloutLogic(EnumTrack.CALLOUT2, null);
+                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT2, null);
         }
 
 
