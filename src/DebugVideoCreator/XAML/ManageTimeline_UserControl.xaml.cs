@@ -97,6 +97,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
+            TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
 
@@ -407,6 +408,32 @@ namespace VideoCreator.XAML
 
         #region == ContextMenu > CloneEvent ==
 
+
+        private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<TimelineVideoEvent> modifiedEvents)
+        {
+            LoaderHelper.ShowLoader(this, loader, "Processing ...");
+            foreach (var modifiedEvent in modifiedEvents)
+            {
+                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedServerProjectId, authApiViewModel);
+                if(response != null)
+                {
+                    var videoEventDt = new VideoEventDatatable();
+                    DataRow dataRow = videoEventDt.NewRow();
+                    dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
+                    dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
+                    dataRow["videoevent_track"] = response.videoevent_track;
+                    dataRow["videoevent_start"] = response.videoevent_start;
+                    dataRow["videoevent_duration"] = response.videoevent_duration;
+                    dataRow["videoevent_end"] = response.videoevent_end;
+                    dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
+                    dataRow["videoevent_issynced"] = response.videoevent_issynced;
+                    dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
+                    videoEventDt.Rows.Add(dataRow);
+                    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
+                }
+            }
+            LoaderHelper.HideLoader(this, loader);
+        }
 
         private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineVideoEvent selectedEvent)
         {

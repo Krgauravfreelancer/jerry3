@@ -2404,14 +2404,14 @@ namespace Sqllite_Library.Data
                 var videoevent_id = Convert.ToInt32(dr["videoevent_id"]);
                 var updateQueryString = $@" UPDATE cbv_videoevent 
                                         SET 
-                                            fk_videoevent_project = {Convert.ToInt32(dr["fk_videoevent_project"])},
                                             fk_videoevent_media = {Convert.ToInt32(dr["fk_videoevent_media"])},
                                             videoevent_track = {Convert.ToInt32(dr["videoevent_track"])},
                                             videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
                                             videoevent_duration = {Convert.ToInt32(dr["videoevent_duration"])},
+                                            videoevent_end = '{Convert.ToString(dr["videoevent_end"])}',
+                                            videoevent_isdeleted = {Convert.ToBoolean(dr["videoevent_isdeleted"])},
                                             videoevent_issynced = {Convert.ToBoolean(dr["videoevent_issynced"])},
-                                            videoevent_serverid = {Convert.ToInt64(dr["videoevent_serverid"])},
-                                            videoevent_syncerror = {Convert.ToString(dr["videoevent_syncerror"])},
+                                            videoevent_syncerror = '{Convert.ToString(dr["videoevent_syncerror"])}',
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
                                             videoevent_id = {videoevent_id}";

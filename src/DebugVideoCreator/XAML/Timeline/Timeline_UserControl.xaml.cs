@@ -45,6 +45,7 @@ namespace VideoCreator.XAML
         public event EventHandler<CalloutOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
+        public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -253,26 +254,13 @@ namespace VideoCreator.XAML
                 TrackbarMouse_Moved.Invoke(sender, payload);
             }
         }
-        private static void NOP(double durationSeconds)
-        {
-            //var durationTicks = Math.Round(durationSeconds * Stopwatch.Frequency);
-            //var sw = Stopwatch.StartNew();
-
-            //while (sw.ElapsedTicks < durationTicks)
-            //{
-            //    Console.WriteLine(TimelineGridCtrl2._isTrackbarLineDragInProg);
-            //}
-        }
-
+        
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // This event handler will be called when the context menu is opening
             HasData = _timelineGridControl.HasData();
             ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
         }
-
-
-
 
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
@@ -307,8 +295,8 @@ namespace VideoCreator.XAML
                 var MenuItem_ClearAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ClearAllTimelines");
                 MenuItem_ClearAllTimelines.IsEnabled = true;
 
-                //var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                //MenuItem_SaveAllTimelines.IsEnabled = true;
+                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+                MenuItem_SaveAllTimelines.IsEnabled = true;
 
                 var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
                 MenuItem_DeleteEvent.IsEnabled = (selectedEvent != null);
@@ -324,8 +312,8 @@ namespace VideoCreator.XAML
                 var MenuItem_ClearAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ClearAllTimelines");
                 MenuItem_ClearAllTimelines.IsEnabled = false;
 
-                //var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                //MenuItem_SaveAllTimelines.IsEnabled = false;
+                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+                MenuItem_SaveAllTimelines.IsEnabled = false;
 
                 var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
                 MenuItem_DeleteEvent.IsEnabled = false;
@@ -536,17 +524,7 @@ namespace VideoCreator.XAML
             }
 
             var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
-
-            foreach (var modifiedEvent in modifiedEvents)
-            {
-                var videoEventDt = new VideoEventDatatable();
-                videoEventDt.AddVideoEventRow(modifiedEvent);
-
-                DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
-            }
-
-            _timelineGridControl.ClearTimeline();
-            MessageBox.Show("Save Successful!");
+            ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
         }
 
 

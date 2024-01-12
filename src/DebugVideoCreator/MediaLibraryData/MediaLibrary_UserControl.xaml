@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:VideoCreator.MediaLibraryData"
              xmlns:loader="clr-namespace:VideoCreator.Loader"
              mc:Ignorable="d">
@@ -19,8 +20,10 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="Media Library" HorizontalAlignment="Center" Grid.Row="0" Grid.Column="0" FontSize="20"  VerticalAlignment="Center" Height="40"/>
-
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" >
+            <xctk:ColorPicker Margin="10" Height="25" Width="200" DisplayColorAndName="True"  AvailableColorsSortingMode="HueSaturationBrightness" />
+            <Label Content="Media Library" HorizontalAlignment="Center" FontSize="20"  VerticalAlignment="Center" Height="40"/>
+        </StackPanel>
         <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" >
             <Label Content="Select Tags : " HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="15" />
             <ListBox x:Name="listBoxtags" SelectionChanged="listBoxtags_SelectionChanged" Width="300" Margin="0,0,10,0" HorizontalAlignment="Right" SelectionMode="Multiple" Height="70" />

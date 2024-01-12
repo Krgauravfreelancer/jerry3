@@ -562,6 +562,29 @@ namespace VideoCreator.Auth
             catch { return null; }
         }
 
+        public async Task<VideoEventModel> PutVideoEvent(Int64 selectedServerProjectId, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
+        {
+            try
+            {
+                var url = $"api/connect/project/{selectedServerProjectId}/videoevent/{selectedServerVideoEventId}";
+                var parameters = new Dictionary<string, string>
+                {
+                    { "fk_videoevent_media", videoEventModel.fk_videoevent_media.ToString() },
+                    { "videoevent_track", videoEventModel.videoevent_track.ToString() },
+                    { "videoevent_start", videoEventModel.videoevent_start.ToString() },
+                    { "videoevent_duration", videoEventModel.videoevent_duration.ToString() },
+                    { "videoevent_end", videoEventModel.videoevent_end.ToString() },
+                    { "videoevent_modifylocdate", videoEventModel.videoevent_modifylocdate.ToString() }
+                };
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Update<ParentData<VideoEventModel>>(url, payload);
+                return result?.Data;
+            }
+            catch { return null; }
+        }
+
+
         public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
         {
             var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-create";

@@ -1,4 +1,5 @@
-﻿using ServerApiCall_UserControl.DTO.App;
+﻿using ServerApiCall_UserControl.DTO;
+using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;
 using ServerApiCall_UserControl.DTO.Company;
 using ServerApiCall_UserControl.DTO.Media;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Markup;
+using Timeline.UserControls.Models;
 using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
@@ -35,8 +37,21 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_duration = (int)row["videoevent_duration"];
             objToSync.videoevent_end = "00:00:00.000"; // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0]:  (byte[])row["media"];
+            objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0] : (byte[])row["media"];
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+            return result;
+        }
+
+        public static async Task<VideoEventModel> UpdateVideoEventToServer(TimelineVideoEvent videoevent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        {
+            var objToSync = new VideoEventModel();
+            objToSync.fk_videoevent_media = videoevent.fk_videoevent_media;
+            objToSync.videoevent_track = videoevent.videoevent_track;
+            objToSync.videoevent_start = videoevent.videoevent_start;
+            objToSync.videoevent_duration = videoevent.videoevent_duration;
+            objToSync.videoevent_end = videoevent.videoevent_end;
+            objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            var result = await authApiViewModel.PutVideoEvent(selectedServerProjectId, videoevent.videoevent_serverid, objToSync);
             return result;
         }
 
