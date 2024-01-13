@@ -39,7 +39,7 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", int duration = 10)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, byte[] blob,  Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", int duration = 10)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
@@ -49,6 +49,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_end = GetEndTime(startTime, duration); // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
+            objToSync.videosegment_media_bytes = blob;
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
         }
@@ -134,7 +135,7 @@ namespace VideoCreator.Helpers
             return dt;
         }
 
-        public static DataTable GetVideoSegmentDataTableForDesign(byte[] blob, int videoeventId, VideoSegmentPostResponse postResponse)
+        public static DataTable GetVideoSegmentDataTableForDesign(byte[] blob, int videoeventId, VideoSegmentModel videosegment)
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videosegment_id", typeof(int));
@@ -150,11 +151,11 @@ namespace VideoCreator.Helpers
             row["videosegment_id"] = videoeventId;
             row["videosegment_media"] = blob;
 
-            row["videosegment_createdate"] = postResponse.VideoSegment.videosegment_createdate;
-            row["videosegment_modifydate"] = postResponse.VideoSegment.videosegment_modifydate;
+            row["videosegment_createdate"] = videosegment.videosegment_createdate;
+            row["videosegment_modifydate"] = videosegment.videosegment_modifydate;
             row["videosegment_isdeleted"] = false;
             row["videosegment_issynced"] = true;
-            row["videosegment_serverid"] = postResponse.VideoSegment.videosegment_id;
+            row["videosegment_serverid"] = videosegment.videosegment_id;
             row["videosegment_syncerror"] = "";
             dtVideoEvent.Rows.Add(row);
             return dtVideoEvent;

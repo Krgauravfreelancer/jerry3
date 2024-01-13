@@ -432,6 +432,7 @@ namespace VideoCreator.XAML
                     DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
                 }
             }
+            TimelineUserConrol.InvokeSuccess();
             LoaderHelper.HideLoader(this, loader);
         }
 
