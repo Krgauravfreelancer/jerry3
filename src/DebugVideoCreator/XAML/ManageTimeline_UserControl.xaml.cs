@@ -560,17 +560,9 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
         {
-            var isSuccess = await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
-            if (isSuccess)
-            {
-                TimelineUserConrol.InvokeSuccess();
-                LoaderHelper.HideLoader(this, loader);
-                MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
+            TimelineUserConrol.InvokeSuccess();
             LoaderHelper.HideLoader(this, loader);
-
-            //else
-            //    MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
@@ -1080,12 +1072,19 @@ namespace VideoCreator.XAML
         private async void btnUploadNotSyncedData_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader, "Processing in Background");
-            await BackgroundProcessHelper.PeriodicallyCheckOfflineDataAndSync();
+            var result = await BackgroundProcessHelper.PeriodicallyCheckOfflineDataAndSync(true);
+            if(result != null && result == true) 
+            {
+                btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
+                btnUploadNotSyncedData.Width = 160;
+                btnUploadNotSyncedData.IsEnabled = false;
+                btnDownloadServerData.IsEnabled = true;
+            }
+            else
+            {
+                MessageBox.Show("Something went wrong, please try later", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             LoaderHelper.HideLoader(this, loader);
-            btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
-            btnUploadNotSyncedData.Width = 160;
-            btnUploadNotSyncedData.IsEnabled = false;
-            btnDownloadServerData.IsEnabled = true;
         }
 
 
@@ -1137,7 +1136,7 @@ namespace VideoCreator.XAML
 
         private void SaveDesign(int localVideoEventId, List<DesignModel> allDesigns)
         {
-            var dtDesign = DesignEventHandlerHelper.GetDesignDataTable(allDesigns, localVideoEventId);
+            var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCallout(allDesigns, localVideoEventId);
             DataManagerSqlLite.InsertRowsToDesign(dtDesign);
         }
 

@@ -462,6 +462,11 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpdateServerId("videosegment", localId, serverId, ErrorMessage);
         }
 
+        public static void UpdateDesignDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
+        {
+            SqlLiteData.UpdateServerId("design", localId, serverId, ErrorMessage);
+        }
+
 
         /*
         public static void UpdateRowsToAudio(DataTable dataTable)

@@ -470,6 +470,8 @@ namespace VideoCreator.Auth
         {
             try
             {
+                //_apiClientHelper.ErrorMessage = "No Internet !!";
+                //throw new Exception("No Internet !!");
                 var url = $"api/connect/project/{selectedServerProjectId}/videoevent-notes-design-videosegment";
 
                 var multipart = new MultipartFormDataContent();

@@ -55,17 +55,19 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImageBackground(CBVVideoEvent videoEvent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerBackground(CBVVideoEvent videoEvent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = videoEvent.fk_videoevent_media;
-            objToSync.videoevent_track = videoEvent.videoevent_track; // TBD
-            objToSync.videoevent_start = videoEvent.videoevent_start; // TBD
+            objToSync.videoevent_track = videoEvent.videoevent_track;
+            objToSync.videoevent_start = videoEvent.videoevent_start;
             objToSync.videoevent_duration = videoEvent.videoevent_duration;
-            objToSync.videoevent_end = "00:00:00.000"; // TBD
+            objToSync.videoevent_end = videoEvent.videoevent_end;
             objToSync.videoevent_modifylocdate = videoEvent.videoevent_createdate.ToString("yyyy-MM-dd HH:mm:ss");
-            if(videoEvent?.videosegment_data?.Count > 0)
+            if (videoEvent?.videosegment_data?.Count > 0)
                 objToSync.videosegment_media_bytes = (byte[])videoEvent?.videosegment_data[0]?.videosegment_media;
+            if (videoEvent?.design_data?.Count > 0)
+                objToSync.design.AddRange(DesignEventHandlerHelper.GetDesignModelList(videoEvent.design_data));
             var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
             return result;
         }

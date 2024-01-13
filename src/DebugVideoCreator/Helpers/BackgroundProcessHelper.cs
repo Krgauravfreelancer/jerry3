@@ -77,9 +77,9 @@ namespace DebugVideoCreator.Helpers
             FrequentlyCheckOfflineData();
         }
 
-        public static async Task PeriodicallyCheckOfflineDataAndSync()
+        public static async Task<bool?> PeriodicallyCheckOfflineDataAndSync(bool isRunningInUI = false)
         {
-            if (isBackgroundProcessRunning) return;
+            if (isBackgroundProcessRunning) return null;
             isBackgroundProcessRunning = true;
             try
             {
@@ -88,7 +88,7 @@ namespace DebugVideoCreator.Helpers
                 {
                     if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.IMAGE || notSyncedRow.fk_videoevent_media == (int)EnumMedia.VIDEO) // for image or video
                     {
-                        await ProcessVideoSegmentDataRowByRowInBackground(notSyncedRow);
+                        return await ProcessVideoSegmentDataRowByRowInBackground(notSyncedRow);
 
                     }
                     else if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.AUDIO) // for Audio
@@ -97,23 +97,31 @@ namespace DebugVideoCreator.Helpers
                     }
                     else if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.FORM) // for DESIGN + IMAGE
                     {
-                        // TBD
+                        return await ProcessVideoSegmentDataRowByRowInBackground(notSyncedRow);
                     }
                 }
             }
             catch (Exception) { }
             finally { isBackgroundProcessRunning = false; }
-
+            return null;
         }
 
-        private static async Task ProcessVideoSegmentDataRowByRowInBackground(CBVVideoEvent videoEvent)
+        private static async Task<bool> ProcessVideoSegmentDataRowByRowInBackground(CBVVideoEvent videoEvent)
         {
-            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImageBackground(videoEvent, selectedServerProjectId, authApiViewModel);
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerBackground(videoEvent, selectedServerProjectId, authApiViewModel);
             if (addedData != null)
             {
                 DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, addedData.videoevent.videoevent_id, authApiViewModel.GetError());
                 if (videoEvent?.videosegment_data?.Count > 0)
                     DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, addedData.videosegment.videosegment_id, authApiViewModel.GetError());
+
+                foreach (var design in videoEvent?.design_data)
+                {
+                    var serverDesign = addedData.design.Where(y => y.design_xml.Equals(design.design_xml)).FirstOrDefault();
+                    if(serverDesign != null)
+                        DataManagerSqlLite.UpdateDesignDataTableServerId(design.design_id, serverDesign.design_id, authApiViewModel.GetError());
+                }
+                return true;
             }
             else
             {
@@ -121,6 +129,9 @@ namespace DebugVideoCreator.Helpers
                 if (videoEvent?.videosegment_data?.Count > 0)
                     DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, videoEvent.videosegment_data[0].videosegment_serverid, authApiViewModel.GetError());
 
+                foreach (var design in videoEvent?.design_data)
+                    DataManagerSqlLite.UpdateDesignDataTableServerId(design.design_id, design.design_serverid, authApiViewModel.GetError());
+                return false;
             }
 
         }
