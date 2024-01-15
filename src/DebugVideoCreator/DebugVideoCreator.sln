@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33513.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugVideoCreator", "DebugVideoCreator.csproj", "{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLite_Library", "UserControls\SQLite_UserControl\SQLite_Library.csproj", "{4562DAB3-B29E-43E3-94D5-C377101A5D61}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31AF915D-14F9-47C6-80D1-C4B5D8762910}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -15,6 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerApiCall_UserControl", "UserControls\ServerApiCall_UserControl\ServerApiCall_UserControl.csproj", "{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoToImage_UserControl", "UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj", "{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLite_Library", "UserControls\SQLite_UserControl_v2\SQLite_Library.csproj", "{4562DAB3-B29E-43E3-94D5-C377101A5D61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,18 +38,6 @@ Global
 		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Release|ARM64.Build.0 = Release|Any CPU
 		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Release|x64.ActiveCfg = Release|Any CPU
 		{7AFBFB4E-C52B-46B2-84DF-E0F3E6B45CE8}.Release|x64.Build.0 = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|x64.Build.0 = Debug|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|ARM64.Build.0 = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|x64.ActiveCfg = Release|Any CPU
-		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|x64.Build.0 = Release|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67ADC641-EC67-44CF-A9AD-2444A90BE6D4}.Debug|ARM64.ActiveCfg = Debug|Any CPU
@@ -74,6 +62,18 @@ Global
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|ARM64.Build.0 = Release|Any CPU
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.ActiveCfg = Release|Any CPU
 		{BDF4F483-1CAC-4D83-AB7E-F03B67B3536B}.Release|x64.Build.0 = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Debug|x64.Build.0 = Debug|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|ARM64.Build.0 = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|x64.ActiveCfg = Release|Any CPU
+		{4562DAB3-B29E-43E3-94D5-C377101A5D61}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

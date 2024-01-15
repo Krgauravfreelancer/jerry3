@@ -6,7 +6,6 @@ namespace Sqllite_Library.Models
     {
         public int project_id { get; set; }
         public string project_name { get; set; }
-        public int project_version { get; set; }
         public string project_comments { get; set; }
         public bool project_uploaded { get; set; }
         public DateTime? project_date { get; set; }
@@ -28,7 +27,7 @@ namespace Sqllite_Library.Models
 
         public override string ToString()
         {
-            return $"{project_id} \t {project_name} \t {project_version} \t {project_uploaded}  [uploaded] " +
+            return $"{project_id} \t {project_name} \t {project_uploaded}  [uploaded] " +
                 $"\t {project_date} [project_date] \t {project_archived} [archived] \t {fk_project_background} background \t {project_comments} [comments] \t {project_started}[Started]";
         }
     }

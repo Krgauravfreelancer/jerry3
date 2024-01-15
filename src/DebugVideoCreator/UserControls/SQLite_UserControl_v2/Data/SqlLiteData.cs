@@ -185,7 +185,7 @@ namespace Sqllite_Library.Data
                     'project_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                     'project_serverid' INTEGER NOT NULL  DEFAULT 1,
                     'project_syncerror' TEXT(50) DEFAULT NULL,
-                    UNIQUE (project_name, project_version)
+                    UNIQUE (project_name)
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -1334,7 +1334,6 @@ namespace Sqllite_Library.Data
                         {
                             project_id = Convert.ToInt32(sqlReader["project_id"]),
                             project_name = Convert.ToString(sqlReader["project_name"]),
-                            project_version = Convert.ToInt32(sqlReader["project_version"]),
                             project_comments = Convert.ToString(sqlReader["project_comments"]),
                             project_uploaded = Convert.ToBoolean(sqlReader["project_uploaded"]),
                             project_date = Convert.ToDateTime(sqlReader["project_date"]),
