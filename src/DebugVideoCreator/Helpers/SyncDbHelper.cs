@@ -163,9 +163,9 @@ namespace VideoCreator.Helpers
             var row = dataTable.NewRow();
             row["project_id"] = -1;
             row["project_name"] = data.project_name;
-            row["project_version"] = data.project_version;
+            //row["project_version"] = data.project_version;
             row["project_uploaded"] = false;
-            row["project_archived"] = data.project_archived;
+            //row["project_archived"] = data.project_archived;
             row["fk_project_background"] = 1;
             row["project_createdate"] = data.project_createdate;
             row["project_modifydate"] = data.project_modifydate;

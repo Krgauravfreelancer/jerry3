@@ -19,14 +19,21 @@ using System.Windows.Input;
 using VideoCreator.MediaLibraryData;
 using NLog;
 using NLog.Config;
+using System.Windows.Controls;
+using System.Windows.Data;
+using NAudio.Wave;
+using System.Linq;
 
 namespace VideoCreator.XAML
 {
     public partial class MainWindow : Window, IDisposable
     {
         private readonly AuthAPIViewModel authApiViewModel;
-        private List<ProjectModel> pendingProjects;
-        
+       
+        private List<ProjectModel> availableProjects;
+        private List<ProjectModelUI> availableProjectsDataSource;
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,17 +52,77 @@ namespace VideoCreator.XAML
             await SyncCompany();
             await SyncBackground();
 
-            rbWIP.IsChecked = true;
+            //rbWIP.IsChecked = true;
             InitialiseAndRefreshScreen();
+
+
+            availableProjects = await authApiViewModel.GetAvailableProjectsData();
+            availableProjectsDataSource = RemoveUnnecessaryFields(availableProjects);
+
+            var item = availableProjectsDataSource != null ? availableProjectsDataSource[0] :  null;
+
+            if (item != null)
+            {
+                foreach (PropertyInfo prop in item.GetType().GetProperties())
+                {
+                    var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                    if (type == typeof(System.Collections.Generic.List<string>))
+                    {
+                        datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name), SelectedItemBinding =  getItems(prop.Name, datagrid.ItemsSource as List<ProjectModel>)  });
+                    }
+                    else
+                    { 
+                        datagrid.Columns.Add(new DataGridTextColumn() { Header = GetHeaderName(prop.Name), Binding = new Binding(prop.Name) });
+                    }
+                }
+            }
+
+
+            //datagrid.Columns.Add(new DataGridTextColumn() { Header = "Name", Binding = new Binding("Name") });    //Static Column
+            //int x = 0;
+            //foreach (Activity act in Community[0].Hobbys)  //Create the dynamic columns
+            //{
+            //    MyGrid.Columns.Add(new DataGridTextColumn() { Header = "Activity", Binding = new Binding("Hobbys[" + x + "].Name") });
+            //    x++;
+            //}
+
+
+
+            
+
+            datagrid.ItemsSource = availableProjectsDataSource;
+            datagrid.Visibility = Visibility.Visible;
+
+            pendingStack.Visibility = Visibility.Hidden;
+            manageStack.Visibility = Visibility.Visible;
+
             LoaderHelper.HideLoader(this, loader);
+        }
+
+        private List<string> getItems(string name, IEnumerable<ProjectModel> source)
+        {
+            return new List<string> { name };
+        }
+
+        private string GetHeaderName(string name)
+        {
+            var output = "";
+            if (!string.IsNullOrEmpty(name))
+            {
+                foreach (var input in name.Split('_'))
+                {
+                    output += input.First().ToString().ToUpper() + input.Substring(1) + ' ';
+                }
+            }
+            return output;
         }
 
 
         private void InitialiseAndRefreshScreen()
         {
             //lblLoading.Visibility = Visibility.Hidden;
-            stackRadioButtons.Visibility = Visibility.Visible;
-            rbWIP_Click(null, null);
+            //stackRadioButtons.Visibility = Visibility.Visible;
+            //rbWIP_Click(null, null);
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -103,7 +170,7 @@ namespace VideoCreator.XAML
 
         private async Task PopulateProjects()
         {
-            var data = await authApiViewModel.GetProjectsData();
+            var data = await authApiViewModel.GetAvailableProjectsData();
             datagrid.ItemsSource = data;
             datagrid.Visibility = Visibility.Visible;
         }
@@ -241,40 +308,40 @@ namespace VideoCreator.XAML
 
         private async void BtnAcceptProject_Click(object sender, RoutedEventArgs e)
         {
-            var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
-                if (selectedProject != null)
-                {
-                    var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, true);
-                    if (result != null)
-                    {
-                        var projectToInsertLocally = pendingProjects.Find(x => x.project_id == selectedProject.project_id);
-                        SyncDbHelper.SyncProject_Insert(projectToInsertLocally);
-                        rbPending_Click(sender, e);
-                        MessageBox.Show("Project Accepted successfully, you will see it in WIP tab", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+            //var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //if (messageBoxResult == MessageBoxResult.Yes)
+            //{
+            //    var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
+            //    if (selectedProject != null)
+            //    {
+            //        var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, true);
+            //        if (result != null)
+            //        {
+            //            var projectToInsertLocally = pendingProjects.Find(x => x.project_id == selectedProject.project_id);
+            //            SyncDbHelper.SyncProject_Insert(projectToInsertLocally);
+            //            rbPending_Click(sender, e);
+            //            MessageBox.Show("Project Accepted successfully, you will see it in WIP tab", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
         }
         private async void BtnRejectProject_Click(object sender, RoutedEventArgs e)
         {
-            var messageBoxResult = MessageBox.Show("Are you sure you want to Reject the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
-                if (selectedProject != null)
-                {
-                    var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, false);
-                    if (result != null)
-                    {
-                        rbPending_Click(sender, e);
-                        MessageBox.Show("Project Rejected successfully.", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-            }
+            //var messageBoxResult = MessageBox.Show("Are you sure you want to Reject the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //if (messageBoxResult == MessageBoxResult.Yes)
+            //{
+            //    var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
+            //    if (selectedProject != null)
+            //    {
+            //        var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, false);
+            //        if (result != null)
+            //        {
+            //            rbPending_Click(sender, e);
+            //            MessageBox.Show("Project Rejected successfully.", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+            //        }
+            //    }
+            //}
         }
         
         private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
@@ -315,31 +382,31 @@ namespace VideoCreator.XAML
 
         private async void rbPending_Click(object sender, RoutedEventArgs e)
         {
-            pendingProjects = await authApiViewModel.GetProjectsData(null, ProjectStatusEnum.Pending);
-            datagrid.ItemsSource = RemoveUnnecessaryFields(pendingProjects);
-            datagrid.Visibility = Visibility.Visible;
+            ////pendingProjects = await authApiViewModel.GetAvailableProjectsData(null, ProjectStatusEnum.Pending);
+            //datagrid.ItemsSource = RemoveUnnecessaryFields(pendingProjects);
+            //datagrid.Visibility = Visibility.Visible;
 
-            pendingStack.Visibility = Visibility.Visible;
-            manageStack.Visibility = Visibility.Hidden;
+            //pendingStack.Visibility = Visibility.Visible;
+            //manageStack.Visibility = Visibility.Hidden;
 
         }
         private void rbWIP_Click(object sender, RoutedEventArgs e)
         {
-            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
-            datagrid.ItemsSource = data;
-            datagrid.Visibility = Visibility.Visible;
+            //var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
+            //datagrid.ItemsSource = data;
+            //datagrid.Visibility = Visibility.Visible;
 
-            pendingStack.Visibility = Visibility.Hidden;
-            manageStack.Visibility = Visibility.Visible;
+            //pendingStack.Visibility = Visibility.Hidden;
+            //manageStack.Visibility = Visibility.Visible;
         }
         private void rbArchived_Click(object sender, RoutedEventArgs e)
         {
-            var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
-            datagrid.ItemsSource = data;
-            datagrid.Visibility = Visibility.Visible;
+            //var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
+            //datagrid.ItemsSource = data;
+            //datagrid.Visibility = Visibility.Visible;
 
-            pendingStack.Visibility = Visibility.Hidden;
-            manageStack.Visibility = Visibility.Hidden;
+            //pendingStack.Visibility = Visibility.Hidden;
+            //manageStack.Visibility = Visibility.Hidden;
         }
 
         public DataTable ToDataTable<T>(List<T> items)

@@ -113,31 +113,26 @@ namespace VideoCreator.Auth
 
         #region == Project API Calls ==
 
-        public async Task<List<ProjectModel>> GetProjectsData(DateTime? modifiedDate = null, ProjectStatusEnum status = 0)
+        public async Task<List<ProjectModel>> GetAvailableProjectsData()
         {
             var url = $"api/connect/project/available";
-            if (status > 0)
-                url += $"?projstatus={(int)status}";
-            if (modifiedDate.HasValue)
-                url += $"?modifydate={modifiedDate:yyyy-MM-dd HH:mm:ss}";
-
             var result = await _apiClientHelper.Get<ParentDataList<ProjectModel>>(url);
             return result?.Data?.Count > 0 ? result.Data : null;
         }
 
-        public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
-        {
-            var url = $"api/connect/project/accept-reject";
-            var parameters = new Dictionary<string, string>
-            {
-                { "project_id", project_id.ToString() },
-                { "accept_reject", accept_flag ? "1" : "0" }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
+        //public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
+        //{
+        //    var url = $"api/connect/project/accept-reject";
+        //    var parameters = new Dictionary<string, string>
+        //    {
+        //        { "project_id", project_id.ToString() },
+        //        { "accept_reject", accept_flag ? "1" : "0" }
+        //    };
+        //    var payload = new FormUrlEncodedContent(parameters);
 
-            var result = await _apiClientHelper.Create<ParentData<ProjectAcceptRejectModel>>(url, payload);
-            return result != null ? result : null;
-        }
+        //    var result = await _apiClientHelper.Create<ParentData<ProjectAcceptRejectModel>>(url, payload);
+        //    return result != null ? result : null;
+        //}
 
         public async Task CreateProject(string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
@@ -153,7 +148,7 @@ namespace VideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
-            await GetProjectsData();
+            await GetAvailableProjectsData();
         }
 
         public async Task UpdateProject(int ProjectId, string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
@@ -170,7 +165,7 @@ namespace VideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Update<ParentData<ProjectModel>>(url, payload);
-            await GetProjectsData();
+            await GetAvailableProjectsData();
         }
 
         public async Task PatchProject(int projectId, int project_version, string project_comments)
@@ -184,7 +179,7 @@ namespace VideoCreator.Auth
             var payload = new FormUrlEncodedContent(parameters);
 
             var result = await _apiClientHelper.Patch<ParentData<ProjectModel>>(url, payload);
-            await GetProjectsData();
+            await GetAvailableProjectsData();
         }
 
         public async Task GetProjectCount()

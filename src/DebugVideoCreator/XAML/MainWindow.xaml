@@ -43,7 +43,7 @@
 
 
         <!--<Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>-->
-        <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" Style="{DynamicResource DataGridStyle1}" />
+        <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" />
 
         <StackPanel x:Name="pendingStack" Orientation="Horizontal"  Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
             <Button Content="Accept" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnAcceptProject_Click" Height="25" Width="180" 
