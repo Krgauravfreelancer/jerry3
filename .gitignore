@@ -374,3 +374,7 @@
 /src/DebugVideoCreator/UserControls/ServerApiCall_UserControl/obj/Release
 /src/DebugVideoCreator/UserControls/TimePicker_UserControl/TimePicker_UserControl/obj/Release
 /src/DebugVideoCreator/UserControls/TimePicker_UserControl/TimePicker_UserControl/bin/Release
+/src/DebugVideoCreator/UserControls/SQLite_UserControl_v2/.vs
+/src/DebugVideoCreator/UserControls/SQLite_UserControl_v2/bin/Debug
+/src/DebugVideoCreator/UserControls/SQLite_UserControl_v2/obj/Debug
+/src/DebugVideoCreator/UserControls/SQLite_UserControl_v2/packages
