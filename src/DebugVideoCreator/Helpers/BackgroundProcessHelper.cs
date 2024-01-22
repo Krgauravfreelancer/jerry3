@@ -125,12 +125,12 @@ namespace DebugVideoCreator.Helpers
             }
             else
             {
-                DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, videoEvent.videoevent_serverid, authApiViewModel.GetError());
+                DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, videoEvent.videoevent_serverid, string.IsNullOrEmpty(authApiViewModel.GetError()) ? "Error" : authApiViewModel.GetError());
                 if (videoEvent?.videosegment_data?.Count > 0)
-                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, videoEvent.videosegment_data[0].videosegment_serverid, authApiViewModel.GetError());
+                    DataManagerSqlLite.UpdateVideoSegmentDataTableServerId(videoEvent.videosegment_data[0].videosegment_id, videoEvent.videosegment_data[0].videosegment_serverid, string.IsNullOrEmpty(authApiViewModel.GetError()) ? "Error": authApiViewModel.GetError());
 
                 foreach (var design in videoEvent?.design_data)
-                    DataManagerSqlLite.UpdateDesignDataTableServerId(design.design_id, design.design_serverid, authApiViewModel.GetError());
+                    DataManagerSqlLite.UpdateDesignDataTableServerId(design.design_id, design.design_serverid, string.IsNullOrEmpty(authApiViewModel.GetError()) ? "Error" : authApiViewModel.GetError());
                 return false;
             }
 
