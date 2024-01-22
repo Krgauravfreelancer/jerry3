@@ -31,8 +31,9 @@ namespace VideoCreator.XAML
         private readonly AuthAPIViewModel authApiViewModel;
        
         private List<ProjectModel> availableProjects;
+        private List<CBVDownloadedProject> downloadedProjects;
         private List<ProjectModelUI> availableProjectsDataSource;
-
+        private ProjectModelUI selectedItem;
 
         public MainWindow()
         {
@@ -41,60 +42,23 @@ namespace VideoCreator.XAML
             
         }
 
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
             LogManagerHelper.WriteVerboseLog(this, "Starting the windows application !! Inside OnControlLoaded...");
             await Login();
-            await SyncApp();
+            //await SyncApp();
             await SyncMedia();
             await SyncScreens();
             await SyncCompany();
             await SyncBackground();
 
-            //rbWIP.IsChecked = true;
-            InitialiseAndRefreshScreen();
-
-
-            availableProjects = await authApiViewModel.GetAvailableProjectsData();
-            availableProjectsDataSource = RemoveUnnecessaryFields(availableProjects);
-
-            var item = availableProjectsDataSource != null ? availableProjectsDataSource[0] :  null;
-
-            if (item != null)
-            {
-                foreach (PropertyInfo prop in item.GetType().GetProperties())
-                {
-                    var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                    if (type == typeof(System.Collections.Generic.List<string>))
-                    {
-                        datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name), SelectedItemBinding =  getItems(prop.Name, datagrid.ItemsSource as List<ProjectModel>)  });
-                    }
-                    else
-                    { 
-                        datagrid.Columns.Add(new DataGridTextColumn() { Header = GetHeaderName(prop.Name), Binding = new Binding(prop.Name) });
-                    }
-                }
-            }
-
-
-            //datagrid.Columns.Add(new DataGridTextColumn() { Header = "Name", Binding = new Binding("Name") });    //Static Column
-            //int x = 0;
-            //foreach (Activity act in Community[0].Hobbys)  //Create the dynamic columns
-            //{
-            //    MyGrid.Columns.Add(new DataGridTextColumn() { Header = "Activity", Binding = new Binding("Hobbys[" + x + "].Name") });
-            //    x++;
-            //}
-
-
-
-            
-
-            datagrid.ItemsSource = availableProjectsDataSource;
-            datagrid.Visibility = Visibility.Visible;
-
-            pendingStack.Visibility = Visibility.Hidden;
-            manageStack.Visibility = Visibility.Visible;
+            await InitialiseAndRefreshScreen(true);
 
             LoaderHelper.HideLoader(this, loader);
         }
@@ -118,16 +82,102 @@ namespace VideoCreator.XAML
         }
 
 
-        private void InitialiseAndRefreshScreen()
+        private async Task InitialiseAndRefreshScreen(bool isFirstCall = false)
         {
-            //lblLoading.Visibility = Visibility.Hidden;
-            //stackRadioButtons.Visibility = Visibility.Visible;
-            //rbWIP_Click(null, null);
+            downloadedProjects = DataManagerSqlLite.GetDownloadedProjectList();
+            availableProjects = await authApiViewModel.GetAvailableProjectsData();
+            availableProjectsDataSource = RemoveUnnecessaryFields(availableProjects);
+            if (isFirstCall)
+            {
+                var item = availableProjectsDataSource != null ? availableProjectsDataSource[0] : null;
+
+                if (item != null)
+                {
+                    foreach (PropertyInfo prop in item.GetType().GetProperties())
+                    {
+                        var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                        if (type == typeof(System.Collections.Generic.List<string>))
+                        {
+                            datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name) });
+                        }
+                        else
+                        {
+                            datagrid.Columns.Add(new DataGridTextColumn() { Header = GetHeaderName(prop.Name), Binding = new Binding(prop.Name) });
+                        }
+                    }
+                }
+            }
+            datagrid.ItemsSource = availableProjectsDataSource;
+            datagrid.Visibility = Visibility.Visible;
+            manageStack.Visibility = Visibility.Visible;
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+        private List<ProjectModelUI> RemoveUnnecessaryFields(List<ProjectModel> projects)
         {
-            Application.Current.Shutdown();
+            foreach(var item in projects)
+            {
+                var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id);
+                var isExist = proj != null;
+                if (isExist)
+                {
+                    item.projstatus_name = "AVAILABLE";
+                    item.project_localId = proj.project_id;
+                }
+                else
+                {
+                    item.project_localId = -1;
+                }
+            }
+            var result = JsonConvert.DeserializeObject<List<ProjectModelUI>>(JsonConvert.SerializeObject(projects));
+            return result;
+        }
+
+
+        
+
+
+        #region == API and Auth Events ==
+        private async Task Login()
+        {
+            await authApiViewModel.ExecuteLoginAsync();
+            ResetTokenOrError();
+            SetWelcomeMessage(false);
+        }
+        private async void BtnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            await Login();
+        }
+
+        private async void BtnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            await authApiViewModel.ExecuteLogoutAsync();
+            ResetTokenOrError();
+            SetWelcomeMessage(true);
+        }
+
+        private void ResetTokenOrError()
+        {
+            if (!string.IsNullOrEmpty(authApiViewModel.GetError()))
+            {
+                txtError.Text = authApiViewModel.GetError();
+                txtError.Foreground = Brushes.Red;
+                btnLogin.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                txtError.Text = "";
+                txtError.Foreground = Brushes.Green;
+                btnLogin.Visibility = Visibility.Hidden;
+            }
+
+            if (!string.IsNullOrEmpty(authApiViewModel.GetToken()))
+            {
+                btnLogout.IsEnabled = true;
+            }
+            else
+            {
+                btnLogout.IsEnabled = false;
+            }
         }
 
         private async Task SyncApp()
@@ -166,72 +216,9 @@ namespace VideoCreator.XAML
             result.Add(data);
             SyncDbHelper.SyncBackground(result, authApiViewModel);
         }
-
-
-        private async Task PopulateProjects()
-        {
-            var data = await authApiViewModel.GetAvailableProjectsData();
-            datagrid.ItemsSource = data;
-            datagrid.Visibility = Visibility.Visible;
-        }
-
-        #region == Auth Events ==
-        private async Task Login()
-        {
-            await authApiViewModel.ExecuteLoginAsync();
-            ResetTokenOrError();
-            SetWelcomeMessage(false);
-        }
-        private async void BtnLogin_Click(object sender, RoutedEventArgs e)
-        {
-            await Login();
-        }
-
-        private async void BtnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            await authApiViewModel.ExecuteLogoutAsync();
-            ResetTokenOrError();
-            SetWelcomeMessage(true);
-            rbWIP_Click(null, null);
-        }
-
-        private void ResetTokenOrError()
-        {
-            if (!string.IsNullOrEmpty(authApiViewModel.GetError()))
-            {
-                txtError.Text = authApiViewModel.GetError();
-                txtError.Foreground = Brushes.Red;
-                btnLogin.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                txtError.Text = "";
-                txtError.Foreground = Brushes.Green;
-                btnLogin.Visibility = Visibility.Hidden;
-            }
-
-            if (!string.IsNullOrEmpty(authApiViewModel.GetToken()))
-            {
-                //txtToken.Text = "Logged In with Token - " + authApiViewModel.GetToken();
-                //txtToken.Foreground = Brushes.Green;
-                btnLogout.IsEnabled = true;
-            }
-            else
-            {
-                //txtToken.Text = "";
-                //txtToken.Foreground = Brushes.Red;
-                btnLogout.IsEnabled = false;
-            }
-        }
         #endregion
 
         #region == Events ==
-
-        private void BtnCleanRegistry_Click(object sender, RoutedEventArgs e)
-        {
-            var message = DataManagerSqlLite.ClearRegistryAndDeleteDB(); // Lets clean for testing purpose
-            MessageBox.Show(message, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
 
         private void SetWelcomeMessage(bool isLogOut = false)
         {
@@ -247,54 +234,41 @@ namespace VideoCreator.XAML
 
         private bool PreValidations()
         {
-            if (datagrid.SelectedItem == null)
+            if (selectedItem == null)
             {
                 MessageBox.Show("Please select one recrod from Grid", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
-
-            if ((bool)rbPending.IsChecked)
-                MessageBox.Show("Please accept project to start working on it", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            else if ((bool)rbArchived.IsChecked)
-                MessageBox.Show("project is archived, no work possible", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            else if ((bool)rbWIP.IsChecked)
-                return true;
-            else
-                MessageBox.Show("Please select a project from WIP to continue", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            return false;
+            else if(selectedItem.projstatus_name != "AVAILABLE")
+            {
+                MessageBox.Show("You need to downloa the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                return false;
+            }
+            
+            return true;
         }
 
-        private void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
+        private async void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
         {
             int selectedProjectId;
             Int64 selectedServerProjectId;
             if (PreValidations())
             {
-                selectedProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_id ?? 0;
-                selectedServerProjectId = ((CBVWIPOrArchivedProjectList)datagrid.SelectedItem)?.project_serverid ?? 0;
+                selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_localId ?? 0;
+                selectedServerProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
             }
             else return;
-
-            //selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
 
             var window = new Window
             {
-                //Title = "Manage Timeline",
-                //Content = manageTimeline_UserControl,
-                //WindowState = WindowState.Maximized,
-                //ResizeMode = ResizeMode.CanResize,
-                //WindowStartupLocation = WindowStartupLocation.CenterScreen
                 Title = "Manage Timeline",
                 Content = manageTimeline_UserControl,
                 WindowState = WindowState.Maximized,
             };
 
-            //manageTimeline_UserControl.closeTheEditWindow += (object sender_2, EventArgs e_2) =>
-            //{
-            //    window.Close();
-            //};
+            
             
             var result = window.ShowDialog();
             if (result.HasValue)
@@ -303,47 +277,38 @@ namespace VideoCreator.XAML
                 manageTimeline_UserControl.Dispose();
             }
             
-            InitialiseAndRefreshScreen();
+            await InitialiseAndRefreshScreen();
         }
 
-        private async void BtnAcceptProject_Click(object sender, RoutedEventArgs e)
+        private void BtnViewPreviousVersion_Click(object sender, RoutedEventArgs e)
         {
-            //var messageBoxResult = MessageBox.Show("Are you sure you want to accept the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //if (messageBoxResult == MessageBoxResult.Yes)
-            //{
-            //    var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
-            //    if (selectedProject != null)
-            //    {
-            //        var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, true);
-            //        if (result != null)
-            //        {
-            //            var projectToInsertLocally = pendingProjects.Find(x => x.project_id == selectedProject.project_id);
-            //            SyncDbHelper.SyncProject_Insert(projectToInsertLocally);
-            //            rbPending_Click(sender, e);
-            //            MessageBox.Show("Project Accepted successfully, you will see it in WIP tab", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Coming Soon !!!");
+        }
 
-            //        }
-            //    }
-            //}
-        }
-        private async void BtnRejectProject_Click(object sender, RoutedEventArgs e)
+        private async void BtnDownloadLocally_Click(object sender, RoutedEventArgs e)
         {
-            //var messageBoxResult = MessageBox.Show("Are you sure you want to Reject the project?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //if (messageBoxResult == MessageBoxResult.Yes)
-            //{
-            //    var selectedProject = (ProjectModelUI)datagrid.SelectedItem;
-            //    if (selectedProject != null)
-            //    {
-            //        var result = await authApiViewModel.AcceptOrRejectProject(selectedProject.project_id, false);
-            //        if (result != null)
-            //        {
-            //            rbPending_Click(sender, e);
-            //            MessageBox.Show("Project Rejected successfully.", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
-            //        }
-            //    }
-            //}
+            var selectedItemFull = availableProjects.Find(x => x.project_id == selectedItem.project_id);
+            if (selectedItemFull != null)
+            {
+                LoaderHelper.ShowLoader(this, loader);
+                SyncDbHelper.UpsertProject(selectedItemFull);
+                await InitialiseAndRefreshScreen();
+                LoaderHelper.HideLoader(this, loader);
+            }
+            else
+                MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);
         }
+
+        private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoaderHelper.ShowLoader(this, loader);
+            await InitialiseAndRefreshScreen();
+            LoaderHelper.HideLoader(this, loader);
+        }
+
         
+
+
         private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
         {
             InitialiseDbHelper.PopulateLOCAudioTable();
@@ -363,51 +328,13 @@ namespace VideoCreator.XAML
         #endregion == Events ==
         private void datagrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((bool)rbPending.IsChecked)
-            {
-                btnAcceptProject.IsEnabled = true;
-                btnRejectProject.IsEnabled = true;
-            }
-            else
-            {
-                btnAcceptProject.IsEnabled = false;
-                btnRejectProject.IsEnabled = false;
-            }
-        }
-        private List<ProjectModelUI> RemoveUnnecessaryFields(List<ProjectModel> data)
-        {
-            var result = JsonConvert.DeserializeObject<List<ProjectModelUI>>(JsonConvert.SerializeObject(data));
-            return result;
+            selectedItem = datagrid.SelectedItem != null ? (ProjectModelUI)datagrid.SelectedItem : null;
+            btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.projstatus_name == "AVAILABLE";
+            btnViewPreviousVersion.IsEnabled = selectedItem != null && selectedItem.all_version?.Count > 1;
+            btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.projstatus_name != "AVAILABLE";
         }
 
-        private async void rbPending_Click(object sender, RoutedEventArgs e)
-        {
-            ////pendingProjects = await authApiViewModel.GetAvailableProjectsData(null, ProjectStatusEnum.Pending);
-            //datagrid.ItemsSource = RemoveUnnecessaryFields(pendingProjects);
-            //datagrid.Visibility = Visibility.Visible;
 
-            //pendingStack.Visibility = Visibility.Visible;
-            //manageStack.Visibility = Visibility.Hidden;
-
-        }
-        private void rbWIP_Click(object sender, RoutedEventArgs e)
-        {
-            //var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(false, true);
-            //datagrid.ItemsSource = data;
-            //datagrid.Visibility = Visibility.Visible;
-
-            //pendingStack.Visibility = Visibility.Hidden;
-            //manageStack.Visibility = Visibility.Visible;
-        }
-        private void rbArchived_Click(object sender, RoutedEventArgs e)
-        {
-            //var data = DataManagerSqlLite.GetWIPOrArchivedProjectList(true, false);
-            //datagrid.ItemsSource = data;
-            //datagrid.Visibility = Visibility.Visible;
-
-            //pendingStack.Visibility = Visibility.Hidden;
-            //manageStack.Visibility = Visibility.Hidden;
-        }
 
         public DataTable ToDataTable<T>(List<T> items)
         {

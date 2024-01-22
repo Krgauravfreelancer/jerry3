@@ -323,14 +323,10 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetProjects(includeArchived, startedFlag);
         }
 
-        public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool includeArchived = false, bool startedFlag = false)
+        
+        public static List<CBVDownloadedProject> GetDownloadedProjectList()
         {
-            return SqlLiteData.GetWIPOrArchivedProjectList(includeArchived, startedFlag);
-        }
-
-        public static List<CBVPendingProjectList> GetPendingProjectList()
-        {
-            return SqlLiteData.GetPendingProjectList();
+            return SqlLiteData.GetDownloadedProjectList();
         }
 
         public static int GetProjectsCount()
@@ -552,15 +548,17 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpsertRowsToBackground(dataTable);
         }
 
-        public static int UpsertRowsToProject(DataTable data)
+        public static int UpsertRowsToProjectAndProjectDet(DataTable data)
         {
-            foreach (DataRow rowMain in data.Rows)
-            {
-                //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
-                //if (!backgroundFlag)
-                //    throw new Exception("background_id foreign key constraint not successful ");
-            }
-            return SqlLiteData.UpsertRowsToProject(data);
+            //foreach (DataRow rowMain in data.Rows)
+            //{
+            //    //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
+            //    //if (!backgroundFlag)
+            //    //    throw new Exception("background_id foreign key constraint not successful ");
+            //}
+            var projectId =  SqlLiteData.UpsertRowsToProject(data);
+            var projectDetId = SqlLiteData.UpsertRowsToProjectDet(data, projectId);
+            return projectId;
         }
 
         #endregion

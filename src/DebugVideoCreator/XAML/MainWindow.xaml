@@ -15,10 +15,6 @@
         <Label Content="CB Video Creator" HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC"  VerticalAlignment="Top" Height="55"/>
 
 
-        <Label x:Name="lblLoading" Visibility="Hidden" Content="Please wait.. Logging you in and doing initial setup.." HorizontalAlignment="Center" FontWeight="Bold" FontSize="20" Foreground="#3381CC" VerticalAlignment="Center" Height="55"/>
-
-
-
         <StackPanel Orientation="Vertical" Margin="700,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="450">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="35" VerticalAlignment="Top">
                 <Button x:Name="btnLogin" Content="Login" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnLogin_Click" Height="25" Width="100" 
@@ -29,31 +25,22 @@
             <!--<TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>-->
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
         </StackPanel>
-        <StackPanel x:Name="stackRadioButtons" Margin="10,60,0,0" Height="40" VerticalAlignment="Top" Orientation= "Horizontal" HorizontalAlignment="Center" Visibility="Hidden">
-            <Viewbox Height="20">
-                <RadioButton x:Name="rbPending" Content="PENDING" GroupName="ProjectStatus" Click="rbPending_Click" Background="#ececec" Foreground="#3381CC" />
-            </Viewbox>
-            <Viewbox Height="20">
-                <RadioButton x:Name="rbWIP" Content="WIP" GroupName="ProjectStatus"  Click="rbWIP_Click" Background="#ececec" Foreground="#3381CC" Margin="40,0" />
-            </Viewbox>
-            <Viewbox Height="20">
-                <RadioButton x:Name="rbArchived" Content="ARCHIVED"  Click="rbArchived_Click" GroupName="ProjectStatus" Background="#ececec" Foreground="#3381CC"/>
-            </Viewbox>
-        </StackPanel>
 
 
         <!--<Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>-->
         <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" />
 
-        <StackPanel x:Name="pendingStack" Orientation="Horizontal"  Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
-            <Button Content="Accept" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnAcceptProject_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnAcceptProject" IsEnabled="False"/>
-            <Button Content="Reject" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnRejectProject_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" Margin="10,0,0,0" FontWeight="Bold" x:Name="btnRejectProject" IsEnabled="False"/>
-        </StackPanel>
+       
         <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
             <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="manageTimelineButton"/>
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnManageTimelineButton" IsEnabled="False"/>
+            <Button Content="View Previous Version" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnViewPreviousVersion_Click" Height="25" Width="180" 
+                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnViewPreviousVersion" IsEnabled="False"/>
+            <Button Content="Download Project" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnDownloadLocally_Click" 
+                    Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnDownloadProject" IsEnabled="False"/>
+            <Button Content="Refresh" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnRefresh_Click" 
+                    Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnRefresh"/>
+
         </StackPanel>
         <!--<StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
             <Button Content="Test LOC Audio Insert" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnInsertLocAudio_Click" Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>

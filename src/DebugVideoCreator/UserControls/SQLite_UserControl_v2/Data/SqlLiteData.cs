@@ -174,7 +174,7 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_project' (
                     'project_id' INTEGER NOT NULL  DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
                     'project_name' TEXT(30) UNIQUE NOT NULL  DEFAULT 'NULL',
-                    'project_currwfstep' INTEGER NOT NULL  DEFAULT 1,
+                    'project_currwfstep' TEXT(20) NOT NULL  DEFAULT 'NULL',
                     'project_uploaded' INTEGER(1) NOT NULL  DEFAULT 0,
                     'fk_project_background' INTEGER NOT NULL DEFAULT 1 REFERENCES 'cbv_background' ('background_id'),
                     'project_date' TEXT(25) DEFAULT NULL, 
@@ -184,8 +184,7 @@ namespace Sqllite_Library.Data
                     'project_isdeleted' INTEGER(1) NOT NULL DEFAULT 0,
                     'project_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                     'project_serverid' INTEGER NOT NULL  DEFAULT 1,
-                    'project_syncerror' TEXT(50) DEFAULT NULL,
-                    UNIQUE (project_name)
+                    'project_syncerror' TEXT(50) DEFAULT NULL
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -195,8 +194,8 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE 'cbv_projdet' (
                     'projdet_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                     'fk_projdet_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                    'projdet_version' INTEGER NOT NULL  DEFAULT 1,
-                    'projdet_currver' INTEGER(1) NOT NULL  DEFAULT 1,
+                    'projdet_version' TEXT(20) NOT NULL  DEFAULT 'NULL',
+                    'projdet_currver' TEXT(20) NOT NULL  DEFAULT 'NULL',
                     'projdet_comments' TEXT(100) DEFAULT NULL,
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
@@ -496,13 +495,13 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
+                values.Add($"('{dr["project_name"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
                     $" '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, 
+                    (project_name, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, 
                         project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
@@ -1371,15 +1370,17 @@ namespace Sqllite_Library.Data
             return projects;
         }
 
-        public static List<CBVPendingProjectList> GetPendingProjectList()
+        public static List<CBVDownloadedProject> GetDownloadedProjectList()
         {
-            var projects = new List<CBVPendingProjectList>();
+            var projects = new List<CBVDownloadedProject>();
 
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
-            string sqlQueryString = "SELECT project_id, project_name, project_version, project_date  FROM cbv_project ";
-
+                string sqlQueryString = $@"SELECT 
+                                                P.project_id, P.project_name, P.project_date, P.project_serverid, PD.projdet_version
+                                            FROM cbv_project P
+                                                JOIN cbv_projdet PD on PD.fk_projdet_project = P.project_id";
 
             SQLiteConnection sqlCon = null;
             try
@@ -1395,12 +1396,13 @@ namespace Sqllite_Library.Data
                 {
                     while (sqlReader.Read())
                     {
-                        var project = new CBVPendingProjectList
+                        var project = new CBVDownloadedProject
                         {
                             project_id = Convert.ToInt32(sqlReader["project_id"]),
                             project_name = Convert.ToString(sqlReader["project_name"]),
-                            project_version = Convert.ToInt32(sqlReader["project_version"]),
+                            project_version = Convert.ToString(sqlReader["projdet_version"]),
                             project_date = Convert.ToDateTime(sqlReader["project_date"]),
+                            project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
                         };
                         projects.Add(project);
                     }
@@ -1422,80 +1424,80 @@ namespace Sqllite_Library.Data
 
         }
 
-        public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool archivedFlag, bool wipFlag = false)
-        {
-            var projects = new List<CBVWIPOrArchivedProjectList>();
+     //   public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool archivedFlag, bool wipFlag = false)
+     //   {
+     //       var projects = new List<CBVWIPOrArchivedProjectList>();
 
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-            string sqlQueryString = "SELECT project_id, project_serverid, project_name, project_version, project_date FROM cbv_project ";
+     //       // Check if database is created
+     //       if (false == IsDbCreated())
+     //           throw new Exception("Database is not present.");
+     //       string sqlQueryString = "SELECT project_id, project_serverid, project_name, project_version, project_date FROM cbv_project ";
 
-            if (wipFlag)
-                sqlQueryString = $@"
-                    SELECT P.project_id, project_serverid, P.project_name, P.project_version, P.project_date, 
-                            CASE 
-			                    When VECount.VideoEventCount is NULL Then 0
-			                    When VECount.VideoEventCount = 0 Then 0
-			                    Else 1
-		                    End project_started,
-		                    CASE 
-		                        When VECount.VideoEventCount Is Null Then 0
-		                        Else VECount.VideoEventCount 
-		                    End project_videoeventcount
-                    FROM cbv_project P
-                 /* LEFT JOIN (
-                                Select fk_videoevent_project, count(fk_videoevent_project) as VideoEventCount
-                                from cbv_videoevent VE 
-			                    group by fk_videoevent_project
-                                ) as VECount on VECount.fk_videoevent_project = P.project_id */
-					" ;
+     //       if (wipFlag)
+     //           sqlQueryString = $@"
+     //               SELECT P.project_id, project_serverid, P.project_name, P.project_version, P.project_date, 
+     //                       CASE 
+			  //                  When VECount.VideoEventCount is NULL Then 0
+			  //                  When VECount.VideoEventCount = 0 Then 0
+			  //                  Else 1
+		   //                 End project_started,
+		   //                 CASE 
+		   //                     When VECount.VideoEventCount Is Null Then 0
+		   //                     Else VECount.VideoEventCount 
+		   //                 End project_videoeventcount
+     //               FROM cbv_project P
+     //            /* LEFT JOIN (
+     //                           Select fk_videoevent_project, count(fk_videoevent_project) as VideoEventCount
+     //                           from cbv_videoevent VE 
+			  //                  group by fk_videoevent_project
+     //                           ) as VECount on VECount.fk_videoevent_project = P.project_id */
+					//" ;
 
-            sqlQueryString += $@" WHERE project_archived={archivedFlag} and project_isdeleted = 0";
+     //       sqlQueryString += $@" WHERE project_archived={archivedFlag} and project_isdeleted = 0";
 
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
+     //       SQLiteConnection sqlCon = null;
+     //       try
+     //       {
+     //           string fileName = RegisteryHelper.GetFileName();
 
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
+     //           // Open Database connection 
+     //           sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+     //           sqlCon.Open();
 
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
-                {
-                    while (sqlReader.Read())
-                    {
-                        var project = new CBVWIPOrArchivedProjectList
-                        {
-                            project_id = Convert.ToInt32(sqlReader["project_id"]),
-                            project_serverid = Convert.ToInt32(sqlReader["project_serverid"]),
-                            project_name = Convert.ToString(sqlReader["project_name"]),
-                            project_version = Convert.ToInt32(sqlReader["project_version"]),
-                            project_date = Convert.ToDateTime(sqlReader["project_date"]),
-                        };
-                        if (wipFlag)
-                        {
-                            project.project_started = Convert.ToBoolean(sqlReader["project_started"]);
-                            project.project_videoeventcount = Convert.ToInt32(sqlReader["project_videoeventcount"]);
-                        }
-                        projects.Add(project);
-                    }
-                }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
-            }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
+     //           var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+     //           using (var sqlReader = sqlQuery.ExecuteReader())
+     //           {
+     //               while (sqlReader.Read())
+     //               {
+     //                   var project = new CBVWIPOrArchivedProjectList
+     //                   {
+     //                       project_id = Convert.ToInt32(sqlReader["project_id"]),
+     //                       project_serverid = Convert.ToInt32(sqlReader["project_serverid"]),
+     //                       project_name = Convert.ToString(sqlReader["project_name"]),
+     //                       project_version = Convert.ToInt32(sqlReader["project_version"]),
+     //                       project_date = Convert.ToDateTime(sqlReader["project_date"]),
+     //                   };
+     //                   if (wipFlag)
+     //                   {
+     //                       project.project_started = Convert.ToBoolean(sqlReader["project_started"]);
+     //                       project.project_videoeventcount = Convert.ToInt32(sqlReader["project_videoeventcount"]);
+     //                   }
+     //                   projects.Add(project);
+     //               }
+     //           }
+     //           // Close database
+     //           sqlQuery.Dispose();
+     //           sqlCon.Close();
+     //       }
+     //       catch (Exception)
+     //       {
+     //           if (null != sqlCon)
+     //               sqlCon.Close();
+     //           throw;
+     //       }
 
-            return projects;
-        }
+     //       return projects;
+     //   }
 
 
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false)
@@ -2892,20 +2894,53 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', {dr["project_version"]}, '{dr["project_comments"]}', " +
+                values.Add($"('{dr["project_name"]}', " +
                     $"{projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
                     $" 0, {issynced}, {serverid}, '{syncerror}')");
-            }
-            var valuesString = string.Join(",", values.ToArray());
-            string sqlQueryString =
-                $@"INSERT INTO  cbv_project 
-                    (project_name, project_version, project_comments, project_uploaded, project_date, project_archived, fk_project_background, 
+
+                var valuesString = string.Join(",", values.ToArray());
+                string sqlQueryString =
+                    $@"INSERT INTO  cbv_project 
+                    (project_name, project_uploaded, project_date, project_archived, fk_project_background, 
                         project_createdate, project_modifydate, project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
 
-            var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
-            return insertedId;
+                var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
+                return insertedId;
+            }
+
+            return -1;
+        }
+
+        public static int UpsertRowsToProjectDet(DataTable dataTable, int Project_Id)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                
+                var createDate = Convert.ToString(dr["projdet_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["projdet_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                values.Add($"({Project_Id}, '{dr["projdet_version"]}', '{dr["projdet_currver"]}', '', '{createDate}', '{modifyDate}')");
+
+                var valuesString = string.Join(",", values.ToArray());
+                string sqlQueryString =
+                    $@"INSERT INTO cbv_projdet
+                    (fk_projdet_project, projdet_version,  projdet_currver, projdet_comments, projdet_createdate, projdet_modifydate) 
+                VALUES 
+                    {valuesString}";
+
+                var insertedId = InsertRecordsInTable("cbv_projdet", sqlQueryString);
+                return insertedId;
+            }
+
+            return -1;
         }
 
         #endregion
