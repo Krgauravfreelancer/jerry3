@@ -116,7 +116,7 @@ namespace VideoCreator.XAML
         {
             foreach(var item in projects)
             {
-                var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id);
+                var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id && x.project_version == item.current_version);
                 var isExist = proj != null;
                 if (isExist)
                 {
