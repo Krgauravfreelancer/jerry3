@@ -21,9 +21,6 @@ namespace VideoCreator.Helpers
             if (DataManagerSqlLite.GetBackgroundsCount() == 0)
                 PopulateBackgroundTable();
 
-            if (DataManagerSqlLite.GetProjectsCount() == 0)
-                PopulateProjectTable();
-
             if (DataManagerSqlLite.GetVoiceTimerCount() == 0)
             {
                 SyncVoiceTimer();
@@ -219,43 +216,6 @@ namespace VideoCreator.Helpers
         #endregion
 
         #region == Populate functions ==
-
-        private static void PopulateProjectTable()
-        {
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("id", typeof(int));
-            dataTable.Columns.Add("project_name", typeof(string));
-            dataTable.Columns.Add("project_version", typeof(int));
-            dataTable.Columns.Add("project_comments", typeof(string));
-            dataTable.Columns.Add("project_createdate", typeof(string));
-            dataTable.Columns.Add("project_modifydate", typeof(string));
-            dataTable.Columns.Add("project_uploaded", typeof(bool));
-            dataTable.Columns.Add("project_archived", typeof(bool));
-            dataTable.Columns.Add("fk_project_background", typeof(int));
-            dataTable.Columns.Add("project_date", typeof(string));
-
-            for (var i = 1; i <= 2; i++) // Made 1 rows to check DataGrid fuctionality
-            {
-                var row = dataTable.NewRow();
-                row["id"] = 1;
-                row["project_name"] = $"Sample Project - {i}";
-                row["project_version"] = i;
-                row["project_uploaded"] = false;
-                row["project_archived"] = i % 2 == 0;
-                row["fk_project_background"] = 1;
-                row["project_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["project_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                row["project_date"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                dataTable.Rows.Add(row);
-            }
-
-            var insertedId = DataManagerSqlLite.InsertRowsToProject(dataTable);
-            if (insertedId > -1)
-            {
-                MessageBox.Show("Projects populated to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
 
         private static void PopulateBackgroundTable()
         {

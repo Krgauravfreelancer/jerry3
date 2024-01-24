@@ -28,20 +28,6 @@ namespace VideoCreator.Helpers
         public static void InitializeDatabase()
         {
             DataManagerSqlLite.CreateDatabaseIfNotExist(false, true); // Lets keep the flag false for now
-            //SyncScreen();
-            //SyncCompany(); // TBD 
-
-
-
-            //if (DataManagerSqlLite.GetProjectsCount() == 0)
-            //    PopulateProjectTable();
-
-            //if (DataManagerSqlLite.GetVoiceTimerCount() == 0)
-            //{
-            //    SyncVoiceTimer();
-            //    var data = DataManagerSqlLite.GetVoiceTimers(); // For testing purpose to see if all functions are working
-            //    Console.WriteLine(data.Count);
-            //}
         }
 
         #endregion

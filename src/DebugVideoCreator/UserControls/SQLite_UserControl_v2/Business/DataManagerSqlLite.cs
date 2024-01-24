@@ -4,6 +4,7 @@ using Sqllite_Library.Models;
 using System.Data;
 using System.Collections.Generic;
 using Sqllite_Library.Helpers;
+using System.Linq;
 
 namespace Sqllite_Library.Business
 {
@@ -318,15 +319,14 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetApp();
         }
 
-        public static List<CBVProject> GetProjects(bool includeArchived = false, bool startedFlag = false)
-        {
-            return SqlLiteData.GetProjects(includeArchived, startedFlag);
-        }
-
-        
-        public static List<CBVDownloadedProject> GetDownloadedProjectList()
+        public static List<CBVProjectForJoin> GetDownloadedProjectList()
         {
             return SqlLiteData.GetDownloadedProjectList();
+        }
+
+        public static CBVProject GetProjectById(int projectId = -1, bool projdetFlag = false)
+        {
+            return SqlLiteData.GetProjectById(projectId, projdetFlag).FirstOrDefault();
         }
 
         public static int GetProjectsCount()

@@ -23,6 +23,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using NAudio.Wave;
 using System.Linq;
+using DebugVideoCreator.Models;
 
 namespace VideoCreator.XAML
 {
@@ -31,7 +32,7 @@ namespace VideoCreator.XAML
         private readonly AuthAPIViewModel authApiViewModel;
        
         private List<ProjectModel> availableProjects;
-        private List<CBVDownloadedProject> downloadedProjects;
+        private List<CBVProjectForJoin> downloadedProjects;
         private List<ProjectModelUI> availableProjectsDataSource;
         private ProjectModelUI selectedItem;
 
@@ -249,16 +250,22 @@ namespace VideoCreator.XAML
 
         private async void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
         {
-            int selectedProjectId;
-            Int64 selectedServerProjectId;
-            if (PreValidations())
+            if (PreValidations() == false)
+                return;
+
+            CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
+            CBVProjdet cbvProjDet = cbvProject.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
+
+            var selectedProjectEvent = new SelectedProjectEvent
             {
-                selectedProjectId = selectedItem?.project_localId ?? 0;
-                selectedServerProjectId = selectedItem?.project_id ?? 0;
-            }
-            else return;
+                projectId = selectedItem?.project_localId ?? -1,
+                serverProjectId = selectedItem?.project_id ?? -1,
+                projdetId = cbvProjDet?.projdet_id ?? -1,
+                serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
+            };
+            
             var readonlyFlag = selectedItem.projstatus_name == "AVAILABLE" && selectedItem.current_version == false;
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel, readonlyFlag);
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
 
             var window = new Window
             {
@@ -267,15 +274,12 @@ namespace VideoCreator.XAML
                 WindowState = WindowState.Maximized,
             };
 
-            
-            
             var result = window.ShowDialog();
             if (result.HasValue)
             {
                 datagrid.SelectedItem = null;
                 manageTimeline_UserControl.Dispose();
             }
-            
             await InitialiseAndRefreshScreen();
         }
 

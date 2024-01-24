@@ -40,9 +40,6 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class ManageTimeline_UserControl : UserControl, IDisposable
     {
-        private int selectedProjectId;
-        private Int64 selectedServerProjectId;
-
         //private int voiceAvgCount = -1;
         //private string audioMinutetext, audioSecondtext, audioSaveButtonText;
         //private bool isWavAudio = true;
@@ -52,24 +49,23 @@ namespace VideoCreator.XAML
         //public event EventHandler closeTheEditWindow;
         private bool ReadOnly;
         private int RetryIntervalInSeconds = 300;
-
+        SelectedProjectEvent selectedProjectEvent;
 
 
         private TrackbarMouseMoveEvent mouseEventToProcess;
         private TimelineVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
 
-        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, bool readonlyFlag)
+        public ManageTimeline_UserControl(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool _readonlyFlag)
         {
             InitializeComponent();
-            selectedProjectId = projectId;
-            selectedServerProjectId = _selectedServerProjectId;
+            selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
-            ReadOnly = readonlyFlag;
-            var subjectText = ReadOnly ? "[READONLY] Project Id - " + selectedProjectId: "Project Id - " + selectedProjectId;
-            lblSelectedProjectId.Content = subjectText;
-            //await SyncServerDataToLocalDB();
+            ReadOnly = _readonlyFlag;
+            var subjectText = "Project Id - " + selectedProjectEvent.projectId;
+            lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}": subjectText ;
             InitializeChildren();
+            //await SyncServerDataToLocalDB();
 
             // BackgroundProcessHelper.SetBackgroundProcess(selectedProjectId, selectedServerProjectId, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
             loader.Visibility = Visibility.Hidden;
@@ -83,7 +79,7 @@ namespace VideoCreator.XAML
             //ResetAudioMenuOptions();
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectId, authApiViewModel, ReadOnly);
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent.projectId, authApiViewModel, ReadOnly);
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
 
@@ -99,14 +95,14 @@ namespace VideoCreator.XAML
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
-            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId, ReadOnly);
+            NotesUserConrol.InitializeNotes(selectedProjectEvent.projectId, selectedVideoEventId, ReadOnly);
 
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
             // Reload Control
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projectId);
             //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             //ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
@@ -123,9 +119,9 @@ namespace VideoCreator.XAML
 
         private void Refresh()
         {
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projectId);
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
+            NotesUserConrol.InitializeNotes(selectedProjectEvent.projectId, selectedVideoEventId);
         }
 
 
@@ -229,7 +225,7 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
             var fsp_uc = new FullScreen_UserControl(true, true);
-            fsp_uc.SetSelectedProjectIdAndReset(selectedProjectId);
+            fsp_uc.SetSelectedProjectIdAndReset(selectedProjectEvent.projectId);
             var window = new Window
             {
                 Title = "Full Screen Player",
@@ -244,7 +240,7 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectId);
+            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectEvent.projectId);
             screenRecordingUserControl.BtnSaveClickedEvent += ScreenRecordingUserControl_BtnSaveClickedEvent; //+= ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
             var screenRecorderWindow = new System.Windows.Window
             {
@@ -273,7 +269,7 @@ namespace VideoCreator.XAML
 
         private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
         {
-            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedServerProjectId, authApiViewModel);
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedProjectEvent.serverProjectId, authApiViewModel);
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -296,7 +292,7 @@ namespace VideoCreator.XAML
 
         private void SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
         {
-            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectId);
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectEvent.projectId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
             {
@@ -316,7 +312,7 @@ namespace VideoCreator.XAML
         {
             // Save the record locally with server Id = temp and issynced = false
             var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
-            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectId);
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projectId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
             {
@@ -351,7 +347,8 @@ namespace VideoCreator.XAML
         #region == ContextMenu > AddImageEvent > Using CB Library ==
         private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
         {
-            var mediaLibraryUserControl = new MediaLibrary_UserControl(2, selectedProjectId, selectedServerProjectId, authApiViewModel, startTime);
+            int trackId = 2;
+            var mediaLibraryUserControl = new MediaLibrary_UserControl(trackId, selectedProjectEvent.projectId, selectedProjectEvent.serverProjectId, authApiViewModel, startTime);
             mediaLibraryUserControl.BtnUseAndSaveClickedEvent += MediaLibraryUserControl_BtnUseAndSaveClickedEvent;
             var window = new Window
             {
@@ -390,7 +387,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader, "Processing ...");
             foreach (var modifiedEvent in modifiedEvents)
             {
-                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedServerProjectId, authApiViewModel);
+                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent.serverProjectId, authApiViewModel);
                 if(response != null)
                 {
                     var videoEventDt = new VideoEventDatatable();
@@ -462,15 +459,15 @@ namespace VideoCreator.XAML
             var message = string.Empty;
 
             var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
-            var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedServerProjectId, -1);
+            var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
-            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedServerProjectId, authApiViewModel, payload.timeAtTheMoment);
+            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent.serverProjectId, authApiViewModel, payload.timeAtTheMoment);
 
             if (videoEventResponse != null)
             {
                 message += $"{i++}. Successfully cloned event to server !!" + Environment.NewLine;
 
-                var dtVideoEvent = CloneEventHandlerHelper.GetVideoEventDataTableServer(videoEventResponse, selectedProjectId);
+                var dtVideoEvent = CloneEventHandlerHelper.GetVideoEventDataTableServer(videoEventResponse, selectedProjectEvent.projectId);
                 var videoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dtVideoEvent, false);
                 var insertedVideoEventId = videoEventIds?.Count > 0 ? videoEventIds[0] : -1;
                 if (insertedVideoEventId > 0)
@@ -536,7 +533,7 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
         {
-            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectId, selectedServerProjectId, authApiViewModel, track, this, loader, imagePath);
+            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent.projectId, selectedProjectEvent.serverProjectId, authApiViewModel, track, this, loader, imagePath);
             TimelineUserConrol.InvokeSuccess();
             LoaderHelper.HideLoader(this, loader);
         }
@@ -1043,11 +1040,11 @@ namespace VideoCreator.XAML
         {
             // Step1: Lets clear the local DB
 
-            DataManagerSqlLite.DeleteAllVideoEventsByProjectId(selectedProjectId, true);
+            DataManagerSqlLite.DeleteAllVideoEventsByProjectId(selectedProjectEvent.projectId, true);
 
 
             //Step2: Lets fetch the data from 
-            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjectId(selectedServerProjectId);
+            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjectId(selectedProjectEvent.serverProjectId);
 
             if (serverVideoEventData?.Data != null)
             {
@@ -1067,7 +1064,7 @@ namespace VideoCreator.XAML
 
         private int SaveVideoEvent(AllVideoEventResponseModel videoevent)
         {
-            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectId, videoevent);
+            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectEvent.projectId, videoevent);
             var result = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             return result?.Count > 0 ? result[0] : -1;
         }
