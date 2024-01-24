@@ -4,12 +4,14 @@ using System.Text.Json.Serialization;
 
 namespace ServerApiCall_UserControl.DTO.Projects
 {
-    public class ProjectModel: ProjectModelUI
+    public class ProjectModel : ProjectModelUI
     {
-        public string project_modifydate { get; set; }
-        public string project_createdate { get; set; }
         public int fk_project_section { get; set; }
         public int projstatus_id { get; set; }
+        public string project_modifydate { get; set; }
+        public string project_createdate { get; set; }
+        public int projdet_id { get; set; }
+
     }
 
     public class ProjectModelUI
@@ -18,11 +20,11 @@ namespace ServerApiCall_UserControl.DTO.Projects
         public string project_name { get; set; }
         public string project_currwfstep { get; set; }
         public string projstatus_name { get; set; }
-        public string current_version { get; set; }
+        public bool current_version { get; set; }
+        public string projdet_version { get; set; }
         public int project_localId { get; set; }
-        public List<string> all_version { get; set; }
-
     }
+
 
     public enum ProjectStatusEnum
     {

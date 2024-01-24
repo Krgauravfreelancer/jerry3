@@ -195,7 +195,7 @@ namespace Sqllite_Library.Data
                     'projdet_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                     'fk_projdet_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
                     'projdet_version' TEXT(20) NOT NULL  DEFAULT 'NULL',
-                    'projdet_currver' TEXT(20) NOT NULL  DEFAULT 'NULL',
+                    'projdet_currver' INTEGER(1) NOT NULL  DEFAULT 0,
                     'projdet_comments' TEXT(100) DEFAULT NULL,
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
@@ -1368,6 +1368,46 @@ namespace Sqllite_Library.Data
             }
 
             return projects;
+        }
+
+
+        public static int IsProjectAvailable(int projectServerId)
+        {
+            int project_id = -1;
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+            string sqlQueryString = $@"SELECT project_id FROM cbv_project Where project_serverid = {projectServerId}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        project_id = Convert.ToInt32(sqlReader["project_id"]);
+                        return project_id;
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+            return project_id;
         }
 
         public static List<CBVDownloadedProject> GetDownloadedProjectList()
@@ -2886,7 +2926,7 @@ namespace Sqllite_Library.Data
                 var modifyDate = Convert.ToString(dr["project_modifydate"]);
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-
+                var isdeleted = Convert.ToInt16(dr["project_isdeleted"]);
                 var issynced = Convert.ToInt16(dr["project_issynced"]);
                 var serverid = Convert.ToInt64(dr["project_serverid"]);
 
@@ -2894,14 +2934,13 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', " +
-                    $"{projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
-                    $" 0, {issynced}, {serverid}, '{syncerror}')");
+                values.Add($"('{dr["project_name"]}',  '{dr["project_currwfstep"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
+                    $" {isdeleted}, {issynced}, {serverid}, '{syncerror}')");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_project 
-                    (project_name, project_uploaded, project_date, project_archived, fk_project_background, 
+                    (project_name, project_currwfstep, project_uploaded, project_date, project_archived, fk_project_background, 
                         project_createdate, project_modifydate, project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
@@ -2927,7 +2966,7 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({Project_Id}, '{dr["projdet_version"]}', '{dr["projdet_currver"]}', '', '{createDate}', '{modifyDate}')");
+                values.Add($"({Project_Id}, '{dr["projdet_version"]}', {dr["projdet_currver"]}, '{dr["projdet_comments"]}', '{createDate}', '{modifyDate}')");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =

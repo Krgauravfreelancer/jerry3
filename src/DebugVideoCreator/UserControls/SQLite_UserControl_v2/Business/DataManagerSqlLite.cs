@@ -548,7 +548,12 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpsertRowsToBackground(dataTable);
         }
 
-        public static int UpsertRowsToProjectAndProjectDet(DataTable data)
+        public static int IsProjectAvailable(int projectServerId)
+        {
+            return SqlLiteData.IsProjectAvailable(projectServerId);
+        }
+
+        public static int UpsertRowsToProjectAndProjectDet(DataTable data, int projectServerId, bool projdetAvailable)
         {
             //foreach (DataRow rowMain in data.Rows)
             //{
@@ -556,8 +561,12 @@ namespace Sqllite_Library.Business
             //    //if (!backgroundFlag)
             //    //    throw new Exception("background_id foreign key constraint not successful ");
             //}
-            var projectId =  SqlLiteData.UpsertRowsToProject(data);
-            var projectDetId = SqlLiteData.UpsertRowsToProjectDet(data, projectId);
+
+            var projectId = SqlLiteData.IsProjectAvailable(projectServerId);
+            if (projectId == -1)
+                projectId = SqlLiteData.UpsertRowsToProject(data);
+            if (projdetAvailable)
+                SqlLiteData.UpsertRowsToProjectDet(data, projectId);
             return projectId;
         }
 

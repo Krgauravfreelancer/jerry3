@@ -120,6 +120,13 @@ namespace VideoCreator.Auth
             return result?.Data?.Count > 0 ? result.Data : null;
         }
 
+        public async Task<ProjectWithDetailModel> GetProjectById(int projectId)
+        {
+            var url = $"api/connect/project/{projectId}";
+            var result = await _apiClientHelper.Get<ParentData<ProjectWithDetailModel>>(url);
+            return result?.Data != null ? result.Data : default(ProjectWithDetailModel);
+        }
+
         //public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
         //{
         //    var url = $"api/connect/project/accept-reject";
@@ -146,9 +153,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() },
             };
             var payload = new FormUrlEncodedContent(parameters);
-
             var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
-            await GetAvailableProjectsData();
         }
 
         public async Task UpdateProject(int ProjectId, string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
@@ -163,9 +168,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() }
             };
             var payload = new FormUrlEncodedContent(parameters);
-
             var result = await _apiClientHelper.Update<ParentData<ProjectModel>>(url, payload);
-            await GetAvailableProjectsData();
         }
 
         public async Task PatchProject(int projectId, int project_version, string project_comments)
@@ -177,9 +180,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() },
             };
             var payload = new FormUrlEncodedContent(parameters);
-
             var result = await _apiClientHelper.Patch<ParentData<ProjectModel>>(url, payload);
-            await GetAvailableProjectsData();
         }
 
         public async Task GetProjectCount()

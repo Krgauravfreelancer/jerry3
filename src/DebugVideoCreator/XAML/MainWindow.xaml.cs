@@ -52,7 +52,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader);
             LogManagerHelper.WriteVerboseLog(this, "Starting the windows application !! Inside OnControlLoaded...");
             await Login();
-            //await SyncApp();
+            await SyncApp();
             await SyncMedia();
             await SyncScreens();
             await SyncCompany();
@@ -116,7 +116,7 @@ namespace VideoCreator.XAML
         {
             foreach(var item in projects)
             {
-                var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id && x.project_version == item.current_version);
+                var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id && x.project_version == item.projdet_version);
                 var isExist = proj != null;
                 if (isExist)
                 {
@@ -280,18 +280,14 @@ namespace VideoCreator.XAML
             await InitialiseAndRefreshScreen();
         }
 
-        private void BtnViewPreviousVersion_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Coming Soon !!!");
-        }
-
         private async void BtnDownloadLocally_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItemFull = availableProjects.Find(x => x.project_id == selectedItem.project_id);
+            var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
+
             if (selectedItemFull != null)
             {
                 LoaderHelper.ShowLoader(this, loader);
-                SyncDbHelper.UpsertProject(selectedItemFull);
+                SyncDbHelper.UpsertProject(selectedItemFull, selectedItem.projdet_version);
                 await InitialiseAndRefreshScreen();
                 LoaderHelper.HideLoader(this, loader);
             }
@@ -330,7 +326,6 @@ namespace VideoCreator.XAML
         {
             selectedItem = datagrid.SelectedItem != null ? (ProjectModelUI)datagrid.SelectedItem : null;
             btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.projstatus_name == "AVAILABLE";
-            btnViewPreviousVersion.IsEnabled = selectedItem != null && selectedItem.all_version?.Count > 1;
             btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.projstatus_name != "AVAILABLE";
         }
 

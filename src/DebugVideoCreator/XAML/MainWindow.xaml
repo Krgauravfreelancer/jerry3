@@ -34,8 +34,6 @@
         <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
             <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
                     Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnManageTimelineButton" IsEnabled="False"/>
-            <Button Content="View Previous Version" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnViewPreviousVersion_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnViewPreviousVersion" IsEnabled="False"/>
             <Button Content="Download Project" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnDownloadLocally_Click" 
                     Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnDownloadProject" IsEnabled="False"/>
             <Button Content="Refresh" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnRefresh_Click" 

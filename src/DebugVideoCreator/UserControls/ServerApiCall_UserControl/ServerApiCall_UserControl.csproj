@@ -75,6 +75,7 @@
     <Compile Include="DBTransferControl.cs" />
     <Compile Include="DTO\Auth\LoginResponseModel.cs" />
     <Compile Include="DTO\Auth\LogoutResponseModel.cs" />
+    <Compile Include="DTO\Projects\ProjectWithDetailModel.cs" />
     <Compile Include="Helpers\Auth_ServerAPICall_Helper.cs" />
     <Compile Include="Helpers\EncryptionHelper.cs" />
     <Compile Include="Helpers\UriExtensions.cs" />

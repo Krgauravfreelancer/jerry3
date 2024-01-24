@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Windows;
@@ -142,61 +143,67 @@ namespace VideoCreator.Helpers
             DataManagerSqlLite.UpsertRowsToBackground(dataTable);
         }
 
-        public static void UpsertProject(ProjectModel projectModel)
+        public static void UpsertProject(ProjectWithDetailModel projectModel, string version)
         {
             InitializeDatabase();
             DataTable dataTable = new DataTable();
+            //project
             dataTable.Columns.Add("project_id", typeof(int));
             dataTable.Columns.Add("project_name", typeof(string));
-            dataTable.Columns.Add("project_version", typeof(string));
-            dataTable.Columns.Add("project_comments", typeof(string));
+            dataTable.Columns.Add("project_currwfstep", typeof(string));
+            dataTable.Columns.Add("project_uploaded", typeof(bool));
+            dataTable.Columns.Add("fk_project_background", typeof(int));
+
+            dataTable.Columns.Add("project_date", typeof(string));
+            dataTable.Columns.Add("project_archived", typeof(bool));
+
             dataTable.Columns.Add("project_createdate", typeof(string));
             dataTable.Columns.Add("project_modifydate", typeof(string));
-            dataTable.Columns.Add("project_uploaded", typeof(bool));
-            dataTable.Columns.Add("project_archived", typeof(bool));
-            dataTable.Columns.Add("fk_project_background", typeof(int));
-            dataTable.Columns.Add("project_date", typeof(string));
+            
+            dataTable.Columns.Add("project_isdeleted", typeof(bool));
             dataTable.Columns.Add("project_issynced", typeof(bool));
             dataTable.Columns.Add("project_serverid", typeof(Int64));
             dataTable.Columns.Add("project_syncerror", typeof(string));
 
-
+            //Proj Det
             dataTable.Columns.Add("projdet_version", typeof(string));
-            dataTable.Columns.Add("projdet_currver", typeof(string));
+            dataTable.Columns.Add("projdet_currver", typeof(bool));
             dataTable.Columns.Add("projdet_comments", typeof(string));
             dataTable.Columns.Add("projdet_createdate", typeof(string));
             dataTable.Columns.Add("projdet_modifydate", typeof(string));
 
-
             var row = dataTable.NewRow();
             row["project_id"] = -1;
             row["project_name"] = projectModel.project_name;
-            row["project_version"] = projectModel.current_version;
+            row["project_currwfstep"] = projectModel.project_currwfstep ?? "";
             row["project_uploaded"] = false;
-            row["project_archived"] = false;
             row["fk_project_background"] = 1;
-            row["project_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            row["project_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            
             row["project_date"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["project_archived"] = false;
 
+            row["project_createdate"] = projectModel.project_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            row["project_modifydate"] = projectModel.project_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            row["project_isdeleted"] = false;
             row["project_issynced"] = true;
             row["project_serverid"] = projectModel.project_id;
             row["project_syncerror"] = "";
 
-            row["projdet_version"] = projectModel.current_version;
-            row["projdet_currver"] = projectModel.current_version;
-            row["projdet_comments"] = "";
-            row["project_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            row["project_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+            var projdet = projectModel?.project_detail?.Find(x => x.projdet_version == version);
+            if (projdet != null) 
+            {
+                row["projdet_version"] = projdet.projdet_version;
+                row["projdet_currver"] = projdet.projdet_currver;
+                row["projdet_comments"] = projdet.projdet_comments;
+                row["projdet_createdate"] = projdet.projdet_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["projdet_modifydate"] = projdet.projdet_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+            }
             dataTable.Rows.Add(row);
-            var insertedId = DataManagerSqlLite.UpsertRowsToProjectAndProjectDet(dataTable);
+            var insertedId = DataManagerSqlLite.UpsertRowsToProjectAndProjectDet(dataTable, projectModel.project_id, projdet != null);
         }
-
-
-
-
 
 
         private static void SyncVoiceTimer()
