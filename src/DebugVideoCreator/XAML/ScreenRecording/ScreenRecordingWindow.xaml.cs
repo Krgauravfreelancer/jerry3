@@ -31,12 +31,10 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class ScreenRecordingWindow : UserControl
     {
-        bool showMessageBoxes = false;
-
         private readonly Window _mainWindow;
         private readonly int _trackID;
         private readonly int _projectID;
-
+        bool showMessageBoxes = false;
 
         public event Action<DataTable> BtnSaveClickedEvent;
 
@@ -85,10 +83,11 @@ namespace VideoCreator.XAML
 
             if (VideoEventData.Count > 0)
             {
-
-                var startime = VideoEventData.LastOrDefault().videoevent_start;
-                if (startime?.Length == 8) startime = startime + ".000";
-                TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
+                TimeSpan StartTime;
+                if (VideoEventData.LastOrDefault().videoevent_start?.Length == 8)
+                    StartTime = TimeSpan.ParseExact(VideoEventData.LastOrDefault().videoevent_start, @"hh\:mm\:ss", CultureInfo.InvariantCulture);
+                else
+                    StartTime = TimeSpan.ParseExact(VideoEventData.LastOrDefault().videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
                 TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
             }
 

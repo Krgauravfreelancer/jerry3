@@ -29,7 +29,7 @@ namespace VideoCreator.XAML
     public partial class Preview : UserControl
     {
         string imageOutputFolder = $"{Directory.GetCurrentDirectory()}\\ExtractedImages";
-        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Media";
+        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Video";
         public bool isProcessing = false;
         public Preview()
         {
@@ -97,6 +97,11 @@ namespace VideoCreator.XAML
                     }
                     else
                     {
+                        bool exists = Directory.Exists(videoOutputFolder);
+                        if (!exists)
+                            System.IO.Directory.CreateDirectory(videoOutputFolder);
+                        
+                        Directory.CreateDirectory(videoOutputFolder);
                         var VideoFileName = $"{videoOutputFolder}\\video_{videoevent?.videoevent_id}.mp4";
                         if (!File.Exists(VideoFileName))
                         {
@@ -107,8 +112,11 @@ namespace VideoCreator.XAML
                         }
                         var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder);
                         var convertedImage = await video2image.ConvertVideoToImage(true);
-                        var bmp = new Bitmap(convertedImage);
-                        bmps.Add(bmp);
+                        if (File.Exists(convertedImage))
+                        {
+                            var bmp = new Bitmap(convertedImage);
+                            bmps.Add(bmp);
+                        }
                     }
                 }
             }
