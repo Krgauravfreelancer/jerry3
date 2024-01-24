@@ -236,7 +236,7 @@ namespace VideoCreator.MediaLibraryData
             LoaderHelper.ShowLoader(this, loader, "Downloading full file ..");
             var dataTable = new DataTable();
             dataTable.Columns.Add("videoevent_id", typeof(int));
-            dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_projdet", typeof(int));
             dataTable.Columns.Add("fk_videoevent_media", typeof(int));
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
@@ -260,18 +260,21 @@ namespace VideoCreator.MediaLibraryData
 
             var row = dataTable.NewRow();
             //row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjectId;
+            row["fk_videoevent_media"] = 1;
             row["videoevent_track"] = _trackId;
             row["videoevent_start"] = videoevent_start;
+            row["videoevent_duration"] = 10; // TBD
+
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_isdeleted"] = false;
             row["videoevent_issynced"] = false;
             row["videoevent_serverid"] = -1;
             row["videoevent_syncerror"] = string.Empty;
-            row["videoevent_duration"] = 10; // TBD
+            
 
-            row["fk_videoevent_media"] = 1;
+            
 
             row["fk_videoevent_screen"] = -1; // Not needed for this case
             var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
