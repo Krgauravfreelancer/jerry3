@@ -166,6 +166,7 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("project_syncerror", typeof(string));
 
             //Proj Det
+            dataTable.Columns.Add("projdet_serverid", typeof(Int64));
             dataTable.Columns.Add("projdet_version", typeof(string));
             dataTable.Columns.Add("projdet_currver", typeof(bool));
             dataTable.Columns.Add("projdet_comments", typeof(string));
@@ -194,6 +195,7 @@ namespace VideoCreator.Helpers
             var projdet = projectModel?.project_detail?.Find(x => x.projdet_version == version);
             if (projdet != null) 
             {
+                row["projdet_serverid"] = projdet.projdet_id;
                 row["projdet_version"] = projdet.projdet_version;
                 row["projdet_currver"] = projdet.projdet_currver;
                 row["projdet_comments"] = projdet.projdet_comments;

@@ -626,27 +626,6 @@ namespace VideoCreator.Auth
             return result;
         }
 
-        public async Task<ProjectLockModel> GetLockStatus(Int64 projectServerId)
-        {
-            var url = $"api/connect/project/{projectServerId}/lock-status";
-            var response = await _apiClientHelper.Get<ProjectLockModel>(url);
-            return response;
-        }
-
-        public async Task<ParentData<object>> LockProject(Int64 projectServerId, bool lockFlag)
-        {
-            var url = $"api/connect/project/{projectServerId}/lock-unlock";
-            var parameters = new Dictionary<string, string>
-            {
-                { "lock", lockFlag ? "1": "0" }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
-
-            var response = await _apiClientHelper.Create<ParentData<object>>(url, payload);
-            return response;
-        }
-
-
         public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
         {
             var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";

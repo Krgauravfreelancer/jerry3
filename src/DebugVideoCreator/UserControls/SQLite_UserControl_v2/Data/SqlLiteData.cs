@@ -197,6 +197,7 @@ namespace Sqllite_Library.Data
                     'projdet_version' TEXT(20) NOT NULL  DEFAULT 'NULL',
                     'projdet_currver' INTEGER(1) NOT NULL  DEFAULT 0,
                     'projdet_comments' TEXT(100) DEFAULT NULL,
+                    'projdet_serverid' INTEGER NOT NULL DEFAULT 0,
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
@@ -2966,12 +2967,12 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({Project_Id}, '{dr["projdet_version"]}', {dr["projdet_currver"]}, '{dr["projdet_comments"]}', '{createDate}', '{modifyDate}')");
+                values.Add($"({Project_Id}, '{dr["projdet_version"]}', {dr["projdet_currver"]}, '{dr["projdet_comments"]}', '{dr["projdet_serverid"]}', '{createDate}', '{modifyDate}')");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO cbv_projdet
-                    (fk_projdet_project, projdet_version,  projdet_currver, projdet_comments, projdet_createdate, projdet_modifydate) 
+                    (fk_projdet_project, projdet_version,  projdet_currver, projdet_comments, projdet_serverid, projdet_createdate, projdet_modifydate) 
                 VALUES 
                     {valuesString}";
 

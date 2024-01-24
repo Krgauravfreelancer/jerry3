@@ -241,10 +241,9 @@ namespace VideoCreator.XAML
             }
             else if(selectedItem.projstatus_name != "AVAILABLE")
             {
-                MessageBox.Show("You need to downloa the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("You need to download the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
-            
             return true;
         }
 
@@ -254,12 +253,12 @@ namespace VideoCreator.XAML
             Int64 selectedServerProjectId;
             if (PreValidations())
             {
-                selectedProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_localId ?? 0;
-                selectedServerProjectId = ((ProjectModelUI)datagrid.SelectedItem)?.project_id ?? 0;
+                selectedProjectId = selectedItem?.project_localId ?? 0;
+                selectedServerProjectId = selectedItem?.project_id ?? 0;
             }
             else return;
-
-            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel);
+            var readonlyFlag = selectedItem.projstatus_name == "AVAILABLE" && selectedItem.current_version == false;
+            var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectId, selectedServerProjectId, authApiViewModel, readonlyFlag);
 
             var window = new Window
             {

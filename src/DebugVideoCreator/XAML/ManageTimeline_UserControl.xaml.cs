@@ -59,19 +59,19 @@ namespace VideoCreator.XAML
         private TimelineVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
 
-        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel)
+        public ManageTimeline_UserControl(int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, bool readonlyFlag)
         {
             InitializeComponent();
             selectedProjectId = projectId;
             selectedServerProjectId = _selectedServerProjectId;
             authApiViewModel = _authApiViewModel;
-            var subjectText = "Project Id - " + selectedProjectId;
+            ReadOnly = readonlyFlag;
+            var subjectText = ReadOnly ? "[READONLY] Project Id - " + selectedProjectId: "Project Id - " + selectedProjectId;
             lblSelectedProjectId.Content = subjectText;
-            //Task.Run(async () => { await checkIfProjectIsLocked(); });
+            //await SyncServerDataToLocalDB();
+            InitializeChildren();
 
-            checkIfProjectIsLocked();
-
-            BackgroundProcessHelper.SetBackgroundProcess(selectedProjectId, selectedServerProjectId, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
+            // BackgroundProcessHelper.SetBackgroundProcess(selectedProjectId, selectedServerProjectId, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
             loader.Visibility = Visibility.Hidden;
         }
 
@@ -126,30 +126,6 @@ namespace VideoCreator.XAML
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectId);
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectId, selectedVideoEventId);
-        }
-
-
-        private async void checkIfProjectIsLocked()
-        {
-            var response = await authApiViewModel.GetLockStatus(selectedServerProjectId);
-            if (response?.project_islocked == true && response?.permission_status == 1)
-            {
-                //MessageBox.Show($"Project with {selectedServerProjectId} is open for read-write as its locked by you - " + response.lockedby_username);
-                ReadOnly = false;
-                btnlock.IsEnabled = false;
-                btnunlock.IsEnabled = true;
-                InitializeChildren();
-            }
-            else
-            {
-                // MessageBox.Show($"Project is locked by some other user - '{response.lockedby_username}', every option is read only !! ", "Read Only Mode - Info", MessageBoxButton.OK, MessageBoxImage.Warning);
-                ReadOnly = true;
-                btnlock.IsEnabled = true;
-                btnunlock.IsEnabled = false;
-                //closeTheEditWindow.Invoke(null, null);
-                InitializeChildren();
-            }
-
         }
 
 
@@ -1029,44 +1005,6 @@ namespace VideoCreator.XAML
             //    NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
             //    //ResetAudio();
             //}
-        }
-
-
-
-        private async void btnReleaseLock_Click(object sender, RoutedEventArgs e)
-        {
-            var response = await authApiViewModel.LockProject(selectedServerProjectId, false);
-            if (response?.Status == "success")
-            {
-                MessageBox.Show($"Lock on Project with Id - {selectedServerProjectId} is released successfully", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                ReadOnly = true;
-                btnlock.IsEnabled = true;
-                btnunlock.IsEnabled = false;
-                InitializeChildren();
-            }
-
-        }
-
-        private async void btnLockForEdit_Click(object sender, RoutedEventArgs e)
-        {
-            var response = await authApiViewModel.LockProject(selectedServerProjectId, true);
-            if (response?.Status == "success")
-            {
-                MessageBox.Show($"Project with Id - {selectedServerProjectId} is locked successfully, waiting for sync", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
-                ReadOnly = false;
-                btnlock.IsEnabled = false;
-                btnunlock.IsEnabled = true;
-                await SyncServerDataToLocalDB();
-                InitializeChildren();
-            }
-            else
-            {
-                ReadOnly = true;
-                btnlock.IsEnabled = true;
-                btnunlock.IsEnabled = false;
-                //closeTheEditWindow.Invoke(null, null);
-                InitializeChildren();
-            }
         }
 
         private async void btnUploadNotSyncedData_Click(object sender, RoutedEventArgs e)
