@@ -135,7 +135,7 @@ namespace VideoCreator.Helpers
             DataTable dataTable = new DataTable();
             //project
             dataTable.Columns.Add("project_id", typeof(int));
-            dataTable.Columns.Add("project_name", typeof(string));
+            dataTable.Columns.Add("project_videotitle", typeof(string));
             dataTable.Columns.Add("project_currwfstep", typeof(string));
             dataTable.Columns.Add("project_uploaded", typeof(bool));
             dataTable.Columns.Add("fk_project_background", typeof(int));
@@ -161,7 +161,7 @@ namespace VideoCreator.Helpers
 
             var row = dataTable.NewRow();
             row["project_id"] = -1;
-            row["project_name"] = projectModel.project_name;
+            row["project_videotitle"] = projectModel.project_videotitle;
             row["project_currwfstep"] = projectModel.project_currwfstep ?? "";
             row["project_uploaded"] = false;
             row["fk_project_background"] = 1;
@@ -248,7 +248,7 @@ namespace VideoCreator.Helpers
         {
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("id", typeof(int));
-            dataTable.Columns.Add("project_name", typeof(string));
+            dataTable.Columns.Add("project_videotitle", typeof(string));
             dataTable.Columns.Add("project_version", typeof(int));
             dataTable.Columns.Add("project_comments", typeof(string));
             dataTable.Columns.Add("project_createdate", typeof(string));
@@ -262,7 +262,7 @@ namespace VideoCreator.Helpers
             {
                 var row = dataTable.NewRow();
                 row["id"] = 1;
-                row["project_name"] = $"Sample Project - {i}";
+                row["project_videotitle"] = $"Sample Project - {i}";
                 row["project_version"] = i;
                 row["project_uploaded"] = false;
                 row["project_archived"] = i % 2 == 0;

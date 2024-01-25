@@ -7,7 +7,7 @@ namespace ServerApiCall_UserControl.DTO.Projects
     public class ProjectWithDetailModel
     {
         public int project_id { get; set; }
-        public string project_name { get; set; }
+        public string project_videotitle { get; set; }
         public string project_currwfstep { get; set; }
         public int fk_project_section { get; set; }
         public object fk_project_projstatus { get; set; }

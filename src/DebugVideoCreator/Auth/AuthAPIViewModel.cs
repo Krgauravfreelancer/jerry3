@@ -141,12 +141,12 @@ namespace VideoCreator.Auth
         //    return result != null ? result : null;
         //}
 
-        public async Task CreateProject(string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
+        public async Task CreateProject(string project_videotitle, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
             var url = $"api/connect/project";
             var parameters = new Dictionary<string, string>
             {
-                { "project_name", project_name.ToString() },
+                { "project_videotitle", project_videotitle.ToString() },
                 { "fk_project_section", fk_project_section.ToString() },
                 { "fk_project_projstatus", fk_project_projstatus.ToString() },
                 { "project_version", project_version.ToString() },
@@ -156,12 +156,12 @@ namespace VideoCreator.Auth
             var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
         }
 
-        public async Task UpdateProject(int ProjectId, string project_name, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
+        public async Task UpdateProject(int ProjectId, string project_videotitle, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
             var url = $"api/connect/project/{ProjectId}";
             var parameters = new Dictionary<string, string>
             {
-                { "project_name", project_name.ToString() },
+                { "project_videotitle", project_videotitle.ToString() },
                 { "fk_project_section", fk_project_section.ToString() },
                 { "fk_project_projstatus", fk_project_projstatus.ToString() },
                 { "project_version", project_version.ToString() },

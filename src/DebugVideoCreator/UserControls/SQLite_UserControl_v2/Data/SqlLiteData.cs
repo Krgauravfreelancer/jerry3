@@ -82,8 +82,12 @@ namespace Sqllite_Library.Data
 
             CreateProjectTable(sqlCon);
             CreateProjectDetTable(sqlCon);
+            
+            CreateRequireAutofillTable(sqlCon);
+            CreateObjectiveAutofillTable(sqlCon);
+            CreateNextAutofillTable(sqlCon);
+            
             CreateVideoEventTable(sqlCon);
-
             CreateVideoSegmentTable(sqlCon);
             //CreateAudioTable(sqlCon);
             CreateNotesTable(sqlCon);
@@ -173,7 +177,7 @@ namespace Sqllite_Library.Data
         {
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_project' (
                     'project_id' INTEGER NOT NULL  DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
-                    'project_name' TEXT(30) UNIQUE NOT NULL  DEFAULT 'NULL',
+                    'project_videotitle' TEXT(50) UNIQUE NOT NULL  DEFAULT 'NULL',
                     'project_currwfstep' TEXT(20) NOT NULL  DEFAULT 'NULL',
                     'project_uploaded' INTEGER(1) NOT NULL  DEFAULT 0,
                     'fk_project_background' INTEGER NOT NULL DEFAULT 1 REFERENCES 'cbv_background' ('background_id'),
@@ -200,6 +204,62 @@ namespace Sqllite_Library.Data
                     'projdet_serverid' INTEGER NOT NULL DEFAULT 0,
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateRequireAutofillTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_requireautofill' (
+                    'requireautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_requireautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
+                    'requireautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'requireautofill_importance' INTEGER NOT NULL  DEFAULT 1,
+                    'requireautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
+                    'requireautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'requireautofill_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'requireautofill_serverid' INTEGER NOT NULL  DEFAULT 1,
+                    'requireautofill_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                    'requireautofill_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
+                    'requireautofill_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
+                    UNIQUE (fk_requireautofill_project, requireautofill_name)
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateObjectiveAutofillTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_objectiveautofill' (
+                    'objectiveautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_objectiveautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
+                    'objectiveautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'objectiveautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
+                    'objectiveautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'objectiveautofill_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'objectiveautofill_serverid' INTEGER NOT NULL  DEFAULT 1,
+                    'objectiveautofill_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                    'objectiveautofill_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
+                    'objectiveautofill_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
+                    UNIQUE (fk_objectiveautofill_project, objectiveautofill_name)
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateNextAutofillTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_nextautofill' (
+                    'nextautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_nextautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
+                    'nextautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'nextautofill_importance' INTEGER NOT NULL  DEFAULT 1,
+                    'nextautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
+                    'nextautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'nextautofill_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'nextautofill_serverid' INTEGER NOT NULL  DEFAULT 1,
+                    'nextautofill_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                    'nextautofill_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
+                    'nextautofill_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
+                    UNIQUE (fk_nextautofill_project, nextautofill_name)
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -496,13 +556,13 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
+                values.Add($"('{dr["project_videotitle"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}," +
                     $" '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
             }
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO  cbv_project 
-                    (project_name, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, 
+                    (project_videotitle, project_uploaded, project_date, project_archived, fk_project_background, project_createdate, project_modifydate, 
                         project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
@@ -1317,7 +1377,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
                 string sqlQueryString = $@"SELECT 
-                                                P.project_id, P.project_name, P.project_date, P.project_serverid, PD.projdet_version
+                                                P.project_id, P.project_videotitle, P.project_date, P.project_serverid, PD.projdet_version
                                             FROM cbv_project P
                                                 JOIN cbv_projdet PD on PD.fk_projdet_project = P.project_id";
 
@@ -1338,7 +1398,7 @@ namespace Sqllite_Library.Data
                         var project = new CBVProjectForJoin
                         {
                             project_id = Convert.ToInt32(sqlReader["project_id"]),
-                            project_name = Convert.ToString(sqlReader["project_name"]),
+                            project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
                             project_version = Convert.ToString(sqlReader["projdet_version"]),
                             project_date = Convert.ToDateTime(sqlReader["project_date"]),
                             project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
@@ -1370,11 +1430,11 @@ namespace Sqllite_Library.Data
         //       // Check if database is created
         //       if (false == IsDbCreated())
         //           throw new Exception("Database is not present.");
-        //       string sqlQueryString = "SELECT project_id, project_serverid, project_name, project_version, project_date FROM cbv_project ";
+        //       string sqlQueryString = "SELECT project_id, project_serverid, project_videotitle, project_version, project_date FROM cbv_project ";
 
         //       if (wipFlag)
         //           sqlQueryString = $@"
-        //               SELECT P.project_id, project_serverid, P.project_name, P.project_version, P.project_date, 
+        //               SELECT P.project_id, project_serverid, P.project_videotitle, P.project_version, P.project_date, 
         //                       CASE 
         //                  When VECount.VideoEventCount is NULL Then 0
         //                  When VECount.VideoEventCount = 0 Then 0
@@ -1412,7 +1472,7 @@ namespace Sqllite_Library.Data
         //                   {
         //                       project_id = Convert.ToInt32(sqlReader["project_id"]),
         //                       project_serverid = Convert.ToInt32(sqlReader["project_serverid"]),
-        //                       project_name = Convert.ToString(sqlReader["project_name"]),
+        //                       project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
         //                       project_version = Convert.ToInt32(sqlReader["project_version"]),
         //                       project_date = Convert.ToDateTime(sqlReader["project_date"]),
         //                   };
@@ -1516,7 +1576,7 @@ namespace Sqllite_Library.Data
                         var obj = new CBVProject
                         {
                             project_id = Convert.ToInt32(sqlReader["project_id"]),
-                            project_name = Convert.ToString(sqlReader["project_name"]),
+                            project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
                             project_currwfstep = Convert.ToString(sqlReader["project_currwfstep"]),
                             project_uploaded = Convert.ToBoolean(sqlReader["project_uploaded"]),
                             fk_project_background = Convert.ToInt32(sqlReader["fk_project_background"]),
@@ -2442,7 +2502,7 @@ namespace Sqllite_Library.Data
 
                 var updateQueryString = $@" UPDATE cbv_project 
                                         SET 
-                                            project_name = '{Convert.ToString(dr["project_name"])}',
+                                            project_videotitle = '{Convert.ToString(dr["project_videotitle"])}',
                                             project_version = {Convert.ToInt32(dr["project_version"])},
                                             project_comments = '{Convert.ToString(dr["project_comments"])}',
                                             project_uploaded = {Convert.ToInt32(dr["project_uploaded"])},
@@ -2946,13 +3006,13 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
-                values.Add($"('{dr["project_name"]}',  '{dr["project_currwfstep"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
+                values.Add($"('{dr["project_videotitle"]}',  '{dr["project_currwfstep"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
                     $" {isdeleted}, {issynced}, {serverid}, '{syncerror}')");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_project 
-                    (project_name, project_currwfstep, project_uploaded, project_date, project_archived, fk_project_background, 
+                    (project_videotitle, project_currwfstep, project_uploaded, project_date, project_archived, fk_project_background, 
                         project_createdate, project_modifydate, project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";

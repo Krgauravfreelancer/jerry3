@@ -333,7 +333,7 @@ namespace VideoCreator.XAML
         //    if (entity == EnumEntity.ALL || entity == EnumEntity.PROJECT)
         //    {
         //        var data = DataManagerSqlLite.GetProjects(false);
-        //        RefreshComboBoxes<CBVProject>(ProjectCmbBox, data, "project_name");
+        //        RefreshComboBoxes<CBVProject>(ProjectCmbBox, data, "project_videotitle");
         //        if (ProjectCmbBox.Items.Count > 0)
         //        {
         //            ProjectCmbBox.SelectedIndex = 0;

@@ -6,7 +6,7 @@ namespace Sqllite_Library.Models
     public class CBVProject
     {
         public int project_id { get; set; }
-        public string project_name { get; set; }
+        public string project_videotitle { get; set; }
         public string project_currwfstep { get; set; }
         public bool project_uploaded { get; set; }
         public int fk_project_background { get; set; }
@@ -28,7 +28,7 @@ namespace Sqllite_Library.Models
     public class CBVProjectForJoin
     {
         public int project_id { get; set; }
-        public string project_name { get; set; }
+        public string project_videotitle { get; set; }
         public string project_version { get; set; }
         public Int64 project_serverid { get; set; }
         public DateTime? project_date { get; set; }

@@ -17,7 +17,7 @@ namespace ServerApiCall_UserControl.DTO.Projects
     public class ProjectModelUI
     {
         public int project_id { get; set; }
-        public string project_name { get; set; }
+        public string project_videotitle { get; set; }
         public string project_currwfstep { get; set; }
         public string projstatus_name { get; set; }
         public bool current_version { get; set; }
