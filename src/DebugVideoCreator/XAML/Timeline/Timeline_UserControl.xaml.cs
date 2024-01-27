@@ -26,7 +26,7 @@ namespace VideoCreator.XAML
         private int selectedProjectId;
 
         private AuthAPIViewModel authApiViewModel;
-        
+
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
         //public event EventHandler ContextMenu_AddVideoEvent_Success;
 
@@ -226,7 +226,7 @@ namespace VideoCreator.XAML
                 dispatcherTimer.Tick += new EventHandler(TrackBarMouseMovedAndStopped);
                 dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
                 dispatcherTimer.Start();
-                
+
             };
         }
 
@@ -254,7 +254,7 @@ namespace VideoCreator.XAML
                 TrackbarMouse_Moved.Invoke(sender, payload);
             }
         }
-        
+
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // This event handler will be called when the context menu is opening
@@ -303,7 +303,7 @@ namespace VideoCreator.XAML
 
                 var MenuItem_EditEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_EditEvent");
                 MenuItem_EditEvent.IsEnabled = (selectedEvent != null);
-                
+
                 var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
                 MenuItem_CloneItems.IsEnabled = (selectedEvent != null);
             }
@@ -392,7 +392,7 @@ namespace VideoCreator.XAML
                 selectedEvent = _timelineGridControl.GetSelectedEvent();
 
             if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)
-            { 
+            {
                 var emptyPayload = new CalloutOrCloneEvent
                 {
                     timelineVideoEvent = selectedEvent,
@@ -407,6 +407,7 @@ namespace VideoCreator.XAML
             };
             return payload;
         }
+
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
             var payload = CalloutPreprocessing();
@@ -532,6 +533,6 @@ namespace VideoCreator.XAML
 
         #endregion
 
-        
+
     }
 }
