@@ -34,26 +34,26 @@ namespace VideoCreator.XAML
         bool showMessageBoxes = false;
 
         private readonly Window _mainWindow;
-        private readonly int _trackID;
-        private readonly int _projectID;
+        private readonly int TrackID;
+        private int ProjectID;
 
 
         public event Action<DataTable> BtnSaveClickedEvent;
 
-        public ScreenRecordingWindow(Window mainWindow, int trackId, int projectID)
+        public ScreenRecordingWindow(Window mainWindow, int _trackId, int _projectID)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
-            _trackID = trackId;
-            _projectID = projectID;
+            TrackID = _trackId;
+            ProjectID = _projectID;
             SetProjectID(_projectID);
         }
 
-        public ScreenRecordingWindow(int trackId, int projectID)
+        public ScreenRecordingWindow(int _trackId, int _projectID)
         {
             InitializeComponent();
-            _trackID = trackId;
-            _projectID = projectID;
+            TrackID = _trackId;
+            ProjectID = _projectID;
             SetProjectID(_projectID);
             //RefreshOrLoadComboBoxes(EnumEntity.ALL);
         }
@@ -78,28 +78,28 @@ namespace VideoCreator.XAML
 
         public void SetProjectID(int projectID)
         {
-
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(projectID, true);
+            ProjectID = projectID;
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true);
 
             TimeSpan TotalTime = TimeSpan.Zero;
 
             if (VideoEventData.Count > 0)
             {
-
+                
                 var startime = VideoEventData.LastOrDefault().videoevent_start;
                 if (startime?.Length == 8) startime = startime + ".000";
                 TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.FFF", CultureInfo.InvariantCulture);
                 TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
             }
 
-            Recorder.SetProjectInfo(projectID, _trackID, TotalTime);
+            Recorder.SetProjectInfo(ProjectID, TrackID, TotalTime);
 
             RefreshData();
         }
 
         private void RefreshData()
         {
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(_projectID, true);
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true);
 
 
             List<Media> mediaList = new List<Media>();
@@ -119,7 +119,7 @@ namespace VideoCreator.XAML
                 }
 
                 media.VideoEventID = item.videoevent_id;
-                media.ProjectId = _projectID;
+                media.ProjectId = ProjectID;
                 media.TrackId = item.videoevent_track;
                 if (item.notes_data != null)
                 {
