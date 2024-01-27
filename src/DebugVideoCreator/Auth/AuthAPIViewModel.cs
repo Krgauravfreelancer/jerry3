@@ -21,6 +21,7 @@ using Sqllite_Library.Models;
 using Newtonsoft.Json;
 using System.Windows.Forms.VisualStyles;
 using DesignerNp.controls;
+using DebugVideoCreator.Models;
 
 namespace VideoCreator.Auth
 {
@@ -462,13 +463,13 @@ namespace VideoCreator.Auth
             return null;
         }
 
-        public async Task<VideoEventResponseModel> POSTVideoEvent(Int64 selectedServerProjectId, VideoEventModel videoEventModel)
+        public async Task<VideoEventResponseModel> POSTVideoEvent(SelectedProjectEvent selectedProjectEvent, VideoEventModel videoEventModel)
         {
             try
             {
                 //_apiClientHelper.ErrorMessage = "No Internet !!";
                 //throw new Exception("No Internet !!");
-                var url = $"api/connect/project/{selectedServerProjectId}/videoevent-notes-design-videosegment";
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent-notes-design-videosegment";
 
                 var multipart = new MultipartFormDataContent();
                 // FK

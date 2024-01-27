@@ -1684,7 +1684,7 @@ namespace Sqllite_Library.Data
         }
 
 
-        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projDetId, bool dependentDataFlag = true)
+        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId, bool dependentDataFlag = true)
         {
             var data = new List<CBVVideoEvent>();
 
@@ -1692,7 +1692,7 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where fk_videoevent_projdet = {projDetId} and videoevent_issynced = 0 and videoevent_serverid > {DateTime.UtcNow.ToString("yyyyMMdd")}";
+            string sqlQueryString = $@"SELECT * FROM cbv_videoevent where fk_videoevent_projdet = {projdetId} and videoevent_issynced = 0 and videoevent_serverid > {DateTime.UtcNow.ToString("yyyyMMdd")}";
             SQLiteConnection sqlCon = null;
             try
             {

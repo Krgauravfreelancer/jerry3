@@ -53,7 +53,7 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, byte[] blob,  Int64 selectedServerProjectId, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", int duration = 10)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, byte[] blob,  SelectedProjectEvent selectedProjectEvent, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", int duration = 10)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
@@ -64,7 +64,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
             objToSync.videosegment_media_bytes = blob;
-            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+            var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
             return result;
         }
 
@@ -84,13 +84,13 @@ namespace VideoCreator.Helpers
 
         #region == Video Event ==
 
-        public static DataTable GetVideoEventDataTableForDesign(VideoEventResponseModel addedData, int selectedProjectId)
+        public static DataTable GetVideoEventDataTableForDesign(VideoEventResponseModel addedData, int selectedProjdetId)
         {
             var dtVideoEvent = GetVideoEventDataTable();
 
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjdetId;
             row["videoevent_start"] = addedData.videoevent.videoevent_start;
             row["videoevent_track"] = addedData.videoevent.videoevent_track;
             row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
@@ -105,12 +105,12 @@ namespace VideoCreator.Helpers
             return dtVideoEvent;
         }
 
-        public static DataTable GetVideoEventDataTableForCalloutLocally(DataTable design, DataTable videosegment, string timeAtTheMoment, int duration, int track, int selectedProjectId, Int64 serverVideoEventId)
+        public static DataTable GetVideoEventDataTableForCalloutLocally(DataTable design, DataTable videosegment, string timeAtTheMoment, int duration, int track, int projdetId, Int64 serverVideoEventId)
         {
             var dtVideoEvent = GetVideoEventDataTable();
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = projdetId;
             row["videoevent_start"] = timeAtTheMoment;
             row["videoevent_track"] = track;
             row["videoevent_duration"] = duration;
@@ -129,7 +129,7 @@ namespace VideoCreator.Helpers
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_project", typeof(int));
+            dtVideoEvent.Columns.Add("fk_videoevent_projdet", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
             dtVideoEvent.Columns.Add("videoevent_duration", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_track", typeof(int));
@@ -171,7 +171,7 @@ namespace VideoCreator.Helpers
             return dt;
         }
 
-        public static DataTable GetDesignDataTableForCalloutLocally(DataTable design, DataTable videosegment, string timeAtTheMoment, int duration, int track, int selectedProjectId, Int64 serverVideoEventId, int localVideoEventId)
+        public static DataTable GetDesignDataTableForCalloutLocally(DataTable design, DataTable videosegment, string timeAtTheMoment, int duration, int track, int localVideoEventId)
         {
             var dtVideoEvent = GetDesignDataTable();
             foreach (DataRow rowDesign in design.Rows)

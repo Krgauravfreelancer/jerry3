@@ -7,7 +7,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
     public class VideoEventModel
     {
         public int videoevent_id { get; set; }
-        public int fk_videoevent_project { get; set; }
+        public int fk_videoevent_projdet { get; set; }
         public int fk_videoevent_media { get; set; }
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }
@@ -71,7 +71,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
     public class VideoEventResponseObject
     {
         public int videoevent_id { get; set; }
-        public int fk_videoevent_project { get; set; }
+        public int fk_videoevent_projdet { get; set; }
         public int fk_videoevent_media { get; set; }
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }

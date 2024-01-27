@@ -67,7 +67,7 @@ namespace VideoCreator.XAML
             InitializeChildren();
             //await SyncServerDataToLocalDB();
 
-            // BackgroundProcessHelper.SetBackgroundProcess(selectedProjectId, selectedServerProjectId, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
+            BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
             loader.Visibility = Visibility.Hidden;
         }
 
@@ -269,7 +269,7 @@ namespace VideoCreator.XAML
 
         private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
         {
-            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedProjectEvent.serverProjectId, authApiViewModel);
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedProjectEvent, authApiViewModel);
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -292,7 +292,7 @@ namespace VideoCreator.XAML
 
         private void SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
         {
-            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectEvent.projectId);
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectEvent.projdetId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
             {
@@ -312,7 +312,7 @@ namespace VideoCreator.XAML
         {
             // Save the record locally with server Id = temp and issynced = false
             var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
-            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projectId);
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projdetId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
             {
@@ -461,13 +461,13 @@ namespace VideoCreator.XAML
             var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
             var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
-            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent.serverProjectId, authApiViewModel, payload.timeAtTheMoment);
+            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment);
 
             if (videoEventResponse != null)
             {
                 message += $"{i++}. Successfully cloned event to server !!" + Environment.NewLine;
 
-                var dtVideoEvent = CloneEventHandlerHelper.GetVideoEventDataTableServer(videoEventResponse, selectedProjectEvent.projectId);
+                var dtVideoEvent = CloneEventHandlerHelper.GetVideoEventDataTableServer(videoEventResponse, selectedProjectEvent.projdetId);
                 var videoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dtVideoEvent, false);
                 var insertedVideoEventId = videoEventIds?.Count > 0 ? videoEventIds[0] : -1;
                 if (insertedVideoEventId > 0)
@@ -533,7 +533,7 @@ namespace VideoCreator.XAML
 
         private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
         {
-            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent.projectId, selectedProjectEvent.serverProjectId, authApiViewModel, track, this, loader, imagePath);
+            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath);
             TimelineUserConrol.InvokeSuccess();
             LoaderHelper.HideLoader(this, loader);
         }
@@ -877,7 +877,7 @@ namespace VideoCreator.XAML
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("videoevent_id", typeof(int));
-            dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+            dataTable.Columns.Add("fk_videoevent_projdet", typeof(int));
             dataTable.Columns.Add("fk_videoevent_media", typeof(int));
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
@@ -907,7 +907,7 @@ namespace VideoCreator.XAML
             var dataTable = GetVideoEventTableForAudio();
             var row = dataTable.NewRow();
             row["videoevent_id"] = audioSaveButtonText == "Save" ? -1 : selectedVideoEvent.videoevent_id;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjectId;
             row["videoevent_track"] = 1;
 
             audioMinutetext = audioMinutetext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[1].ToString());
@@ -1064,7 +1064,7 @@ namespace VideoCreator.XAML
 
         private int SaveVideoEvent(AllVideoEventResponseModel videoevent)
         {
-            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectEvent.projectId, videoevent);
+            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectEvent.projdetId, videoevent);
             var result = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             return result?.Count > 0 ? result[0] : -1;
         }

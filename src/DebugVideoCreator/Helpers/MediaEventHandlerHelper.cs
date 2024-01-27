@@ -1,4 +1,5 @@
-﻿using ServerApiCall_UserControl.DTO;
+﻿using DebugVideoCreator.Models;
+using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;
 using ServerApiCall_UserControl.DTO.Company;
@@ -28,7 +29,7 @@ namespace VideoCreator.Helpers
     {
         #region === Post to server and then save locally ==
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImage(DataRow row, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImage(DataRow row, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)row["fk_videoevent_media"];
@@ -38,7 +39,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_end = "00:00:00.000"; // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0] : (byte[])row["media"];
-            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+            var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
             return result;
         }
 
@@ -55,7 +56,7 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerBackground(CBVVideoEvent videoEvent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerBackground(CBVVideoEvent videoEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = videoEvent.fk_videoevent_media;
@@ -68,17 +69,17 @@ namespace VideoCreator.Helpers
                 objToSync.videosegment_media_bytes = (byte[])videoEvent?.videosegment_data[0]?.videosegment_media;
             if (videoEvent?.design_data?.Count > 0)
                 objToSync.design.AddRange(DesignEventHandlerHelper.GetDesignModelList(videoEvent.design_data));
-            var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+            var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
             return result;
         }
 
-        public static DataTable GetVideoEventDataTableForVideoOrImage(VideoEventResponseModel addedData, int selectedProjectId)
+        public static DataTable GetVideoEventDataTableForVideoOrImage(VideoEventResponseModel addedData, int selectedProjdetId)
         {
             var dtVideoEvent = GetVideoEventDataTable();
 
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjdetId;
             row["videoevent_start"] = addedData.videoevent.videoevent_start;
             row["videoevent_track"] = addedData.videoevent.videoevent_track;
             row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
@@ -99,7 +100,7 @@ namespace VideoCreator.Helpers
             var dt = GetVideoEventDataTable();
             var row = dt.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjectId;
             row["videoevent_start"] = videoevent.videoevent_start;
             row["videoevent_track"] = videoevent.videoevent_track;
             row["videoevent_duration"] = videoevent.videoevent_duration;
@@ -135,13 +136,13 @@ namespace VideoCreator.Helpers
         #endregion
 
         #region == Save to Local ==
-        public static DataTable GetVideoEventDataTableForVideoOrImageLocally(DataRow datarow, Int64 serverVideoEventId, int selectedProjectId)
+        public static DataTable GetVideoEventDataTableForVideoOrImageLocally(DataRow datarow, Int64 serverVideoEventId, Int64 selectedProjdetId)
         {
             var dtVideoEvent = GetVideoEventDataTable();
 
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjdetId;
             row["videoevent_start"] = "00:00:00.000"; // TBD
             row["videoevent_track"] = 2; // TBD
             row["videoevent_duration"] = (int)datarow["videoevent_duration"];
@@ -196,7 +197,7 @@ namespace VideoCreator.Helpers
         {
             var dtVideoEvent = new DataTable();
             dtVideoEvent.Columns.Add("videoevent_id", typeof(int));
-            dtVideoEvent.Columns.Add("fk_videoevent_project", typeof(int));
+            dtVideoEvent.Columns.Add("fk_videoevent_projdet", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
             dtVideoEvent.Columns.Add("videoevent_duration", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_track", typeof(int));

@@ -1,4 +1,5 @@
-﻿using NAudio.CoreAudioApi.Interfaces;
+﻿using DebugVideoCreator.Models;
+using NAudio.CoreAudioApi.Interfaces;
 using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;
@@ -27,14 +28,14 @@ namespace VideoCreator.Helpers
     public static class CloneEventHandlerHelper
     {
         #region === Clone Functions ==
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForClone(List<CBVVideoEvent> videoEventList, byte[] blob, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000")
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForClone(List<CBVVideoEvent> videoEventList, byte[] blob, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000")
         {
             if (videoEventList != null && videoEventList?.Count > 0)
             {
                 var videoEvent = videoEventList[0];
                 var dtNotes = GetNotesDataTableClient(videoEvent.notes_data, -1);
                 var dtDesign = GetDesignDataTableClient(videoEvent.design_data, -1);
-                var dtVideoSegment = GetVideoSegmentDataTableClient(videoEvent.videosegment_data, selectedServerProjectId, -1);
+                var dtVideoSegment = GetVideoSegmentDataTableClient(videoEvent.videosegment_data, selectedProjectEvent.serverProjectId, -1);
 
                 var objToSync = new VideoEventModel();
                 objToSync.fk_videoevent_media = videoEvent.fk_videoevent_media;
@@ -49,7 +50,7 @@ namespace VideoCreator.Helpers
                 if (blob != null)
                     objToSync.videosegment_media_bytes = blob;
 
-                var result = await authApiViewModel.POSTVideoEvent(selectedServerProjectId, objToSync);
+                var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
                 return result;
             }
             return null;
@@ -309,12 +310,12 @@ namespace VideoCreator.Helpers
 
         #region == VideoEvent Section ==
 
-        public static DataTable GetVideoEventDataTableServer(VideoEventResponseModel addedData, int selectedProjectId)
+        public static DataTable GetVideoEventDataTableServer(VideoEventResponseModel addedData, int projdetId)
         {
             var dtVideoEvent = GetRawVideoEventDataTable();
             var row = dtVideoEvent.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_project"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = projdetId;
             row["videoevent_start"] = addedData.videoevent.videoevent_start;
             row["videoevent_track"] = addedData.videoevent.videoevent_track;
             row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
@@ -333,7 +334,7 @@ namespace VideoCreator.Helpers
         {
             var dt = new DataTable();
             dt.Columns.Add("videoevent_id", typeof(int));
-            dt.Columns.Add("fk_videoevent_project", typeof(int));
+            dt.Columns.Add("fk_videoevent_projdet", typeof(int));
             dt.Columns.Add("videoevent_start", typeof(string));
             dt.Columns.Add("videoevent_duration", typeof(int));
             dt.Columns.Add("videoevent_track", typeof(int));

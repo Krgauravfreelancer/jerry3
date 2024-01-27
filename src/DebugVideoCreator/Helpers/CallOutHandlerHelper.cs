@@ -69,16 +69,16 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        public static async Task<bool?> CallOut(CalloutOrCloneEvent calloutEvent, string title, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
+        public static async Task<bool?> CallOut(CalloutOrCloneEvent calloutEvent, string title, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
             Designer_UserControl designerUserControl;
             if (string.IsNullOrEmpty(imagePath))
             {
                 var data = DataManagerSqlLite.GetBackground();
-                designerUserControl = new Designer_UserControl(selectedProjectId, JsonConvert.SerializeObject(data));
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data));
             }
             else
-                designerUserControl = new Designer_UserControl(selectedProjectId, imagePath, true);
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
 
             var designUCWindow = new Window
             {
@@ -98,7 +98,7 @@ namespace VideoCreator.Helpers
                         var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableAdd, uc, loader);
                         if (designImagerUserControl != null)
                         {
-                            return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectId, selectedServerProjectId, authApiViewModel, track);
+                            return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectEvent, authApiViewModel, track);
                         }
                     }
                 }
@@ -122,11 +122,11 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, CalloutOrCloneEvent calloutEvent, int selectedProjectId, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel, EnumTrack track)
+        private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, CalloutOrCloneEvent calloutEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             int duration = 10;
-            var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedServerProjectId, track, authApiViewModel, calloutEvent?.timeAtTheMoment, duration);
+            var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, calloutEvent?.timeAtTheMoment, duration);
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -134,15 +134,15 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectId, selectedServerProjectId, authApiViewModel, track);
+                    return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectEvent, authApiViewModel, track);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForCallout(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, calloutEvent?.timeAtTheMoment, duration, (int)track, selectedProjectId, selectedServerProjectId);
+                    return FailureFlowForCallout(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, calloutEvent?.timeAtTheMoment, duration, (int)track, selectedProjectEvent);
                 else
                     return null;
             }
             else
             {
-                SuccessFlowForCallout(addedData, selectedProjectId, blob);
+                SuccessFlowForCallout(addedData, selectedProjectEvent.projdetId, blob);
                 MessageBox.Show($"videosegment record for image added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 return true;
             }
@@ -151,17 +151,17 @@ namespace VideoCreator.Helpers
             
         }
 
-        private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, int duration, int track, int selectedProjectId, Int64 selectedServerProjectId)
+        private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, int duration, int track, SelectedProjectEvent selectedProjectEvent)
         {
             // Save the record locally with server Id = temp and issynced = false
             var blob = dtVideoSegmentMaster.Rows[0]["videosegment_media"] as byte[];
             var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
-            var dt = DesignEventHandlerHelper.GetVideoEventDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, selectedProjectId, localServerVideoEventId);
+            var dt = DesignEventHandlerHelper.GetVideoEventDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, selectedProjectEvent.projdetId, localServerVideoEventId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
             {
                 var localVideoEventId = insertedVideoEventIds[0];
-                var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, selectedProjectId, localServerVideoEventId, localVideoEventId);
+                var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, localVideoEventId);
                 DataManagerSqlLite.InsertRowsToDesign(dtDesign);
 
                 var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForCalloutLocally(blob, localVideoEventId);

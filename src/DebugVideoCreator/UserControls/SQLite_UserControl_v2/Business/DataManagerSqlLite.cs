@@ -60,9 +60,9 @@ namespace Sqllite_Library.Business
             var insertedIds = new List<int>();
             foreach (DataRow rowMain in data.Rows)
             {
-                //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)rowMain["fk_videoevent_project"]);
+                //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)rowMain["fk_videoevent_projdet"]);
                 //if (!projectFlag)
-                //    throw new Exception("project_Id foreign key constraint not successful ");
+                //    throw new Exception("projdet_Id foreign key constraint not successful ");
 
                 var mediaId = (int)rowMain["fk_videoevent_media"];
                 //var mediaFlag = SqlLiteData.ReferentialKeyPresent("cbv_media", "media_id", mediaId);
@@ -350,15 +350,15 @@ namespace Sqllite_Library.Business
         }
 
         // Lets not fetch dependent tables be default and thats why flag is false
-        public static List<CBVVideoEvent> GetVideoEvents(int projectId = 0, bool dependentDataFlag = false)
+        public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false)
         {
-            return SqlLiteData.GetVideoEvents(projectId, dependentDataFlag);
+            return SqlLiteData.GetVideoEvents(projdetId, dependentDataFlag);
         }
 
 
-        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projectId = 0, bool dependentDataFlag = true)
+        public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId = 0, bool dependentDataFlag = true)
         {
-            return SqlLiteData.GetNotSyncedVideoEvents(projectId, dependentDataFlag);
+            return SqlLiteData.GetNotSyncedVideoEvents(projdetId, dependentDataFlag);
         }
 
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false)

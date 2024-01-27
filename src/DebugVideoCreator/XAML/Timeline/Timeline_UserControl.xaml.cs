@@ -157,7 +157,7 @@ namespace VideoCreator.XAML
                 DataRow dRow = dt.NewRow();
 
                 dRow[nameof(TimelineVideoEvent.videoevent_id)] = videoEvent.videoevent_id;
-                //dRow[nameof(TimelineVideoEvent.fk_videoevent_project)] = videoEvent.fk_videoevent_project;
+                dRow["fk_videoevent_project"] = videoEvent.fk_videoevent_projdet;
                 dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = videoEvent.fk_videoevent_media;
                 dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoEvent.videoevent_track;
                 dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoEvent.videoevent_start;

@@ -1,4 +1,5 @@
-﻿using Sqllite_Library.Business;
+﻿using DebugVideoCreator.Models;
+using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
@@ -19,16 +20,13 @@ namespace DebugVideoCreator.Helpers
         private static readonly DispatcherTimer dispatcherTimer = new DispatcherTimer();
         private static int RetryIntervalInSeconds = 300;
         private static bool isBackgroundProcessRunning = false;
-
-        private static int selectedProjectId;
-        private static Int64 selectedServerProjectId;
+        private static SelectedProjectEvent selectedProjectEvent;
         private static AuthAPIViewModel authApiViewModel;
         private static Button btnUploadNotSyncedData, btnDownloadServerData;
 
-        public static void SetBackgroundProcess(int projectId, Int64 serverProjectId, AuthAPIViewModel _authApiViewModel, Button btnUpload, Button btnDownload)
+        public static void SetBackgroundProcess(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, Button btnUpload, Button btnDownload)
         {
-            selectedProjectId = projectId;
-            selectedServerProjectId = serverProjectId;
+            selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
             btnUploadNotSyncedData = btnUpload;
             btnDownloadServerData = btnDownload;
@@ -53,7 +51,7 @@ namespace DebugVideoCreator.Helpers
 
         private static void FrequentlyCheckOfflineData()
         {
-            var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectId, true);
+            var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectEvent.projdetId, true);
             if (notSyncedData?.Count > 0)
             {
                 btnUploadNotSyncedData.Content = $"Upload Not Synced Data - {notSyncedData?.Count} events";
@@ -83,7 +81,7 @@ namespace DebugVideoCreator.Helpers
             isBackgroundProcessRunning = true;
             try
             {
-                var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectId, true);
+                var notSyncedData = DataManagerSqlLite.GetNotSyncedVideoEvents(selectedProjectEvent.projdetId, true);
                 foreach (var notSyncedRow in notSyncedData)
                 {
                     if (notSyncedRow.fk_videoevent_media == (int)EnumMedia.IMAGE || notSyncedRow.fk_videoevent_media == (int)EnumMedia.VIDEO) // for image or video
@@ -108,7 +106,7 @@ namespace DebugVideoCreator.Helpers
 
         private static async Task<bool> ProcessVideoSegmentDataRowByRowInBackground(CBVVideoEvent videoEvent)
         {
-            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerBackground(videoEvent, selectedServerProjectId, authApiViewModel);
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerBackground(videoEvent, selectedProjectEvent, authApiViewModel);
             if (addedData != null)
             {
                 DataManagerSqlLite.UpdateVideoEventDataTableServerId(videoEvent.videoevent_id, addedData.videoevent.videoevent_id, authApiViewModel.GetError());
