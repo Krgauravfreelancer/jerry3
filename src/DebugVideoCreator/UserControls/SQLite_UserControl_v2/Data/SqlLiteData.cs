@@ -2801,7 +2801,7 @@ namespace Sqllite_Library.Data
         }
 
 
-        public static void DeleteAllVideoEventsByProjectId(int projdetId, bool cascadeDelete)
+        public static void DeleteAllVideoEventsByProjdetId(int projdetId, bool cascadeDelete)
         {
             var deleteQueryString = $@" 
                                         Delete from cbv_videoevent 
@@ -2836,7 +2836,7 @@ namespace Sqllite_Library.Data
 
                                         " + deleteQueryString;
             var deleteFlag = DeleteRecordsInTable(deleteQueryString);
-            Console.WriteLine($@"DeleteAllVideoEventsByProjectId Success for projectId - {projdetId} with cascadeflag - {cascadeDelete}");
+            Console.WriteLine($@"DeleteAllVideoEventsByProjectId Success for projdetId - {projdetId} with cascadeflag - {cascadeDelete}");
         }
 
 

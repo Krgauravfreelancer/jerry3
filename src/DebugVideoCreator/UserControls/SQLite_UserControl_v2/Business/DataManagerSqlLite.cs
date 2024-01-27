@@ -515,9 +515,9 @@ namespace Sqllite_Library.Business
             SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete);
         }
 
-        public static void DeleteAllVideoEventsByProjectId(int projectId, bool cascadeDelete)
+        public static void DeleteAllVideoEventsByProjdetId(int projdetId, bool cascadeDelete)
         {
-            SqlLiteData.DeleteAllVideoEventsByProjectId(projectId, cascadeDelete);
+            SqlLiteData.DeleteAllVideoEventsByProjdetId(projdetId, cascadeDelete);
         }
 
         #endregion

@@ -387,7 +387,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader, "Processing ...");
             foreach (var modifiedEvent in modifiedEvents)
             {
-                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent.serverProjectId, authApiViewModel);
+                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
                 if(response != null)
                 {
                     var videoEventDt = new VideoEventDatatable();
@@ -1040,11 +1040,11 @@ namespace VideoCreator.XAML
         {
             // Step1: Lets clear the local DB
 
-            DataManagerSqlLite.DeleteAllVideoEventsByProjectId(selectedProjectEvent.projectId, true);
+            DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
 
 
             //Step2: Lets fetch the data from 
-            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjectId(selectedProjectEvent.serverProjectId);
+            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
 
             if (serverVideoEventData?.Data != null)
             {

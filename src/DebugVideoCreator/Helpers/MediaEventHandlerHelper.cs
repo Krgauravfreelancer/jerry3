@@ -43,7 +43,7 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        public static async Task<VideoEventModel> UpdateVideoEventToServer(TimelineVideoEvent videoevent, Int64 selectedServerProjectId, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventModel> UpdateVideoEventToServer(TimelineVideoEvent videoevent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = videoevent.fk_videoevent_media;
@@ -52,7 +52,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_duration = videoevent.videoevent_duration;
             objToSync.videoevent_end = videoevent.videoevent_end;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            var result = await authApiViewModel.PutVideoEvent(selectedServerProjectId, videoevent.videoevent_serverid, objToSync);
+            var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, videoevent.videoevent_serverid, objToSync);
             return result;
         }
 
@@ -95,12 +95,12 @@ namespace VideoCreator.Helpers
         }
 
         
-        public static DataTable GetVideoEventTableWithData(int selectedProjectId, AllVideoEventResponseModel videoevent)
+        public static DataTable GetVideoEventTableWithData(int selectedProjdetId, AllVideoEventResponseModel videoevent)
         {
             var dt = GetVideoEventDataTable();
             var row = dt.NewRow();
             row["videoevent_id"] = -1;
-            row["fk_videoevent_projdet"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjdetId;
             row["videoevent_start"] = videoevent.videoevent_start;
             row["videoevent_track"] = videoevent.videoevent_track;
             row["videoevent_duration"] = videoevent.videoevent_duration;

@@ -453,9 +453,9 @@ namespace VideoCreator.Auth
         */
         #region == Video Event ==
 
-        public async Task<ParentDataList<AllVideoEventResponseModel>> GetAllVideoEventsbyProjectId(Int64 selectedServerProjectId)
+        public async Task<ParentDataList<AllVideoEventResponseModel>> GetAllVideoEventsbyProjdetId(SelectedProjectEvent selectedProjectEvent)
         {
-            var url = $"api/connect/project/{selectedServerProjectId}/videoevent";
+            var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent";
 
             var result = await _apiClientHelper.Get<ParentDataList<AllVideoEventResponseModel>>(url);
             if (result != null)
@@ -561,11 +561,11 @@ namespace VideoCreator.Auth
             catch { return null; }
         }
 
-        public async Task<VideoEventModel> PutVideoEvent(Int64 selectedServerProjectId, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
+        public async Task<VideoEventModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
         {
             try
             {
-                var url = $"api/connect/project/{selectedServerProjectId}/videoevent/{selectedServerVideoEventId}";
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent/{selectedServerVideoEventId}";
                 var parameters = new Dictionary<string, string>
                 {
                     { "fk_videoevent_media", videoEventModel.fk_videoevent_media.ToString() },
