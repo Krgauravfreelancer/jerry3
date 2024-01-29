@@ -134,6 +134,7 @@
     <Compile Include="Models\CBVScreen.cs" />
     <Compile Include="Models\CBVProject.cs" />
     <Compile Include="Models\EnumEntity.cs" />
+    <Compile Include="Models\SelectedProjectEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

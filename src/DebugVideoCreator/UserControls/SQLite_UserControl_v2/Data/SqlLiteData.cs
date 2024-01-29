@@ -2014,8 +2014,7 @@ namespace Sqllite_Library.Data
             else
                 sqlQueryString += $@" where notes_isdeleted = 0";
 
-            if (videoEventId > -1)
-                sqlQueryString += $@" and fk_notes_videoevent = {videoEventId} order by notes_index";
+            sqlQueryString += $@" and fk_notes_videoevent = {videoEventId} order by notes_index";
             SQLiteConnection sqlCon = null;
             try
             {

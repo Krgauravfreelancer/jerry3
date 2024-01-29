@@ -79,7 +79,7 @@ namespace VideoCreator.XAML
             //ResetAudioMenuOptions();
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent.projectId, authApiViewModel, ReadOnly);
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent, authApiViewModel, ReadOnly);
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
 
@@ -95,14 +95,14 @@ namespace VideoCreator.XAML
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
-            NotesUserConrol.InitializeNotes(selectedProjectEvent.projectId, selectedVideoEventId, ReadOnly);
+            NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
 
             NotesUserConrol.Visibility = Visibility.Visible;
 
 
             // Reload Control
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projectId);
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
             //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             //ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
@@ -119,9 +119,9 @@ namespace VideoCreator.XAML
 
         private void Refresh()
         {
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projectId);
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.InitializeNotes(selectedProjectEvent.projectId, selectedVideoEventId);
+            NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
         }
 
 

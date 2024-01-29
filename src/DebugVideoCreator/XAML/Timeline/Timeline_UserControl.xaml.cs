@@ -23,7 +23,7 @@ namespace VideoCreator.XAML
     public partial class Timeline_UserControl : UserControl
     {
         public bool HasData { get; set; } = false;
-        private int selectedProjectId;
+        private SelectedProjectEvent selectedProjectEvent;
 
         private AuthAPIViewModel authApiViewModel;
 
@@ -57,9 +57,9 @@ namespace VideoCreator.XAML
             InitializeComponent();
         }
 
-        public void SetSelectedProjectId(int project_id, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
+        public void SetSelectedProjectId(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
         {
-            selectedProjectId = project_id;
+            selectedProjectEvent = _selectedProjectEvent;
             InitializeTimeline();
             ReadOnly = readonlyMode;
             ResetContextMenu();
@@ -144,13 +144,13 @@ namespace VideoCreator.XAML
             _timelineGridControl.SetScreenList(screens);
         }
 
-        public void LoadVideoEventsFromDb(int projectId)
+        public void LoadVideoEventsFromDb(int projdetId)
         {
 
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
 
-            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projectId);
+            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId);
             foreach (var videoEvent in videoEventList)
             {
 
@@ -207,7 +207,7 @@ namespace VideoCreator.XAML
             LoadScreenFromDb();
 
             //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
-            LoadVideoEventsFromDb(selectedProjectId);
+            LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
             TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
@@ -473,7 +473,7 @@ namespace VideoCreator.XAML
         {
             //show a warning here that user will lose all changes if the changes are not saved
             //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
-            LoadVideoEventsFromDb(selectedProjectId);
+            LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
         }
 
         private void ClearTimelines(object sender, RoutedEventArgs e)

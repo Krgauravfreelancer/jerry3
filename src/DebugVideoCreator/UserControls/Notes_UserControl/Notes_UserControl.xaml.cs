@@ -16,7 +16,7 @@ namespace Notes_UserControl
     /// </summary>
     public partial class Notes_UserControl : UserControl
     {
-        private int selectedproject_id;
+        private SelectedProjectEvent selectedProjectEvent;
         private int selectedVideoEventId = -1;
         public event EventHandler locAudioAddedEvent;
         public event EventHandler locAudioShowEvent;
@@ -38,9 +38,9 @@ namespace Notes_UserControl
 
         
 
-        public void InitializeNotes(int project_id, int videoEvent_id = -1, bool readonlyMode = false)
+        public void InitializeNotes(SelectedProjectEvent _selectedProjectEvent, int videoEvent_id = -1, bool readonlyMode = false)
         {
-            selectedproject_id = project_id;
+            selectedProjectEvent = _selectedProjectEvent;
             selectedVideoEventId = videoEvent_id;
             ReadOnly = readonlyMode;
             ResetContextMenu();
