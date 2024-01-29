@@ -59,9 +59,6 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
       <HintPath>packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="NotesManage_UserControl">
-      <HintPath>Libraries\NotesManage_UserControl.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
@@ -154,7 +151,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
+    <ProjectReference Include="..\NotesManage_UserControl\NotesManage_UserControl.csproj">
+      <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>
+      <Name>NotesManage_UserControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLite_UserControl_v2\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
