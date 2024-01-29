@@ -423,10 +423,6 @@ namespace VideoCreator.XAML
                 lblSelectedVideoeventId.Content = $"";
             }
             NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
-
-
-
-
         }
 
         //private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)

@@ -84,24 +84,30 @@ namespace Notes_UserControl
             if (selectedVideoEventId > -1)
             {
                 var notes = DataManagerSqlLite.GetNotes(selectedVideoEventId);
-                if (notes.Count <= 0)
-                {
-                    var dtNotes = BuildNotesDataTableForDB();
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 1, "Launch Visual Studio, and open the New Project dialog box");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 2, "In the Window category, select the \"WPF User control Library\"");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 3, "Name the new project");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 4, "Click OK to create the project");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 5, "In Solution Explorer, rename UserControl1 to an appropriate name");
-                    dtNotes = AddNoteRowForDBTable(dtNotes, 6, "Add System.Windows.forms");
-                    if (saveNotesEvent != null)
-                        saveNotesEvent.Invoke(this, dtNotes);
-                    else
-                        DelayAction(1000, new Action(() => { saveNotesEvent.Invoke(this, dtNotes); }));
-                }
-                else
+                if (notes.Count > 0)
                     DisplayAllNotesForSelectedVideoEvent();
+                else
+                    AddDummyNotes(false);
             }
 
+        }
+
+        private void AddDummyNotes(bool shouldAddDummy)
+        {
+            if (shouldAddDummy)
+            {
+                var dtNotes = BuildNotesDataTableForDB();
+                dtNotes = AddNoteRowForDBTable(dtNotes, 1, "Launch Visual Studio, and open the New Project dialog box");
+                dtNotes = AddNoteRowForDBTable(dtNotes, 2, "In the Window category, select the \"WPF User control Library\"");
+                dtNotes = AddNoteRowForDBTable(dtNotes, 3, "Name the new project");
+                dtNotes = AddNoteRowForDBTable(dtNotes, 4, "Click OK to create the project");
+                dtNotes = AddNoteRowForDBTable(dtNotes, 5, "In Solution Explorer, rename UserControl1 to an appropriate name");
+                dtNotes = AddNoteRowForDBTable(dtNotes, 6, "Add System.Windows.forms");
+                if (saveNotesEvent != null)
+                    saveNotesEvent.Invoke(this, dtNotes);
+                else
+                    DelayAction(1000, new Action(() => { saveNotesEvent.Invoke(this, dtNotes); }));
+            }
         }
 
         public void DisplayAllNotesForSelectedVideoEvent()
