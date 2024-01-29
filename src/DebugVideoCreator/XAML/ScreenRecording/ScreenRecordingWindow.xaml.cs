@@ -199,7 +199,7 @@ namespace VideoCreator.XAML
             {
                 var dataTable = new DataTable();
                 dataTable.Columns.Add("videoevent_id", typeof(int));
-                dataTable.Columns.Add("fk_videoevent_project", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_projdet", typeof(int));
                 dataTable.Columns.Add("fk_videoevent_media", typeof(int));
                 dataTable.Columns.Add("videoevent_track", typeof(int));
                 dataTable.Columns.Add("videoevent_start", typeof(string));
@@ -225,7 +225,7 @@ namespace VideoCreator.XAML
 
                 var row = dataTable.NewRow();
                 //row["videoevent_id"] = -1;
-                row["fk_videoevent_project"] = e.MediaItem.ProjectId;
+                row["fk_videoevent_projdet"] = e.MediaItem.ProjectId;
                 row["videoevent_track"] = e.MediaItem.TrackId;
                 row["videoevent_start"] = element.StartTime.ToString(@"hh\:mm\:ss");
                 row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
