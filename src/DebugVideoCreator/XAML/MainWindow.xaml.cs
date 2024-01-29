@@ -31,10 +31,10 @@ namespace VideoCreator.XAML
     {
         private readonly AuthAPIViewModel authApiViewModel;
        
-        private List<ProjectModel> availableProjects;
+        private List<ProjectList> availableProjects;
         private List<CBVProjectForJoin> downloadedProjects;
-        private List<ProjectModelUI> availableProjectsDataSource;
-        private ProjectModelUI selectedItem;
+        private List<ProjectListUI> availableProjectsDataSource;
+        private ProjectListUI selectedItem;
 
         public MainWindow()
         {
@@ -64,7 +64,7 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private List<string> getItems(string name, IEnumerable<ProjectModel> source)
+        private List<string> getItems(string name, IEnumerable<ProjectList> source)
         {
             return new List<string> { name };
         }
@@ -113,7 +113,7 @@ namespace VideoCreator.XAML
             manageStack.Visibility = Visibility.Visible;
         }
 
-        private List<ProjectModelUI> RemoveUnnecessaryFields(List<ProjectModel> projects)
+        private List<ProjectListUI> RemoveUnnecessaryFields(List<ProjectList> projects)
         {
             foreach(var item in projects)
             {
@@ -129,7 +129,7 @@ namespace VideoCreator.XAML
                     item.project_localId = -1;
                 }
             }
-            var result = JsonConvert.DeserializeObject<List<ProjectModelUI>>(JsonConvert.SerializeObject(projects));
+            var result = JsonConvert.DeserializeObject<List<ProjectListUI>>(JsonConvert.SerializeObject(projects));
             return result;
         }
 
@@ -327,7 +327,7 @@ namespace VideoCreator.XAML
         #endregion == Events ==
         private void datagrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            selectedItem = datagrid.SelectedItem != null ? (ProjectModelUI)datagrid.SelectedItem : null;
+            selectedItem = datagrid.SelectedItem != null ? (ProjectListUI)datagrid.SelectedItem : null;
             btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.projstatus_name == "AVAILABLE";
             btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.projstatus_name != "AVAILABLE";
         }

@@ -118,6 +118,9 @@
     <Compile Include="Models\CBVLocAudio.cs" />
     <Compile Include="Models\CBVBackground.cs" />
     <Compile Include="Models\CBVCompany.cs" />
+    <Compile Include="Models\CBVRequireAutofill.cs" />
+    <Compile Include="Models\CBVObjectiveAutofill.cs" />
+    <Compile Include="Models\CBVNextAutofill.cs" />
     <Compile Include="Models\CBVProjdet.cs" />
     <Compile Include="Models\CBVVoiceAvergae.cs" />
     <Compile Include="Models\CBVVoiceTimer.cs" />

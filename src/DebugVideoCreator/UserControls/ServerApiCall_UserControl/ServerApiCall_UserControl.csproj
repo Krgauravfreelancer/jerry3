@@ -75,7 +75,12 @@
     <Compile Include="DBTransferControl.cs" />
     <Compile Include="DTO\Auth\LoginResponseModel.cs" />
     <Compile Include="DTO\Auth\LogoutResponseModel.cs" />
-    <Compile Include="DTO\Projects\ProjectWithDetailModel.cs" />
+    <Compile Include="DTO\AutofillModels\Autofill.cs" />
+    <Compile Include="DTO\AutofillModels\NextAutofill.cs" />
+    <Compile Include="DTO\AutofillModels\RequireAutofill.cs" />
+    <Compile Include="DTO\AutofillModels\ObjectiveAutofill.cs" />
+    <Compile Include="DTO\Projects\ProjectDetail.cs" />
+    <Compile Include="DTO\Projects\ProjectWithId.cs" />
     <Compile Include="Helpers\Auth_ServerAPICall_Helper.cs" />
     <Compile Include="Helpers\EncryptionHelper.cs" />
     <Compile Include="Helpers\UriExtensions.cs" />
@@ -91,10 +96,7 @@
     <Compile Include="DTO\ParentData.cs" />
     <Compile Include="DTO\ParentDataList.cs" />
     <Compile Include="DTO\Media\MediaModel.cs" />
-    <Compile Include="DTO\Projects\ProjectAssignModel.cs" />
-    <Compile Include="DTO\Projects\ProjectLockModel.cs" />
     <Compile Include="DTO\Projects\ProjectModel.cs" />
-    <Compile Include="DTO\Projects\ProjectCountModel.cs" />
     <Compile Include="DTO\Screen\ScreenModel.cs" />
     <Compile Include="DTO\VideoEvent\NotesModel.cs" />
     <Compile Include="DTO\VideoEvent\AudioModel.cs" />

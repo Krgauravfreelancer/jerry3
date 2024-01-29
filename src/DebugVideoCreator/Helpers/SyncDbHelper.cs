@@ -129,7 +129,7 @@ namespace VideoCreator.Helpers
             DataManagerSqlLite.UpsertRowsToBackground(dataTable);
         }
 
-        public static void UpsertProject(ProjectWithDetailModel projectModel, string version)
+        public static void UpsertProject(ProjectWithId projectModel, string version)
         {
             InitializeDatabase();
             DataTable dataTable = new DataTable();
@@ -187,7 +187,6 @@ namespace VideoCreator.Helpers
                 row["projdet_comments"] = projdet.projdet_comments;
                 row["projdet_createdate"] = projdet.projdet_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["projdet_modifydate"] = projdet.projdet_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-
             }
             dataTable.Rows.Add(row);
             var insertedId = DataManagerSqlLite.UpsertRowsToProjectAndProjectDet(dataTable, projectModel.project_id, projdet != null);

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ServerApiCall_UserControl.DTO.Projects
 {
-    public class ProjectModel : ProjectModelUI
+    public class ProjectList : ProjectListUI
     {
         public int fk_project_section { get; set; }
         public int projstatus_id { get; set; }
@@ -14,7 +14,7 @@ namespace ServerApiCall_UserControl.DTO.Projects
 
     }
 
-    public class ProjectModelUI
+    public class ProjectListUI
     {
         public int project_id { get; set; }
         public string project_videotitle { get; set; }

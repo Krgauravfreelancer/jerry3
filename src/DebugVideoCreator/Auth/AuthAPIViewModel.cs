@@ -114,18 +114,18 @@ namespace VideoCreator.Auth
 
         #region == Project API Calls ==
 
-        public async Task<List<ProjectModel>> GetAvailableProjectsData()
+        public async Task<List<ProjectList>> GetAvailableProjectsData()
         {
             var url = $"api/connect/project/available";
-            var result = await _apiClientHelper.Get<ParentDataList<ProjectModel>>(url);
+            var result = await _apiClientHelper.Get<ParentDataList<ProjectList>>(url);
             return result?.Data?.Count > 0 ? result.Data : null;
         }
 
-        public async Task<ProjectWithDetailModel> GetProjectById(int projectId)
+        public async Task<ProjectWithId> GetProjectById(int projectId)
         {
             var url = $"api/connect/project/{projectId}";
-            var result = await _apiClientHelper.Get<ParentData<ProjectWithDetailModel>>(url);
-            return result?.Data != null ? result.Data : default(ProjectWithDetailModel);
+            var result = await _apiClientHelper.Get<ParentData<ProjectWithId>>(url);
+            return result?.Data != null ? result.Data : default(ProjectWithId);
         }
 
         //public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
@@ -154,7 +154,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() },
             };
             var payload = new FormUrlEncodedContent(parameters);
-            var result = await _apiClientHelper.Create<ParentData<ProjectModel>>(url, payload);
+            var result = await _apiClientHelper.Create<ParentData<ProjectList>>(url, payload);
         }
 
         public async Task UpdateProject(int ProjectId, string project_videotitle, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
@@ -169,7 +169,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() }
             };
             var payload = new FormUrlEncodedContent(parameters);
-            var result = await _apiClientHelper.Update<ParentData<ProjectModel>>(url, payload);
+            var result = await _apiClientHelper.Update<ParentData<ProjectList>>(url, payload);
         }
 
         public async Task PatchProject(int projectId, int project_version, string project_comments)
@@ -181,21 +181,7 @@ namespace VideoCreator.Auth
                 { "project_comments", project_comments.ToString() },
             };
             var payload = new FormUrlEncodedContent(parameters);
-            var result = await _apiClientHelper.Patch<ParentData<ProjectModel>>(url, payload);
-        }
-
-        public async Task GetProjectCount()
-        {
-            var url = $"api/connect/project/count";
-            var result = await _apiClientHelper.Get<ProjectCountModel>(url);
-            if (result != null && result.Available <= -1)
-            {
-                MessageBox.Show("Some Error occured !!!", "GetProjectCount", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                MessageBox.Show($"Available number of projects: [ {result.Available} ]", "GetProjectCount", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            var result = await _apiClientHelper.Patch<ParentData<ProjectList>>(url, payload);
         }
 
         public async Task GetOwnershipOfProjects(string ProjectIds)
@@ -216,20 +202,6 @@ namespace VideoCreator.Auth
                 MessageBox.Show(builder.ToString(), "Projects ownership List", MessageBoxButton.OK, MessageBoxImage.Information);
             }
 
-        }
-
-        public async Task IsAssignedToAnyProject()
-        {
-            var url = "api/connect/project/assigned";
-            var result = await _apiClientHelper.Get<ProjectAssignModel>(url);
-            if (result != null && result.Assigned == false)
-            {
-                MessageBox.Show($"user not assigned to any project", "Project Assigned", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                MessageBox.Show("Assigned to any projects: [" + result.ToString() + "]", "Projects Assigned", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
         }
 
         #endregion
