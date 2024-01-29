@@ -553,7 +553,7 @@ namespace Sqllite_Library.Business
             return SqlLiteData.IsProjectAvailable(projectServerId);
         }
 
-        public static int UpsertRowsToProjectAndProjectDet(DataTable data, int projectServerId, bool projdetAvailable)
+        public static int UpsertRowsToProjectbyId(DataTable data, int projectServerId, bool projdetAvailable)
         {
             //foreach (DataRow rowMain in data.Rows)
             //{
@@ -564,9 +564,26 @@ namespace Sqllite_Library.Business
 
             var projectId = SqlLiteData.IsProjectAvailable(projectServerId);
             if (projectId == -1)
+            {
                 projectId = SqlLiteData.UpsertRowsToProject(data);
+                foreach (DataRow row in data.Rows)
+                {
+                    var requirements = row["require_autofill"] as DataTable;
+                    if (requirements != null)
+                        SqlLiteData.InsertRowsToRequireAutofill(requirements, projectId);
+
+                    var objective = row["objective_autofill"] as DataTable;
+                    if (objective != null)
+                        SqlLiteData.InsertRowsToObjectiveAutofill(objective, projectId);
+
+                    var next = row["next_autofill"] as DataTable;
+                    if (next != null)
+                        SqlLiteData.InsertRowsToNextAutofill(next, projectId);
+                }
+            }
+
             if (projdetAvailable)
-                SqlLiteData.UpsertRowsToProjectDet(data, projectId);
+                SqlLiteData.InsertRowsToProjectDetail(data, projectId);
             return projectId;
         }
 

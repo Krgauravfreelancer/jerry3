@@ -3007,23 +3007,104 @@ namespace Sqllite_Library.Data
                 var fkProjectBackground = Convert.ToBoolean(dr["fk_project_background"]);
                 values.Add($"('{dr["project_videotitle"]}',  '{dr["project_currwfstep"]}', {projectUploaded}, '{projectDate}', {projectArchived}, {fkProjectBackground}, '{createDate}', '{modifyDate}', " +
                     $" {isdeleted}, {issynced}, {serverid}, '{syncerror}')");
-
-                var valuesString = string.Join(",", values.ToArray());
-                string sqlQueryString =
-                    $@"INSERT INTO  cbv_project 
+            }
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO  cbv_project 
                     (project_videotitle, project_currwfstep, project_uploaded, project_date, project_archived, fk_project_background, 
                         project_createdate, project_modifydate, project_isdeleted, project_issynced, project_serverid, project_syncerror) 
                 VALUES 
                     {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
-                return insertedId;
-            }
-
-            return -1;
+            var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
+            return insertedId;
         }
 
-        public static int UpsertRowsToProjectDet(DataTable dataTable, int Project_Id)
+        public static int InsertRowsToObjectiveAutofill(DataTable dataTable, int Project_Id)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var createDate = Convert.ToString(dr["objectiveautofill_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["objectiveautofill_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                values.Add($"({Project_Id}, '{dr["objectiveautofill_name"]}', {dr["objectiveautofill_active"]}, '{createDate}', '{modifyDate}' ," +
+                    $" {dr["objectiveautofill_serverid"]},  {dr["objectiveautofill_issynced"]},  '{dr["objectiveautofill_syncerror"]}',  {dr["objectiveautofill_isedited"]})");
+            }
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO cbv_objectiveautofill
+                    (fk_objectiveautofill_project, objectiveautofill_name,  objectiveautofill_active, objectiveautofill_createdate, objectiveautofill_modifydate,
+                        objectiveautofill_serverid, objectiveautofill_issynced, objectiveautofill_syncerror, objectiveautofill_isedited) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTable("cbv_objectiveautofill", sqlQueryString);
+            return insertedId;
+        }
+
+        public static int InsertRowsToRequireAutofill(DataTable dataTable, int Project_Id)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var createDate = Convert.ToString(dr["requireautofill_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["requireautofill_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                values.Add($"({Project_Id}, '{dr["requireautofill_name"]}', {dr["requireautofill_importance"]}, {dr["requireautofill_active"]}, '{createDate}', '{modifyDate}' ," +
+                    $" {dr["requireautofill_serverid"]},  {dr["requireautofill_issynced"]},  '{dr["requireautofill_syncerror"]}',  {dr["requireautofill_isedited"]})");
+            }
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO cbv_requireautofill
+                    (fk_requireautofill_project, requireautofill_name,  requireautofill_importance, requireautofill_active, requireautofill_createdate, requireautofill_modifydate,
+                        requireautofill_serverid, requireautofill_issynced, requireautofill_syncerror, requireautofill_isedited) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTable("cbv_requireautofill", sqlQueryString);
+            return insertedId;
+        }
+
+        public static int InsertRowsToNextAutofill(DataTable dataTable, int Project_Id)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var createDate = Convert.ToString(dr["nextautofill_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["nextautofill_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                values.Add($"({Project_Id}, '{dr["nextautofill_name"]}', {dr["nextautofill_importance"]}, {dr["nextautofill_active"]}, '{createDate}', '{modifyDate}' ," +
+                    $" {dr["nextautofill_serverid"]},  {dr["nextautofill_issynced"]},  '{dr["nextautofill_syncerror"]}',  {dr["nextautofill_isedited"]})");
+            }
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO cbv_nextautofill
+                    (fk_nextautofill_project, nextautofill_name,  nextautofill_importance, nextautofill_active, nextautofill_createdate, nextautofill_modifydate,
+                        nextautofill_serverid, nextautofill_issynced, nextautofill_syncerror, nextautofill_isedited) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTable("cbv_nextautofill", sqlQueryString);
+            return insertedId;
+        }
+
+        public static int InsertRowsToProjectDetail(DataTable dataTable, int Project_Id)
         {
             var values = new List<string>();
             foreach (DataRow dr in dataTable.Rows)

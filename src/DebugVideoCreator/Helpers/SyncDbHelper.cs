@@ -1,4 +1,5 @@
 ﻿using ServerApiCall_UserControl.DTO.App;
+using ServerApiCall_UserControl.DTO.AutofillModels;
 using ServerApiCall_UserControl.DTO.Background;
 using ServerApiCall_UserControl.DTO.Company;
 using ServerApiCall_UserControl.DTO.Media;
@@ -145,19 +146,16 @@ namespace VideoCreator.Helpers
 
             dataTable.Columns.Add("project_createdate", typeof(string));
             dataTable.Columns.Add("project_modifydate", typeof(string));
-            
+
             dataTable.Columns.Add("project_isdeleted", typeof(bool));
             dataTable.Columns.Add("project_issynced", typeof(bool));
             dataTable.Columns.Add("project_serverid", typeof(Int64));
             dataTable.Columns.Add("project_syncerror", typeof(string));
 
-            //Proj Det
-            dataTable.Columns.Add("projdet_serverid", typeof(Int64));
-            dataTable.Columns.Add("projdet_version", typeof(string));
-            dataTable.Columns.Add("projdet_currver", typeof(bool));
-            dataTable.Columns.Add("projdet_comments", typeof(string));
-            dataTable.Columns.Add("projdet_createdate", typeof(string));
-            dataTable.Columns.Add("projdet_modifydate", typeof(string));
+            dataTable.Columns.Add("require_autofill", typeof(DataTable));
+            dataTable.Columns.Add("next_autofill", typeof(DataTable));
+            dataTable.Columns.Add("objective_autofill", typeof(DataTable));
+
 
             var row = dataTable.NewRow();
             row["project_id"] = -1;
@@ -165,7 +163,7 @@ namespace VideoCreator.Helpers
             row["project_currwfstep"] = projectModel.project_currwfstep ?? "";
             row["project_uploaded"] = false;
             row["fk_project_background"] = 1;
-            
+
             row["project_date"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["project_archived"] = false;
 
@@ -176,10 +174,30 @@ namespace VideoCreator.Helpers
             row["project_issynced"] = true;
             row["project_serverid"] = projectModel.project_id;
             row["project_syncerror"] = "";
-
+            row["next_autofill"] = FillNextAutofills(projectModel?.autofill?.next_autofill);
+            row["require_autofill"] = FillRequireAutofills(projectModel?.autofill?.require_autofill);
+            row["objective_autofill"] = FillObjectiveAutofills(projectModel?.autofill?.objective_autofill);
 
             var projdet = projectModel?.project_detail?.Find(x => x.projdet_version == version);
-            if (projdet != null) 
+            FillProjectDetails(dataTable, row, projdet);
+
+
+            dataTable.Rows.Add(row);
+            var insertedId = DataManagerSqlLite.UpsertRowsToProjectbyId(dataTable, projectModel.project_id, projdet != null);
+        }
+
+
+        private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, ProjectDetail projdet)
+        {
+            //Proj Det
+            dataTable.Columns.Add("projdet_serverid", typeof(Int64));
+            dataTable.Columns.Add("projdet_version", typeof(string));
+            dataTable.Columns.Add("projdet_currver", typeof(bool));
+            dataTable.Columns.Add("projdet_comments", typeof(string));
+            dataTable.Columns.Add("projdet_createdate", typeof(string));
+            dataTable.Columns.Add("projdet_modifydate", typeof(string));
+
+            if (projdet != null)
             {
                 row["projdet_serverid"] = projdet.projdet_id;
                 row["projdet_version"] = projdet.projdet_version;
@@ -188,10 +206,132 @@ namespace VideoCreator.Helpers
                 row["projdet_createdate"] = projdet.projdet_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["projdet_modifydate"] = projdet.projdet_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             }
-            dataTable.Rows.Add(row);
-            var insertedId = DataManagerSqlLite.UpsertRowsToProjectAndProjectDet(dataTable, projectModel.project_id, projdet != null);
+
+            return dataTable;
         }
 
+        private static DataTable FillRequireAutofills(List<RequireAutofill> data)
+        {
+            if (data != null && data.Count > 0)
+            {
+                //require autofil
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("requireautofill_id", typeof(int));
+                dataTable.Columns.Add("fk_requireautofill_project", typeof(int));
+                dataTable.Columns.Add("requireautofill_name", typeof(string));
+                dataTable.Columns.Add("requireautofill_importance", typeof(int));
+                dataTable.Columns.Add("requireautofill_active", typeof(bool));
+                // Local Columns
+                dataTable.Columns.Add("requireautofill_createdate", typeof(DateTime));
+                dataTable.Columns.Add("requireautofill_modifydate", typeof(DateTime));
+                dataTable.Columns.Add("requireautofill_serverid", typeof(Int64));
+                dataTable.Columns.Add("requireautofill_issynced", typeof(bool));
+                dataTable.Columns.Add("requireautofill_syncerror", typeof(string));
+                dataTable.Columns.Add("requireautofill_isedited", typeof(bool));
+
+                foreach (var item in data)
+                {
+                    var row = dataTable.NewRow();
+                    row["requireautofill_id"] = -1;
+                    row["fk_requireautofill_project"] = item.fk_requireautofill_project;
+                    row["requireautofill_name"] = item.requireautofill_name;
+                    row["requireautofill_importance"] = item.requireautofill_importance;
+                    row["requireautofill_active"] = item.requireautofill_active;
+                    // Local Columns
+                    row["requireautofill_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["requireautofill_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["requireautofill_serverid"] = item.requireautofill_id;
+                    row["requireautofill_issynced"] = true;
+                    row["requireautofill_syncerror"] = string.Empty;
+                    row["requireautofill_isedited"] = false;
+                    dataTable.Rows.Add(row);
+                }
+                return dataTable;
+            }
+            return null;
+        }
+
+        private static DataTable FillObjectiveAutofills(List<ObjectiveAutofill> data)
+        {
+            if (data != null && data.Count > 0)
+            {
+                //Objective autofil
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("objectiveautofill_id", typeof(int));
+                dataTable.Columns.Add("fk_objectiveautofill_project", typeof(int));
+                dataTable.Columns.Add("objectiveautofill_name", typeof(string));
+                //dataTable.Columns.Add("objectiveautofill_importance", typeof(int));
+                dataTable.Columns.Add("objectiveautofill_active", typeof(bool));
+                // Local Columns
+                dataTable.Columns.Add("objectiveautofill_createdate", typeof(DateTime));
+                dataTable.Columns.Add("objectiveautofill_modifydate", typeof(DateTime));
+                dataTable.Columns.Add("objectiveautofill_serverid", typeof(Int64));
+                dataTable.Columns.Add("objectiveautofill_issynced", typeof(bool));
+                dataTable.Columns.Add("objectiveautofill_syncerror", typeof(string));
+                dataTable.Columns.Add("objectiveautofill_isedited", typeof(bool));
+
+                foreach (var item in data)
+                {
+                    var row = dataTable.NewRow();
+                    row["objectiveautofill_id"] = -1;
+                    row["fk_objectiveautofill_project"] = item.fk_objectiveautofill_project;
+                    row["objectiveautofill_name"] = item.objectiveautofill_name;
+                    //row["objectiveautofill_importance"] = item.objectiveautofill_importance;
+                    row["objectiveautofill_active"] = item.objectiveautofill_active;
+                    // Local Columns
+                    row["objectiveautofill_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["objectiveautofill_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["objectiveautofill_serverid"] = item.objectiveautofill_id;
+                    row["objectiveautofill_issynced"] = true;
+                    row["objectiveautofill_syncerror"] = string.Empty;
+                    row["objectiveautofill_isedited"] = false;
+                    dataTable.Rows.Add(row);
+                }
+                return dataTable;
+            }
+            return null;
+        }
+
+        private static DataTable FillNextAutofills(List<NextAutofill> data)
+        {
+            if (data != null && data.Count > 0)
+            {
+                //next autofil
+                DataTable dataTable = new DataTable();
+                dataTable.Columns.Add("nextautofill_id", typeof(int));
+                dataTable.Columns.Add("fk_nextautofill_project", typeof(int));
+                dataTable.Columns.Add("nextautofill_name", typeof(string));
+                dataTable.Columns.Add("nextautofill_importance", typeof(int));
+                dataTable.Columns.Add("nextautofill_active", typeof(bool));
+                // Local Columns
+                dataTable.Columns.Add("nextautofill_createdate", typeof(DateTime));
+                dataTable.Columns.Add("nextautofill_modifydate", typeof(DateTime));
+                dataTable.Columns.Add("nextautofill_serverid", typeof(Int64));
+                dataTable.Columns.Add("nextautofill_issynced", typeof(bool));
+                dataTable.Columns.Add("nextautofill_syncerror", typeof(string));
+                dataTable.Columns.Add("nextautofill_isedited", typeof(bool));
+
+                foreach (var item in data)
+                {
+                    var row = dataTable.NewRow();
+                    row["nextautofill_id"] = -1;
+                    row["fk_nextautofill_project"] = item.fk_nextautofill_project;
+                    row["nextautofill_name"] = item.nextautofill_name;
+                    row["nextautofill_importance"] = item.nextautofill_importance;
+                    row["nextautofill_active"] = item.nextautofill_active;
+                    // Local Columns
+                    row["nextautofill_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["nextautofill_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");//TBD
+                    row["nextautofill_serverid"] = item.nextautofill_id;
+                    row["nextautofill_issynced"] = true;
+                    row["nextautofill_syncerror"] = string.Empty;
+                    row["nextautofill_isedited"] = false;
+                    dataTable.Rows.Add(row);
+                }
+                return dataTable;
+            }
+            return null;
+        }
 
         private static void SyncVoiceTimer()
         {
