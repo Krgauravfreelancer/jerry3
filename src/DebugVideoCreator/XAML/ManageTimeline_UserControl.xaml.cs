@@ -1062,7 +1062,7 @@ namespace VideoCreator.XAML
                 if (videoEvent?.videosegment != null)
                     await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
             }
-            InitializeChildren();
+            //InitializeChildren();
             Refresh();
             btnDownloadServerData.Content = $@"Download Server Data";
             btnDownloadServerData.IsEnabled = false;
