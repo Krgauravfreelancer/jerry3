@@ -82,11 +82,11 @@ namespace Sqllite_Library.Data
 
             CreateProjectTable(sqlCon);
             CreateProjectDetTable(sqlCon);
-            
+
             CreateRequireAutofillTable(sqlCon);
             CreateObjectiveAutofillTable(sqlCon);
             CreateNextAutofillTable(sqlCon);
-            
+
             CreateVideoEventTable(sqlCon);
             CreateVideoSegmentTable(sqlCon);
             //CreateAudioTable(sqlCon);
@@ -1033,6 +1033,39 @@ namespace Sqllite_Library.Data
 
         #region == GET Methods ==
 
+        private static void CloseConnections(this SqlConnectionModel sqlObject)
+        {
+            sqlObject?.SQLiteDataReader?.Close();
+            sqlObject?.SQLiteCommand?.Dispose();
+            sqlObject?.SQLiteConnection?.Close();
+        }
+
+        private static SqlConnectionModel RunSelectQuery(this string sqlQueryString)
+        {
+            var sqlObject = new SqlConnectionModel();
+            try
+            {
+                // Check if database is created
+                if (false == IsDbCreated())
+                    throw new Exception("Database is not present.");
+
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlObject.SQLiteConnection = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlObject.SQLiteConnection.Open();
+
+                sqlObject.SQLiteCommand = new SQLiteCommand(sqlQueryString, sqlObject.SQLiteConnection);
+                sqlObject.SQLiteDataReader = sqlObject.SQLiteCommand.ExecuteReader();
+                return sqlObject;
+            }
+            catch
+            {
+                CloseConnections(sqlObject);
+            }
+            return null;
+        }
+
         private static int GetMaxIndexForNotes(int fkVideoEventId)
         {
             // Check if database is created
@@ -1098,46 +1131,21 @@ namespace Sqllite_Library.Data
         public static List<CBVCompany> GetCompany()
         {
             var data = new List<CBVCompany>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-
             string sqlQueryString = $@"SELECT * FROM cbv_company";
-
-            SQLiteConnection sqlCon = null;
-            try
+            var sqlObject = sqlQueryString.RunSelectQuery();
+            if (sqlObject != null)
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
+                while (sqlObject.SQLiteDataReader.Read())
                 {
-                    while (sqlReader.Read())
+                    var obj = new CBVCompany
                     {
-                        var obj = new CBVCompany
-                        {
-                            company_id = sqlReader.GetInt32(0),
-                            company_name = sqlReader.GetString(1)
-                        };
-                        data.Add(obj);
-                    }
+                        company_id = sqlObject.SQLiteDataReader.GetInt32(0),
+                        company_name = sqlObject.SQLiteDataReader.GetString(1)
+                    };
+                    data.Add(obj);
                 }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
+                sqlObject.CloseConnections();
             }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-
             return data;
         }
 
@@ -1376,7 +1384,7 @@ namespace Sqllite_Library.Data
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
-                string sqlQueryString = $@"SELECT 
+            string sqlQueryString = $@"SELECT 
                                                 P.project_id, P.project_videotitle, P.project_date, P.project_serverid, PD.projdet_version
                                             FROM cbv_project P
                                                 JOIN cbv_projdet PD on PD.fk_projdet_project = P.project_id";
@@ -1508,7 +1516,7 @@ namespace Sqllite_Library.Data
 
             string sqlQueryString = $@"SELECT * FROM cbv_projdet where  fk_projdet_project = {projectId}";
 
-            
+
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1588,7 +1596,7 @@ namespace Sqllite_Library.Data
                             project_issynced = Convert.ToBoolean(sqlReader["project_issynced"]),
                             project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
                             project_syncerror = Convert.ToString(sqlReader["project_syncerror"])
-                            
+
                         };
                         if (projdetFlag)
                         {
@@ -1611,6 +1619,134 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        #region == Autofill ==
+        public static List<CBVNextAutofill> GetNextAutofillById(int NextAutofillId = -1, bool onlyActive = true)
+        {
+            var data = new List<CBVNextAutofill>();
+
+            string selectClause = $@"SELECT * FROM cbv_nextautofill ";
+            var whereClause = "";
+
+            if (NextAutofillId > 0) whereClause += $@" where fk_nextautofill_project = {NextAutofillId}";
+            if (onlyActive)
+            {
+                if (string.IsNullOrEmpty(whereClause))
+                    whereClause += $@" where nextautofill_active = true";
+                else
+                    whereClause += $@" and nextautofill_active = true";
+            }
+            var sqlObject = (selectClause + whereClause).RunSelectQuery();
+            if (sqlObject != null)
+            {
+                while (sqlObject.SQLiteDataReader.Read())
+                {
+                    var obj = new CBVNextAutofill();
+                    obj.nextautofill_id = Convert.ToInt32(sqlObject.SQLiteDataReader["nextautofill_id"]);
+                    obj.fk_nextautofill_project = Convert.ToInt32(sqlObject.SQLiteDataReader["fk_nextautofill_project"]);
+                    obj.nextautofill_name = Convert.ToString(sqlObject.SQLiteDataReader["nextautofill_name"]);
+                    obj.nextautofill_importance = Convert.ToInt32(sqlObject.SQLiteDataReader["nextautofill_importance"]);
+                    obj.nextautofill_active = Convert.ToBoolean(sqlObject.SQLiteDataReader["nextautofill_active"]);
+                    obj.nextautofill_createdate = Convert.ToDateTime(sqlObject.SQLiteDataReader["nextautofill_createdate"]);
+                    obj.nextautofill_modifydate = Convert.ToDateTime(sqlObject.SQLiteDataReader["nextautofill_modifydate"]);
+                    obj.nextautofill_serverid = Convert.ToInt64(sqlObject.SQLiteDataReader["nextautofill_serverid"]);
+                    obj.nextautofill_issynced = Convert.ToBoolean(sqlObject.SQLiteDataReader["nextautofill_issynced"]);
+                    obj.nextautofill_syncerror = Convert.ToString(sqlObject.SQLiteDataReader["nextautofill_syncerror"]);
+                    obj.nextautofill_isedited = Convert.ToBoolean(sqlObject.SQLiteDataReader["nextautofill_isedited"]);
+                    data.Add(obj);
+                }
+                sqlObject.CloseConnections();
+            }
+            return data;
+        }
+
+        public static List<CBVRequireAutofill> GetRequireAutofillById(int RequireAutofillId = -1, bool onlyActive = true)
+        {
+            var data = new List<CBVRequireAutofill>();
+
+            string selectClause = $@"SELECT * FROM cbv_requireautofill ";
+            var whereClause = "";
+
+            if (RequireAutofillId > 0) whereClause += $@" where fk_requireautofill_project = {RequireAutofillId}";
+            if (onlyActive)
+            {
+                if (string.IsNullOrEmpty(whereClause))
+                    whereClause += $@" where requireautofill_active = true";
+                else
+                    whereClause += $@" and requireautofill_active = true";
+            }
+            var sqlObject = (selectClause + whereClause).RunSelectQuery();
+            if (sqlObject != null)
+            {
+                while (sqlObject.SQLiteDataReader.Read())
+                {
+                    var obj = new CBVRequireAutofill();
+                    obj.requireautofill_id = Convert.ToInt32(sqlObject.SQLiteDataReader["requireautofill_id"]);
+                    obj.fk_requireautofill_project = Convert.ToInt32(sqlObject.SQLiteDataReader["fk_requireautofill_project"]);
+                    obj.requireautofill_name = Convert.ToString(sqlObject.SQLiteDataReader["requireautofill_name"]);
+                    obj.requireautofill_importance = Convert.ToInt32(sqlObject.SQLiteDataReader["requireautofill_importance"]);
+                    obj.requireautofill_active = Convert.ToBoolean(sqlObject.SQLiteDataReader["requireautofill_active"]);
+                    obj.requireautofill_createdate = Convert.ToDateTime(sqlObject.SQLiteDataReader["requireautofill_createdate"]);
+                    obj.requireautofill_modifydate = Convert.ToDateTime(sqlObject.SQLiteDataReader["requireautofill_modifydate"]);
+                    obj.requireautofill_serverid = Convert.ToInt64(sqlObject.SQLiteDataReader["requireautofill_serverid"]);
+                    obj.requireautofill_issynced = Convert.ToBoolean(sqlObject.SQLiteDataReader["requireautofill_issynced"]);
+                    obj.requireautofill_syncerror = Convert.ToString(sqlObject.SQLiteDataReader["requireautofill_syncerror"]);
+                    obj.requireautofill_isedited = Convert.ToBoolean(sqlObject.SQLiteDataReader["requireautofill_isedited"]);
+                    data.Add(obj);
+                }
+                sqlObject.CloseConnections();
+            }
+            return data;
+        }
+
+        public static List<CBVObjectiveAutofill> GetObjectiveAutofillById(int ObjectiveAutofillId = -1, bool onlyActive = true)
+        {
+            var data = new List<CBVObjectiveAutofill>();
+
+            string selectClause = $@"SELECT * FROM cbv_objectiveautofill ";
+            var whereClause = "";
+
+            if (ObjectiveAutofillId > 0) whereClause += $@" where fk_objectiveautofill_project = {ObjectiveAutofillId}";
+            if (onlyActive)
+            {
+                if (string.IsNullOrEmpty(whereClause))
+                    whereClause += $@" where objectiveautofill_active = true";
+                else
+                    whereClause += $@" and objectiveautofill_active = true";
+            }
+            var sqlObject = (selectClause + whereClause).RunSelectQuery();
+            if (sqlObject != null)
+            {
+                while (sqlObject.SQLiteDataReader.Read())
+                {
+                    var obj = new CBVObjectiveAutofill();
+                    obj.objectiveautofill_id = Convert.ToInt32(sqlObject.SQLiteDataReader["objectiveautofill_id"]);
+                    obj.fk_objectiveautofill_project = Convert.ToInt32(sqlObject.SQLiteDataReader["fk_objectiveautofill_project"]);
+                    obj.objectiveautofill_name = Convert.ToString(sqlObject.SQLiteDataReader["objectiveautofill_name"]);
+                    // obj.objectiveautofill_importance = Convert.ToInt32(sqlObject.SQLiteDataReader["objectiveautofill_importance"]);
+                    obj.objectiveautofill_active = Convert.ToBoolean(sqlObject.SQLiteDataReader["objectiveautofill_active"]);
+                    obj.objectiveautofill_createdate = Convert.ToDateTime(sqlObject.SQLiteDataReader["objectiveautofill_createdate"]);
+                    obj.objectiveautofill_modifydate = Convert.ToDateTime(sqlObject.SQLiteDataReader["objectiveautofill_modifydate"]);
+                    obj.objectiveautofill_serverid = Convert.ToInt64(sqlObject.SQLiteDataReader["objectiveautofill_serverid"]);
+                    obj.objectiveautofill_issynced = Convert.ToBoolean(sqlObject.SQLiteDataReader["objectiveautofill_issynced"]);
+                    obj.objectiveautofill_syncerror = Convert.ToString(sqlObject.SQLiteDataReader["objectiveautofill_syncerror"]);
+                    obj.objectiveautofill_isedited = Convert.ToBoolean(sqlObject.SQLiteDataReader["objectiveautofill_isedited"]);
+                    data.Add(obj);
+                }
+                sqlObject.CloseConnections();
+            }
+            return data;
+        }
+
+        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool onlyActive)
+        {
+            var data = new CBVAutofill();
+            data.next_autofill = GetNextAutofillById(-1, true);
+            data.require_autofill = GetRequireAutofillById(-1, true);
+            data.objective_autofill = GetObjectiveAutofillById(-1, true);
+            return data;
+        }
+
+        #endregion
 
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false)
         {
@@ -3109,7 +3245,7 @@ namespace Sqllite_Library.Data
             var values = new List<string>();
             foreach (DataRow dr in dataTable.Rows)
             {
-                
+
                 var createDate = Convert.ToString(dr["projdet_createdate"]);
                 if (string.IsNullOrEmpty(createDate))
                     createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");

@@ -349,6 +349,27 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetCount("cbv_voiceaverage");
         }
 
+        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool onlyActive = true)
+        {
+            return SqlLiteData.GetAutofillByProjectId(ProjectId, onlyActive);
+        }
+
+        public static CBVNextAutofill GetNextAutofillById(int NextAutofillId, bool onlyActive = true)
+        {
+            return SqlLiteData.GetNextAutofillById(NextAutofillId, onlyActive).FirstOrDefault();
+        }
+
+        public static CBVRequireAutofill GetRequireAutofillById(int RequireAutofillId, bool onlyActive = true)
+        {
+            return SqlLiteData.GetRequireAutofillById(RequireAutofillId, onlyActive).FirstOrDefault();
+        }
+
+        public static CBVObjectiveAutofill GetObjectiveAutofillById(int ObjectiveAutofillId, bool onlyActive = true)
+        {
+            return SqlLiteData.GetObjectiveAutofillById(ObjectiveAutofillId, onlyActive).FirstOrDefault();
+        }
+
+
         // Lets not fetch dependent tables be default and thats why flag is false
         public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false)
         {
@@ -503,7 +524,8 @@ namespace Sqllite_Library.Business
 
         #endregion
 
-        #region == Update Methods ==
+
+        #region == DELETE Methods ==
 
         public static void DeleteNotesById(int notesId = -1)
         {
@@ -522,6 +544,7 @@ namespace Sqllite_Library.Business
 
         #endregion
 
+        
         #region == Upsert Methods ==
         public static void UpsertRowsToApp(DataTable dataTable)
         {

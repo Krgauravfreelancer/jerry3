@@ -14,7 +14,7 @@ namespace Sqllite_Library.Models
         public Int64 objectiveautofill_serverid { get; set; }
         public bool objectiveautofill_issynced { get; set; }
         public string objectiveautofill_syncerror { get; set; }
-        public bool objectiveautofill_isdeleted { get; set; }
+        public bool objectiveautofill_isedited { get; set; }
        
     }
 }

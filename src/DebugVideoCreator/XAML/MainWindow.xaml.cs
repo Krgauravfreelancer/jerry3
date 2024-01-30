@@ -24,6 +24,7 @@ using System.Windows.Data;
 using NAudio.Wave;
 using System.Linq;
 using DebugVideoCreator.Models;
+using ServerApiCall_UserControl.DTO.AutofillModels;
 
 namespace VideoCreator.XAML
 {
@@ -52,13 +53,13 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(this, loader);
             LogManagerHelper.WriteVerboseLog(this, "Starting the windows application !! Inside OnControlLoaded...");
+            // AutoFill();
             await Login();
             await SyncApp();
             await SyncMedia();
             await SyncScreens();
             await SyncCompany();
             await SyncBackground();
-
             await InitialiseAndRefreshScreen(true);
 
             LoaderHelper.HideLoader(this, loader);
@@ -216,6 +217,11 @@ namespace VideoCreator.XAML
             var result = new List<BackgroundModel>();
             result.Add(data);
             SyncDbHelper.SyncBackground(result, authApiViewModel);
+        }
+
+        private void AutoFill()
+        {
+            var data = DataManagerSqlLite.GetAutofillByProjectId(3);
         }
         #endregion
 
