@@ -32,6 +32,7 @@ using ServerApiCall_UserControl.DTO.MediaLibraryModels;
 using System.Drawing;
 using Timeline.UserControls.Models;
 using DebugVideoCreator.Helpers;
+using ServerApiCall_UserControl.DTO;
 
 namespace VideoCreator.XAML
 {
@@ -63,9 +64,9 @@ namespace VideoCreator.XAML
             authApiViewModel = _authApiViewModel;
             ReadOnly = _readonlyFlag;
             var subjectText = "Project Id - " + selectedProjectEvent.projectId;
-            lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}": subjectText ;
+            lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}" : subjectText;
             InitializeChildren();
-            //await SyncServerDataToLocalDB();
+            new Action(async () => await ConfirmAndSyncServerDataToLocalDB())();
 
             BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
             loader.Visibility = Visibility.Hidden;
@@ -84,9 +85,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
 
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
-            TimelineUserConrol.ContextMenu_AddCallOut_Success += TimelineUserConrol_ContextMenu_AddCallOut_Success;
-
-
+            
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
@@ -115,11 +114,13 @@ namespace VideoCreator.XAML
             NotesUserConrol.deleteSingleNoteEvent += NotesUserConrol_deleteSingleNoteEvent;
             // NotesUserConrol.HandleVideoEventSelectionChanged();
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
+
+            
         }
 
         private void Refresh()
         {
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
+            TimelineUserConrol.InitializeTimeline();
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
         }
@@ -333,14 +334,6 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void TimelineUserConrol_ContextMenu_AddCallOut_Success(object sender, EventArgs e)
-        {
-            Refresh();
-        }
-
-
-
-
         #endregion
 
 
@@ -388,7 +381,7 @@ namespace VideoCreator.XAML
             foreach (var modifiedEvent in modifiedEvents)
             {
                 var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
-                if(response != null)
+                if (response != null)
                 {
                     var videoEventDt = new VideoEventDatatable();
                     DataRow dataRow = videoEventDt.NewRow();
@@ -405,7 +398,7 @@ namespace VideoCreator.XAML
                     DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
                 }
             }
-            TimelineUserConrol.InvokeSuccess();
+            TimelineUserConrol.InitializeTimeline();
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -530,7 +523,7 @@ namespace VideoCreator.XAML
         private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
         {
             await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath);
-            TimelineUserConrol.InvokeSuccess();
+            TimelineUserConrol.InitializeTimeline();
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -552,7 +545,7 @@ namespace VideoCreator.XAML
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
                 var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
-                await HandleCalloutLogic(calloutEvent,EnumTrack.CALLOUT2, convertedImage);
+                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT2, convertedImage);
             }
             else
                 await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT2, null);
@@ -1004,7 +997,7 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(this, loader, "Processing in Background");
             var result = await BackgroundProcessHelper.PeriodicallyCheckOfflineDataAndSync(true);
-            if(result != null && result == true) 
+            if (result != null && result == true)
             {
                 btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
                 btnUploadNotSyncedData.Width = 160;
@@ -1024,37 +1017,57 @@ namespace VideoCreator.XAML
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm == MessageBoxResult.Yes)
             {
-                LoaderHelper.ShowLoader(this, loader);
-                await SyncServerDataToLocalDB();
+                await SyncServerDataToLocalDB(null);
+                
             }
-            InitializeChildren();
-            LoaderHelper.HideLoader(this, loader);
-            MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
-        private async Task SyncServerDataToLocalDB()
+        private async Task ConfirmAndSyncServerDataToLocalDB()
         {
-            // Step1: Lets clear the local DB
-
-            DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
-
-
-            //Step2: Lets fetch the data from 
+            var localVideoEventCount = DataManagerSqlLite.GetVideoEventCountProjectAndDetailId(selectedProjectEvent.projectId, selectedProjectEvent.projdetId);
             var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
-
-            if (serverVideoEventData?.Data != null)
+            if (serverVideoEventData != null && serverVideoEventData.Data?.Count > localVideoEventCount)
             {
-                foreach (var videoEvent in serverVideoEventData?.Data)
+                btnDownloadServerData.IsEnabled = true;
+                var result = MessageBox.Show($@"Server has {serverVideoEventData.Data.Count} events while local DB has {localVideoEventCount} events. 
+    {Environment.NewLine}Do you want to download server data to local?", "Sync Data", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                    await SyncServerDataToLocalDB(serverVideoEventData);
+                else
                 {
-                    var localVideoEventId = SaveVideoEvent(videoEvent);
-                    if (videoEvent?.design?.Count > 0)
-                        SaveDesign(localVideoEventId, videoEvent?.design);
-                    if (videoEvent?.notes?.Count > 0)
-                        SaveNotes(localVideoEventId, videoEvent?.notes);
-                    if (videoEvent?.videosegment != null)
-                        await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
+                    btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
+                    btnDownloadServerData.IsEnabled = true;
                 }
             }
+            else 
+            {
+                btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
+                btnDownloadServerData.IsEnabled = false;
+            }
+        }
+
+        private async Task SyncServerDataToLocalDB(ParentDataList<AllVideoEventResponseModel> serverVideoEventData)
+        {
+            if(serverVideoEventData == null) serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
+            LoaderHelper.ShowLoader(this, loader);
+            // Step1: Lets clear the local DB
+            DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
+            foreach (var videoEvent in serverVideoEventData?.Data)
+            {
+                var localVideoEventId = SaveVideoEvent(videoEvent);
+                if (videoEvent?.design?.Count > 0)
+                    SaveDesign(localVideoEventId, videoEvent?.design);
+                if (videoEvent?.notes?.Count > 0)
+                    SaveNotes(localVideoEventId, videoEvent?.notes);
+                if (videoEvent?.videosegment != null)
+                    await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
+            }
+            InitializeChildren();
+            Refresh();
+            btnDownloadServerData.Content = $@"Download Server Data";
+            btnDownloadServerData.IsEnabled = false;
+            LoaderHelper.HideLoader(this, loader);
+            MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 
 

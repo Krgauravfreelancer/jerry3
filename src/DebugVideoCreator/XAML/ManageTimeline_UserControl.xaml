@@ -73,8 +73,8 @@
 
             <local:Timeline_UserControl Background="Transparent" x:Name="TimelineUserConrol" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
             <StackPanel Grid.Row="2" Margin="10, 0, 10, 0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Orientation="Horizontal" VerticalAlignment="Top" Height="60">
-                <Button x:Name="btnDownloadServerData" Click="btnDownloadServer_Click" Content="Download Server Data" Width="200" Margin="2" Padding="5 0 5 0" Height="30"/>
-                <Button x:Name="btnUploadNotSyncedData" Click="btnUploadNotSyncedData_Click" Content="Upload Not Synced Data" Width="200" Margin="2" Padding="5 0 5 0" Height="30"/>
+                <Button x:Name="btnDownloadServerData" Click="btnDownloadServer_Click" Content="Download Server Data" Width="200" Margin="2" Padding="5 0 5 0" Height="40"/>
+                <Button x:Name="btnUploadNotSyncedData" Click="btnUploadNotSyncedData_Click" Content="Upload Not Synced Data" Width="200" Margin="2" Padding="5 0 5 0" Height="40"/>
             </StackPanel>
             <loader:LoadingAnimation Grid.ColumnSpan="2" Grid.RowSpan="3" x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
         </Grid>

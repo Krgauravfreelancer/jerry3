@@ -369,6 +369,10 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetObjectiveAutofillById(ObjectiveAutofillId, onlyActive).FirstOrDefault();
         }
 
+        public static int GetVideoEventCountProjectAndDetailId(int ProjectId, int ProjectdetailId)
+        {
+            return SqlLiteData.GetVideoEventCountProjectAndDetailId(ProjectId, ProjectdetailId);
+        }
 
         // Lets not fetch dependent tables be default and thats why flag is false
         public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false)

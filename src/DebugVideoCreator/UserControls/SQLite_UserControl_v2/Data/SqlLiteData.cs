@@ -1128,6 +1128,44 @@ namespace Sqllite_Library.Data
             return count;
         }
 
+        public static int GetVideoEventCountProjectAndDetailId(int ProjectId, int ProjectdetailId)
+        {
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            SQLiteConnection sqlCon = null;
+            int count;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                string sqlQueryString = $@"SELECT 
+	                                            count(*) 
+                                            FROM 
+	                                            cbv_videoevent V
+	                                            Left join cbv_projdet pd on pd.projdet_id = v.fk_videoevent_projdet
+                                            where 
+	                                            v.fk_videoevent_projdet = {ProjectdetailId}
+	                                            And pd.fk_projdet_project = {ProjectId}";
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                count = Convert.ToInt32(sqlQuery.ExecuteScalar());
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                sqlCon?.Close();
+                throw;
+            }
+
+            return count;
+        }
+
         public static List<CBVCompany> GetCompany()
         {
             var data = new List<CBVCompany>();
