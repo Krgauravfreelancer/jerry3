@@ -155,7 +155,8 @@ namespace VideoCreator.XAML
                 DataRow dRow = dt.NewRow();
 
                 dRow[nameof(TimelineVideoEvent.videoevent_id)] = videoEvent.videoevent_id;
-                dRow["fk_videoevent_project"] = videoEvent.fk_videoevent_projdet;
+                //dRow[nameof(TimelineVideoEvent.fk_videoevent_project)] = videoEvent.fk_videoevent_project;
+                dRow[nameof(TimelineVideoEvent.fk_videoevent_projdet)] = videoEvent.fk_videoevent_projdet;
                 dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = videoEvent.fk_videoevent_media;
                 dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoEvent.videoevent_track;
                 dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoEvent.videoevent_start;
@@ -205,6 +206,7 @@ namespace VideoCreator.XAML
             LoadScreenFromDb();
 
             //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
@@ -260,6 +262,9 @@ namespace VideoCreator.XAML
             ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
         }
 
+
+
+
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
             var contextMenu = this.Resources[resourceKey] as ContextMenu;
@@ -275,7 +280,7 @@ namespace VideoCreator.XAML
             try
             {
                 //var timeInputDate = (DateTime)TrackbarTimepicker.Value;
-                //var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss.fff", null);
+                //var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), "HH:mm:ss", null);
                 //_timelineGridControl.MoveTrackbar(timeInputDate);
             }
             catch
@@ -330,8 +335,15 @@ namespace VideoCreator.XAML
         //{
         //    if (entity == EnumEntity.ALL || entity == EnumEntity.PROJECT)
         //    {
-        //        var data = DataManagerSqlLite.GetProjects(false);
-        //        RefreshComboBoxes<CBVProject>(ProjectCmbBox, data, "project_videotitle");
+        //        var data = DataManagerSqlLite.GetDownloadedProjectList();
+
+        //        // Remove the duplicate on projects based on project_id property
+        //        List<CBVProjectForJoin> uniqueProjects = data
+        //                                         .GroupBy(p => p.project_id)
+        //                                         .Select(group => group.First())
+        //                                         .ToList();
+
+        //        RefreshComboBoxes<CBVProjectForJoin>(ProjectCmbBox, uniqueProjects, nameof(CBVProjectForJoin.project_videotitle));
         //        if (ProjectCmbBox.Items.Count > 0)
         //        {
         //            ProjectCmbBox.SelectedIndex = 0;
@@ -356,7 +368,7 @@ namespace VideoCreator.XAML
 
         //    if (ProjectCmbBox.SelectedItem != null)
         //    {
-        //        int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+        //        int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
 
         //        if (ProjectCmbBox.SelectedIndex != -1)
         //        {
@@ -427,6 +439,18 @@ namespace VideoCreator.XAML
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
+            //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, Selected_ID);
+            //screenRecorderWindow.Owner = this;
+            //screenRecorderWindow.Title = "Add Video Event";
+
+            //screenRecorderWindow.BtnSaveClickedEvent += () =>
+            //{
+            //    LoadVideoEventsFromDb(Selected_ID);
+            //};
+
+            //screenRecorderWindow.Show();
+            //Hide();
             ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
         }
 
@@ -464,7 +488,7 @@ namespace VideoCreator.XAML
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
             //show a warning here that user will lose all changes if the changes are not saved
-            //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
+            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
         }
 
@@ -518,8 +542,17 @@ namespace VideoCreator.XAML
 
             var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
             ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
-        }
+            //foreach (var modifiedEvent in modifiedEvents)
+            //{
+            //    var videoEventDt = new VideoEventDatatable();
+            //    videoEventDt.AddVideoEventRow(modifiedEvent);
 
+            //    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
+            //}
+
+            //_timelineGridControl.ClearTimeline();
+            //MessageBox.Show("Save Successful!");
+        }
 
 
 

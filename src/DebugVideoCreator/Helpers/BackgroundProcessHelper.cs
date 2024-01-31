@@ -24,12 +24,11 @@ namespace DebugVideoCreator.Helpers
         private static AuthAPIViewModel authApiViewModel;
         private static Button btnUploadNotSyncedData, btnDownloadServerData;
 
-        public static void SetBackgroundProcess(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, Button btnUpload, Button btnDownload)
+        public static void SetBackgroundProcess(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, Button btnUpload)
         {
             selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
             btnUploadNotSyncedData = btnUpload;
-            btnDownloadServerData = btnDownload;
 
             // To Check if unsync data present
             dispatcherTimerToCheckIfUnSyncDataPresent.Tick += new EventHandler(RunBackgroundProcessFrequently);
@@ -57,14 +56,12 @@ namespace DebugVideoCreator.Helpers
                 btnUploadNotSyncedData.Content = $"Upload Not Synced Data - {notSyncedData?.Count} events";
                 btnUploadNotSyncedData.Width = 210;
                 btnUploadNotSyncedData.IsEnabled = true;
-                btnDownloadServerData.IsEnabled = false;
             }
             else
             {
                 btnUploadNotSyncedData.Content = $"Upload Not Synced Data";
                 btnUploadNotSyncedData.Width = 160;
                 btnUploadNotSyncedData.IsEnabled = false;
-                btnDownloadServerData.IsEnabled = true;
             }
         }
 

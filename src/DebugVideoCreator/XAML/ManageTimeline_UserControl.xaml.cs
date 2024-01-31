@@ -68,7 +68,7 @@ namespace VideoCreator.XAML
             InitializeChildren();
             new Action(async () => await ConfirmAndSyncServerDataToLocalDB())();
 
-            BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData, btnDownloadServerData);
+            BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData);
             loader.Visibility = Visibility.Hidden;
         }
 
