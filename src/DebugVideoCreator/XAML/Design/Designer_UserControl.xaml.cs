@@ -44,6 +44,50 @@ namespace VideoCreator.XAML
             InitialSetup();
         }
 
+        public void AutofillSetup()
+        {
+            // InitialSetup();
+
+            // This can come from database
+            var bgImageXAML = GetBackgroundImageElement();
+            designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+
+
+
+            //proceed
+            DataTable designElements = designer.GetDesign();
+            designViewer.LoadDesign(designElements);
+
+            var title = "<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"50\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"351\" Canvas.Top=\"372\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>Sample Video Title for the first Video element</TextBox>";
+
+            foreach (DataRow row in designElements.Rows)
+            {
+                var rowDesign = dataTableAdd.NewRow();
+
+                rowDesign["design_id"] = row["id"];
+                rowDesign["fk_design_videoevent"] = -1;
+                rowDesign["fk_design_screen"] = 1;
+                rowDesign["fk_design_background"] = 1;
+                rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowDesign["design_xml"] = row["xaml"];
+                dataTableAdd.Rows.Add(rowDesign);
+            }
+
+            var rowTitle = dataTableAdd.NewRow();
+
+            rowTitle["design_id"] = -1;
+            rowTitle["fk_design_videoevent"] = -1;
+            rowTitle["fk_design_screen"] = 1;
+            rowTitle["fk_design_background"] = 1;
+            rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowTitle["design_xml"] = title;
+            dataTableAdd.Rows.Add(rowTitle);
+        }
+
+
+
         private void InitialSetup()
         {
             dataTableAdd = createDesignDbDataTable();

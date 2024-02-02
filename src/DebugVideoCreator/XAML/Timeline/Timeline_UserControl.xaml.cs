@@ -39,7 +39,6 @@ namespace VideoCreator.XAML
 
         public event EventHandler ContextMenu_Run_Clicked;
 
-
         public event EventHandler<CalloutOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
@@ -558,6 +557,70 @@ namespace VideoCreator.XAML
 
         #endregion
 
+
+        #region == AutoFill Events ==
+
+        public event EventHandler<AutofillEvent> Autofill_Clicked;
+        private void AddTitleAutofill_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var payload = new AutofillEvent
+            {
+                AutofillType = AutofillEnumType.Title,
+                timeAtTheMoment = trackbarTime,
+                Duration = 10
+            };
+            Autofill_Clicked.Invoke(sender, payload);
+        }
+
+        private void AddRequirementAutofill_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var payload = new AutofillEvent
+            {
+                AutofillType = AutofillEnumType.Requirement,
+                timeAtTheMoment = trackbarTime,
+                Duration = 10
+            };
+            Autofill_Clicked.Invoke(sender, payload);
+        }
+
+        private void AddObjectiveAutofill_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var payload = new AutofillEvent
+            {
+                AutofillType = AutofillEnumType.Objective,
+                timeAtTheMoment = trackbarTime,
+                Duration = 10
+            };
+            Autofill_Clicked.Invoke(sender, payload);
+        }
+
+        private void AddNextAutofill_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var payload = new AutofillEvent
+            {
+                AutofillType = AutofillEnumType.Next,
+                timeAtTheMoment = trackbarTime,
+                Duration = 10
+            };
+            Autofill_Clicked.Invoke(sender, payload);
+        }
+
+        private void AddAllAutofill_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var payload = new AutofillEvent
+            {
+                AutofillType = AutofillEnumType.All,
+                timeAtTheMoment = trackbarTime,
+                Duration = 10
+            };
+            Autofill_Clicked.Invoke(sender, payload);
+        }
+        #endregion
 
     }
 }

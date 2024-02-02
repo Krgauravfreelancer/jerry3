@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
+using System.Xml;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 
@@ -28,6 +34,109 @@ namespace VideoCreator.XAML
             LoadDesign(designTable);
             InitializeTable();
         }
+
+        public void AutofillSetup(DataTable dataTable)
+        {
+            // Get the Image as byte stream 
+
+            container.RenderSize = new Size(1920, 1080);
+
+            //Canvas canvas = new Canvas();
+            //canvas.RenderSize = new Size(1920, 1080);
+            string text = "<Canvas  \r\n                                    xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' \r\n                                    xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
+            string text2 = "</Canvas>";
+            var xaml = string.Empty;
+            foreach (DataRow row in dataTable.Rows)
+            {
+                xaml += (string)row["design_xml"] + "\r\n";
+            }
+
+            string s = text + xaml + text2;
+            StringReader input = new StringReader(s);
+            XmlReader reader = XmlReader.Create(input);
+            var canvas = (Canvas)XamlReader.Load(reader);
+
+            Size size = new Size(1920, 1080);
+            canvas.Measure(size);
+            Rect rect = new Rect(0, 0, 1920, 1080);
+            canvas.Arrange(rect);
+
+            //canvas.Measure(new Size(1920, 1080));
+            //canvas.Arrange(new Rect(X, Y, width, height));
+            //canvas.RenderSize = new Size(1920, 1080);
+            //UIElement element = canvas.Children[0];
+            //foreach (DataRow row in dataTable.Rows)
+            //{
+            //    var xaml = (string)row["design_xml"];
+            //    string s = text + xaml + text2;
+            //    StringReader input = new StringReader(s);
+            //    XmlReader reader = XmlReader.Create(input);
+            //    canvas = (Canvas)XamlReader.Load(reader);
+            //    canvas.RenderSize = new Size(1920, 1080);
+            //    UIElement element = canvas.Children[0];
+            //    //canvas.Children.RemoveAt(0);
+            //    //container.Children.Add(element);
+            //}
+
+
+
+
+            /*
+             
+             string text = "<Canvas \r\n                                    xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' \r\n                                    xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
+            string text2 = "</Canvas>";
+            string s = text + xaml + text2;
+            StringReader input = new StringReader(s);
+            XmlReader reader = XmlReader.Create(input);
+            Canvas canvas = (Canvas)XamlReader.Load(reader);
+            UIElement element = canvas.Children[0];
+            canvas.Children.RemoveAt(0);
+            container.Children.Add(element);
+             */
+
+
+
+            //Rect rect = new Rect(canvas.RenderSize);
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96.0, 96.0, PixelFormats.Default);
+            renderTargetBitmap.Render(canvas);
+
+            //RenderTargetBitmap renderTargetBitmap = RenderVisual(canvas);
+
+            BitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+            bitmapEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+            MemoryStream memoryStream = new MemoryStream();
+            bitmapEncoder.Save(memoryStream);
+            // Process 
+            byte[] blob = (byte[])memoryStream.ToArray();
+            BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
+            SaveToDataTable(blob);
+            memoryStream.Close();
+        }
+
+        private RenderTargetBitmap RenderVisual(UIElement elt)
+        {
+            PresentationSource source = PresentationSource.FromVisual(elt);
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)elt.RenderSize.Width,
+                  (int)elt.RenderSize.Height, 96, 96, PixelFormats.Default);
+
+            VisualBrush sourceBrush = new VisualBrush(elt);
+            DrawingVisual drawingVisual = new DrawingVisual();
+            DrawingContext drawingContext = drawingVisual.RenderOpen();
+            using (drawingContext)
+            {
+                drawingContext.DrawRectangle(sourceBrush, null, new Rect(new Point(0, 0),
+                      new Point(elt.RenderSize.Width, elt.RenderSize.Height)));
+            }
+            rtb.Render(drawingVisual);
+
+            return rtb;
+        }
+
+        private void AddElement(string xaml)
+        {
+            
+        }
+
 
         #region == Events ==
         private void btnConvert_Click(object sender, RoutedEventArgs e)

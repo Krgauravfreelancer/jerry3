@@ -94,6 +94,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
+            TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
+
             NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
 
             NotesUserConrol.Visibility = Visibility.Visible;
@@ -555,6 +557,29 @@ namespace VideoCreator.XAML
 
         #endregion
 
+
+        #region == Autofill Event ==
+        private async void TimelineUserConrol_Autofill_Clicked(object sender, AutofillEvent autofillEvent)
+        {
+            LoaderHelper.ShowLoader(this, loader);
+            var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
+            if(backgroundImagePath == null)
+            {
+                MessageBox.Show($"No Background found, autofill cant be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                await AutofillHandlerHelper.Process(autofillEvent, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
+                TimelineUserConrol.InitializeTimeline();
+            }
+                
+
+            
+            LoaderHelper.HideLoader(this, loader);
+        }
+        #endregion
+
+
         #region == Audio Context Menu ==
 
         /*
@@ -979,7 +1004,7 @@ namespace VideoCreator.XAML
             return true;
         }
         */
-        #endregion 
+        #endregion
 
 
         private void cmbVideoEvent_SelectionChanged(object sender, Windows.SelectionChangedEventArgs e)

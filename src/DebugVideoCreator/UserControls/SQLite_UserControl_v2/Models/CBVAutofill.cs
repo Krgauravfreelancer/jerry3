@@ -8,4 +8,13 @@ namespace Sqllite_Library.Models
         public List<CBVObjectiveAutofill> objective_autofill { get; set; }
         public List<CBVRequireAutofill> require_autofill { get; set; }
     }
+
+    public enum AutofillEnumType
+    {
+        All = 0,
+        Title,
+        Requirement,
+        Objective,
+        Next
+    }
 }
