@@ -66,7 +66,7 @@ namespace VideoCreator.Helpers
         public static async Task<bool?> Process(AutofillEvent autofillEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
-            designerUserControl.AutofillSetup();
+            designerUserControl.AutofillSetup(autofillEvent);
 
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);

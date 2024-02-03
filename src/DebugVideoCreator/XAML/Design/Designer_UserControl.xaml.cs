@@ -15,6 +15,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using DebugVideoCreator.Models;
 
 namespace VideoCreator.XAML
 {
@@ -44,22 +45,20 @@ namespace VideoCreator.XAML
             InitialSetup();
         }
 
-        public void AutofillSetup()
+        public void AutofillSetup(AutofillEvent autofillEvent)
         {
-            // InitialSetup();
-
-            // This can come from database
             var bgImageXAML = GetBackgroundImageElement();
             designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
-
-
 
             //proceed
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
+            FillDataTableForAutofill(autofillEvent, designElements);
+        }
 
-            var title = "<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"50\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"351\" Canvas.Top=\"372\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>Sample Video Title for the first Video element</TextBox>";
-
+        private void FillDataTableForAutofill(AutofillEvent autofillEvent, DataTable designElements)
+        {
+            // background Image
             foreach (DataRow row in designElements.Rows)
             {
                 var rowDesign = dataTableAdd.NewRow();
@@ -74,6 +73,14 @@ namespace VideoCreator.XAML
                 dataTableAdd.Rows.Add(rowDesign);
             }
 
+            if (autofillEvent.AutofillType == AutofillEnumType.Title)
+                AddTitle();
+            if (autofillEvent.AutofillType == AutofillEnumType.Objective)
+                AddObjective();
+        }
+
+        private void AddTitle()
+        {
             var rowTitle = dataTableAdd.NewRow();
 
             rowTitle["design_id"] = -1;
@@ -82,8 +89,79 @@ namespace VideoCreator.XAML
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_xml"] = title;
+            rowTitle["design_xml"] = GetTitleElement("Sample Video Title for the first Video element");
             dataTableAdd.Rows.Add(rowTitle);
+        }
+
+        private void AddObjective()
+        {
+            var rowHeading = dataTableAdd.NewRow();
+
+            rowHeading["design_id"] = -1;
+            rowHeading["fk_design_videoevent"] = -1;
+            rowHeading["fk_design_screen"] = 1;
+            rowHeading["fk_design_background"] = 1;
+            rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowHeading["design_xml"] = GetHeading($"objective heading is here -");
+            dataTableAdd.Rows.Add(rowHeading);
+
+            for (var i = 0; i < 3; i++)
+            { 
+                var rowCircle = dataTableAdd.NewRow();
+
+                rowCircle["design_id"] = -1;
+                rowCircle["fk_design_videoevent"] = -1;
+                rowCircle["fk_design_screen"] = 1;
+                rowCircle["fk_design_background"] = 1;
+                rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowCircle["design_xml"] = GetBulletCircle(i + 1);
+                dataTableAdd.Rows.Add(rowCircle);
+
+
+                var rowText = dataTableAdd.NewRow();
+
+                rowText["design_id"] = -1;
+                rowText["fk_design_videoevent"] = -1;
+                rowText["fk_design_screen"] = 1;
+                rowText["fk_design_background"] = 1;
+                rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                rowText["design_xml"] = GetBulletPoints($"Bullet point - {i + 1}", i + 1);
+                dataTableAdd.Rows.Add(rowText);
+            }
+
+            
+        }
+
+
+        private string GetTitleElement(string Text)
+        {
+            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontWeight = \"800\" FontSize=\"60\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"300\" Canvas.Top=\"450\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{Text.ToUpper()}</TextBox>";
+            return title;
+        }
+
+        private string GetHeading(string HeadingText)
+        {
+            var top = 250;
+            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontWeight = \"800\" FontSize=\"60\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"350\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{HeadingText.ToUpper()}</TextBox>";
+            return title;
+        }
+
+        private string GetBulletPoints(string BulletText, int bulletNumber = 1)
+        {
+            var top = 250 + (bulletNumber*150);
+            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"50\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{BulletText}</TextBox>";
+            return title;
+            
+        }
+
+        private string GetBulletCircle(int bulletNumber = 1)
+        {
+            var top = 280 + (bulletNumber * 150);
+            var circle = $"<Ellipse Fill=\"#00000000\" Stroke=\"#FFF0F8FF\" StrokeThickness=\"10\" StrokeDashArray=\"\" Width=\"20\" Height=\"20\" Opacity=\"1\" Canvas.Left=\"380\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><Ellipse.RenderTransform><RotateTransform Angle=\"0\" /></Ellipse.RenderTransform></Ellipse>";
+            return circle;
         }
 
 
@@ -139,10 +217,10 @@ namespace VideoCreator.XAML
             }
         }
 
-        private string GetBackgroundImageElement()
+        private string GetBackgroundImageElement(double defaultWidth = 1920)
         {
             var height = stackDesigner.ActualHeight;
-            var width = stackDesigner.ActualWidth;
+            var width = stackDesigner.ActualWidth == 0 ? defaultWidth : stackDesigner.ActualWidth;
             if (string.IsNullOrEmpty(imagePath))
             {
                 if (BackgroundImagesData != null && BackgroundImagesData.Count > 0)
