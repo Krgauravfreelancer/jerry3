@@ -45,127 +45,6 @@ namespace VideoCreator.XAML
             InitialSetup();
         }
 
-        public void AutofillSetup(AutofillEvent autofillEvent)
-        {
-            var bgImageXAML = GetBackgroundImageElement();
-            designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
-
-            //proceed
-            DataTable designElements = designer.GetDesign();
-            designViewer.LoadDesign(designElements);
-            FillDataTableForAutofill(autofillEvent, designElements);
-        }
-
-        private void FillDataTableForAutofill(AutofillEvent autofillEvent, DataTable designElements)
-        {
-            // background Image
-            foreach (DataRow row in designElements.Rows)
-            {
-                var rowDesign = dataTableAdd.NewRow();
-
-                rowDesign["design_id"] = row["id"];
-                rowDesign["fk_design_videoevent"] = -1;
-                rowDesign["fk_design_screen"] = 1;
-                rowDesign["fk_design_background"] = 1;
-                rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowDesign["design_xml"] = row["xaml"];
-                dataTableAdd.Rows.Add(rowDesign);
-            }
-
-            if (autofillEvent.AutofillType == AutofillEnumType.Title)
-                AddTitle();
-            if (autofillEvent.AutofillType == AutofillEnumType.Objective)
-                AddObjective();
-        }
-
-        private void AddTitle()
-        {
-            var rowTitle = dataTableAdd.NewRow();
-
-            rowTitle["design_id"] = -1;
-            rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = 1;
-            rowTitle["fk_design_background"] = 1;
-            rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_xml"] = GetTitleElement("Sample Video Title for the first Video element");
-            dataTableAdd.Rows.Add(rowTitle);
-        }
-
-        private void AddObjective()
-        {
-            var rowHeading = dataTableAdd.NewRow();
-
-            rowHeading["design_id"] = -1;
-            rowHeading["fk_design_videoevent"] = -1;
-            rowHeading["fk_design_screen"] = 1;
-            rowHeading["fk_design_background"] = 1;
-            rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_xml"] = GetHeading($"objective heading is here -");
-            dataTableAdd.Rows.Add(rowHeading);
-
-            for (var i = 0; i < 3; i++)
-            { 
-                var rowCircle = dataTableAdd.NewRow();
-
-                rowCircle["design_id"] = -1;
-                rowCircle["fk_design_videoevent"] = -1;
-                rowCircle["fk_design_screen"] = 1;
-                rowCircle["fk_design_background"] = 1;
-                rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_xml"] = GetBulletCircle(i + 1);
-                dataTableAdd.Rows.Add(rowCircle);
-
-
-                var rowText = dataTableAdd.NewRow();
-
-                rowText["design_id"] = -1;
-                rowText["fk_design_videoevent"] = -1;
-                rowText["fk_design_screen"] = 1;
-                rowText["fk_design_background"] = 1;
-                rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_xml"] = GetBulletPoints($"Bullet point - {i + 1}", i + 1);
-                dataTableAdd.Rows.Add(rowText);
-            }
-
-            
-        }
-
-
-        private string GetTitleElement(string Text)
-        {
-            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontWeight = \"800\" FontSize=\"60\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"300\" Canvas.Top=\"450\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{Text.ToUpper()}</TextBox>";
-            return title;
-        }
-
-        private string GetHeading(string HeadingText)
-        {
-            var top = 250;
-            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontWeight = \"800\" FontSize=\"60\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"350\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{HeadingText.ToUpper()}</TextBox>";
-            return title;
-        }
-
-        private string GetBulletPoints(string BulletText, int bulletNumber = 1)
-        {
-            var top = 250 + (bulletNumber*150);
-            var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"50\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{BulletText}</TextBox>";
-            return title;
-            
-        }
-
-        private string GetBulletCircle(int bulletNumber = 1)
-        {
-            var top = 280 + (bulletNumber * 150);
-            var circle = $"<Ellipse Fill=\"#00000000\" Stroke=\"#FFF0F8FF\" StrokeThickness=\"10\" StrokeDashArray=\"\" Width=\"20\" Height=\"20\" Opacity=\"1\" Canvas.Left=\"380\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><Ellipse.RenderTransform><RotateTransform Angle=\"0\" /></Ellipse.RenderTransform></Ellipse>";
-            return circle;
-        }
-
-
-
         private void InitialSetup()
         {
             dataTableAdd = createDesignDbDataTable();
@@ -198,6 +77,8 @@ namespace VideoCreator.XAML
             return dtDesign;
         }
 
+        #region == Events ==
+
         private void BtnProceed_Click(object sender, RoutedEventArgs e)
         {
             DataTable designElements = designer.GetDesign();
@@ -216,6 +97,56 @@ namespace VideoCreator.XAML
                 myWindow.Close();
             }
         }
+
+        private void cbUseBackground_Checked(object sender, RoutedEventArgs e)
+        {
+            if (designer == null) return;
+            DataTable designElements = designer.GetDesign();
+            if (designElements.Rows.Count > 0)
+            {
+                foreach (DataRow row in designElements.Rows)
+                {
+                    if (row[1].ToString().StartsWith("<Image ") == false)
+                    {
+                        var bgImageXAML = GetBackgroundImageElement();
+                        if (!string.IsNullOrEmpty(bgImageXAML))
+                        {
+                            DataRow dataRow = designElements.NewRow();
+                            dataRow["id"] = 1;
+                            dataRow["xaml"] = bgImageXAML;
+                            designElements.Rows.InsertAt(dataRow, 0);
+                            break;
+                        }
+                    }
+                }
+                designer.LoadDesign(designElements);
+
+            }
+            else
+            {
+                var bgImageXAML = GetBackgroundImageElement();
+                designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+            }
+        }
+
+        private void cbUseBackground_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (designer == null) return;
+            DataTable designElements = designer.GetDesign();
+            foreach (DataRow row in designElements.Rows)
+            {
+                if (row[1].ToString().StartsWith("<Image "))
+                {
+                    designElements.Rows.Remove(row);
+                    break;
+                }
+            }
+
+
+            designer.LoadDesign(designElements);
+        }
+
+        #endregion
 
         private string GetBackgroundImageElement(double defaultWidth = 1920)
         {
@@ -282,31 +213,6 @@ namespace VideoCreator.XAML
             cbUseBackground.IsEnabled = true;
         }
 
-        //private void cmbBackground_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    selectedBGItem = ((CBVBackground)cmbBackground?.SelectedItem);
-
-        //    // Process 
-        //    byte[] blob = (byte[])selectedBGItem.background_media;
-        //    BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
-        //    imgBackground.Source = x;
-        //    btnSave.IsEnabled = selectedBGItem?.background_id >= 0;
-        //}
-
-        private void LoadComboBoxesBackground()
-        {
-
-            //cmbBackground.SelectedItem = null;
-            //cmbBackground.DisplayMemberPath = "background_image_name";
-            //cmbBackground.Items.Clear();
-            //int i = 1;
-            //foreach (var item in BackgroundImagesData)
-            //{
-            //    item.background_image_name = "background-" + i++;
-            //    cmbBackground.Items.Add(item);
-            //}
-        }
-
         private void AddToDatabase(DataTable dtElements)
         {
             // For now only Add is supported.
@@ -337,52 +243,28 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void cbUseBackground_Checked(object sender, RoutedEventArgs e)
+        #region == Autofill ==
+        public DataTable AutofillSetup()
         {
-            if (designer == null) return;
-            DataTable designElements = designer.GetDesign();
-            if (designElements.Rows.Count > 0)
-            {
-                foreach (DataRow row in designElements.Rows)
-                {
-                    if (row[1].ToString().StartsWith("<Image ") == false)
-                    {
-                        var bgImageXAML = GetBackgroundImageElement();
-                        if (!string.IsNullOrEmpty(bgImageXAML))
-                        {
-                            DataRow dataRow = designElements.NewRow();
-                            dataRow["id"] = 1;
-                            dataRow["xaml"] = bgImageXAML;
-                            designElements.Rows.InsertAt(dataRow, 0);
-                            break;
-                        }
-                    }
-                }
-                designer.LoadDesign(designElements);
+            var bgImageXAML = GetBackgroundImageElement();
+            designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
 
-            }
-            else
-            {
-                var bgImageXAML = GetBackgroundImageElement();
-                designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
-            }
+            //proceed
+            DataTable designElements = designer.GetDesign();
+            designViewer.LoadDesign(designElements);
+            return designElements;
         }
 
-        private void cbUseBackground_Unchecked(object sender, RoutedEventArgs e)
+        public DataRow GetNewRow()
         {
-            if (designer == null) return;
-            DataTable designElements = designer.GetDesign();
-            foreach (DataRow row in designElements.Rows)
-            {
-                if (row[1].ToString().StartsWith("<Image "))
-                {
-                    designElements.Rows.Remove(row);
-                    break;
-                }
-            }
-
-
-            designer.LoadDesign(designElements);
+            return dataTableAdd.NewRow();
         }
+
+        public void AddNewRowToDatatable(DataRow row)
+        {
+            dataTableAdd.Rows.Add(row);
+        }
+
+        #endregion
     }
 }

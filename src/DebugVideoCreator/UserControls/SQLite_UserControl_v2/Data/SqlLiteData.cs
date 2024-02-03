@@ -605,7 +605,7 @@ namespace Sqllite_Library.Data
             return string.IsNullOrEmpty(result) ? "00:00:00.000" : result;
         }
 
-        private static string CalcNextEnd(string start, int duration)
+        public static string CalcNextEnd(string start, int duration)
         {
             if (string.IsNullOrEmpty(start))
                 return "00:00:00.000";

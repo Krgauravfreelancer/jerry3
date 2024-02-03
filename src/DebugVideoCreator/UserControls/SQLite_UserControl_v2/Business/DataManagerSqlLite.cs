@@ -616,5 +616,10 @@ namespace Sqllite_Library.Business
 
         #endregion
 
+        public static string CalcNextEnd(string start, int duration)
+        {
+            return SqlLiteData.CalcNextEnd(start, duration);
+        }
+
     }
 }
