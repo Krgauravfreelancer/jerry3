@@ -65,11 +65,6 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private List<string> getItems(string name, IEnumerable<ProjectList> source)
-        {
-            return new List<string> { name };
-        }
-
         private string GetHeaderName(string name)
         {
             var output = "";
@@ -109,7 +104,10 @@ namespace VideoCreator.XAML
                     }
                 }
             }
+            var selected = selectedItem; //make a local copy;
             datagrid.ItemsSource = availableProjectsDataSource;
+            if(selected != null)
+                datagrid.SelectedItem = availableProjectsDataSource?.Find(x=>x.project_id == selected.project_id && x.projdet_version == selected.projdet_version); 
             datagrid.Visibility = Visibility.Visible;
             manageStack.Visibility = Visibility.Visible;
         }
@@ -282,10 +280,7 @@ namespace VideoCreator.XAML
 
             var result = window.ShowDialog();
             if (result.HasValue)
-            {
-                datagrid.SelectedItem = null;
                 manageTimeline_UserControl.Dispose();
-            }
             await InitialiseAndRefreshScreen();
         }
 

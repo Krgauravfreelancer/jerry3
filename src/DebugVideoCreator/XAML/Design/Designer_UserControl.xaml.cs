@@ -84,7 +84,7 @@ namespace VideoCreator.XAML
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
 
-            if (designElements.Rows.Count <= 1)
+            if (designElements.Rows.Count < 1)
             {
                 System.Windows.MessageBox.Show("Nothing to save, please create some design", "Information", (MessageBoxButton)MessageBoxButtons.OK, (MessageBoxImage)MessageBoxIcon.Error);
                 return;
