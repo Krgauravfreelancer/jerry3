@@ -22,7 +22,7 @@ namespace DebugVideoCreator.Helpers
         private static bool isBackgroundProcessRunning = false;
         private static SelectedProjectEvent selectedProjectEvent;
         private static AuthAPIViewModel authApiViewModel;
-        private static Button btnUploadNotSyncedData, btnDownloadServerData;
+        private static Button btnUploadNotSyncedData;
 
         public static void SetBackgroundProcess(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, Button btnUpload)
         {

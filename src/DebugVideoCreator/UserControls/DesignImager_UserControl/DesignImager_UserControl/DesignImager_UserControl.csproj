@@ -112,14 +112,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SQLite_UserControl\SQLite_Library.csproj">
+    <Content Include="lib\DesignImager.dll" />
+    <Resource Include="lib\DesignImager.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SQLite_UserControl_v2\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="lib\DesignImager.dll" />
-    <Resource Include="lib\DesignImager.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

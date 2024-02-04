@@ -119,10 +119,10 @@ namespace DesignerNp.controls
         public void LoadDesign(DataTable dataTable)
         {
             this.dataTable = dataTable;
+            if(container.Children.Count > 0)
+                container.Children.Clear();
 
-            container.Children.Clear();
-
-            if (null != dataTable)
+            if (null != dataTable && dataTable.Rows?.Count > 0)
             {
                 foreach (DataRow dataRow in dataTable.Rows)
                 {
@@ -205,7 +205,7 @@ namespace DesignerNp.controls
         }
         private void AddElement(string xaml)
         {
-            string canvasStart = @"<Canvas 
+            string canvasStart = @"<Canvas
                                     xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' 
                                     xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
             string canvasEnd = "</Canvas>";

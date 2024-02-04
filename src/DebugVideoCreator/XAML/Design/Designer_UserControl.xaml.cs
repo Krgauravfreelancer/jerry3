@@ -98,7 +98,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void cbUseBackground_Checked(object sender, RoutedEventArgs e)
+        private void cbShowBackground_Checked(object sender, RoutedEventArgs e)
         {
             if (designer == null) return;
             DataTable designElements = designer.GetDesign();
@@ -129,7 +129,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void cbUseBackground_Unchecked(object sender, RoutedEventArgs e)
+        private void cbShowBackground_Unchecked(object sender, RoutedEventArgs e)
         {
             if (designer == null) return;
             DataTable designElements = designer.GetDesign();
@@ -210,7 +210,7 @@ namespace VideoCreator.XAML
 
             toggleFlag = !toggleFlag;
             BtnInitialiseDesigner.IsEnabled = false;
-            cbUseBackground.IsEnabled = true;
+            cbShowBackground.IsEnabled = true;
         }
 
         private void AddToDatabase(DataTable dtElements)

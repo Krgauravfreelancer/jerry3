@@ -119,11 +119,8 @@
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
-    <Reference Include="designer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="DesignImager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\designer.dll</HintPath>
-    </Reference>
-    <Reference Include="DesignImager">
       <HintPath>Libraries\DesignImager.dll</HintPath>
     </Reference>
     <Reference Include="DesignViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -585,6 +582,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="UserControls\Designer-UserControl\designer\designer.csproj">
+      <Project>{e7717082-151e-4ce2-96f7-fff228ea8854}</Project>
+      <Name>designer</Name>
+    </ProjectReference>
     <ProjectReference Include="UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj">
       <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>
       <Name>NotesManage_UserControl</Name>
