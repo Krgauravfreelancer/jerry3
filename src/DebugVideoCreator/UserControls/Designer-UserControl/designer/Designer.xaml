@@ -9,16 +9,16 @@
              AllowDrop="True"
              Loaded="UserControl_Loaded">
     <Grid>
-        <Canvas Margin="0" x:Name="container" Width="1646" Height="950"
-                Background="Transparent"
-                xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'  
-                xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
-                MouseLeftButtonDown="container_MouseLeftButtonDown"
-                MouseLeftButtonUp="container_MouseLeftButtonUp"
-                MouseMove="container_MouseMove"
-                KeyUp="container_KeyUp"
-                Focusable="True" IsVisibleChanged="container_IsVisibleChanged"
-                >
+        <Canvas Margin="0" x:Name="container" Width="1920" MinHeight="1080"
+            Background="Transparent"
+            xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'  
+            xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'
+            MouseLeftButtonDown="container_MouseLeftButtonDown"
+            MouseLeftButtonUp="container_MouseLeftButtonUp"
+            MouseMove="container_MouseMove"
+            KeyUp="container_KeyUp"
+            Focusable="True" IsVisibleChanged="container_IsVisibleChanged"
+            >
         </Canvas>
     </Grid>
 </UserControl>

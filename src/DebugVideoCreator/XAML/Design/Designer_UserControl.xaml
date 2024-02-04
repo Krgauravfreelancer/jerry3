@@ -29,7 +29,12 @@
         </StackPanel>
         
         <designer:ShapeBar Grid.Column="0" Grid.Row="1" Margin="2" x:Name="shapeBar"  ></designer:ShapeBar>
-        <StackPanel x:Name="stackDesigner"  Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+        <!--<ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" >
+            <StackPanel x:Name="stackDesigner" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                <designer:Designer x:Name="designer" />
+            </StackPanel>
+        </ScrollViewer>-->
+        <StackPanel x:Name="stackDesigner" Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
             <designer:Designer x:Name="designer" />
         </StackPanel>
         <DesignViewer:DesignViewer Grid.Column="1" Grid.Row="1" Margin="2" x:Name="designViewer" Visibility="Visible"/>

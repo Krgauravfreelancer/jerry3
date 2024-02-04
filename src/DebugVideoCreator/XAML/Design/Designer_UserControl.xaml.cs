@@ -166,13 +166,15 @@ namespace VideoCreator.XAML
                         {
                             ms.WriteTo(fs);
                         }
-                        return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
+                        //return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
+                        return $"<Image Width=\"1920\" Height=\"1080\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
                     }
                 }
             }
             else
             {
-                return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{imagePath}\" Panel.ZIndex=\"0\"/>";
+                //return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{imagePath}\" Panel.ZIndex=\"0\"/>";
+                return $"<Image Width=\"1920\"  Height=\"1080\" x:Name=\"bgImage\" Source=\"{imagePath}\" Panel.ZIndex=\"0\"/>";
             }
             return null;
         }
@@ -219,7 +221,7 @@ namespace VideoCreator.XAML
             foreach (DataRow row in dtElements.Rows)
             {
                 //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
-                if (!string.IsNullOrEmpty(imagePath) && row["xaml"].ToString().StartsWith("<Image"))
+                if (row["xaml"].ToString().StartsWith("<Image"))
                     continue;
 
                 var rowDesign = dataTableAdd.NewRow();
