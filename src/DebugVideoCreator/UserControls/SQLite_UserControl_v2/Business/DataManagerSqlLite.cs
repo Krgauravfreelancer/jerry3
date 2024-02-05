@@ -349,9 +349,9 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetCount("cbv_voiceaverage");
         }
 
-        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool onlyActive = true)
+        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool requirmentFlag, bool objectiveFlag, bool nextFlag, bool onlyActive = true)
         {
-            return SqlLiteData.GetAutofillByProjectId(ProjectId, onlyActive);
+            return SqlLiteData.GetAutofillByProjectId(ProjectId, requirmentFlag, objectiveFlag, nextFlag, onlyActive);
         }
 
         public static CBVNextAutofill GetNextAutofillById(int NextAutofillId, bool onlyActive = true)

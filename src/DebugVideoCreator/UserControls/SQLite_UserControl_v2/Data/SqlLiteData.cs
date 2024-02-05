@@ -1775,12 +1775,12 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool onlyActive)
+        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool requirmentFlag, bool objectiveFlag, bool nextFlag, bool onlyActive)
         {
             var data = new CBVAutofill();
-            data.next_autofill = GetNextAutofillById(-1, true);
-            data.require_autofill = GetRequireAutofillById(-1, true);
-            data.objective_autofill = GetObjectiveAutofillById(-1, true);
+            if (nextFlag) data.next_autofill = GetNextAutofillById(ProjectId, onlyActive);
+            if (requirmentFlag) data.require_autofill = GetRequireAutofillById(ProjectId, onlyActive);
+            if (objectiveFlag) data.objective_autofill = GetObjectiveAutofillById(ProjectId, onlyActive);
             return data;
         }
 

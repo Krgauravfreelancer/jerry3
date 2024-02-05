@@ -85,22 +85,39 @@ namespace VideoCreator.Helpers
             }
             else if (autofillEvent.AutofillType == AutofillEnumType.Requirement)
             {
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Requirement", selectedProjectEvent, authApiViewModel, 0);
+                var result = DataManagerSqlLite.GetAutofillByProjectId(selectedProjectEvent.projectId, true, false, false, true);
+                var req = result?.require_autofill?.Select(x => x.requireautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 0, AutofillEnumType.Requirement, req);
             }
             else if (autofillEvent.AutofillType == AutofillEnumType.Objective)
             {
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Objective", selectedProjectEvent, authApiViewModel, 0);
+                var result = DataManagerSqlLite.GetAutofillByProjectId(selectedProjectEvent.projectId, false, true, false, true);
+                var objectives = result?.objective_autofill?.Select(x => x.objectiveautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 0, AutofillEnumType.Objective, objectives);
             }
             else if (autofillEvent.AutofillType == AutofillEnumType.Next)
             {
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Next", selectedProjectEvent, authApiViewModel, 0);
+                var result = DataManagerSqlLite.GetAutofillByProjectId(selectedProjectEvent.projectId, false, false, true, true);
+                var next = result?.next_autofill?.Select(x => x.nextautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 0, AutofillEnumType.Next, next);
             }
             else if (autofillEvent.AutofillType == AutofillEnumType.All)
             {
                 await AddProjectNameAutoFill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Requirement", selectedProjectEvent, authApiViewModel, 1);
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Objective", selectedProjectEvent, authApiViewModel, 2);
-                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, "Next", selectedProjectEvent, authApiViewModel, 3);
+                
+                var result = DataManagerSqlLite.GetAutofillByProjectId(selectedProjectEvent.projectId, true, true, true, true);
+                
+                // requirements
+                var req = result?.require_autofill?.Select(x => x.requireautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 1, AutofillEnumType.Requirement, req);
+
+                // objectives
+                var objectives = result?.objective_autofill?.Select(x => x.objectiveautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 2, AutofillEnumType.Objective, objectives);
+                
+                // next
+                var next = result?.next_autofill?.Select(x => x.nextautofill_name)?.ToList();
+                await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 3, AutofillEnumType.Next, next);
             }
             MessageBox.Show($"Autofill events added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
@@ -108,7 +125,11 @@ namespace VideoCreator.Helpers
 
         private static async Task<bool?> AddProjectNameAutoFill(AutofillEvent autofillEvent, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
-            FillBackgroundForAutofill(autofillEvent, designElements, designerUserControl);
+            var title = DataManagerSqlLite.GetProjectById(selectedProjectEvent.projectId, false)?.project_videotitle;
+            if (string.IsNullOrEmpty(title))
+                title = "Sample Video Title for the first Video element";
+
+            FillBackgroundForAutofill(designElements, designerUserControl, AutofillEnumType.Title);
             var rowTitle = designerUserControl.GetNewRow();
 
             rowTitle["design_id"] = -1;
@@ -117,7 +138,7 @@ namespace VideoCreator.Helpers
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_xml"] = GetTitleElement("Sample Video Title for the first Video element");
+            rowTitle["design_xml"] = GetTitleElement(title);
             designerUserControl.AddNewRowToDatatable(rowTitle);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
@@ -127,17 +148,19 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private static async Task<bool?> AddOthersAutofill(AutofillEvent autofillEvent, DataTable designElements, Designer_UserControl designerUserControl, string Typetext, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy)
+        private static async Task<bool?> AddOthersAutofill(AutofillEvent autofillEvent, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy, AutofillEnumType othersType, List<string> data)
         {
-            FillBackgroundForAutofill(autofillEvent, designElements, designerUserControl);
+            if(data == null || data.Count == 0) { return false; }
+
+            FillBackgroundForAutofill(designElements, designerUserControl, othersType);
             var rowHeading = designerUserControl.GetNewRow();
 
             var designScreen = 1;
-            if (Typetext == "Requirement")
+            if (othersType == AutofillEnumType.Requirement)
                 designScreen = 2;
-            else if (Typetext == "Objective")
+            else if (othersType == AutofillEnumType.Objective)
                 designScreen = 3;
-            else if (Typetext == "Next")
+            else if (othersType == AutofillEnumType.Next)
                 designScreen = 4;
 
             rowHeading["design_id"] = -1;
@@ -146,16 +169,16 @@ namespace VideoCreator.Helpers
             rowHeading["fk_design_background"] = 1;
             rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_xml"] = GetHeading($"{Typetext} heading is here -");
+            rowHeading["design_xml"] = GetHeading($"{othersType} heading is here -");
             designerUserControl.AddNewRowToDatatable(rowHeading);
 
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < data.Count; i++)
             {
                 var rowCircle = designerUserControl.GetNewRow();
 
                 rowCircle["design_id"] = -1;
                 rowCircle["fk_design_videoevent"] = -1;
-                rowCircle["fk_design_screen"] = 1;
+                rowCircle["fk_design_screen"] = designScreen;
                 rowCircle["fk_design_background"] = 1;
                 rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -167,15 +190,12 @@ namespace VideoCreator.Helpers
 
                 rowText["design_id"] = -1;
                 rowText["fk_design_videoevent"] = -1;
-                rowText["fk_design_screen"] = 1;
+                rowText["fk_design_screen"] = designScreen;
                 rowText["fk_design_background"] = 1;
                 rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_xml"] = GetBulletPoints($"{Typetext} Bullet point - {i + 1}", i + 1);
+                rowText["design_xml"] = GetBulletPoints($"{data[i]}", i + 1);
                 designerUserControl.AddNewRowToDatatable(rowText);
-
-                if (Typetext == "Next")
-                    break;
             }
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
@@ -185,15 +205,22 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private static void FillBackgroundForAutofill(AutofillEvent autofillEvent, DataTable designElements, Designer_UserControl designerUserControl)
+        private static void FillBackgroundForAutofill(DataTable designElements, Designer_UserControl designerUserControl, AutofillEnumType autofillEnumType)
         {
+            var designScreen = 1;
+            if (autofillEnumType == AutofillEnumType.Requirement)
+                designScreen = 2;
+            else if (autofillEnumType == AutofillEnumType.Objective)
+                designScreen = 3;
+            else if (autofillEnumType == AutofillEnumType.Next)
+                designScreen = 4;
             // background Image
             foreach (DataRow row in designElements.Rows)
             {
                 var rowDesign = designerUserControl.GetNewRow();
                 rowDesign["design_id"] = row["id"];
                 rowDesign["fk_design_videoevent"] = -1;
-                rowDesign["fk_design_screen"] = 1;
+                rowDesign["fk_design_screen"] = designScreen;
                 rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");

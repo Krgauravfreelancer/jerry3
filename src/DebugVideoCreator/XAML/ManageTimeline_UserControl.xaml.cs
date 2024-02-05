@@ -573,7 +573,7 @@ namespace VideoCreator.XAML
             var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
             if(backgroundImagePath == null)
             {
-                MessageBox.Show($"No Background found, autofill cant be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"No Background found, autofill cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {

@@ -217,10 +217,6 @@ namespace VideoCreator.XAML
             SyncDbHelper.SyncBackground(result, authApiViewModel);
         }
 
-        private void AutoFill()
-        {
-            var data = DataManagerSqlLite.GetAutofillByProjectId(3);
-        }
         #endregion
 
         #region == Events ==
