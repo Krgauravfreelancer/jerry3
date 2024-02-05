@@ -32,14 +32,15 @@ namespace VideoCreator.XAML
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
 
-        public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout1_Clicked;
-        public event EventHandler<CalloutOrCloneEvent> ContextMenu_AddCallout2_Clicked;
+        public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
+        public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
+        public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
 
         public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
 
         public event EventHandler ContextMenu_Run_Clicked;
 
-        public event EventHandler<CalloutOrCloneEvent> ContextMenu_CloneEvent_Clicked;
+        public event EventHandler<FormOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
         public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
@@ -389,7 +390,7 @@ namespace VideoCreator.XAML
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
         }
 
-        private CalloutOrCloneEvent CalloutPreprocessing()
+        private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
         {
             TimelineVideoEvent selectedEvent;
             var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
@@ -402,14 +403,14 @@ namespace VideoCreator.XAML
 
             if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)
             {
-                var emptyPayload = new CalloutOrCloneEvent
+                var emptyPayload = new FormOrCloneEvent
                 {
                     timelineVideoEvent = selectedEvent,
                     timeAtTheMoment = trackbarTime
                 };
                 return emptyPayload;
             }
-            var payload = new CalloutOrCloneEvent
+            var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
                 timeAtTheMoment = trackbarTime
@@ -428,6 +429,15 @@ namespace VideoCreator.XAML
             var payload = CalloutPreprocessing();
             ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
         }
+
+        private void AddFormEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var payload = CalloutPreprocessing(false);
+            ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
+        }
+
+
+        
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
@@ -475,7 +485,7 @@ namespace VideoCreator.XAML
             }
             var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
             var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
-            var payload = new CalloutOrCloneEvent
+            var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
                 timeAtTheMoment = trackbarTime

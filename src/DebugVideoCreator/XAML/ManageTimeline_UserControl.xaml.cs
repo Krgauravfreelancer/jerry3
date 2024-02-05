@@ -88,6 +88,7 @@ namespace VideoCreator.XAML
             
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
+            TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
@@ -441,7 +442,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, CalloutOrCloneEvent payload)
+        private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, FormOrCloneEvent payload)
         {
             LoaderHelper.ShowLoader(this, loader);
             int i = 1;
@@ -522,37 +523,44 @@ namespace VideoCreator.XAML
 
         #region == Design/Form Context Menu Option ==
 
-        private async Task HandleCalloutLogic(CalloutOrCloneEvent calloutEvent, EnumTrack track, string imagePath)
+        private async Task HandleFormLogic(FormOrCloneEvent calloutEvent, EnumTrack track, string imagePath, bool isFormEvent)
         {
-            await CallOutHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath);
+            await FormHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath, isFormEvent);
             TimelineUserConrol.InitializeTimeline();
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
+        private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, FormOrCloneEvent calloutEvent)
         {
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
-                var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
-                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT1, convertedImage);
+                var convertedImage = await FormHandlerHelper.Preprocess(calloutEvent);
+                await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT1, convertedImage, false);
             }
             else
-                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT1, null);
+                await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT1, null, false);
         }
 
-        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, CalloutOrCloneEvent calloutEvent)
+        private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, FormOrCloneEvent calloutEvent)
         {
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
-                var convertedImage = await CallOutHandlerHelper.Preprocess(calloutEvent);
-                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT2, convertedImage);
+                var convertedImage = await FormHandlerHelper.Preprocess(calloutEvent);
+                await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT2, convertedImage, false);
             }
             else
-                await HandleCalloutLogic(calloutEvent, EnumTrack.CALLOUT2, null);
+                await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT2, null, false);
         }
 
+        private async void TimelineUserConrol_ContextMenu_AddFormEvent_Clicked(object sender, FormOrCloneEvent calloutEvent)
+        {
+            LoaderHelper.ShowLoader(this, loader, "Form Window is opened ..");
+            await HandleFormLogic(calloutEvent, EnumTrack.IMAGEORVIDEO, null, true);
+        }
+
+        
 
 
         #endregion

@@ -28,13 +28,13 @@ using System.Linq;
 
 namespace VideoCreator.Helpers
 {
-    public static class CallOutHandlerHelper
+    public static class FormHandlerHelper
     {
         #region === Form/Design Functions ==
 
         private static int RetryIntervalInSeconds = 300;
 
-        public static async Task<string> Preprocess(CalloutOrCloneEvent calloutEvent)
+        public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
@@ -69,16 +69,16 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        public static async Task<bool?> CallOut(CalloutOrCloneEvent calloutEvent, string title, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null)
+        public static async Task<bool?> CallOut(FormOrCloneEvent calloutEvent, string title, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null, bool isFormEvent = false)
         {
             Designer_UserControl designerUserControl;
             if (string.IsNullOrEmpty(imagePath))
             {
                 var data = DataManagerSqlLite.GetBackground();
-                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data));
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data), false, isFormEvent);
             }
             else
-                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true, isFormEvent);
 
             var designUCWindow = new Window
             {
@@ -122,7 +122,7 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, CalloutOrCloneEvent calloutEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track)
+        private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, FormOrCloneEvent calloutEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             int duration = 10;

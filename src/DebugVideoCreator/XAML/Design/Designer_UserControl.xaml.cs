@@ -31,13 +31,15 @@ namespace VideoCreator.XAML
         private readonly int selectedProjectId;
         private readonly List<CBVBackground> BackgroundImagesData;
         private bool toggleFlag = false;
+        private bool isFormEvent = false;
         //private CBVBackground selectedBGItem;
         private string imagePath;
-        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, bool isImagePathGiven = false)
+        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, bool _isImagePathGiven = false, bool _isFormEvent = false)
         {
             InitializeComponent();
             selectedProjectId = _selectedProjectId;
-            if(isImagePathGiven ) 
+            isFormEvent = _isFormEvent;
+            if (_isImagePathGiven) 
                 imagePath = _backgroundDatastring;
             else
                 BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
@@ -62,6 +64,8 @@ namespace VideoCreator.XAML
             designViewer.Visibility = Visibility.Visible;
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
+
+            cbShowBackground.IsEnabled = !isFormEvent;
         }
 
         private DataTable createDesignDbDataTable()
@@ -221,7 +225,7 @@ namespace VideoCreator.XAML
             foreach (DataRow row in dtElements.Rows)
             {
                 //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
-                if (row["xaml"].ToString().StartsWith("<Image"))
+                if (!isFormEvent && row["xaml"].ToString().StartsWith("<Image"))
                     continue;
 
                 var rowDesign = dataTableAdd.NewRow();
