@@ -81,12 +81,14 @@ namespace VideoCreator.Helpers
             datatable.Columns.Add("screen_id", typeof(int));
             datatable.Columns.Add("screen_name", typeof(string));
             datatable.Columns.Add("screen_color", typeof(string));
+            datatable.Columns.Add("screen_hexcolor", typeof(string));
             foreach (var item in data)
             {
                 var row = datatable.NewRow();
                 row["screen_id"] = -1;
                 row["screen_name"] = item.screen_name.ToLower();
                 row["screen_color"] = item.screen_color;
+                row["screen_hexcolor"] = item.screen_hexcolor;
                 datatable.Rows.Add(row);
             }
             DataManagerSqlLite.UpsertRowsToScreen(datatable);

@@ -168,6 +168,7 @@ namespace Sqllite_Library.Data
                 'screen_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
                 'screen_name' TEXT(20) NOT NULL DEFAULT 'NULL',
                 'screen_color' TEXT(15) NOT NULL DEFAULT 'NULL',
+                'screen_hexcolor' TEXT(15) NOT NULL DEFAULT 'NULL',
                 UNIQUE (screen_name)
                 );";
             CreateTableHelper(sqlQueryString, sqlCon);
@@ -446,11 +447,11 @@ namespace Sqllite_Library.Data
             var insertedIds = new List<int>();
             foreach (DataRow dr in dataTable.Rows)
             {
-                var values = $"'{dr["screen_name"]}', '{dr["screen_color"]}'";
+                var values = $"'{dr["screen_name"]}', '{dr["screen_color"]}, '{dr["screen_hexcolor"]}'";
                 var whereClause = $" NOT EXISTS(SELECT 1 FROM cbv_screen WHERE screen_name = '{dr["screen_name"]}');";
                 string sqlQueryString =
                     $@"INSERT INTO cbv_screen 
-                        (screen_name, screen_color) 
+                        (screen_name, screen_color, screen_hexcolor) 
                         SELECT 
                             {values}
                         WHERE
@@ -1264,6 +1265,7 @@ namespace Sqllite_Library.Data
                             screen_id = sqlReader.GetInt32(0),
                             screen_name = sqlReader.GetString(1),
                             screen_color = sqlReader.GetString(2),
+                            screen_hexcolor = sqlReader.GetString(3),
                         };
                         data.Add(obj);
                     }
@@ -3098,13 +3100,15 @@ namespace Sqllite_Library.Data
                 var screen_id = Convert.ToInt32(dr["screen_id"]);
                 var screen_name = Convert.ToString(dr["screen_name"]);
                 var screen_color = Convert.ToString(dr["screen_color"]);
+                var screen_hexcolor = Convert.ToString(dr["screen_hexcolor"]);
 
-                var upsertQueryString = $@" INSERT INTO cbv_screen(screen_name, screen_color)
-                                                    VALUES('{screen_name}','{screen_color}')
+                var upsertQueryString = $@" INSERT INTO cbv_screen(screen_name, screen_color, screen_hexcolor)
+                                                    VALUES('{screen_name}','{screen_color}', '{screen_hexcolor}')
                                                 ON CONFLICT(screen_name) 
                                                 DO UPDATE 
                                                 SET
-                                                    screen_color = excluded.screen_color;";
+                                                    screen_color = excluded.screen_color,
+                                                    screen_hexcolor = excluded.screen_hexcolor;";
 
                 var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
                 Console.WriteLine($@"cbv_screen table upsert status for id - {screen_id} result - {upsertFlag}");
