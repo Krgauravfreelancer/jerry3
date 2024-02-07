@@ -584,6 +584,7 @@ namespace VideoCreator.XAML
         #region == AutoFill Events ==
 
         public event EventHandler<AutofillEvent> Autofill_Clicked;
+        /*
         private void AddTitleAutofill_Click(object sender, RoutedEventArgs e)
         {
             var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
@@ -632,6 +633,7 @@ namespace VideoCreator.XAML
             Autofill_Clicked.Invoke(sender, payload);
         }
 
+        */
         private void AddAllAutofill_Click(object sender, RoutedEventArgs e)
         {
             var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");

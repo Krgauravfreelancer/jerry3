@@ -232,7 +232,7 @@ namespace VideoCreator.XAML
 
                 rowDesign["design_id"] = row["id"];
                 rowDesign["fk_design_videoevent"] = -1;
-                rowDesign["fk_design_screen"] = 1;
+                rowDesign["fk_design_screen"] = 5; // for user def
                 rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
