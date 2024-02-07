@@ -24,7 +24,7 @@
             <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
             <Separator></Separator>
             <MenuItem Header="Add Title Autofill" x:Name="MenuItem_AddTitleAutofill" Click="AddTitleAutofill_Click" />
-            <MenuItem Header="Add Requirements' Autofill" x:Name="MenuItem_AddRequirementAutofill" Click="AddRequirementAutofill_Click"/>
+            <MenuItem Header="Add Requirement Autofill" x:Name="MenuItem_AddRequirementAutofill" Click="AddRequirementAutofill_Click"/>
             <MenuItem Header="Add Objective Autofill" x:Name="MenuItem_AddObjectiveAutofill"  Click="AddObjectiveAutofill_Click"/>
             <MenuItem Header="Add Next Autofill" x:Name="MenuItem_AddNextAutofill" Click="AddNextAutofill_Click"/>
             <MenuItem Header="Add All Autofill" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click"/>
