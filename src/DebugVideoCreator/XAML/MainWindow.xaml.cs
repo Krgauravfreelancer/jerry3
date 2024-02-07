@@ -57,7 +57,7 @@ namespace VideoCreator.XAML
             await Login();
             await SyncApp();
             await SyncMedia();
-            await SyncScreens();
+            //await SyncScreens();
             await SyncCompany();
             await SyncBackground();
             await InitialiseAndRefreshScreen(true);

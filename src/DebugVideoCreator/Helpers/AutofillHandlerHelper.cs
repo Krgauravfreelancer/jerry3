@@ -157,11 +157,11 @@ namespace VideoCreator.Helpers
 
             var designScreen = 1;
             if (othersType == AutofillEnumType.Requirement)
-                designScreen = 2;
-            else if (othersType == AutofillEnumType.Objective)
                 designScreen = 3;
-            else if (othersType == AutofillEnumType.Next)
+            else if (othersType == AutofillEnumType.Objective)
                 designScreen = 4;
+            else if (othersType == AutofillEnumType.Next)
+                designScreen = 7;
 
             rowHeading["design_id"] = -1;
             rowHeading["fk_design_videoevent"] = -1;
@@ -209,11 +209,11 @@ namespace VideoCreator.Helpers
         {
             var designScreen = 1;
             if (autofillEnumType == AutofillEnumType.Requirement)
-                designScreen = 2;
-            else if (autofillEnumType == AutofillEnumType.Objective)
                 designScreen = 3;
-            else if (autofillEnumType == AutofillEnumType.Next)
+            else if (autofillEnumType == AutofillEnumType.Objective)
                 designScreen = 4;
+            else if (autofillEnumType == AutofillEnumType.Next)
+                designScreen = 7;
             // background Image
             foreach (DataRow row in designElements.Rows)
             {

@@ -58,10 +58,10 @@ namespace VideoCreator.XAML
         public void SetSelectedProjectId(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
         {
             selectedProjectEvent = _selectedProjectEvent;
+            authApiViewModel = _authApiViewModel;
             InitializeTimeline();
             ReadOnly = readonlyMode;
             ResetContextMenu();
-            authApiViewModel = _authApiViewModel;
         }
 
         private void ResetContextMenu()
