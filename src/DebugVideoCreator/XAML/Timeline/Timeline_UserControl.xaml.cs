@@ -44,6 +44,7 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
         public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
+        public event EventHandler<List<int>> ContextMenu_DeleteTimelines_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -536,21 +537,21 @@ namespace VideoCreator.XAML
             // Add new events to the database
             var addedEvents = _timelineGridControl.GetAddedTimelineEvents();
 
-            foreach (var newEvent in addedEvents)
-            {
-                var videoEventDt = new VideoEventDatatable();
-                videoEventDt.AddVideoEventRow(newEvent);
+            //foreach (var newEvent in addedEvents)
+            //{
+            //    var videoEventDt = new VideoEventDatatable();
+            //    videoEventDt.AddVideoEventRow(newEvent);
 
-                var addedRow = DataManagerSqlLite.InsertRowsToVideoEvent(videoEventDt, false);
+            //    var addedRow = DataManagerSqlLite.InsertRowsToVideoEvent(videoEventDt, false);
 
-                if (newEvent.GetTimelineMediaType() == MediaType.form)
-                {
-                    var designDt = new DesignDatatable();
-                    designDt.AddDesign(addedRow.First(), (int)newEvent.EventScreen);
-                    DataManagerSqlLite.InsertRowsToDesign(designDt);
-                }
+            //    if (newEvent.GetTimelineMediaType() == MediaType.form)
+            //    {
+            //        var designDt = new DesignDatatable();
+            //        designDt.AddDesign(addedRow.First(), (int)newEvent.EventScreen);
+            //        DataManagerSqlLite.InsertRowsToDesign(designDt);
+            //    }
 
-            }
+            //}
 
             // Update changes to the database for existing events
             var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
@@ -565,15 +566,17 @@ namespace VideoCreator.XAML
 
             // Removes the deleted events from the database
             var deletedEventIds = _timelineGridControl.GetDeletedTimelineEventsId();
-            foreach (var id in deletedEventIds)
-            {
-                // Please adjust cascadeDelete as required
-                DataManagerSqlLite.DeleteVideoEventsById(id, cascadeDelete: true);
-            }
+            ContextMenu_DeleteTimelines_Clicked.Invoke(sender, deletedEventIds);
 
-            //_timelineGridControl.ClearTimeline();
-            LoadTimelineDataFromDb_Click(null, null);
-            MessageBox.Show("Save Successful!");
+            //foreach (var id in deletedEventIds)
+            //{
+            //    // Please adjust cascadeDelete as required
+            //    DataManagerSqlLite.DeleteVideoEventsById(id, cascadeDelete: true);
+            //}
+
+            ////_timelineGridControl.ClearTimeline();
+            //LoadTimelineDataFromDb_Click(null, null);
+            //MessageBox.Show("Save Successful!");
         }
 
 

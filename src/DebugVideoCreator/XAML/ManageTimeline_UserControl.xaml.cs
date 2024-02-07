@@ -375,7 +375,7 @@ namespace VideoCreator.XAML
 
         #endregion
 
-        #region == ContextMenu > CloneEvent ==
+        #region == ContextMenu > OtherEvents ==
 
 
         private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<TimelineVideoEvent> modifiedEvents)
@@ -442,6 +442,9 @@ namespace VideoCreator.XAML
             }
         }
 
+        #endregion
+
+        #region == ContextMenu > CloneEvent ==
         private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, FormOrCloneEvent payload)
         {
             LoaderHelper.ShowLoader(this, loader);
