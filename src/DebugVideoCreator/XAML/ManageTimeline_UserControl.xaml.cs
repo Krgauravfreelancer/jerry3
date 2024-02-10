@@ -453,7 +453,7 @@ namespace VideoCreator.XAML
 
             var message = string.Empty;
 
-            var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true);
+            var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true, false);
             var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
             var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment);

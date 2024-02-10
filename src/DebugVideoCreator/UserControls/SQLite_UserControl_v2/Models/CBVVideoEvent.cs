@@ -22,6 +22,10 @@ namespace Sqllite_Library.Models
         public List<CBVVideoSegment> videosegment_data { get; set; }
         public List<CBVDesign> design_data { get; set; }
         public List<CBVNotes> notes_data { get; set; }
+
+        //Added for timeline (used by Cha, please dont remove)
+        public int fk_design_screen { get; set; }
+        public int fk_design_background { get; set; }
         public CBVVideoEvent()
         {
             audio_data =  new List<CBVAudio>();

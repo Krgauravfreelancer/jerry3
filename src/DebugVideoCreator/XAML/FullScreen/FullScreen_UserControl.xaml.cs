@@ -71,7 +71,7 @@ namespace VideoCreator.XAML
 
         private void SetUp()
         {
-            var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true);
+            var data = DataManagerSqlLite.GetVideoEvents(selectedProjectId, true, false);
             List<PlaylistItem> playlist = new List<PlaylistItem>();
             var finalBytes = new byte[] { };
             foreach (var item in data)

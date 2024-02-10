@@ -375,9 +375,9 @@ namespace Sqllite_Library.Business
         }
 
         // Lets not fetch dependent tables be default and thats why flag is false
-        public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false)
+        public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false, bool designFlag = false)
         {
-            return SqlLiteData.GetVideoEvents(projdetId, dependentDataFlag);
+            return SqlLiteData.GetVideoEvents(projdetId, dependentDataFlag, designFlag);
         }
 
 
@@ -386,9 +386,9 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetNotSyncedVideoEvents(projdetId, dependentDataFlag);
         }
 
-        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false)
+        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false, bool designFlag = false)
         {
-            return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag);
+            return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag, designFlag);
         }
 
         public static int GetVideoEventsCount()

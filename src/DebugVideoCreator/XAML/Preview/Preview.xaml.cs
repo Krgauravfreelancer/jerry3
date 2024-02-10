@@ -79,7 +79,7 @@ namespace VideoCreator.XAML
             var bmps = new List<System.Drawing.Bitmap>();
             foreach (var id in mouseMovedEvent.videoeventIds)
             {
-                var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true).FirstOrDefault();
+                var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true, false).FirstOrDefault();
                 if (videoevent != null && videoevent?.videosegment_data?.Count > 0) 
                 {
                     if (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4)

@@ -37,7 +37,7 @@ namespace VideoCreator.Helpers
         public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
-            var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true);
+            var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true, false);
 
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)

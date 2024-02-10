@@ -79,7 +79,7 @@ namespace VideoCreator.XAML
         public void SetProjectID(int projectID)
         {
             ProjectID = projectID;
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true);
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true, false);
 
             TimeSpan TotalTime = TimeSpan.Zero;
 
@@ -99,7 +99,7 @@ namespace VideoCreator.XAML
 
         private void RefreshData()
         {
-            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true);
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(ProjectID, true, false);
 
 
             List<Media> mediaList = new List<Media>();

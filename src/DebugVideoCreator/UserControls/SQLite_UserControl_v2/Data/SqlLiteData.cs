@@ -6,6 +6,7 @@ using Sqllite_Library.Models;
 using System.Data;
 using Sqllite_Library.Helpers;
 using System.Windows;
+using System.Linq;
 
 namespace Sqllite_Library.Data
 {
@@ -1788,7 +1789,7 @@ namespace Sqllite_Library.Data
 
         #endregion
 
-        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false)
+        public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false, bool designFlag = false)
         {
             var data = new List<CBVVideoEvent>();
 
@@ -1797,6 +1798,17 @@ namespace Sqllite_Library.Data
                 throw new Exception("Database is not present.");
 
             string sqlQueryString = $@"SELECT * FROM cbv_videoevent where videoevent_id = {videoeventId}";
+            
+            if(designFlag)
+                sqlQueryString = $@"SELECT 
+                                        VE.*, D.fk_design_screen, D.fk_design_background 
+                                    FROM 
+                                        cbv_videoevent VE 
+                                        Join cbv_design D on D.fk_design_videoevent = VE.videoevent_id
+                                    where 
+                                        VE.videoevent_id = {videoeventId}
+                                    LIMIT 1";
+            
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1827,6 +1839,14 @@ namespace Sqllite_Library.Data
                             videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
                             videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
                         };
+
+                        if(designFlag)
+                        {
+                            obj.fk_design_background = Convert.ToInt32(sqlReader["fk_design_background"]);
+                            obj.fk_design_screen = Convert.ToInt32(sqlReader["fk_design_screen"]);
+                        }
+
+                            
                         if (dependentDataFlag)
                         {
                             var videoEventId = sqlReader.GetInt32(0);
@@ -1930,7 +1950,7 @@ namespace Sqllite_Library.Data
 
             return data;
         }
-        public static List<CBVVideoEvent> GetVideoEvents(int projdetId, bool dependentDataFlag = false)
+        public static List<CBVVideoEvent> GetVideoEvents(int projdetId, bool dependentDataFlag = false, bool designFlag = false)
         {
             var data = new List<CBVVideoEvent>();
 
@@ -1938,8 +1958,17 @@ namespace Sqllite_Library.Data
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
 
-            string sqlQueryString = $@"SELECT * FROM cbv_videoevent ";
-            sqlQueryString += projdetId <= 0 ? " where videoevent_isdeleted = 0 " : $@" where fk_videoevent_projdet = {projdetId} and videoevent_isdeleted = 0";
+            string sqlQueryString = $@"SELECT VE.* FROM cbv_videoevent VE";
+
+            if(designFlag)
+                sqlQueryString = $@"SELECT 
+                                        VE.*, D.fk_design_screen, D.fk_design_background 
+                                    FROM 
+                                        cbv_videoevent VE 
+                                        Join cbv_design D on D.fk_design_videoevent = VE.videoevent_id
+                                    ";
+
+            sqlQueryString += projdetId <= 0 ? " where VE.videoevent_isdeleted = 0 " : $@" where VE.fk_videoevent_projdet = {projdetId} and VE.videoevent_isdeleted = 0";
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1970,6 +1999,11 @@ namespace Sqllite_Library.Data
                             videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
                             videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
                         };
+                        if (designFlag)
+                        {
+                            obj.fk_design_background = Convert.ToInt32(sqlReader["fk_design_background"]);
+                            obj.fk_design_screen = Convert.ToInt32(sqlReader["fk_design_screen"]);
+                        }
                         if (dependentDataFlag)
                         {
                             var videoEventId = sqlReader.GetInt32(0);
@@ -1998,8 +2032,8 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 throw;
             }
-
-            return data;
+            
+            return data.GroupBy(x => x.videoevent_id).Select(p=>p.First()).Distinct().ToList();
         }
 
         /*

@@ -147,7 +147,7 @@ namespace VideoCreator.XAML
         {
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
-            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId);
+            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId, false, true);
             foreach (var videoEvent in videoEventList)
             {
 
