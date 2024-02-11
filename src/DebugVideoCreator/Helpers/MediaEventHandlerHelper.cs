@@ -29,7 +29,7 @@ namespace VideoCreator.Helpers
     {
         #region === Post to server and then save locally ==
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImage(DataRow row, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForVideoOrImage(DataRow row, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)row["fk_videoevent_media"];
@@ -39,6 +39,23 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_end = "00:00:00.000"; // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0] : (byte[])row["media"];
+            if(dtNotes != null && dtNotes.Rows.Count > 0)
+            {
+                objToSync.notes = new List<NotesModelPost>();
+                foreach (DataRow dr in dtNotes.Rows)
+                {
+                    var note = new NotesModelPost
+                    {
+                        notes_line = Convert.ToString(dr["notes_line"]),
+                        notes_index = Convert.ToString(dr["notes_index"]),
+                        notes_wordcount = Convert.ToInt32(dr["notes_wordcount"]),
+                        notes_start = Convert.ToString(dr["notes_start"]),
+                        notes_duration = Convert.ToInt32(dr["notes_duration"]),
+                        notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
+                    }; 
+                    objToSync.notes.Add(note);
+                }
+            }
             var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
             return result;
         }

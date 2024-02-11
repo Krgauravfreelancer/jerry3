@@ -566,7 +566,7 @@ namespace VideoCreator.XAML
 
             // Removes the deleted events from the database
             var deletedEventIds = _timelineGridControl.GetDeletedTimelineEventsId();
-            ContextMenu_DeleteTimelines_Clicked.Invoke(sender, deletedEventIds);
+            ContextMenu_DeleteTimelines_Clicked?.Invoke(sender, deletedEventIds);
 
             //foreach (var id in deletedEventIds)
             //{

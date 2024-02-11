@@ -33,6 +33,7 @@ using System.Drawing;
 using Timeline.UserControls.Models;
 using DebugVideoCreator.Helpers;
 using ServerApiCall_UserControl.DTO;
+using ScreenRecorder_UserControl.Models;
 
 namespace VideoCreator.XAML
 {
@@ -244,8 +245,14 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectEvent.projectId);
-            screenRecordingUserControl.BtnSaveClickedEvent += ScreenRecordingUserControl_BtnSaveClickedEvent; //+= ScreenRecorderUserConrol_ContextMenu_SaveEvent_Clicked;
+            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectEvent.projdetId);
+            screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
+            {
+                LoaderHelper.ShowLoader(screenRecordingUserControl, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
+                await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
+                LoaderHelper.HideLoader(screenRecordingUserControl, screenRecordingUserControl.loader);
+                screenRecordingUserControl.RefreshData();
+            };
             var screenRecorderWindow = new System.Windows.Window
             {
                 Title = "Screen Recorder",
@@ -255,7 +262,7 @@ namespace VideoCreator.XAML
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
             LoaderHelper.ShowLoader(this, loader);
-            LoaderHelper.ShowLoader(screenRecorderWindow, loader);
+            LoaderHelper.ShowLoader(screenRecorderWindow, screenRecordingUserControl.loader);
             var result = screenRecorderWindow.ShowDialog();
             if (result.HasValue)
             {
@@ -264,7 +271,7 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private async void ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
+        private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
             foreach (DataRow row in dataTable.Rows)
@@ -273,7 +280,8 @@ namespace VideoCreator.XAML
 
         private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
         {
-            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, selectedProjectEvent, authApiViewModel);
+            var dtNotes = (DataTable)row["videoevent_notes"];
+            var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, dtNotes, selectedProjectEvent, authApiViewModel);
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -307,9 +315,59 @@ namespace VideoCreator.XAML
                 if (insertedVideoSegmentId > 0)
                 {
                     Refresh();
-                    MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    // MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                if(addedData?.notes?.Count > 0)
+                {
+                    DataManagerSqlLite.InsertRowsToNotes(NotesDataTableToSave(addedData?.notes, videoEventId));
                 }
             }
+        }
+
+        private DataTable NotesDataTableToSave(List<NotesModel> notes, int videoeventId)
+        {
+            var notesDataTable = new DataTable();
+            notesDataTable.Columns.Add("notes_id", typeof(int));
+            notesDataTable.Columns.Add("fk_notes_videoevent", typeof(int));
+            notesDataTable.Columns.Add("notes_line", typeof(string));
+            notesDataTable.Columns.Add("notes_wordcount", typeof(int));
+            notesDataTable.Columns.Add("notes_index", typeof(int));
+            notesDataTable.Columns.Add("notes_start", typeof(string));
+            notesDataTable.Columns.Add("notes_duration", typeof(int));
+            notesDataTable.Columns.Add("notes_createdate", typeof(string));
+            notesDataTable.Columns.Add("notes_modifydate", typeof(string));
+            notesDataTable.Columns.Add("notes_isdeleted", typeof(bool));
+            notesDataTable.Columns.Add("notes_issynced", typeof(bool));
+            notesDataTable.Columns.Add("notes_serverid", typeof(long));
+            notesDataTable.Columns.Add("notes_syncerror", typeof(string));
+
+            notesDataTable.Rows.Clear();
+
+
+            int NotesIndex = 0;
+            foreach (var element in notes)
+            {
+                var noteRow = notesDataTable.NewRow();
+
+                noteRow["notes_id"] = -1;
+                noteRow["fk_notes_videoevent"] = videoeventId;
+                noteRow["notes_line"] = element.notes_line ;
+                noteRow["notes_wordcount"] = element.notes_wordcount;
+                noteRow["notes_index"] = NotesIndex;
+                noteRow["notes_start"] = element.notes_start;
+                noteRow["notes_duration"] = element.notes_duration;
+                noteRow["notes_createdate"] = element.notes_createdate;
+                noteRow["notes_modifydate"] = element.notes_modifydate;
+                noteRow["notes_isdeleted"] = false;
+                noteRow["notes_issynced"] = true;
+                noteRow["notes_serverid"] = element.notes_id;
+                noteRow["notes_syncerror"] = string.Empty;
+
+                notesDataTable.Rows.Add(noteRow);
+                NotesIndex++;
+
+            }
+            return notesDataTable;
         }
 
         private void FailureFlowForSaveImageorVideo(DataRow row)
