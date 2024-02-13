@@ -616,9 +616,21 @@ namespace Sqllite_Library.Business
 
         #endregion
 
-        public static string CalcNextEnd(string start, int duration)
+
+        public static string GetNextStart(int fk_videoevent_media, int projdetId)
+        {
+            return SqlLiteData.GetNextStart(fk_videoevent_media, projdetId);
+        }
+
+
+        public static string CalcNextEnd(string start, string duration)
         {
             return SqlLiteData.CalcNextEnd(start, duration);
+        }
+
+        public static int GetMillisecondsFromTimespan(string timespan)
+        {
+            return SqlLiteData.GetMillisecondsFromTimespan(timespan);
         }
 
     }

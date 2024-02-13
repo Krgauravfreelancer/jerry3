@@ -41,7 +41,7 @@ namespace VideoCreator.XAML
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
-            
+            var sum = DataManagerSqlLite.CalcNextEnd("00:00:10.123", "00:00:15.987");
         }
 
         private void Window_Closed(object sender, EventArgs e)

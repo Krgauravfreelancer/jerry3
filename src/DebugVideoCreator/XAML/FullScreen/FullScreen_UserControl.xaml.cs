@@ -84,7 +84,7 @@ namespace VideoCreator.XAML
                     break;
                 }
 
-                TimeSpan duration = TimeSpan.FromSeconds(item.videoevent_duration);
+                TimeSpan duration = TimeSpan.Parse(item.videoevent_duration);
 
                 List<CBVVideoSegment> videoSegments = item.videosegment_data;
                 List<CBVAudio> AudioSegments = item.audio_data;

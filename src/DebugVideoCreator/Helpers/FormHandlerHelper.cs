@@ -125,7 +125,7 @@ namespace VideoCreator.Helpers
         private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, FormOrCloneEvent calloutEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
-            int duration = 10;
+            string duration = "00:00:10.000";
             var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, calloutEvent?.timeAtTheMoment, duration);
             if (addedData == null)
             {
@@ -151,7 +151,7 @@ namespace VideoCreator.Helpers
             
         }
 
-        private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, int duration, int track, SelectedProjectEvent selectedProjectEvent)
+        private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
         {
             // Save the record locally with server Id = temp and issynced = false
             var blob = dtVideoSegmentMaster.Rows[0]["videosegment_media"] as byte[];

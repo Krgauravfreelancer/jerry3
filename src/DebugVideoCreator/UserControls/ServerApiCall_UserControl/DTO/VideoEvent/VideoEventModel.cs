@@ -12,7 +12,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }
         public string videoevent_end { get; set; }
-        public int videoevent_duration { get; set; }
+        public string videoevent_duration { get; set; }
         public string videoevent_modifylocdate { get; set; }
 
 
@@ -75,7 +75,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public int fk_videoevent_media { get; set; }
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }
-        public int videoevent_duration { get; set; }
+        public string videoevent_duration { get; set; }
         public string videoevent_modifylocdate { get; set; }
 
 

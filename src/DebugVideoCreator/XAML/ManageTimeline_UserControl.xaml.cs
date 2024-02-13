@@ -964,7 +964,7 @@ namespace VideoCreator.XAML
             dataTable.Columns.Add("fk_videoevent_media", typeof(int));
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
-            dataTable.Columns.Add("videoevent_duration", typeof(int));
+            dataTable.Columns.Add("videoevent_duration", typeof(string));
             dataTable.Columns.Add("videoevent_end", typeof(string));
             dataTable.Columns.Add("videoevent_createdate", typeof(string));
             dataTable.Columns.Add("videoevent_modifydate", typeof(string));
@@ -997,7 +997,7 @@ namespace VideoCreator.XAML
             audioSecondtext = audioSecondtext ?? (audioSaveButtonText == "Save" ? "00" : selectedVideoEvent.videoevent_start.Split(':')[2].ToString());
 
             row["videoevent_start"] = $"00:{audioMinutetext}:{audioSecondtext}";
-            row["videoevent_duration"] = 0;
+            row["videoevent_duration"] = $"00:00:10";
             row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             row["fk_videoevent_screen"] = -1; // Not needed for this case

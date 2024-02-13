@@ -391,7 +391,7 @@ namespace VideoCreator.Auth
             }
         }
 
-        public async Task PatchBackground(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, int videoevent_duration)
+        public async Task PatchBackground(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, string videoevent_duration)
         {
             var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
             var parameters = new Dictionary<string, string>
@@ -457,7 +457,7 @@ namespace VideoCreator.Auth
                 requestbodyContent_start.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_start\"");
                 multipart.Add(requestbodyContent_start);
                 // Duration
-                var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration.ToString());
+                var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration);
                 requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
                 multipart.Add(requestbodyContent_duration);
                 // Start
@@ -643,7 +643,7 @@ namespace VideoCreator.Auth
             requestbodyContent_start.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_start\"");
             multipart.Add(requestbodyContent_start);
             // Duration
-            var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration.ToString());
+            var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration);
             requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
             multipart.Add(requestbodyContent_duration);
             // LOC DATE
@@ -741,7 +741,7 @@ namespace VideoCreator.Auth
 
 
 
-        //public async Task UpdateVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, int videoevent_track, string videoevent_start, int videoevent_duration)
+        //public async Task UpdateVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, int videoevent_track, string videoevent_start, string videoevent_duration)
         //{
         //    var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
         //    var parameters = new Dictionary<string, string>
@@ -764,7 +764,7 @@ namespace VideoCreator.Auth
         //    }
         //}
 
-        //public async Task PatchVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, int videoevent_duration)
+        //public async Task PatchVideoEvent(int projectId, int videoeventId, int fk_videoevent_media, string videoevent_start, string videoevent_duration)
         //{
         //    var url = $"api/connect/project/{projectId}/videoevent/{videoeventId}";
         //    var parameters = new Dictionary<string, string>

@@ -274,7 +274,7 @@ namespace Sqllite_Library.Data
                 'fk_videoevent_media' INTEGER NOT NULL DEFAULT 1 REFERENCES 'cbv_media'('media_id'),
                 'videoevent_track' INTEGER NOT NULL  DEFAULT 1,
                 'videoevent_start' TEXT(12) NOT NULL DEFAULT '00:00:00.000',
-                'videoevent_duration' INTEGER NOT NULL DEFAULT 0,
+                'videoevent_duration' TEXT(12) NOT NULL DEFAULT 'NULL',
                 'videoevent_end' TEXT(12) NOT NULL DEFAULT '00:00:00.000',
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
@@ -576,7 +576,7 @@ namespace Sqllite_Library.Data
 
         #region == Video Event and Depenedent Tables ==
 
-        private static string GetNextStart(int fk_videoevent_media, int projdetId)
+        public static string GetNextStart(int fk_videoevent_media, int projdetId)
         {
             // Check if database is created
             if (false == IsDbCreated())
@@ -598,7 +598,7 @@ namespace Sqllite_Library.Data
             else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
 
 
-            whereClause += $" and fk_videoevent_projdet = {projdetId}";
+            whereClause += $" and fk_videoevent_projdet = {projdetId} and videoevent_isdeleted = 0";
 
             var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
             result = Convert.ToString(sqlQuery.ExecuteScalar());
@@ -607,20 +607,38 @@ namespace Sqllite_Library.Data
             return string.IsNullOrEmpty(result) ? "00:00:00.000" : result;
         }
 
-        public static string CalcNextEnd(string start, int duration)
+        public static int GetMillisecondsFromTimespan(string timespan)
+        {
+            var ms = timespan.Length > 8 ? timespan.Split('.')[1] : "000";
+            var timeArray = timespan.Length > 8 ? timespan.Remove(8).Split(':') : timespan.Split(':');
+            var timeinSecond = (Convert.ToInt32(timeArray[0]) * 3600) + (Convert.ToInt32(timeArray[1]) * 60) + (Convert.ToInt32(timeArray[2]));
+            var timeInMillisecond = (timeinSecond * 1000) + Convert.ToInt32(ms);
+            return timeInMillisecond;
+        }
+
+        public static string CalcNextEnd(string start, string duration)
         {
             if (string.IsNullOrEmpty(start))
                 return "00:00:00.000";
 
             var ms = start.Length > 8 ? start.Split('.')[1] : "000";
+            
+            
             var array = start.Length > 8 ? start.Remove(8).Split(':') : start.Split(':');
-            var time = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
-            var endTime = time + duration;
+            var startTimeinSecond = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
+            //var time = startTimeinSecond * 1000 + ms;
+            var starttime = GetMillisecondsFromTimespan(start);
+            var durationtime = GetMillisecondsFromTimespan(duration);
+
+            var endTime = starttime + durationtime;
+
+            var endtimeInMs = endTime % 1000;
+            endTime = endTime / 1000;
             int s = endTime % 60;
             endTime /= 60;
             int mins = endTime % 60;
             int hours = endTime / 60;
-            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3}", hours, mins, s, ms);
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", hours, mins, s, endtimeInMs);
         }
 
         public static int InsertRowsToVideoEvent(DataRow dr)
@@ -636,10 +654,10 @@ namespace Sqllite_Library.Data
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             var start = Convert.ToString(dr["videoevent_start"]);
-            if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
-                start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_projdet"]));
+            //if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
+            //    start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_projdet"]));
 
-            var end = CalcNextEnd(start, Convert.ToInt32(dr["videoevent_duration"]));
+            var end = CalcNextEnd(start, Convert.ToString(dr["videoevent_duration"]));
 
             var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
             var serverid = Convert.ToInt64(dr["videoevent_serverid"]);
@@ -648,7 +666,7 @@ namespace Sqllite_Library.Data
             var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
             values.Add($"({dr["fk_videoevent_projdet"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', {dr["videoevent_duration"]}, '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                $"'{start}', '{dr["videoevent_duration"]}', '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
 
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
@@ -1830,7 +1848,7 @@ namespace Sqllite_Library.Data
                             fk_videoevent_media = sqlReader.GetInt32(2),
                             videoevent_track = sqlReader.GetInt32(3),
                             videoevent_start = sqlReader.GetString(4),
-                            videoevent_duration = sqlReader.GetInt32(5),
+                            videoevent_duration = sqlReader.GetString(5),
                             videoevent_end = sqlReader.GetString(6),
                             videoevent_createdate = sqlReader.GetDateTime(7),
                             videoevent_modifydate = sqlReader.GetDateTime(8),
@@ -1910,7 +1928,7 @@ namespace Sqllite_Library.Data
                             fk_videoevent_media = sqlReader.GetInt32(2),
                             videoevent_track = sqlReader.GetInt32(3),
                             videoevent_start = sqlReader.GetString(4),
-                            videoevent_duration = sqlReader.GetInt32(5),
+                            videoevent_duration = sqlReader.GetString(5),
                             videoevent_end = sqlReader.GetString(6),
                             videoevent_createdate = sqlReader.GetDateTime(7),
                             videoevent_modifydate = sqlReader.GetDateTime(8),
@@ -1990,7 +2008,7 @@ namespace Sqllite_Library.Data
                             fk_videoevent_media = sqlReader.GetInt32(2),
                             videoevent_track = sqlReader.GetInt32(3),
                             videoevent_start = sqlReader.GetString(4),
-                            videoevent_duration = sqlReader.GetInt32(5),
+                            videoevent_duration = sqlReader.GetString(5),
                             videoevent_end = sqlReader.GetString(6),
                             videoevent_createdate = sqlReader.GetDateTime(7),
                             videoevent_modifydate = sqlReader.GetDateTime(8),
@@ -2743,7 +2761,7 @@ namespace Sqllite_Library.Data
                                             fk_videoevent_media = {Convert.ToInt32(dr["fk_videoevent_media"])},
                                             videoevent_track = {Convert.ToInt32(dr["videoevent_track"])},
                                             videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
-                                            videoevent_duration = {Convert.ToInt32(dr["videoevent_duration"])},
+                                            videoevent_duration = '{Convert.ToString(dr["videoevent_duration"])}',
                                             videoevent_end = '{Convert.ToString(dr["videoevent_end"])}',
                                             videoevent_isdeleted = {Convert.ToBoolean(dr["videoevent_isdeleted"])},
                                             videoevent_issynced = {Convert.ToBoolean(dr["videoevent_issynced"])},

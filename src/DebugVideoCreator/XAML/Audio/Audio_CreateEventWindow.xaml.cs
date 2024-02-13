@@ -33,7 +33,7 @@ namespace VideoCreator.XAML
             dataTable.Columns.Add("fk_videoevent_media", typeof(int));
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
-            dataTable.Columns.Add("videoevent_duration", typeof(int));
+            dataTable.Columns.Add("videoevent_duration", typeof(string));
             dataTable.Columns.Add("videoevent_createdate", typeof(string));
             dataTable.Columns.Add("videoevent_modifydate", typeof(string));
             //optional column
@@ -49,7 +49,7 @@ namespace VideoCreator.XAML
             //row["videoevent_start"] = $"00:{SMinTxt.Text}:{SSecTxt.Text}";
             //row["videoevent_duration"] = (Convert.ToInt32(DMinTxt.Text) * 60) + Convert.ToInt32(DSecTxt.Text);
             row["videoevent_start"] = $"00:00:00.000";
-            row["videoevent_duration"] = 10;
+            row["videoevent_duration"] = $"00:00:10.000";
             row["videoevent_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             row["fk_videoevent_media"] = 3; // For Audio

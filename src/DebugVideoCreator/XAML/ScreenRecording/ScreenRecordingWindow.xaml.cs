@@ -88,7 +88,7 @@ namespace VideoCreator.XAML
                 var startime = VideoEventData.LastOrDefault().videoevent_start;
                 if (startime?.Length == 8) startime = startime + ".000";
                 TimeSpan StartTime = TimeSpan.ParseExact(startime, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
-                TotalTime = StartTime + TimeSpan.FromSeconds(VideoEventData.LastOrDefault().videoevent_duration);
+                TotalTime = StartTime + TimeSpan.Parse(VideoEventData.LastOrDefault().videoevent_duration);
             }
 
             Recorder.SetProjectInfo(ProjdetID, TrackID, TotalTime);
@@ -139,7 +139,7 @@ namespace VideoCreator.XAML
                     }
                     media.RecordedTextList = textItems;
                 }
-                media.Duration = TimeSpan.FromSeconds(item.videoevent_duration);
+                media.Duration = TimeSpan.Parse(item.videoevent_duration);
                 media.StartTime = TimeSpan.Parse(item.videoevent_start);
 
                 mediaList.Add(media);
@@ -194,7 +194,7 @@ namespace VideoCreator.XAML
                     dataTable.Columns.Add("fk_videoevent_media", typeof(int));
                     dataTable.Columns.Add("videoevent_track", typeof(int));
                     dataTable.Columns.Add("videoevent_start", typeof(string));
-                    dataTable.Columns.Add("videoevent_duration", typeof(int));
+                    dataTable.Columns.Add("videoevent_duration", typeof(string));
                     dataTable.Columns.Add("videoevent_createdate", typeof(string));
                     dataTable.Columns.Add("videoevent_modifydate", typeof(string));
                     dataTable.Columns.Add("media", typeof(byte[])); // Media Column
@@ -235,7 +235,7 @@ namespace VideoCreator.XAML
                         mediaId = 2;
                     }
 
-                    row["videoevent_duration"] = element.Duration.TotalSeconds;
+                    row["videoevent_duration"] = Convert.ToString(element.Duration);
 
                     row["fk_videoevent_media"] = mediaId;
 

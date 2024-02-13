@@ -146,7 +146,8 @@ namespace VideoCreator.XAML
         public void LoadVideoEventsFromDb(int projdetId)
         {
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
-
+            //dt.Columns.Remove("videoevent_duration");
+            //dt.Columns.Add("videoevent_duration", typeof(string));
             List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId, false, true);
             foreach (var videoEvent in videoEventList)
             {
@@ -158,7 +159,7 @@ namespace VideoCreator.XAML
                 dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = videoEvent.fk_videoevent_media;
                 dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoEvent.videoevent_track;
                 dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoEvent.videoevent_start;
-                dRow[nameof(TimelineVideoEvent.videoevent_duration)] = videoEvent.videoevent_duration;
+                dRow[nameof(TimelineVideoEvent.videoevent_duration)] = DataManagerSqlLite.GetMillisecondsFromTimespan(videoEvent.videoevent_duration)/1000;
 
                 dRow[nameof(TimelineVideoEvent.videoevent_createdate)] = videoEvent.videoevent_createdate;
                 dRow[nameof(TimelineVideoEvent.videoevent_modifydate)] = videoEvent.videoevent_modifydate;
@@ -229,7 +230,6 @@ namespace VideoCreator.XAML
 
         private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
         {
-            Console.WriteLine($"{i++}.Here !!! {TimelineGridCtrl2._isTrackbarLineDragInProg}");
             if (TimelineGridCtrl2._isTrackbarLineDragInProg == false)
             {
 
@@ -396,7 +396,7 @@ namespace VideoCreator.XAML
             var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = trackbarTime
+                timeAtTheMoment = IsCallout ? trackbarTime : DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId)
             };
             return payload;
         }
@@ -644,7 +644,8 @@ namespace VideoCreator.XAML
             {
                 AutofillType = AutofillEnumType.All,
                 timeAtTheMoment = trackbarTime,
-                Duration = 10
+                DurationInSec = 10,
+                Duration = "00:00:10.000"
             };
             Autofill_Clicked.Invoke(sender, payload);
         }

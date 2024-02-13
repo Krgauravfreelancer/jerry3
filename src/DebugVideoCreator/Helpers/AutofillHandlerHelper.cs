@@ -309,11 +309,12 @@ namespace VideoCreator.Helpers
 
             if (IncrementBy > 0)
             {
-                var startTime = DataManagerSqlLite.CalcNextEnd(autofillEvent?.timeAtTheMoment, autofillEvent.Duration*IncrementBy);
-                addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, startTime, autofillEvent.Duration);
+                
+                var startTime = DataManagerSqlLite.CalcNextEnd(autofillEvent?.timeAtTheMoment, $"00:00:{autofillEvent.DurationInSec * IncrementBy}.000");
+                addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, startTime, $"{autofillEvent.Duration}");
             }
             else
-                addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, autofillEvent?.timeAtTheMoment, autofillEvent.Duration);
+                addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, autofillEvent?.timeAtTheMoment, $"{autofillEvent.Duration}");
             
             
             if (addedData == null)
@@ -337,7 +338,7 @@ namespace VideoCreator.Helpers
         }
 
         
-        private static bool FailureFlowForAutofill(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, int duration, int track, SelectedProjectEvent selectedProjectEvent)
+        private static bool FailureFlowForAutofill(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
         {
             // Save the record locally with server Id = temp and issynced = false
             var blob = dtVideoSegmentMaster.Rows[0]["videosegment_media"] as byte[];

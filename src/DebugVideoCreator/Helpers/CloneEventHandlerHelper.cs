@@ -42,7 +42,7 @@ namespace VideoCreator.Helpers
                 objToSync.videoevent_track = videoEvent.videoevent_track;
                 objToSync.videoevent_start = startTime;
                 objToSync.videoevent_duration = videoEvent.videoevent_duration;
-                objToSync.videoevent_end = GetEndTime(startTime, videoEvent.videoevent_duration);
+                objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(startTime, videoEvent.videoevent_duration);
                 objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 objToSync.design.AddRange(GetDesignModelList(dtDesign));
                 objToSync.notes.AddRange(GetNotesModelList(dtNotes));
@@ -61,18 +61,6 @@ namespace VideoCreator.Helpers
             foreach (DataRow row in dt.Rows)
                 return (byte[])row["videosegment_media"];
             return null;
-        }
-
-        private static string GetEndTime(string startTime, int duration = 10)
-        {
-            if (string.IsNullOrEmpty(startTime)) return "00:00:10.000";
-
-            var timeonly = startTime.Split('.')[0];
-            var timeArray = timeonly.Split(':');
-            var time = (int.Parse(timeArray[0]) * 3600) + (int.Parse(timeArray[1]) * 60) + int.Parse(timeArray[2]);
-            var endTime = time + duration;
-            TimeSpan endTimeSpan = TimeSpan.FromSeconds(endTime);
-            return endTimeSpan.ToString(@"hh\:mm\:ss") + "." + Convert.ToString(startTime.Split('.')[1]);
         }
 
         #endregion
@@ -336,7 +324,7 @@ namespace VideoCreator.Helpers
             dt.Columns.Add("videoevent_id", typeof(int));
             dt.Columns.Add("fk_videoevent_projdet", typeof(int));
             dt.Columns.Add("videoevent_start", typeof(string));
-            dt.Columns.Add("videoevent_duration", typeof(int));
+            dt.Columns.Add("videoevent_duration", typeof(string));
             dt.Columns.Add("videoevent_track", typeof(int));
             dt.Columns.Add("fk_videoevent_media", typeof(int));
             dt.Columns.Add("videoevent_createdate", typeof(string));
