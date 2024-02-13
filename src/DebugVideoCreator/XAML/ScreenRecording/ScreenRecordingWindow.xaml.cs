@@ -234,8 +234,8 @@ namespace VideoCreator.XAML
                     {
                         mediaId = 2;
                     }
-
-                    row["videoevent_duration"] = Convert.ToString(element.Duration);
+                    
+                    row["videoevent_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff");
 
                     row["fk_videoevent_media"] = mediaId;
 
