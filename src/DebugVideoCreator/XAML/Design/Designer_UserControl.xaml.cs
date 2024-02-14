@@ -261,6 +261,12 @@ namespace VideoCreator.XAML
             return designElements;
         }
 
+
+        public void ClearDatatable()
+        {
+            dataTableAdd.Clear();
+        }
+
         public DataRow GetNewRow()
         {
             return dataTableAdd.NewRow();

@@ -129,12 +129,13 @@ namespace VideoCreator.Helpers
             if (string.IsNullOrEmpty(title))
                 title = "Sample Video Title for the first Video element";
 
+            designerUserControl.ClearDatatable();
             FillBackgroundForAutofill(designElements, designerUserControl, AutofillEnumType.Title);
             var rowTitle = designerUserControl.GetNewRow();
 
             rowTitle["design_id"] = -1;
             rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = 1;
+            rowTitle["fk_design_screen"] = (int)AutofillEnumType.Title;
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -152,6 +153,7 @@ namespace VideoCreator.Helpers
         {
             if(data == null || data.Count == 0) { return false; }
 
+            designerUserControl.ClearDatatable();
             FillBackgroundForAutofill(designElements, designerUserControl, othersType);
             var rowHeading = designerUserControl.GetNewRow();
 

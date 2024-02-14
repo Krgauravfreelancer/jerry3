@@ -59,7 +59,7 @@ namespace VideoCreator.XAML
             await SyncMedia();
             await SyncCompany();
             await SyncBackground();
-            //await SyncScreens();
+            await SyncScreens();
             await InitialiseAndRefreshScreen(true);
 
             LoaderHelper.HideLoader(this, loader);
