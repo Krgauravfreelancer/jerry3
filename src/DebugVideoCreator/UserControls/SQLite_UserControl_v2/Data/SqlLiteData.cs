@@ -1983,7 +1983,7 @@ namespace Sqllite_Library.Data
                                         VE.*, D.fk_design_screen, D.fk_design_background 
                                     FROM 
                                         cbv_videoevent VE 
-                                        Join cbv_design D on D.fk_design_videoevent = VE.videoevent_id
+                                        Left Join cbv_design D on D.fk_design_videoevent = VE.videoevent_id
                                     ";
 
             sqlQueryString += projdetId <= 0 ? " where VE.videoevent_isdeleted = 0 " : $@" where VE.fk_videoevent_projdet = {projdetId} and VE.videoevent_isdeleted = 0";
@@ -2019,8 +2019,8 @@ namespace Sqllite_Library.Data
                         };
                         if (designFlag)
                         {
-                            obj.fk_design_background = Convert.ToInt32(sqlReader["fk_design_background"]);
-                            obj.fk_design_screen = Convert.ToInt32(sqlReader["fk_design_screen"]);
+                            obj.fk_design_background = Convert.ToInt32(Convert.ToString(sqlReader["fk_design_background"]) == "" ? -1 : sqlReader["fk_design_background"]);
+                            obj.fk_design_screen = Convert.ToInt32(Convert.ToString(sqlReader["fk_design_screen"]) == "" ? -1 : sqlReader["fk_design_screen"]);
                         }
                         if (dependentDataFlag)
                         {
