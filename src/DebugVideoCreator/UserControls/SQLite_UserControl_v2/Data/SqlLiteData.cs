@@ -301,8 +301,7 @@ namespace Sqllite_Library.Data
                         'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
                         'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                         'planning_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
-                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0,
-                        UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0
                         );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -3507,6 +3506,49 @@ namespace Sqllite_Library.Data
             }
 
             return -1;
+        }
+
+
+        public static List<int> InsertRowsToPlanning(DataTable dataTable)
+        {
+            var ids = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var values = new List<string>();
+                var createDate = Convert.ToString(dr["planning_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["planning_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+
+                var planning_medialibid = Convert.ToInt32(Convert.ToString(dr["planning_medialibid"]) == "" ? 0 : dr["planning_medialibid"]);
+                var planning_sort = Convert.ToInt32(dr["planning_sort"]);
+
+                var serverid = Convert.ToInt64(dr["planning_serverid"]);
+                var issynced = Convert.ToInt16(dr["planning_issynced"]);
+                var isEdited = Convert.ToInt16(dr["planning_isEdited"]);
+
+                var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+
+                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
+                    $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isEdited})");
+
+                var valuesString = string.Join(",", values.ToArray());
+                string sqlQueryString =
+                    $@"INSERT INTO  cbv_planning 
+                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
+                        planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isEdited) 
+                VALUES 
+                    {valuesString}";
+
+                var insertedId = InsertRecordsInTable("cbv_planning", sqlQueryString);
+                ids.Add(insertedId);
+            }
+            return ids;
         }
 
         #endregion

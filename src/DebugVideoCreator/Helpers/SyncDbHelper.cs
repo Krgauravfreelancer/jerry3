@@ -151,7 +151,7 @@ namespace VideoCreator.Helpers
             DataManagerSqlLite.UpsertRowsToPlanningHead(datatable);
         }
 
-        public static void UpsertProject(ProjectWithId projectModel, string version)
+        public static int UpsertProject(ProjectWithId projectModel, string version)
         {
             InitializeDatabase();
             DataTable dataTable = new DataTable();
@@ -205,6 +205,56 @@ namespace VideoCreator.Helpers
 
             dataTable.Rows.Add(row);
             var insertedId = DataManagerSqlLite.UpsertRowsToProjectbyId(dataTable, projectModel.project_id, projdet != null);
+            return insertedId;
+        }
+
+        public static List<int> UpsertPlanning(List<PlanningModel> plannings, int localProjectId, ProjectWithId projectModel)
+        {
+            InitializeDatabase();
+            DataTable dataTable = new DataTable();
+            //project
+            dataTable.Columns.Add("planning_id", typeof(int));
+            dataTable.Columns.Add("fk_planning_project", typeof(int));
+            dataTable.Columns.Add("fk_planning_head", typeof(int));
+            dataTable.Columns.Add("planning_customname", typeof(string));
+            dataTable.Columns.Add("planning_notesline", typeof(string));
+            dataTable.Columns.Add("planning_medialibid", typeof(string));
+            dataTable.Columns.Add("planning_sort", typeof(int));
+            dataTable.Columns.Add("planning_suggestnotesline", typeof(string));
+
+            dataTable.Columns.Add("planning_createdate", typeof(string));
+            dataTable.Columns.Add("planning_modifydate", typeof(string));
+
+            dataTable.Columns.Add("planning_serverid", typeof(Int64));
+            dataTable.Columns.Add("planning_issynced", typeof(bool));
+            dataTable.Columns.Add("planning_syncerror", typeof(string));
+            dataTable.Columns.Add("planning_isEdited", typeof(bool));
+
+            foreach (var planning in plannings)
+            {
+                var row = dataTable.NewRow();
+                row["planning_id"] = -1;
+                row["fk_planning_project"] = localProjectId;
+                row["fk_planning_head"] = planning.fk_planning_head;
+                row["planning_customname"] = planning.planning_customname;
+                row["planning_notesline"] = planning.planning_notesline;
+                row["planning_medialibid"] = planning.planning_medialibid;
+                row["planning_sort"] = planning.planning_sort;
+                row["planning_suggestnotesline"] = planning.planning_suggestnotesline;
+                row["planning_notesline"] = planning.planning_notesline;
+                row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                row["planning_serverid"] = planning.planning_id;
+                row["planning_issynced"] = true;
+                row["planning_syncerror"] = "";
+                row["planning_isEdited"] = false;
+
+                dataTable.Rows.Add(row);
+            }
+
+            var insertedIds = DataManagerSqlLite.UpsertRowsToPlanning(dataTable, projectModel.project_id);
+            return insertedIds;
         }
 
 

@@ -41,7 +41,7 @@ namespace VideoCreator.XAML
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
-            var data = DataManagerSqlLite.GetPlanningHead();
+            //var data = DataManagerSqlLite.GetPlanningHead();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -295,8 +295,14 @@ namespace VideoCreator.XAML
             if (selectedItemFull != null)
             {
                 LoaderHelper.ShowLoader(this, loader);
-                SyncDbHelper.UpsertProject(selectedItemFull, selectedItem.projdet_version);
+                var projectLocalId = SyncDbHelper.UpsertProject(selectedItemFull, selectedItem.projdet_version);
+
+                //Lets download planning and insert it as well
+                var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
+                SyncDbHelper.UpsertPlanning(plannings, projectLocalId, selectedItemFull);
+
                 await InitialiseAndRefreshScreen();
+
                 LoaderHelper.HideLoader(this, loader);
             }
             else

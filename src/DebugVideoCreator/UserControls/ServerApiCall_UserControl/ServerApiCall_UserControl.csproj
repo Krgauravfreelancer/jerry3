@@ -79,6 +79,7 @@
     <Compile Include="DTO\AutofillModels\NextAutofill.cs" />
     <Compile Include="DTO\AutofillModels\RequireAutofill.cs" />
     <Compile Include="DTO\AutofillModels\ObjectiveAutofill.cs" />
+    <Compile Include="DTO\Planning\PlanningModel.cs" />
     <Compile Include="DTO\Planning\PlanningHeadModel.cs" />
     <Compile Include="DTO\Projects\ProjectDetail.cs" />
     <Compile Include="DTO\Projects\ProjectWithId.cs" />
