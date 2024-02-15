@@ -132,6 +132,25 @@ namespace VideoCreator.Helpers
             DataManagerSqlLite.UpsertRowsToBackground(dataTable);
         }
 
+        public static void SyncPlanningHead(List<PlanningHeadModel> data)
+        {
+            InitializeDatabase();
+            var datatable = new DataTable();
+            datatable.Columns.Add("planninghead_id", typeof(int));
+            datatable.Columns.Add("planninghead_name", typeof(string));
+            datatable.Columns.Add("planninghead_sort", typeof(int));
+            datatable.Columns.Add("screen_hexcolor", typeof(string));
+            foreach (var item in data)
+            {
+                var row = datatable.NewRow();
+                row["planninghead_id"] = -1;
+                row["planninghead_name"] = item.planninghead_name;
+                row["planninghead_sort"] = item.planninghead_sort;
+                datatable.Rows.Add(row);
+            }
+            DataManagerSqlLite.UpsertRowsToPlanningHead(datatable);
+        }
+
         public static void UpsertProject(ProjectWithId projectModel, string version)
         {
             InitializeDatabase();

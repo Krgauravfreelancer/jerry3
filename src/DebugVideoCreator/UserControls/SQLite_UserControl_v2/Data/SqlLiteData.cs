@@ -88,6 +88,13 @@ namespace Sqllite_Library.Data
             CreateObjectiveAutofillTable(sqlCon);
             CreateNextAutofillTable(sqlCon);
 
+            CreatePlanningHeadTable(sqlCon);
+            CreatePlanningTable(sqlCon);
+
+            CreateReviewTable(sqlCon);
+            CreateReviewImageTable(sqlCon);
+            CreateReviewFtfTable(sqlCon);
+
             CreateVideoEventTable(sqlCon);
             CreateVideoSegmentTable(sqlCon);
             //CreateAudioTable(sqlCon);
@@ -262,6 +269,80 @@ namespace Sqllite_Library.Data
                     'nextautofill_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
                     'nextautofill_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
                     UNIQUE (fk_nextautofill_project, nextautofill_name)
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+
+        private static void CreatePlanningHeadTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_planninghead' (
+                        'planninghead_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                        'planninghead_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                        'planninghead_sort' TEXT NOT NULL  DEFAULT '1',
+                        UNIQUE (planninghead_name)
+                        );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreatePlanningTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_planning' (
+                        'planning_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                        'fk_planning_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
+                        'fk_planning_head' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planninghead' ('planninghead_id'),
+                        'planning_customname' TEXT(20) DEFAULT NULL,
+                        'planning_notesline' TEXT DEFAULT NULL,
+                        'planning_medialibid' TEXT(12) DEFAULT NULL,
+                        'planning_sort' TEXT NOT NULL  DEFAULT '1',
+                        'planning_suggestnotesline' TEXT DEFAULT NULL,
+                        'planning_createdate' TEXT NOT NULL  DEFAULT 'NULL',
+                        'planning_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                        'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
+                        'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                        'planning_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
+                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0,
+                        UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                        );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateReviewTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_review' (
+                    'review_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_review_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planning' ('planning_id'),
+                    'review_versionnote' TEXT(100) DEFAULT NULL,
+                    'review_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'review_videoeventsid' INTEGER DEFAULT 1,
+                    'review_createdate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'review_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                    'review_serverid' INTEGER NOT NULL  DEFAULT 1,
+                    'review_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                    'review_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
+                    'review_isEdited' INTEGER(1) NOT NULL  DEFAULT 0
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateReviewImageTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_reviewimg' (
+                    'reviewimg_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_reviewimg_review' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_review' ('review_id'),
+                    'reviewimg_media' NONE NOT NULL  DEFAULT NULL,
+                    'reviewimg_createdate' TEXT NOT NULL  DEFAULT 'NULL'
+                    );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreateReviewFtfTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_reviewftf' (
+                    'reviewftf_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                    'fk_reviewftf_review' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_review' ('review_id'),
+                    'reviewrtf_rtfnote' TEXT NOT NULL  DEFAULT 'NULL',
+                    'reviewrtf_createdate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -1397,6 +1478,53 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        public static List<CBVPlanningHead> GetPlanningHead()
+        {
+            var data = new List<CBVPlanningHead>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planninghead";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanningHead
+                        {
+                            planninghead_id = Convert.ToInt32(sqlReader["planninghead_id"]),
+                            planninghead_name = Convert.ToString(sqlReader["planninghead_name"]),
+                            planninghead_sort = Convert.ToInt32(sqlReader["planninghead_sort"]),
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
         public static int IsProjectAvailable(int projectServerId)
         {
             int project_id = -1;
@@ -1897,7 +2025,6 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId, bool dependentDataFlag = true)
         {
             var data = new List<CBVVideoEvent>();
@@ -1968,6 +2095,7 @@ namespace Sqllite_Library.Data
 
             return data;
         }
+        
         public static List<CBVVideoEvent> GetVideoEvents(int projdetId, bool dependentDataFlag = false, bool designFlag = false)
         {
             var data = new List<CBVVideoEvent>();
@@ -3204,7 +3332,24 @@ namespace Sqllite_Library.Data
             }
         }
 
+        public static void UpsertRowsToPlanningHead(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var planninghead_id = Convert.ToInt32(dr["planninghead_id"]);
+                var planninghead_name = Convert.ToString(dr["planninghead_name"]);
+                var planninghead_sort = Convert.ToInt32(dr["planninghead_sort"]);
+                var whereClause = $" NOT EXISTS(SELECT 1 FROM cbv_planninghead WHERE planninghead_name = '{planninghead_name}' and planninghead_sort = {planninghead_sort} );";
 
+
+                var upsertQueryString = $@" INSERT INTO cbv_planninghead (planninghead_name, planninghead_sort)
+                                                   Select '{planninghead_name}', {planninghead_sort}
+                                                WHERE {whereClause};";
+                var upsertFlag = InsertRecordsInTable("cbv_planninghead", upsertQueryString);
+                
+                Console.WriteLine($@"cbv_planninghead table upsert status for id - {planninghead_id}, name -{planninghead_id} & sort - {planninghead_sort} |  result - {upsertFlag}");
+            }
+        }
 
 
         public static int UpsertRowsToProject(DataTable dataTable)

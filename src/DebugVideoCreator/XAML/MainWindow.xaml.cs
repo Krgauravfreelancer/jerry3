@@ -41,7 +41,7 @@ namespace VideoCreator.XAML
         {
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
-            //var sum = DataManagerSqlLite.CalcNextEnd("00:00:10.123", "00:00:15.987");
+            var data = DataManagerSqlLite.GetPlanningHead();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -60,6 +60,7 @@ namespace VideoCreator.XAML
             await SyncCompany();
             await SyncBackground();
             await SyncScreens();
+            await SyncPlanningHead();
             await InitialiseAndRefreshScreen(true);
 
             LoaderHelper.HideLoader(this, loader);
@@ -199,6 +200,13 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllScreens();
             if (data == null) return;
             SyncDbHelper.SyncScreen(data);
+        }
+
+        private async Task SyncPlanningHead()
+        {
+            var data = await authApiViewModel.GetAllPlanningHead();
+            if (data == null) return;
+            SyncDbHelper.SyncPlanningHead(data);
         }
 
         private async Task SyncCompany()
