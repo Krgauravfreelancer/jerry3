@@ -309,6 +309,15 @@ namespace VideoCreator.XAML
                 MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);
         }
 
+        private void BtnViewPlanning_Click(object sender, RoutedEventArgs e)
+        {
+            if (PreValidations() == false)
+                return;
+
+            var planning = DataManagerSqlLite.GetPlanning(selectedItem.project_localId);
+            MessageBox.Show($"{planning?.Count} rows found in planning for projectId = {selectedItem.project_id}", "Planning Info", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);

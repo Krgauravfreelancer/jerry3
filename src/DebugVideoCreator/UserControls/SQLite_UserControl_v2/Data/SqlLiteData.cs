@@ -1524,6 +1524,67 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+
+        public static List<CBVPlanning> GetPlanning(int projectId)
+        {
+            var data = new List<CBVPlanning>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planning where fk_planning_project = {projectId}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanning
+                        {
+                            planning_id = Convert.ToInt32(sqlReader["planning_id"]),
+                            fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
+                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
+                            planning_customname = Convert.ToString(sqlReader["planning_customname"]),
+                            planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
+                            planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
+                            planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
+                            planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
+                            planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
+                            planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
+
+                            planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
+                            planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
+                            planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
+                            planning_isEdited = Convert.ToBoolean(sqlReader["planning_isEdited"]),
+
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
         public static int IsProjectAvailable(int projectServerId)
         {
             int project_id = -1;
