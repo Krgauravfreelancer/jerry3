@@ -38,7 +38,7 @@
                     Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnDownloadProject" IsEnabled="False"/>
             <Button Content="Refresh" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnRefresh_Click" 
                     Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnRefresh"/>
-            <Button Content="View Planning Data" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnViewPlanning_Click" Height="25" Width="180" 
+            <Button Content="View Planning Count" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnViewPlanning_Click" Height="25" Width="180" 
         Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnViewPlanning"/>
 
         </StackPanel>

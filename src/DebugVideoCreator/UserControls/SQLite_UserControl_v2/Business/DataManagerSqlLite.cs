@@ -629,22 +629,15 @@ namespace Sqllite_Library.Business
             return projectId;
         }
 
-        public static List<int> UpsertRowsToPlanning(DataTable data, int projectServerId)
+        public static List<int> UpsertRowsToPlanning(DataTable data, int projectId)
         {
-            //foreach (DataRow rowMain in data.Rows)
-            //{
-            //    //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
-            //    //if (!backgroundFlag)
-            //    //    throw new Exception("background_id foreign key constraint not successful ");
-            //}
-
-            var projectId = SqlLiteData.IsProjectAvailable(projectServerId);
-            //if (projectId == -1)
+            var planningId = SqlLiteData.IsProjectPlanningAvailable(projectId);
+            if (planningId == -1)
             {
                 var planningIds = SqlLiteData.InsertRowsToPlanning(data);
                 return planningIds;
             }
-            //return null;
+            return null;
         }
 
         #endregion

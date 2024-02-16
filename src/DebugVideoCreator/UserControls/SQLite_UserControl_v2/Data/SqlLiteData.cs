@@ -301,7 +301,8 @@ namespace Sqllite_Library.Data
                         'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
                         'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                         'planning_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
-                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0
+                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0,
+                        UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
                         );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -1523,6 +1524,46 @@ namespace Sqllite_Library.Data
 
             return data;
         }
+
+        public static int IsProjectPlanningAvailable(int projectId)
+        {
+            int planning_id = -1;
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+            string sqlQueryString = $@"SELECT planning_id FROM cbv_planning Where fk_planning_project = {projectId} Limit 1";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        planning_id = Convert.ToInt32(sqlReader["planning_id"]);
+                        return planning_id;
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+            return planning_id;
+        }
+
 
 
         public static List<CBVPlanning> GetPlanning(int projectId)

@@ -253,7 +253,7 @@ namespace VideoCreator.Helpers
                 dataTable.Rows.Add(row);
             }
 
-            var insertedIds = DataManagerSqlLite.UpsertRowsToPlanning(dataTable, projectModel.project_id);
+            var insertedIds = DataManagerSqlLite.UpsertRowsToPlanning(dataTable, localProjectId);
             return insertedIds;
         }
 
