@@ -496,7 +496,10 @@ namespace VideoCreator.XAML
                 return;
             }
             var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-            if (trackbarEvents != null && trackbarEvents?.Count > 0)
+
+            var isSameEventPresent = trackbarEvents?.Find(x => x.videoevent_track == selectedEvent.videoevent_track);
+
+            if (isSameEventPresent != null)
             {
                 MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
