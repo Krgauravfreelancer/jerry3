@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using VideoCreator.Loader;
 
 namespace VideoCreator.Helpers
 {
@@ -18,7 +20,7 @@ namespace VideoCreator.Helpers
         Window window;
         ScreenRecorder_Control Recorder;
         SelectedProjectEvent selectedProjectEvent;
-
+        internal LoadingAnimation loader;
         public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent)
         {
             window = new Window();
@@ -55,9 +57,42 @@ namespace VideoCreator.Helpers
                 Recorder.NotesChangeCompleted += Recorder_NotesChangeCompleted;
             }
 
-            window.Content = Recorder;
-            window.Show();
+            window.Content = AddLoaderAndReturnContent(Recorder);
             return window;
+        }
+
+
+        private Grid AddLoaderAndReturnContent(ScreenRecorder_Control Recorder)
+        {
+            //        < Grid >
+            //    < screenrecorder_usercontrol:ScreenRecorder_Control
+            //        Name = "Recorder" Loaded = "Recorder_Loaded"
+            //        CloseWindow = "Recorder_CloseWindow"
+            //        DeleteMedia = "Recorder_DeleteMedia"
+            //        MediaRecordingCompleted = "Recorder_MediaRecordingCompleted"
+            //        NotesChanged = "Recorder_NotesChanged"
+            //        NotesCreated = "Recorder_NotesCreated"
+            //        NotesDeleted = "Recorder_NotesDeleted"
+            //        NotesChangeCompleted = "Recorder_NotesChangeCompleted" />
+            //    < loader:LoadingAnimation x:Name = "loader" HorizontalAlignment = "Center" VerticalAlignment = "Center" Visibility = "Hidden" />
+            //</ Grid >
+            var grid = new Grid
+            {
+                Name = "parentGrid"
+            };
+            grid.Children.Add(Recorder);
+
+            loader = new LoadingAnimation
+            {
+                Name = "loader",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Visibility = Visibility.Hidden,
+            };
+            grid.Children.Add(loader);
+            return grid;
+
+
         }
 
         private void Recorder_NotesChanged(object sender, NotesChangedArgs e)
@@ -513,6 +548,13 @@ namespace VideoCreator.Helpers
             return notesDataTable;
         }
 
+
+        public bool? ShowWindow(Window window)
+        {
+            LoaderHelper.HideLoader(window, loader);
+            var result = window.ShowDialog();
+            return result;
+        }
 
         #endregion
     }

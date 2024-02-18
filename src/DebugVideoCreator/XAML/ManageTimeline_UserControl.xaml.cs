@@ -247,19 +247,25 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader);
             var screenRecordingUserControl = new ScreenRecorderWindowManager();
             var GeneratedRecorderWindow = screenRecordingUserControl.CreateWindow(selectedProjectEvent);
-            GeneratedRecorderWindow.Closed += (se, ev) =>
-            {
-                this.Visibility = Visibility.Visible;
-                GeneratedRecorderWindow = null;
-            };
             screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
             {
-                //LoaderHelper.ShowLoader(screenRecordingUserControl, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
                 await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
-                //LoaderHelper.HideLoader(screenRecordingUserControl, screenRecordingUserControl.loader);
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
+            }; 
+
+            GeneratedRecorderWindow.Closed += (se, ev) =>
+            {
+                GeneratedRecorderWindow = null;
             };
-            GeneratedRecorderWindow.Show();
+            
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
+            var result = screenRecordingUserControl.ShowWindow(GeneratedRecorderWindow);
+            if (result.HasValue)
+            {
+                Refresh();
+            }
             LoaderHelper.HideLoader(this, loader);
 
 
