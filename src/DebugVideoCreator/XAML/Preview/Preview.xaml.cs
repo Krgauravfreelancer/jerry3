@@ -105,7 +105,7 @@ namespace VideoCreator.XAML
                             b.Write(videoevent.videosegment_data[0].videosegment_media);
                             t.Close();
                         }
-                        var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder);
+                        var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder, mouseMovedEvent.timeAtTheMoment);
                         var convertedImage = await video2image.ConvertVideoToImage(true);
                         var bmp = new Bitmap(convertedImage);
                         bmps.Add(bmp);

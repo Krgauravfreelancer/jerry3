@@ -22,6 +22,7 @@
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" />
             <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" />
             <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
+            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd"  Click="CloneEventAtEnd_Click"/>
             <Separator></Separator>
             <!--<MenuItem Header="Add Title Autofill" x:Name="MenuItem_AddTitleAutofill" Click="AddTitleAutofill_Click" />
             <MenuItem Header="Add Requirement Autofill" x:Name="MenuItem_AddRequirementAutofill" Click="AddRequirementAutofill_Click"/>

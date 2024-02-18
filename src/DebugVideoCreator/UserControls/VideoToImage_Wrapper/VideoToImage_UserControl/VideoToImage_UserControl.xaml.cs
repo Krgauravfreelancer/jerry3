@@ -53,7 +53,9 @@ namespace VideoToImage_UserControl
             if (string.IsNullOrEmpty(txtVideo.Text) || string.IsNullOrEmpty(txtOutput.Text))
                 return;
 
-            Period = int.Parse(txtTime.Text) > 0 ? int.Parse(txtTime.Text) : 1;
+            var time = double.Parse(txtTime.Text);
+            bool isTimeInSecondInt = time == (int)time;
+            Period = time > 0 ? time : 1;
             try
             {
                 Mp4Media = new MediaFile { Filename = txtVideo.Text };

@@ -242,6 +242,13 @@ namespace VideoCreator.XAML
 
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+                var getImageOrVideo = trackbarEvents?.Find(x => x.videoevent_track == 2);
+                if(getImageOrVideo != null)
+                {
+                    var start = getImageOrVideo.StartTime;
+                    trackBarPosition = trackBarPosition - start;
+                }
+                
                 //listView_trackbarEvents.ItemsSource = trackbarEvents;
                 //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
@@ -295,6 +302,9 @@ namespace VideoCreator.XAML
 
                 var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
                 MenuItem_CloneItems.IsEnabled = (selectedEvent != null);
+
+                var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
+                MenuItem_CloneItemsAtEnd.IsEnabled = (selectedEvent != null);
             }
             else
             {
@@ -306,6 +316,9 @@ namespace VideoCreator.XAML
 
                 var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
                 MenuItem_CloneItems.IsEnabled = false;
+
+                var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
+                MenuItem_CloneItemsAtEnd.IsEnabled = false;
             }
         }
 
@@ -447,8 +460,7 @@ namespace VideoCreator.XAML
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
+            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId);
             ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
         }
 
@@ -499,6 +511,26 @@ namespace VideoCreator.XAML
             ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
 
         }
+
+        private void CloneEventAtEnd_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarTime = DataManagerSqlLite.GetNextStart(1, selectedProjectEvent.projdetId);
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+        }
+
+        
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
