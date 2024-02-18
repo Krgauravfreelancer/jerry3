@@ -89,8 +89,6 @@ namespace VideoCreator.XAML
 
         #region == TimelineUserControl : Load from DB functions ==
 
-
-
         private void LoadAppFromDb()
         {
             var apps = DataManagerSqlLite.GetApp().Select(a => new TimelineApp
@@ -131,14 +129,16 @@ namespace VideoCreator.XAML
 
         private void LoadScreenFromDb()
         {
-            var screens = DataManagerSqlLite.GetScreens().Select(s =>
-                                                                    new TimelineScreen
-                                                                    {
-                                                                        screen_color = s.screen_color,
-                                                                        screen_id = s.screen_id,
-                                                                        screen_name = s.screen_name,
-                                                                        screen_hexcolor = s.screen_hexcolor,
-                                                                    }).ToList();
+            var screens = DataManagerSqlLite
+                .GetScreens()
+                .Select(s =>
+                            new TimelineScreen
+                            {
+                                screen_color = s.screen_color,
+                                screen_id = s.screen_id,
+                                screen_name = s.screen_name,
+                                screen_hexcolor = s.screen_hexcolor,
+                            }).ToList();
 
             _timelineGridControl.SetScreenList(screens);
         }
@@ -147,7 +147,12 @@ namespace VideoCreator.XAML
         {
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
+            //CBVProject project = DataManagerSqlLite.GetProjectById(projectId, true);
+
+            //foreach (var projDet in project.projdet_data)
+            //{
             List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId, false, true);
+
             foreach (var videoEvent in videoEventList)
             {
                 DataRow dRow = dt.NewRow();
@@ -157,16 +162,13 @@ namespace VideoCreator.XAML
                 dRow[nameof(TimelineVideoEvent.fk_videoevent_media)] = videoEvent.fk_videoevent_media;
                 dRow[nameof(TimelineVideoEvent.videoevent_track)] = videoEvent.videoevent_track;
                 dRow[nameof(TimelineVideoEvent.videoevent_start)] = videoEvent.videoevent_start;
-                dRow[nameof(TimelineVideoEvent.videoevent_duration)] = DataManagerSqlLite.GetMillisecondsFromTimespan(videoEvent.videoevent_duration) / 1000; ;
-
+                dRow[nameof(TimelineVideoEvent.videoevent_duration)] = videoEvent.videoevent_duration;
                 dRow[nameof(TimelineVideoEvent.videoevent_createdate)] = videoEvent.videoevent_createdate;
                 dRow[nameof(TimelineVideoEvent.videoevent_modifydate)] = videoEvent.videoevent_modifydate;
-
                 dRow[nameof(TimelineVideoEvent.videoevent_isdeleted)] = videoEvent.videoevent_isdeleted;
                 dRow[nameof(TimelineVideoEvent.videoevent_issynced)] = videoEvent.videoevent_issynced;
                 dRow[nameof(TimelineVideoEvent.videoevent_serverid)] = videoEvent.videoevent_serverid;
                 dRow[nameof(TimelineVideoEvent.videoevent_syncerror)] = videoEvent.videoevent_syncerror ?? String.Empty;
-
                 dRow[nameof(TimelineVideoEvent.videoevent_end)] = videoEvent.videoevent_end;
 
                 //added for design screen
@@ -174,8 +176,8 @@ namespace VideoCreator.XAML
                 dRow[nameof(TimelineVideoEvent.fk_design_background)] = videoEvent.fk_design_background;
 
                 dt.Rows.Add(dRow);
-
             }
+            //}
 
             _timelineGridControl.SetTimelineDatatable(dt);
         }
@@ -188,7 +190,6 @@ namespace VideoCreator.XAML
         #endregion
 
         #region == TimelineUserControl : Helper functions ==
-
 
         public void InitializeTimeline()
         {
@@ -205,8 +206,7 @@ namespace VideoCreator.XAML
             LoadMediaFromDb();
             LoadScreenFromDb();
 
-            //int Selected_ID = ((CBVProject)ProjectCmbBox.SelectedItem).project_id;
-            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
@@ -228,7 +228,6 @@ namespace VideoCreator.XAML
                 dispatcherTimer.Start();
 
             };
-
         }
 
         private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
@@ -239,7 +238,7 @@ namespace VideoCreator.XAML
                 dispatcherTimer.Stop();
                 var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
                 //TrackbarTimepicker.Value = trackBarPosition;
-                //TrackbarTimepicker.Set(trackBarPosition.ToString("HH:mm:ss.fff"));
+                //TrackbarTimepicker.Set(trackBarPosition.ToString(@"hh\:mm\:ss\.fff"));
 
 
                 var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
@@ -247,7 +246,7 @@ namespace VideoCreator.XAML
                 //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
                 {
-                    timeAtTheMoment = trackBarPosition.ToString("HH:mm:ss.fff"),
+                    timeAtTheMoment = trackBarPosition.ToString(@"hh\:mm\:ss\.fff"),
                     videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList(),
                     isAnyVideo = trackbarEvents?.Find(x => x.fk_videoevent_media == 2) != null,
                 };
@@ -262,9 +261,6 @@ namespace VideoCreator.XAML
             ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
         }
 
-
-
-
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
             var contextMenu = this.Resources[resourceKey] as ContextMenu;
@@ -273,18 +269,16 @@ namespace VideoCreator.XAML
             return contextMenuItem;
         }
 
-
-
         private void MoveTrackbar(object sender, RoutedEventArgs e)
         {
             try
             {
-                //var timeInputDate = DateTime.ParseExact(TrackbarTimepicker.Get(), _timePickerFormat, null);
-                //_timelineGridControl.MoveTrackbar(timeInputDate);
+                //var timeSpanInput = TimeSpan.Parse(TrackbarTimepicker.Get());
+                //_timelineGridControl.MoveTrackbar(timeSpanInput);
             }
             catch
             {
-
+                // ignore errors
             }
         }
 
@@ -309,7 +303,7 @@ namespace VideoCreator.XAML
 
                 var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
                 MenuItem_DeleteEvent.IsEnabled = false;
-                
+
                 var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
                 MenuItem_CloneItems.IsEnabled = false;
             }
@@ -322,6 +316,11 @@ namespace VideoCreator.XAML
         //    {
         //        var data = DataManagerSqlLite.GetDownloadedProjectList();
 
+        //        foreach (var proj in data)
+        //        {
+        //            CBVProject cbvProject = DataManagerSqlLite.GetProjectById(projectId: proj.project_id, projdetFlag: true);
+        //        }
+
         //        // Remove the duplicate on projects based on project_id property
         //        List<CBVProjectForJoin> uniqueProjects = data
         //                                         .GroupBy(p => p.project_id)
@@ -329,6 +328,7 @@ namespace VideoCreator.XAML
         //                                         .ToList();
 
         //        RefreshComboBoxes<CBVProjectForJoin>(ProjectCmbBox, uniqueProjects, nameof(CBVProjectForJoin.project_videotitle));
+
         //        if (ProjectCmbBox.Items.Count > 0)
         //        {
         //            ProjectCmbBox.SelectedIndex = 0;
@@ -336,11 +336,12 @@ namespace VideoCreator.XAML
         //    }
         //}
 
-        //private void RefreshComboBoxes<T>(System.Windows.Controls.ComboBox combo, List<T> source, string columnNameToShow)
+        //private void RefreshComboBoxes<T>(ComboBox combo, List<T> source, string columnNameToShow)
         //{
         //    combo.SelectedItem = null;
         //    combo.DisplayMemberPath = columnNameToShow;
         //    combo.Items.Clear();
+
         //    foreach (var item in source)
         //    {
         //        combo.Items.Add(item);
@@ -349,37 +350,35 @@ namespace VideoCreator.XAML
 
         //private void ProjectCmbBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         //{
-
         //    if (ProjectCmbBox.SelectedItem != null)
         //    {
-        //        int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+        //        int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
 
         //        if (ProjectCmbBox.SelectedIndex != -1)
         //        {
 
         //            if (_timelineGridControl != null)
-        //                LoadVideoEventsFromDb(Selected_ID);
+        //                LoadVideoEventsFromDb(selectedProjectId);
         //        }
         //    }
         //}
 
         #endregion
 
-
         #region == TimelineUserControl : Context-menu Options ==
-
-
 
         private void AddAudioEvent_Click(object sender, RoutedEventArgs e)
         {
+            // This method is not yet implemented
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
+            throw new NotImplementedException();
         }
 
         private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
         {
             TimelineVideoEvent selectedEvent;
             var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
             var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
             if (trackbarEvents != null && trackbarEvents?.Count > 0)
                 selectedEvent = trackbarEvents[0];
@@ -402,18 +401,17 @@ namespace VideoCreator.XAML
             };
             return payload;
         }
-
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
-            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
 
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 3, Selected_ID);
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 3, selectedProjectId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Callout1";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(Selected_ID);
+            //    LoadVideoEventsFromDb(selectedProjectId);
             //};
 
             //screenRecorderWindow.Show();
@@ -424,15 +422,15 @@ namespace VideoCreator.XAML
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
 
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, Selected_ID);
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, selectedProjectId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Callout2";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(Selected_ID);
+            //    LoadVideoEventsFromDb(selectedProjectId);
             //};
 
             //screenRecorderWindow.Show();
@@ -447,26 +445,23 @@ namespace VideoCreator.XAML
             ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
         }
 
-
-
-
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
             var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
             ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
         }
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
-            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, Selected_ID);
+            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, selectedProjectId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Video Event";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(Selected_ID);
+            //    LoadVideoEventsFromDb(selectedProjectId);
             //};
 
             //screenRecorderWindow.Show();
@@ -495,7 +490,7 @@ namespace VideoCreator.XAML
                 return;
             }
             var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
@@ -507,8 +502,7 @@ namespace VideoCreator.XAML
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
-            //show a warning here that user will lose all changes if the changes are not saved
-            //int Selected_ID = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
         }
 
@@ -531,7 +525,7 @@ namespace VideoCreator.XAML
             //    lblSelectedEvent.Content = "No selected event";
 
             //else
-            //    lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.videoevent_duration}";
+            //    lblSelectedEvent.Content = $"Id: {selectedEvent.videoevent_id} , Track: {selectedEvent.videoevent_track} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.VideoEventDuration_Double} s";
         }
 
         private void SaveTimeline(object sender, RoutedEventArgs e)
@@ -552,7 +546,6 @@ namespace VideoCreator.XAML
             //        designDt.AddDesign(addedRow.First(), (int)newEvent.EventScreen);
             //        DataManagerSqlLite.InsertRowsToDesign(designDt);
             //    }
-
             //}
 
             // Update changes to the database for existing events
@@ -560,6 +553,8 @@ namespace VideoCreator.XAML
             ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
             //foreach (var modifiedEvent in modifiedEvents)
             //{
+            //    modifiedEvent.videoevent_end = DataManagerSqlLite.CalcNextEnd(modifiedEvent.videoevent_start, modifiedEvent.videoevent_duration);
+
             //    var videoEventDt = new VideoEventDatatable();
             //    videoEventDt.AddVideoEventRow(modifiedEvent);
 
@@ -569,14 +564,12 @@ namespace VideoCreator.XAML
             // Removes the deleted events from the database
             var deletedEventIds = _timelineGridControl.GetDeletedTimelineEventsId();
             ContextMenu_DeleteTimelines_Clicked?.Invoke(sender, deletedEventIds);
-
             //foreach (var id in deletedEventIds)
             //{
             //    // Please adjust cascadeDelete as required
             //    DataManagerSqlLite.DeleteVideoEventsById(id, cascadeDelete: true);
             //}
 
-            ////_timelineGridControl.ClearTimeline();
             //LoadTimelineDataFromDb_Click(null, null);
             //MessageBox.Show("Save Successful!");
         }
@@ -590,7 +583,7 @@ namespace VideoCreator.XAML
         /*
         private void AddTitleAutofill_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
             {
                 AutofillType = AutofillEnumType.Title,
@@ -602,7 +595,7 @@ namespace VideoCreator.XAML
 
         private void AddRequirementAutofill_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
             {
                 AutofillType = AutofillEnumType.Requirement,
@@ -614,7 +607,7 @@ namespace VideoCreator.XAML
 
         private void AddObjectiveAutofill_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
             {
                 AutofillType = AutofillEnumType.Objective,
@@ -626,7 +619,7 @@ namespace VideoCreator.XAML
 
         private void AddNextAutofill_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
             {
                 AutofillType = AutofillEnumType.Next,
@@ -639,7 +632,7 @@ namespace VideoCreator.XAML
         */
         private void AddAllAutofill_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString("HH:mm:ss.fff");
+            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
             {
                 AutofillType = AutofillEnumType.All,

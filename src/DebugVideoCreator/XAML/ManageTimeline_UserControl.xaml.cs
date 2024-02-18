@@ -308,7 +308,9 @@ namespace VideoCreator.XAML
 
         private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
         {
-            var dtNotes = (DataTable)row["videoevent_notes"];
+            DataTable dtNotes = null;
+            if (row != null && row["videoevent_notes"] != DBNull.Value)
+                dtNotes = (DataTable)row["videoevent_notes"];
             var addedData = await MediaEventHandlerHelper.PostVideoEventToServerForVideoOrImage(row, dtNotes, selectedProjectEvent, authApiViewModel);
             if (addedData == null)
             {

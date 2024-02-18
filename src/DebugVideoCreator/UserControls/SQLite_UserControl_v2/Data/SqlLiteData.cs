@@ -679,7 +679,7 @@ namespace Sqllite_Library.Data
             else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
 
 
-            whereClause += $" and fk_videoevent_projdet = {projdetId} and videoevent_isdeleted = 0";
+            whereClause += $" and fk_videoevent_projdet = {projdetId} and videoevent_isdeleted = 0 and videoevent_track = 2";
 
             var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
             result = Convert.ToString(sqlQuery.ExecuteScalar());
