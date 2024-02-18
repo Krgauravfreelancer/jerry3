@@ -245,6 +245,27 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
+            var screenRecordingUserControl = new ScreenRecorderWindowManager();
+            var GeneratedRecorderWindow = screenRecordingUserControl.CreateWindow(selectedProjectEvent);
+            GeneratedRecorderWindow.Closed += (se, ev) =>
+            {
+                this.Visibility = Visibility.Visible;
+                GeneratedRecorderWindow = null;
+            };
+            screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
+            {
+                //LoaderHelper.ShowLoader(screenRecordingUserControl, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
+                await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
+                //LoaderHelper.HideLoader(screenRecordingUserControl, screenRecordingUserControl.loader);
+                screenRecordingUserControl.RefreshData();
+            };
+            GeneratedRecorderWindow.Show();
+            LoaderHelper.HideLoader(this, loader);
+
+
+
+            /*
+            LoaderHelper.ShowLoader(this, loader);
             var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectEvent.projdetId);
             screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
             {
@@ -269,6 +290,7 @@ namespace VideoCreator.XAML
                 Refresh();
             }
             LoaderHelper.HideLoader(this, loader);
+            */
         }
 
         private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)

@@ -345,6 +345,7 @@
     <Compile Include="Helpers\MediaEventHandlerHelper.cs" />
     <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
     <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
+    <Compile Include="Helpers\ScreenRecorderWindowManager.cs" />
     <Compile Include="Helpers\SyncDbHelper.cs" />
     <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
@@ -389,9 +390,6 @@
     </Compile>
     <Compile Include="XAML\Preview\Preview.xaml.cs">
       <DependentUpon>Preview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\ScreenRecording\ScreenRecordingWindow.xaml.cs">
-      <DependentUpon>ScreenRecordingWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
@@ -455,10 +453,6 @@
     <Page Include="XAML\Preview\Preview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="XAML\ScreenRecording\ScreenRecordingWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
