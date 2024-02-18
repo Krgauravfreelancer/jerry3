@@ -64,18 +64,6 @@ namespace VideoCreator.Helpers
 
         private Grid AddLoaderAndReturnContent(ScreenRecorder_Control Recorder)
         {
-            //        < Grid >
-            //    < screenrecorder_usercontrol:ScreenRecorder_Control
-            //        Name = "Recorder" Loaded = "Recorder_Loaded"
-            //        CloseWindow = "Recorder_CloseWindow"
-            //        DeleteMedia = "Recorder_DeleteMedia"
-            //        MediaRecordingCompleted = "Recorder_MediaRecordingCompleted"
-            //        NotesChanged = "Recorder_NotesChanged"
-            //        NotesCreated = "Recorder_NotesCreated"
-            //        NotesDeleted = "Recorder_NotesDeleted"
-            //        NotesChangeCompleted = "Recorder_NotesChangeCompleted" />
-            //    < loader:LoadingAnimation x:Name = "loader" HorizontalAlignment = "Center" VerticalAlignment = "Center" Visibility = "Hidden" />
-            //</ Grid >
             var grid = new Grid
             {
                 Name = "parentGrid"
