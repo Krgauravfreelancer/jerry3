@@ -401,6 +401,12 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag, designFlag);
         }
 
+
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime)
+        {
+            return SqlLiteData.GetShiftVideoEventsbyEndTime(fk_videoevent_projdet, endTime);
+        }
+
         public static int GetVideoEventsCount()
         {
             return SqlLiteData.GetCount("cbv_videoevent");
@@ -536,6 +542,11 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpdateRowsToVoiceAverage(dataTable);
         }
 
+        public static void ShiftVideoEvents(DataTable dataTable)
+        {
+            SqlLiteData.ShiftVideoEvents(dataTable);
+        }
+
         #endregion
 
 
@@ -652,6 +663,11 @@ namespace Sqllite_Library.Business
         public static string CalcNextEnd(string start, string duration)
         {
             return SqlLiteData.CalcNextEnd(start, duration);
+        }
+
+        public static string ShiftLeft(string time, string durationToShift)
+        {
+            return SqlLiteData.ShiftLeft(time, durationToShift);
         }
 
         public static int GetMillisecondsFromTimespan(string timespan)

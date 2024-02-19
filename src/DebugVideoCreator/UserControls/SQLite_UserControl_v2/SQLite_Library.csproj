@@ -117,6 +117,7 @@
     <Compile Include="Helpers\RegisteryHelper.cs" />
     <Compile Include="Models\CBVPlanning.cs" />
     <Compile Include="Models\CBVPlanningHead.cs" />
+    <Compile Include="Models\CBVShiftVideoEvent.cs" />
     <Compile Include="Models\SqlConnectionModel.cs" />
     <Compile Include="Models\CBVLocAudio.cs" />
     <Compile Include="Models\CBVBackground.cs" />

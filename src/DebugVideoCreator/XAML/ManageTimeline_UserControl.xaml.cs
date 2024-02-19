@@ -253,12 +253,20 @@ namespace VideoCreator.XAML
                 await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
-            }; 
-
-            GeneratedRecorderWindow.Closed += (se, ev) =>
-            {
-                GeneratedRecorderWindow = null;
             };
+
+            screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
+                await ScreenRecordingUserControl_BtnDeleteMediaClicked(videoeventLocalId);
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
+                screenRecordingUserControl.RefreshData();
+            };
+
+            //GeneratedRecorderWindow.Closed += (se, ev) =>
+            //{
+            //    GeneratedRecorderWindow = null;
+            //};
             
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
             var result = screenRecordingUserControl.ShowWindow(GeneratedRecorderWindow);
@@ -267,38 +275,61 @@ namespace VideoCreator.XAML
                 Refresh();
             }
             LoaderHelper.HideLoader(this, loader);
-
-
-
-            /*
-            LoaderHelper.ShowLoader(this, loader);
-            var screenRecordingUserControl = new ScreenRecordingWindow(1, selectedProjectEvent.projdetId);
-            screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
-            {
-                LoaderHelper.ShowLoader(screenRecordingUserControl, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
-                await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
-                LoaderHelper.HideLoader(screenRecordingUserControl, screenRecordingUserControl.loader);
-                screenRecordingUserControl.RefreshData();
-            };
-            var screenRecorderWindow = new System.Windows.Window
-            {
-                Title = "Screen Recorder",
-                Content = screenRecordingUserControl,
-                ResizeMode = ResizeMode.CanResize,
-                WindowState = WindowState.Maximized,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            LoaderHelper.ShowLoader(this, loader);
-            LoaderHelper.ShowLoader(screenRecorderWindow, screenRecordingUserControl.loader);
-            var result = screenRecorderWindow.ShowDialog();
-            if (result.HasValue)
-            {
-                Refresh();
-            }
-            LoaderHelper.HideLoader(this, loader);
-            */
         }
 
+        #region == Screen recorder > Delete Media Event ==
+
+        private async Task ScreenRecordingUserControl_BtnDeleteMediaClicked(int videoeventLocalId)
+        {
+            // Step-1 soft-delete from server the video-event and children
+            var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
+            var videoevent = videoevents.FirstOrDefault();
+            var deletedData = await MediaEventHandlerHelper.DeleteVideoEventToServer(selectedProjectEvent, videoevent.videoevent_serverid, authApiViewModel);
+
+            // Step-2 Fetch next events of deleted event
+            var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end);
+            
+            // Step-3 Call server API to shift video event and then save locally the shifted events
+            if(tobeShiftedVideoEvents?.Count > 0)
+            {
+                var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                foreach(var item in tobeShiftedVideoEvents)
+                {
+                    var model = new ShiftVideoEventModel
+                    {
+                        videoevent_id = (int)item.videoevent_serverid,
+                        videoevent_duration = item.videoevent_duration,
+                        videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
+                        videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
+                    };
+                    tobeServerShiftedVideoEvents.Add(model);
+                }
+                var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+
+                var dtShiftedVideoEvents = new DataTable();
+                dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                foreach (var item in serverShiftedVideoEvents)
+                {
+                    var row = dtShiftedVideoEvents.NewRow();
+                    row["videoevent_serverid"] = item.videoevent_id;
+                    row["videoevent_start"] = item.videoevent_start;
+                    row["videoevent_end"] = item.videoevent_end;
+                    row["videoevent_duration"] = item.videoevent_duration;
+                    dtShiftedVideoEvents.Rows.Add(row);
+                }
+                DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
+            }
+
+            // Step-4 finally Soft delete event and children from local DB
+            DataManagerSqlLite.DeleteVideoEventsById(videoeventLocalId, true); // This will delete from design/notes/videosegment/videoevent
+        }
+
+        #endregion == Screen recorder > Delete Media Event ==
+
+        #region == Screen recorder > Add Event ==
         private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
@@ -424,6 +455,9 @@ namespace VideoCreator.XAML
                 MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
+
+        #endregion == Screen recorder > Add Event ==
 
         #endregion
 

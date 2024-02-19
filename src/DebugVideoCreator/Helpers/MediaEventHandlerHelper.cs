@@ -1,4 +1,5 @@
 ﻿using DebugVideoCreator.Models;
+using Newtonsoft.Json;
 using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;
@@ -87,6 +88,19 @@ namespace VideoCreator.Helpers
             if (videoEvent?.design_data?.Count > 0)
                 objToSync.design.AddRange(DesignEventHandlerHelper.GetDesignModelList(videoEvent.design_data));
             var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
+            return result;
+        }
+
+
+        public static async Task<VideoEventResponseModel> DeleteVideoEventToServer(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverid, AuthAPIViewModel authApiViewModel)
+        {
+            var result = await authApiViewModel.DeleteVideoEvent(selectedProjectEvent, videoevent_serverid);
+            return result;
+        }
+
+        public static async Task<List<ShiftVideoEventModel>> ShiftVideoEventsToServer(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents, AuthAPIViewModel authApiViewModel)
+        {
+            var result = await authApiViewModel.ShiftVideoEvent(selectedProjectEvent, shiftVideoEvents);
             return result;
         }
 

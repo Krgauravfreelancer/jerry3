@@ -722,6 +722,31 @@ namespace Sqllite_Library.Data
             return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", hours, mins, s, endtimeInMs);
         }
 
+        public static string ShiftLeft(string time, string durationToShift)
+        {
+            if (string.IsNullOrEmpty(time))
+                return "00:00:00.000";
+
+            var ms = time.Length > 8 ? time.Split('.')[1] : "000";
+
+
+            var array = time.Length > 8 ? time.Remove(8).Split(':') : time.Split(':');
+            var startTimeinSecond = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
+            //var time = startTimeinSecond * 1000 + ms;
+            var starttime = GetMillisecondsFromTimespan(time);
+            var durationtime = GetMillisecondsFromTimespan(durationToShift);
+
+            var endTime = starttime - durationtime;
+
+            var endtimeInMs = endTime % 1000;
+            endTime = endTime / 1000;
+            int s = endTime % 60;
+            endTime /= 60;
+            int mins = endTime % 60;
+            int hours = endTime / 60;
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.{3:D3}", hours, mins, s, endtimeInMs);
+        }
+
         public static int InsertRowsToVideoEvent(DataRow dr)
         {
             var values = new List<string>();
@@ -2126,6 +2151,52 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime)
+        {
+            var data = new List<CBVShiftVideoEvent>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@" Select 
+	                                        videoevent_id,
+	                                        videoevent_start, 
+	                                        videoevent_duration,
+	                                        videoevent_end, 
+	                                        videoevent_serverid
+                                        FROM
+	                                        cbv_videoevent
+                                        where 
+	                                        videoevent_start >= '{endTime}'
+	                                        And fk_videoevent_projdet = {fk_videoevent_projdet}
+	                                        And videoevent_track = 2  
+	                                        And videoevent_isdeleted = 0
+                                        Order By
+	                                        videoevent_start,
+	                                        videoevent_end";
+
+
+            var sqlObject = sqlQueryString.RunSelectQuery();
+            if (sqlObject != null)
+            {
+                while (sqlObject.SQLiteDataReader.Read())
+                {
+                    var obj = new CBVShiftVideoEvent();
+                    obj.videoevent_id = Convert.ToInt32(sqlObject.SQLiteDataReader["videoevent_id"]);
+                    obj.videoevent_start = Convert.ToString(sqlObject.SQLiteDataReader["videoevent_start"]);
+                    obj.videoevent_duration = Convert.ToString(sqlObject.SQLiteDataReader["videoevent_duration"]);
+                    obj.videoevent_end = Convert.ToString(sqlObject.SQLiteDataReader["videoevent_end"]);
+                    obj.videoevent_serverid = Convert.ToInt64(sqlObject.SQLiteDataReader["videoevent_serverid"]);
+                    data.Add(obj);
+                }
+                sqlObject.CloseConnections();
+            }
+            return data;
+
+            
+        }
+
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId, bool dependentDataFlag = true)
         {
             var data = new List<CBVVideoEvent>();
@@ -2973,6 +3044,27 @@ namespace Sqllite_Library.Data
                                             project_id = {project_id}";
                 var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
+            }
+        }
+
+        public static void ShiftVideoEvents(DataTable dataTable)
+        {
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                
+                var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var videoevent_serverid = Convert.ToInt32(dr["videoevent_serverid"]);
+                var updateQueryString = $@" UPDATE cbv_videoevent 
+                                        SET 
+                                            videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
+                                            videoevent_duration = '{Convert.ToString(dr["videoevent_duration"])}',
+                                            videoevent_end = '{Convert.ToString(dr["videoevent_end"])}',
+                                            videoevent_modifydate = '{modifyDate}'
+                                        WHERE 
+                                            videoevent_serverid = {videoevent_serverid}";
+                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
+                Console.WriteLine($@"cbv_videoevent table update status for serverid - {videoevent_serverid} result - {updateFlag}");
             }
         }
 

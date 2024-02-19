@@ -131,19 +131,21 @@ namespace ServerApiCall_UserControl
 
         public async Task<string> Update(string url, FormUrlEncodedContent encodedPayload)
         {
+            string content = "";
             try
             {
                 using (HttpResponseMessage response = await apiHttpClient.PutAsync(url, encodedPayload))
                 {
+                    content = await response.Content.ReadAsStringAsync();
                     response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
-                        var result = await response.Content.ReadAsStringAsync();
+                        var result = content;
                         return result;
                     }
                 }
             }
-            catch (Exception ex) { return $"Exception - {ex.Message}"; }
+            catch (Exception ex) { return $"Exception - {ex.Message}, response - {content}"; }
             return null;
         }
 

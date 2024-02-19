@@ -83,6 +83,7 @@
     <Compile Include="DTO\Planning\PlanningHeadModel.cs" />
     <Compile Include="DTO\Projects\ProjectDetail.cs" />
     <Compile Include="DTO\Projects\ProjectWithId.cs" />
+    <Compile Include="DTO\VideoEvent\ShiftVideoEventModel.cs" />
     <Compile Include="Helpers\Auth_ServerAPICall_Helper.cs" />
     <Compile Include="Helpers\EncryptionHelper.cs" />
     <Compile Include="Helpers\UriExtensions.cs" />

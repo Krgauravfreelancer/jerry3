@@ -305,14 +305,16 @@ namespace VideoCreator.Helpers
         {
             try
             {
-                var VideoEvent = DataManagerSqlLite.GetVideoEventbyId(e.MediaItem.VideoEventID, true);
+                BtnDeleteMediaClicked.Invoke(e.MediaItem.VideoEventID);
 
-                foreach (var note in VideoEvent.LastOrDefault().notes_data)
-                {
-                    DataManagerSqlLite.DeleteNotesById(note.notes_id);
-                }
+                //var VideoEvent = DataManagerSqlLite.GetVideoEventbyId(e.MediaItem.VideoEventID, true);
 
-                DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
+                //foreach (var note in VideoEvent.LastOrDefault().notes_data)
+                //{
+                //    DataManagerSqlLite.DeleteNotesById(note.notes_id);
+                //}
+
+                //DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
             }
             catch (Exception ex)
             {
@@ -489,6 +491,7 @@ namespace VideoCreator.Helpers
 
         #region == Added By KG == 
         public event Action<DataTable> BtnSaveClickedEvent; //Added By KG
+        public event Action<int> BtnDeleteMediaClicked; //Added By KG
 
         private DataTable GetNotesDataTable(Media media)
         {

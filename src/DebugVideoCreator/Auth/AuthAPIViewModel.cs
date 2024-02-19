@@ -572,6 +572,37 @@ namespace VideoCreator.Auth
             catch { return null; }
         }
 
+        public async Task<VideoEventResponseModel> DeleteVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverId)
+        {
+            try
+            {
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent/{videoevent_serverId}";
+                var parameters = new Dictionary<string, string>();
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Delete<ParentData<VideoEventResponseModel>>(url, payload);
+                return result?.Data;
+            }
+            catch { return null; }
+        }
+
+        public async Task<List<ShiftVideoEventModel>> ShiftVideoEvent(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents)
+        {
+            try
+            {
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent-shift";
+                var parameters = new Dictionary<string, string>
+                {
+                    { "videoevent", JsonConvert.SerializeObject(shiftVideoEvents) }
+                };
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Update<ParentData<List<ShiftVideoEventModel>>>(url, payload);
+                return result?.Data;
+            }
+            catch { return null; }
+        }
+
 
         public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
         {
