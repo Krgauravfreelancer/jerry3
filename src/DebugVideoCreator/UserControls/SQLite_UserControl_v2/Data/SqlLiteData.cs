@@ -737,7 +737,8 @@ namespace Sqllite_Library.Data
             var durationtime = GetMillisecondsFromTimespan(durationToShift);
 
             var endTime = starttime - durationtime;
-
+            if(endTime < 0)
+                return "00:00:00.000";
             var endtimeInMs = endTime % 1000;
             endTime = endTime / 1000;
             int s = endTime % 60;
