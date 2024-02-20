@@ -140,8 +140,9 @@
 
             </Button>
         </Border>
-        <Grid  Background="Transparent" x:Name="gridProperties" Grid.Column="1" >
+        <Grid  Background="Transparent" x:Name="gridProperties" Grid.Column="1">
             <Grid.RowDefinitions>
+                <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
@@ -156,12 +157,12 @@
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40*"/>
+                <ColumnDefinition Width="32*"/>
                 <ColumnDefinition Width="55*"/>
             </Grid.ColumnDefinitions>
 
             <!-- Properties -->
-            <Grid Grid.Row="0" Grid.ColumnSpan="3" Background="#97C3F2" >
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="#97C3F2" >
                 <Label Grid.Row="0" Grid.Column="0" x:Name="lblTitle" Background="#97C3F2" Content="Properties" Margin="3,3,3,0" Grid.RowSpan="2" VerticalAlignment="Top" ></Label>
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft">
                     <Button x:Name="btnClose" Background="Transparent" Content="X" BorderBrush="{x:Null}" Padding="5,1,5,1" Click="btnClose_Click"/>
@@ -170,11 +171,11 @@
             </Grid>
 
             <!--Color-->
-            <Label Grid.Row="1" Content="Color" />
+            <Label Grid.Row="1" Content="Color"/>
             <xctk:ColorPicker Grid.Row="1" Grid.Column="1" x:Name="colorPicker" VerticalAlignment="Center" SelectedColorChanged="colorPicker_SelectedColorChanged"/>
 
             <!-- Hidden -->
-            <Label Grid.Row="2" Content="Hidden"  />
+            <Label Grid.Row="2" Content="Hidden"/>
             <CheckBox Grid.Row="2" Grid.Column="1" x:Name="cbHidden"/>
 
             <!--Position-->
@@ -244,6 +245,18 @@
                 <TextBox Grid.Column="0" x:Name="txtEndX" Text="" TextChanged="txtEndX_TextChanged" GotFocus="txt_GotFocus"/>
                 <!-- ENd Y -->
                 <TextBox Grid.Column="1" x:Name="txtEndY" Text="" TextChanged="txtEndY_TextChanged" GotFocus="txt_GotFocus"/>
+            </Grid>
+
+            <Label Grid.Row="11" Grid.Column="0"  Content="Align" />
+            <Grid Grid.Row="11" Grid.Column="1" HorizontalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" x:Name="leftAlign" Content="L" Click = "leftAlign_Click" Width="30" Height="20" Margin="0,0,1,0"/>
+                <Button Grid.Column="1" x:Name="CenterAlign" Content="C" Click="centerAlign_Click" Width="30" Height="20" Margin="0,0,1,0"/>
+                <Button Grid.Column="2" x:Name="rightAlign" Content="R" Click="rightAlign_Click" Width="30" Height="20"/>
             </Grid>
         </Grid>
     </Grid>

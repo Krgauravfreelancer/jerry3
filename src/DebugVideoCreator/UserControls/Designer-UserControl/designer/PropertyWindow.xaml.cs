@@ -725,5 +725,47 @@ namespace DesignerNp.controls
         {
             isPressed = false;
         }
+
+        private void leftAlign_Click(object sender, RoutedEventArgs e)
+        {
+            if (null == _uiElement && null == _textBox) return;
+            if(null != _uiElement)
+                _uiElement.SetValue(Canvas.LeftProperty, 10.0);
+            if (null != _textBox)
+                _textBox.SetValue(Canvas.LeftProperty, 10.0);
+            return;
+        }
+
+        private void rightAlign_Click(object sender, RoutedEventArgs e)
+        {
+            if (null == _uiElement && null == _textBox) return;
+            if (null != _uiElement)
+            {
+                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 300);
+                _uiElement.SetValue(Canvas.LeftProperty, x);
+            }
+            if (null != _textBox)
+            {
+                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 300);
+                _textBox.SetValue(Canvas.LeftProperty, x);
+            }
+            return;
+        }
+
+        private void centerAlign_Click(object sender, RoutedEventArgs e)
+        {
+            if (null == _uiElement && null == _textBox) return;
+            if (null != _uiElement)
+            {
+                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 10)/2;
+                _uiElement.SetValue(Canvas.LeftProperty, x);
+            }
+            if (null != _textBox)
+            {
+                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 10)/2;
+                _textBox.SetValue(Canvas.LeftProperty, x);
+            }
+            return;
+        }
     }
 }
