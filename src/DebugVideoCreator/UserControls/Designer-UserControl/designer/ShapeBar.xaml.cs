@@ -101,7 +101,7 @@ namespace DesignerNp.controls
             DataObject data = new DataObject();
             data.SetData(DataFormats.StringFormat,
                 @"<TextBox Text='Text' FontSize='20' Background='Transparent' BorderThickness='0' 
-                    Focusable='False' Cursor='Arrow' Foreground='#FF5E7DD1' AllowDrop='False'/>"
+                    Focusable='False' Cursor='Arrow' Foreground='#000000' AllowDrop='False'/>"
                 );
             data.SetData("Object", this);
 

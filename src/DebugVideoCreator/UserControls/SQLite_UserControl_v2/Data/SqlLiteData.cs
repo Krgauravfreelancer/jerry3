@@ -296,6 +296,8 @@ namespace Sqllite_Library.Data
                         'planning_medialibid' TEXT(12) DEFAULT NULL,
                         'planning_sort' TEXT NOT NULL  DEFAULT '1',
                         'planning_suggestnotesline' TEXT DEFAULT NULL,
+                        'planning_mediathumb' TEXT(100) DEFAULT NULL,
+                        'planning_mediafull' TEXT(100) DEFAULT NULL,
                         'planning_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                         'planning_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
                         'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
@@ -1626,6 +1628,8 @@ namespace Sqllite_Library.Data
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
                             planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
                             planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
+                            planning_mediafull = Convert.ToString(sqlReader["planning_mediafull"]),
+                            planning_mediathumb = Convert.ToString(sqlReader["planning_mediathumb"]),
                             planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
                             planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
 
@@ -3729,13 +3733,13 @@ namespace Sqllite_Library.Data
                 var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
-                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
+                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', '{dr["planning_mediathumb"]}', '{dr["planning_mediafull"]}', " +
                     $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isEdited})");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_planning 
-                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
+                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, planning_mediathumb, planning_mediafull, 
                         planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isEdited) 
                 VALUES 
                     {valuesString}";

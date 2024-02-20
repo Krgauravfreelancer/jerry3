@@ -12,6 +12,8 @@ namespace Sqllite_Library.Models
         public int planning_medialibid { get; set; }
         public int planning_sort { get; set; }
         public string planning_suggestnotesline { get; set; }
+        public string planning_mediathumb { get; set; }
+        public string planning_mediafull { get; set; }
         public DateTime planning_createdate { get; set; }
         public DateTime planning_modifydate { get; set; }
 
