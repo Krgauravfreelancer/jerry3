@@ -30,7 +30,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public int notes_wordcount { get; set; }
         public string notes_index { get; set; }
         public string notes_start { get; set; }
-        public int notes_duration { get; set; }
+        public string notes_duration { get; set; }
         public string notes_modifylocdate { get; set; }
 
     }

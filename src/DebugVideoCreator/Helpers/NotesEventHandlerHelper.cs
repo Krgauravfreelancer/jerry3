@@ -36,7 +36,7 @@ namespace VideoCreator.Helpers
                 notesModel.notes_wordcount = Convert.ToInt16(note["notes_wordcount"]);
                 notesModel.notes_index = Convert.ToString(note["notes_index"]);
                 notesModel.notes_start = Convert.ToString(note["notes_start"]);
-                notesModel.notes_duration = int.Parse(Convert.ToString(note["notes_duration"]));
+                notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
                 notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 data.Add(notesModel);
             }
@@ -51,7 +51,7 @@ namespace VideoCreator.Helpers
             dtNotes.Columns.Add("notes_line", typeof(string));
             dtNotes.Columns.Add("notes_wordcount", typeof(int));
             dtNotes.Columns.Add("notes_start", typeof(string));
-            dtNotes.Columns.Add("notes_duration", typeof(int));
+            dtNotes.Columns.Add("notes_duration", typeof(string));
             dtNotes.Columns.Add("notes_index", typeof(int));
             dtNotes.Columns.Add("notes_createdate", typeof(string));
             dtNotes.Columns.Add("notes_modifydate", typeof(string));
@@ -73,7 +73,7 @@ namespace VideoCreator.Helpers
                 dRow["notes_id"] = -1;
                 dRow["notes_line"] = item.notes_line;
                 dRow["notes_start"] = "00:00:00.000";
-                dRow["notes_duration"] = 0;
+                dRow["notes_duration"] = "00:00:00.000"; //TBD
                 dRow["notes_createdate"] = item.notes_createdate;
                 dRow["notes_modifydate"] = item.notes_modifydate;
                 dRow["fk_notes_videoevent"] = localVideoEventId;

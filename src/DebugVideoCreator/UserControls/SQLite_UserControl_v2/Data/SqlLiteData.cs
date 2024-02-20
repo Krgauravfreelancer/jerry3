@@ -406,7 +406,7 @@ namespace Sqllite_Library.Data
                 'notes_wordcount' INTEGER NOT NULL  DEFAULT 0,
                 'notes_index' INTEGER NOT NULL DEFAULT 0,
                 'notes_start' TEXT(12) NOT NULL DEFAULT '00.00.00.000',
-                'notes_duration' INTEGER NOT NULL DEFAULT 1,
+                'notes_duration' TEXT(12) NOT NULL DEFAULT '00:00:00.000',
                 'notes_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'notes_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
@@ -908,7 +908,7 @@ namespace Sqllite_Library.Data
 
                 var values = new List<string>();
                 values.Add($"({dr["fk_notes_videoevent"]}, '{notes_line}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
-                         $"{dr["notes_duration"]}, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                         $"'{dr["notes_duration"]}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
                 var valuesString = string.Join(",", values.ToArray());
 
                 string sqlQueryString =
@@ -2566,7 +2566,7 @@ namespace Sqllite_Library.Data
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
                             notes_start = Convert.ToString(sqlReader["notes_start"]),
-                            notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
+                            notes_duration = Convert.ToString(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
                             notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"]),
@@ -2623,7 +2623,7 @@ namespace Sqllite_Library.Data
                             notes_wordcount = Convert.ToInt32(sqlReader["notes_wordcount"]),
                             notes_index = Convert.ToInt32(sqlReader["notes_index"]),
                             notes_start = Convert.ToString(sqlReader["notes_start"]),
-                            notes_duration = Convert.ToInt32(sqlReader["notes_duration"]),
+                            notes_duration = Convert.ToString(sqlReader["notes_duration"]),
                             notes_createdate = Convert.ToDateTime(sqlReader["notes_createdate"]),
                             notes_modifydate = Convert.ToDateTime(sqlReader["notes_modifydate"]),
                             notes_isdeleted = Convert.ToBoolean(sqlReader["notes_isdeleted"]),
@@ -3196,7 +3196,7 @@ namespace Sqllite_Library.Data
                                             notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
                                             notes_start = '{Convert.ToString(dr["notes_start"])}',
-                                            notes_duration = {Convert.ToInt32(dr["notes_duration"])},
+                                            notes_duration = {Convert.ToString(dr["notes_duration"])},
                                             notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
                                             notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
                                             notes_syncerror = '{Convert.ToString(dr["notes_syncerror"])}',

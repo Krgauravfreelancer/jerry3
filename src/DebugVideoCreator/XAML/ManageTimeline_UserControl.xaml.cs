@@ -394,7 +394,7 @@ namespace VideoCreator.XAML
             notesDataTable.Columns.Add("notes_wordcount", typeof(int));
             notesDataTable.Columns.Add("notes_index", typeof(int));
             notesDataTable.Columns.Add("notes_start", typeof(string));
-            notesDataTable.Columns.Add("notes_duration", typeof(int));
+            notesDataTable.Columns.Add("notes_duration", typeof(string));
             notesDataTable.Columns.Add("notes_createdate", typeof(string));
             notesDataTable.Columns.Add("notes_modifydate", typeof(string));
             notesDataTable.Columns.Add("notes_isdeleted", typeof(bool));

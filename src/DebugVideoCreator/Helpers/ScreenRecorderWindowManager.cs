@@ -99,7 +99,7 @@ namespace VideoCreator.Helpers
             notedataTable.Columns.Add("notes_wordcount", typeof(int));
             notedataTable.Columns.Add("notes_index", typeof(int));
             notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(int));
+            notedataTable.Columns.Add("notes_duration", typeof(string));
             notedataTable.Columns.Add("notes_createdate", typeof(string));
             notedataTable.Columns.Add("notes_modifydate", typeof(string));
             notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
@@ -121,7 +121,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = ChangedElement.Item.WordCount;
                 //noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = ChangedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = (int)ChangedElement.Item.Duration.TotalSeconds;
+                noteRow["notes_duration"] = ChangedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
@@ -150,7 +150,7 @@ namespace VideoCreator.Helpers
             notedataTable.Columns.Add("notes_wordcount", typeof(int));
             notedataTable.Columns.Add("notes_index", typeof(int));
             notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(int));
+            notedataTable.Columns.Add("notes_duration", typeof(string));
             notedataTable.Columns.Add("notes_createdate", typeof(string));
             notedataTable.Columns.Add("notes_modifydate", typeof(string));
             notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
@@ -172,7 +172,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = ChangedElement.Item.WordCount;
                 //noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = ChangedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = (int)ChangedElement.Item.Duration.TotalSeconds;
+                noteRow["notes_duration"] = ChangedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
@@ -380,7 +380,7 @@ namespace VideoCreator.Helpers
                         textItem.NoteID = note.notes_id;
                         textItem.Text = note.notes_line;
                         textItem.Start = TimeSpan.Parse(note.notes_start);
-                        textItem.Duration = TimeSpan.FromSeconds(note.notes_duration);
+                        textItem.Duration = TimeSpan.Parse(note.notes_duration);
 
                         textItems.Add(textItem);
                     }
@@ -446,7 +446,7 @@ namespace VideoCreator.Helpers
             notedataTable.Columns.Add("notes_wordcount", typeof(int));
             notedataTable.Columns.Add("notes_index", typeof(int));
             notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(int));
+            notedataTable.Columns.Add("notes_duration", typeof(string));
             notedataTable.Columns.Add("notes_createdate", typeof(string));
             notedataTable.Columns.Add("notes_modifydate", typeof(string));
             notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
@@ -469,7 +469,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
+                noteRow["notes_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
@@ -502,7 +502,7 @@ namespace VideoCreator.Helpers
             notesDataTable.Columns.Add("notes_wordcount", typeof(int));
             notesDataTable.Columns.Add("notes_index", typeof(int));
             notesDataTable.Columns.Add("notes_start", typeof(string));
-            notesDataTable.Columns.Add("notes_duration", typeof(int));
+            notesDataTable.Columns.Add("notes_duration", typeof(string));
             notesDataTable.Columns.Add("notes_createdate", typeof(string));
             notesDataTable.Columns.Add("notes_modifydate", typeof(string));
             notesDataTable.Columns.Add("notes_isdeleted", typeof(bool));
@@ -524,7 +524,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = (int)element.Duration.TotalSeconds;
+                noteRow["notes_duration"] = 0;// element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;

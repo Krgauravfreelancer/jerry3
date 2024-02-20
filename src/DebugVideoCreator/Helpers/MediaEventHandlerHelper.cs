@@ -50,8 +50,8 @@ namespace VideoCreator.Helpers
                         notes_line = Convert.ToString(dr["notes_line"]),
                         notes_index = Convert.ToString(dr["notes_index"]),
                         notes_wordcount = Convert.ToInt32(dr["notes_wordcount"]),
-                        notes_start = Convert.ToString(dr["notes_start"]),
-                        notes_duration = Convert.ToInt32(dr["notes_duration"]),
+                        notes_start = "0", //Convert.ToString(dr["notes_start"]),
+                        notes_duration = Convert.ToString(dr["notes_duration"]),
                         notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
                     }; 
                     objToSync.notes.Add(note);
