@@ -29,7 +29,9 @@ namespace VideoCreator.Helpers
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Recorder = new ScreenRecorder_Control();
             selectedProjectEvent = _selectedProjectEvent;
+            //ProjectID = Selected_ID;
 
+            //if (Selected_ID != -1)
             if (selectedProjectEvent != null)
             {
                 var VideoEventData = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true);
@@ -58,6 +60,7 @@ namespace VideoCreator.Helpers
             }
 
             window.Content = AddLoaderAndReturnContent(Recorder);
+            //window.Show();
             return window;
         }
 
@@ -172,7 +175,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = ChangedElement.Item.WordCount;
                 //noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = ChangedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = ChangedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
+                noteRow["notes_duration"] = ChangedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
@@ -217,6 +220,8 @@ namespace VideoCreator.Helpers
 
         private void ScreenRecorder_Control_MediaRecordingCompleted(object sender, MediaRecordingCompletedEventArgs e)
         {
+            //if (ProjectID != -1)
+            //{
             if (e.MediaItems != null)
             {
                 try
@@ -239,7 +244,6 @@ namespace VideoCreator.Helpers
                     dataTable.Columns.Add("videoevent_notes", typeof(DataTable)); //Added By KG
                     foreach (Media element in e.MediaItems)
                     {
-                        
                         // Since this table has Referential Integrity, so lets push one by one
                         //dataTable.Rows.Clear();
 
@@ -293,6 +297,12 @@ namespace VideoCreator.Helpers
                 }
                 RefreshData();
             }
+
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Please Select a project");
+            //}
         }
 
         public void SetProjectID(int projectID)
@@ -306,15 +316,42 @@ namespace VideoCreator.Helpers
             try
             {
                 BtnDeleteMediaClicked.Invoke(e.MediaItem.VideoEventID);
-
                 //var VideoEvent = DataManagerSqlLite.GetVideoEventbyId(e.MediaItem.VideoEventID, true);
 
-                //foreach (var note in VideoEvent.LastOrDefault().notes_data)
+                //DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
+
+                //var VideoEvents = DataManagerSqlLite.GetVideoEvents(ProjectID, true);
+
+                ///*
+                // Datatable with following 4 fields to shift
+                // videoevent_serverid
+                // videoevent_start
+                // videoevent_end
+                // videoevent_duration
+                //*/
+                //var dataTable = new DataTable();
+                ////dataTable.Columns.Add("videoevent_id", typeof(int));
+
+                //dataTable.Columns.Add("videoevent_start", typeof(string));
+                //dataTable.Columns.Add("videoevent_duration", typeof(string));
+                //dataTable.Columns.Add("videoevent_end", typeof(string));
+                //dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+                //dataTable.Rows.Clear();
+
+                //List<CBVShiftVideoEvent> elements = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(ProjectID, (e.MediaItem.StartTime + e.MediaItem.Duration).ToString(@"hh\:mm\:ss\.fff"));
+
+                //foreach (var element in elements)
                 //{
-                //    DataManagerSqlLite.DeleteNotesById(note.notes_id);
+                //    var row = dataTable.NewRow();
+                //    row["videoevent_start"] = DataManagerSqlLite.ShiftLeft(element.videoevent_start, e.MediaItem.Duration.ToString(@"hh\:mm\:ss\.fff"));
+                //    row["videoevent_duration"] = element.videoevent_duration;
+                //    row["videoevent_end"] = DataManagerSqlLite.ShiftLeft(element.videoevent_end, e.MediaItem.Duration.ToString(@"hh\:mm\:ss\.fff"));
+                //    row["videoevent_serverid"] = element.videoevent_serverid;
+                //    dataTable.Rows.Add(row);
                 //}
 
-                //DataManagerSqlLite.DeleteVideoEventsById(e.MediaItem.VideoEventID, true);
+                //DataManagerSqlLite.ShiftVideoEvents(dataTable);
+
             }
             catch (Exception ex)
             {
@@ -368,6 +405,7 @@ namespace VideoCreator.Helpers
                     media.mediaType = MediaType.Video;
                 }
 
+                media.VideoEventServerID = item.videoevent_serverid;
                 media.VideoEventID = item.videoevent_id;
                 media.ProjectId = selectedProjectEvent.projectId;
                 media.TrackId = item.videoevent_track;
@@ -469,7 +507,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_wordcount"] = element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
+                noteRow["notes_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
