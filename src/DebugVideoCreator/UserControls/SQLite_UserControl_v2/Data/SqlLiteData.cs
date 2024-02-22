@@ -296,8 +296,8 @@ namespace Sqllite_Library.Data
                         'planning_medialibid' TEXT(12) DEFAULT NULL,
                         'planning_sort' TEXT NOT NULL  DEFAULT '1',
                         'planning_suggestnotesline' TEXT DEFAULT NULL,
-                        'planning_mediathumb' TEXT(100) DEFAULT NULL,
-                        'planning_mediafull' TEXT(100) DEFAULT NULL,
+                        'planning_mediathumb' NONE DEFAULT NULL,
+                        'planning_mediafull' NONE DEFAULT NULL,
                         'planning_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                         'planning_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
                         'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
@@ -1109,6 +1109,60 @@ namespace Sqllite_Library.Data
             return id;
         }
 
+        private static int Insert2BlobRecordsInTable(string tableName, string InsertQuery, byte[] blob1, byte[] blob2)
+        {
+            // Check if database is created
+            if (false == IsDbCreated())
+            {
+                throw new Exception("Database is not present.");
+            }
+
+            SQLiteConnection sqlCon = null;
+            var id = -1;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                using (var command = new SQLiteCommand(InsertQuery, sqlCon))
+                {
+                    command.Parameters.Add(new SQLiteParameter("blob1", DbType.Binary) { Value = blob1 });
+                    command.Parameters.Add(new SQLiteParameter("blob2", DbType.Binary) { Value = blob1 });
+                    command.ExecuteNonQuery();
+                }
+
+                // Read the project ID
+                var sqlQueryString = $@"SELECT seq from sqlite_sequence where name = '{tableName}'";
+                using (var command = new SQLiteCommand(sqlQueryString, sqlCon))
+                {
+                    using (SQLiteDataReader sqlReader = command.ExecuteReader())
+                    {
+                        if (sqlReader.HasRows)
+                            if (sqlReader.Read())
+                                id = sqlReader.GetInt32(0);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+            finally
+            {
+                if (sqlCon != null)
+                {
+                    sqlCon.Close();
+                    sqlCon = null;
+                }
+            }
+            return id;
+        }
+
         private static int InsertRecordsInTable(string tableName, string InsertQuery)
         {
             // Check if database is created
@@ -1628,8 +1682,8 @@ namespace Sqllite_Library.Data
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
                             planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
                             planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
-                            planning_mediafull = Convert.ToString(sqlReader["planning_mediafull"]),
-                            planning_mediathumb = Convert.ToString(sqlReader["planning_mediathumb"]),
+                            planning_mediafull = sqlReader["planning_mediafull"] as byte[],
+                            planning_mediathumb = sqlReader["planning_mediathumb"] as byte[],
                             planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
                             planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
 
@@ -3733,7 +3787,7 @@ namespace Sqllite_Library.Data
                 var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
-                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', '{dr["planning_mediathumb"]}', '{dr["planning_mediafull"]}', " +
+                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', @blob1, @blob2, " +
                     $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isEdited})");
 
                 var valuesString = string.Join(",", values.ToArray());
@@ -3744,7 +3798,7 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_planning", sqlQueryString);
+                var insertedId = Insert2BlobRecordsInTable("cbv_planning", sqlQueryString, dr["planning_mediathumb"] != DBNull.Value ? dr["planning_mediathumb"] as byte[] : null, dr["planning_mediafull"] != DBNull.Value ? dr["planning_mediafull"] as byte[] : null);
                 ids.Add(insertedId);
             }
             return ids;

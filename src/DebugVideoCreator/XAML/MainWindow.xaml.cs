@@ -298,8 +298,8 @@ namespace VideoCreator.XAML
                 var projectLocalId = SyncDbHelper.UpsertProject(selectedItemFull, selectedItem.projdet_version);
 
                 //Lets download planning and insert it as well
-                var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
-                SyncDbHelper.UpsertPlanning(plannings, projectLocalId, selectedItemFull);
+                //var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
+                //SyncDbHelper.UpsertPlanning(plannings, projectLocalId, selectedItemFull);
 
                 await InitialiseAndRefreshScreen();
 

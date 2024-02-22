@@ -221,8 +221,8 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("planning_medialibid", typeof(string));
             dataTable.Columns.Add("planning_sort", typeof(int));
             dataTable.Columns.Add("planning_suggestnotesline", typeof(string));
-            dataTable.Columns.Add("planning_mediathumb", typeof(string));
-            dataTable.Columns.Add("planning_mediafull", typeof(string));
+            dataTable.Columns.Add("planning_mediathumb", typeof(byte[]));
+            dataTable.Columns.Add("planning_mediafull", typeof(byte[]));
 
             dataTable.Columns.Add("planning_createdate", typeof(string));
             dataTable.Columns.Add("planning_modifydate", typeof(string));
@@ -243,8 +243,8 @@ namespace VideoCreator.Helpers
                 row["planning_medialibid"] = planning.planning_medialibid;
                 row["planning_sort"] = planning.planning_sort;
                 row["planning_suggestnotesline"] = planning.planning_suggestnotesline;
-                row["planning_mediathumb"] = planning.planning_media_thumb;
-                row["planning_mediafull"] = planning.planning_media_full;
+                //row["planning_mediathumb"] = planning.planning_media_thumb;
+                //row["planning_mediafull"] = planning.planning_media_full;
                 row["planning_notesline"] = planning.planning_notesline;
                 row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
