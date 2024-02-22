@@ -1,6 +1,6 @@
 ﻿using Sqllite_Library.Models;
 
-namespace DebugVideoCreator.Models
+namespace VideoCreator.Models
 {
     public class AutofillEvent
     {

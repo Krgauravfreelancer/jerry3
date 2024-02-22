@@ -15,7 +15,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 
 namespace VideoCreator.XAML
 {

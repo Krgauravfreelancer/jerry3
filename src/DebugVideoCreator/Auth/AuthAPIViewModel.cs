@@ -21,7 +21,7 @@ using Sqllite_Library.Models;
 using Newtonsoft.Json;
 using System.Windows.Forms.VisualStyles;
 using DesignerNp.controls;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 
 namespace VideoCreator.Auth
 {

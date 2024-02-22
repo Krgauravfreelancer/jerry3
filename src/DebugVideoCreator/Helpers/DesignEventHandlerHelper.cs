@@ -1,4 +1,4 @@
-﻿using DebugVideoCreator.Models;
+﻿using VideoCreator.Models;
 using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;

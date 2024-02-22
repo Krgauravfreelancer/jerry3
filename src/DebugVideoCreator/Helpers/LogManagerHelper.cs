@@ -5,7 +5,7 @@ using ServerApiCall_UserControl.DTO.Media;
 using ServerApiCall_UserControl.DTO.Projects;
 using ServerApiCall_UserControl.DTO.Screen;
 using ServerApiCall_UserControl.DTO.VideoEvent;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 using Newtonsoft.Json;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
@@ -35,7 +35,7 @@ namespace VideoCreator.Helpers
     {
         public static void WriteVerboseLog(UserControl uc, string log, string className)
         {
-            var isVerboseLogging = DebugVideoCreator.Properties.Settings.Default.VerboseLogging;
+            var isVerboseLogging = VideoCreator.Properties.Settings.Default.VerboseLogging;
             var logger = LogManager.GetLogger(uc.GetType().FullName);
             if (isVerboseLogging)
                 logger.Info(log, uc, DateTime.Now);
@@ -43,7 +43,7 @@ namespace VideoCreator.Helpers
 
         public static void WriteVerboseLog(Window w, string log)
         {
-            var isVerboseLogging = DebugVideoCreator.Properties.Settings.Default.VerboseLogging;
+            var isVerboseLogging = VideoCreator.Properties.Settings.Default.VerboseLogging;
             var logger = LogManager.GetLogger(w.GetType().FullName);
             if (isVerboseLogging)
                 logger.Info(log, w, DateTime.Now);

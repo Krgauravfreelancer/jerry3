@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Timeline.UserControls.Base;
 using Timeline.UserControls.Models;
 
-namespace DebugVideoCreator.Models
+namespace VideoCreator.Models
 {
     public class FormOrCloneEvent
     {

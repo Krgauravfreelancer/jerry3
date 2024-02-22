@@ -23,7 +23,7 @@ using System.Windows.Controls;
 using System.Net;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 using System.IO;
 using Xceed.Wpf.Toolkit.Panels;
 using ServerApiCall_UserControl.DTO.MediaLibraryModels;

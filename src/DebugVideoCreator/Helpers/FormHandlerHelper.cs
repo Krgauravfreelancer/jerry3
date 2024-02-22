@@ -5,7 +5,7 @@ using ServerApiCall_UserControl.DTO.Media;
 using ServerApiCall_UserControl.DTO.Projects;
 using ServerApiCall_UserControl.DTO.Screen;
 using ServerApiCall_UserControl.DTO.VideoEvent;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 using Newtonsoft.Json;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;

@@ -23,7 +23,7 @@ using System.Windows.Controls;
 using System.Net;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 using System.IO;
 using VideoCreator.MediaLibraryData;
 using System.Linq;
@@ -31,7 +31,6 @@ using System.Windows.Media;
 using ServerApiCall_UserControl.DTO.MediaLibraryModels;
 using System.Drawing;
 using Timeline.UserControls.Models;
-using DebugVideoCreator.Helpers;
 using ServerApiCall_UserControl.DTO;
 using ScreenRecorder_UserControl.Models;
 

@@ -1,4 +1,4 @@
-﻿using DebugVideoCreator.Models;
+﻿using VideoCreator.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
@@ -12,7 +12,7 @@ using System.Windows.Threading;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 
-namespace DebugVideoCreator.Helpers
+namespace VideoCreator.Helpers
 {
     public static class BackgroundProcessHelper
     {

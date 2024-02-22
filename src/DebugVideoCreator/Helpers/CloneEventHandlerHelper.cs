@@ -1,4 +1,4 @@
-﻿using DebugVideoCreator.Models;
+﻿using VideoCreator.Models;
 using NAudio.CoreAudioApi.Interfaces;
 using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.DTO.App;

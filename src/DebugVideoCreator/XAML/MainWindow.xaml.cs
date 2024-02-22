@@ -23,7 +23,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using NAudio.Wave;
 using System.Linq;
-using DebugVideoCreator.Models;
+using VideoCreator.Models;
 using ServerApiCall_UserControl.DTO.AutofillModels;
 
 namespace VideoCreator.XAML

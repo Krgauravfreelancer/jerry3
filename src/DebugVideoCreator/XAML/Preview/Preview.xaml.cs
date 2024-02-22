@@ -1,4 +1,4 @@
-﻿using DebugVideoCreator.Models;
+﻿using VideoCreator.Models;
 using GalaSoft.MvvmLight.Messaging;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
