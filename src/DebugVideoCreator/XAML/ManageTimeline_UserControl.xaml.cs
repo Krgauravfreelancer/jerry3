@@ -95,6 +95,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
+            TimelineUserConrol.ContextMenu_DeleteTimelines_Clicked += TimelineUserConrol_DeleteTimelines_Clicked;
 
             TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
 
@@ -121,6 +122,8 @@ namespace VideoCreator.XAML
 
             
         }
+
+        
 
         private void Refresh()
         {
@@ -258,7 +261,13 @@ namespace VideoCreator.XAML
             screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
             {
                 LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
-                await ScreenRecordingUserControl_BtnDeleteMediaClicked(videoeventLocalId);
+                
+                // Logic Here
+                var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
+                var videoevent = videoevents.FirstOrDefault();
+                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true); 
+                
+                
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
             };
@@ -277,57 +286,79 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        #region == Screen recorder > Delete Media Event ==
-
-        private async Task ScreenRecordingUserControl_BtnDeleteMediaClicked(int videoeventLocalId)
+        
+        private async Task DeleteAndShiftEvent(int videoeventLocalId, CBVVideoEvent videoevent,  bool isShift)
         {
             // Step-1 soft-delete from server the video-event and children
-            var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
-            var videoevent = videoevents.FirstOrDefault();
             var deletedData = await MediaEventHandlerHelper.DeleteVideoEventToServer(selectedProjectEvent, videoevent.videoevent_serverid, authApiViewModel);
 
-            // Step-2 Fetch next events of deleted event
-            var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end);
-            
-            // Step-3 Call server API to shift video event and then save locally the shifted events
-            if(tobeShiftedVideoEvents?.Count > 0)
+            if (isShift)
             {
-                var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
-                foreach(var item in tobeShiftedVideoEvents)
-                {
-                    var model = new ShiftVideoEventModel
-                    {
-                        videoevent_id = (int)item.videoevent_serverid,
-                        videoevent_duration = item.videoevent_duration,
-                        videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
-                        videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
-                    };
-                    tobeServerShiftedVideoEvents.Add(model);
-                }
-                var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+                // Step-2 Fetch next events of deleted event
+                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end);
 
-                var dtShiftedVideoEvents = new DataTable();
-                dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
-                dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
-                dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
-                dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
-                foreach (var item in serverShiftedVideoEvents)
+                // Step-3 Call server API to shift video event and then save locally the shifted events
+                if (tobeShiftedVideoEvents?.Count > 0)
                 {
-                    var row = dtShiftedVideoEvents.NewRow();
-                    row["videoevent_serverid"] = item.videoevent_id;
-                    row["videoevent_start"] = item.videoevent_start;
-                    row["videoevent_end"] = item.videoevent_end;
-                    row["videoevent_duration"] = item.videoevent_duration;
-                    dtShiftedVideoEvents.Rows.Add(row);
+                    var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                    foreach (var item in tobeShiftedVideoEvents)
+                    {
+                        var model = new ShiftVideoEventModel
+                        {
+                            videoevent_id = (int)item.videoevent_serverid,
+                            videoevent_duration = item.videoevent_duration,
+                            videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
+                            videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
+                        };
+                        tobeServerShiftedVideoEvents.Add(model);
+                    }
+                    var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+
+                    var dtShiftedVideoEvents = new DataTable();
+                    dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                    dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                    dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                    dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                    foreach (var item in serverShiftedVideoEvents)
+                    {
+                        var row = dtShiftedVideoEvents.NewRow();
+                        row["videoevent_serverid"] = item.videoevent_id;
+                        row["videoevent_start"] = item.videoevent_start;
+                        row["videoevent_end"] = item.videoevent_end;
+                        row["videoevent_duration"] = item.videoevent_duration;
+                        dtShiftedVideoEvents.Rows.Add(row);
+                    }
+                    DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
                 }
-                DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
             }
 
             // Step-4 finally Soft delete event and children from local DB
             DataManagerSqlLite.DeleteVideoEventsById(videoeventLocalId, true); // This will delete from design/notes/videosegment/videoevent
         }
 
-        #endregion == Screen recorder > Delete Media Event ==
+        
+        #region == Timeline > Delete Media Event ==
+
+        private async void TimelineUserConrol_DeleteTimelines_Clicked(object sender, int videoeventLocalId)
+        {
+            LoaderHelper.ShowLoader(this, loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
+
+            //Logic Here
+            var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
+            var videoevent = videoevents.FirstOrDefault();
+
+            if(videoevent?.videoevent_track == 2)
+                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true);
+            else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
+                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false);
+
+            LoaderHelper.HideLoader(this, loader);
+
+            Refresh();
+        }
+
+
+        #endregion == Timeline > Delete Media Event ==
 
         #region == Screen recorder > Add Event ==
         private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)

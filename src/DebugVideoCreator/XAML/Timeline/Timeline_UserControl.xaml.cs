@@ -44,7 +44,7 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
         public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
-        public event EventHandler<List<int>> ContextMenu_DeleteTimelines_Clicked;
+        public event EventHandler<int> ContextMenu_DeleteTimelines_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -143,15 +143,12 @@ namespace VideoCreator.XAML
             _timelineGridControl.SetScreenList(screens);
         }
 
-        public void LoadVideoEventsFromDb(int projdetId)
+        public void LoadVideoEventsFromDb(int projDetId)
         {
+
             DataTable dt = _timelineGridControl.BuildTimelineDataTable();
 
-            //CBVProject project = DataManagerSqlLite.GetProjectById(projectId, true);
-
-            //foreach (var projDet in project.projdet_data)
-            //{
-            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projdetId, false, true);
+            List<CBVVideoEvent> videoEventList = DataManagerSqlLite.GetVideoEvents(projDetId, dependentDataFlag: false, designFlag: true);
 
             foreach (var videoEvent in videoEventList)
             {
@@ -177,9 +174,10 @@ namespace VideoCreator.XAML
 
                 dt.Rows.Add(dRow);
             }
-            //}
 
             _timelineGridControl.SetTimelineDatatable(dt);
+
+
         }
 
         public void ClearTimeline()
@@ -206,7 +204,7 @@ namespace VideoCreator.XAML
             LoadMediaFromDb();
             LoadScreenFromDb();
 
-            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            // int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
@@ -228,6 +226,13 @@ namespace VideoCreator.XAML
                 dispatcherTimer.Start();
 
             };
+
+            /// Use this event handler when a video event is deleted
+            TimelineGridCtrl2.TimelineVideoEventDeleted += (sender, e) =>
+            {
+                ContextMenu_DeleteTimelines_Clicked.Invoke(sender, e.TimelineVideoEvent.videoevent_id);
+                //DataManagerSqlLite.DeleteVideoEventsById(e.TimelineVideoEvent.videoevent_id, cascadeDelete: true);
+            };
         }
 
         private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
@@ -248,7 +253,7 @@ namespace VideoCreator.XAML
                     var start = getImageOrVideo.StartTime;
                     trackBarPosition = trackBarPosition - start;
                 }
-                
+
                 //listView_trackbarEvents.ItemsSource = trackbarEvents;
                 //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
                 var payload = new TrackbarMouseMoveEvent
@@ -327,20 +332,9 @@ namespace VideoCreator.XAML
         //{
         //    if (entity == EnumEntity.ALL || entity == EnumEntity.PROJECT)
         //    {
-        //        var data = DataManagerSqlLite.GetDownloadedProjectList();
+        //        var projectList = DataManagerSqlLite.GetDownloadedProjectList();
 
-        //        foreach (var proj in data)
-        //        {
-        //            CBVProject cbvProject = DataManagerSqlLite.GetProjectById(projectId: proj.project_id, projdetFlag: true);
-        //        }
-
-        //        // Remove the duplicate on projects based on project_id property
-        //        List<CBVProjectForJoin> uniqueProjects = data
-        //                                         .GroupBy(p => p.project_id)
-        //                                         .Select(group => group.First())
-        //                                         .ToList();
-
-        //        RefreshComboBoxes<CBVProjectForJoin>(ProjectCmbBox, uniqueProjects, nameof(CBVProjectForJoin.project_videotitle));
+        //        RefreshComboBoxes<CBVProjectForJoin>(ProjectCmbBox, projectList, nameof(CBVProjectForJoin.project_videotitle));
 
         //        if (ProjectCmbBox.Items.Count > 0)
         //        {
@@ -369,9 +363,40 @@ namespace VideoCreator.XAML
 
         //        if (ProjectCmbBox.SelectedIndex != -1)
         //        {
+        //            // Update the project details whenever the selected project changes
+        //            var cbvProject = DataManagerSqlLite.GetProjectById(projectId: selectedProjectId, projdetFlag: true);
+        //            RefreshComboBoxes<CBVProjdet>(ProjDetCmbBox, cbvProject.projdet_data, nameof(CBVProjdet.projdet_version));
 
+        //            if (ProjDetCmbBox.Items.Count > 0)
+        //            {
+        //                ProjDetCmbBox.SelectedIndex = 0;
+
+        //                // Trigger the SelectionChanged event
+        //                ProjDetComboBox_SelectionChanged(ProjDetCmbBox, null);
+        //            }
+
+        //        }
+
+
+        //    }
+        //}
+
+        //private void RefreshProjDetComboBox()
+        //{
+
+
+        //}
+
+        //private void ProjDetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (ProjDetCmbBox.SelectedItem != null)
+        //    {
+        //        int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
+
+        //        if (ProjectCmbBox.SelectedIndex != -1)
+        //        {
         //            if (_timelineGridControl != null)
-        //                LoadVideoEventsFromDb(selectedProjectId);
+        //                LoadVideoEventsFromDb(projDetId);
         //        }
         //    }
         //}
@@ -417,14 +442,15 @@ namespace VideoCreator.XAML
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
             //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
 
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 3, selectedProjectId);
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 3, projDetId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Callout1";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(selectedProjectId);
+            //    LoadVideoEventsFromDb(projDetId);
             //};
 
             //screenRecorderWindow.Show();
@@ -435,15 +461,16 @@ namespace VideoCreator.XAML
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-            //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            ////int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
+            //int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
 
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, selectedProjectId);
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, projDetId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Callout2";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(selectedProjectId);
+            //    LoadVideoEventsFromDb(projDetId);
             //};
 
             //screenRecorderWindow.Show();
@@ -467,13 +494,15 @@ namespace VideoCreator.XAML
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
             //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, selectedProjectId);
+            //int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
+
+            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 2, projDetId);
             //screenRecorderWindow.Owner = this;
             //screenRecorderWindow.Title = "Add Video Event";
 
             //screenRecorderWindow.BtnSaveClickedEvent += () =>
             //{
-            //    LoadVideoEventsFromDb(selectedProjectId);
+            //    LoadVideoEventsFromDb(projDetId);
             //};
 
             //screenRecorderWindow.Show();
@@ -533,7 +562,7 @@ namespace VideoCreator.XAML
             ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
         }
 
-        
+
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
@@ -596,17 +625,8 @@ namespace VideoCreator.XAML
             //    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
             //}
 
-            // Removes the deleted events from the database
-            var deletedEventIds = _timelineGridControl.GetDeletedTimelineEventsId();
-            ContextMenu_DeleteTimelines_Clicked?.Invoke(sender, deletedEventIds);
-            //foreach (var id in deletedEventIds)
-            //{
-            //    // Please adjust cascadeDelete as required
-            //    DataManagerSqlLite.DeleteVideoEventsById(id, cascadeDelete: true);
-            //}
-
-            //LoadTimelineDataFromDb_Click(null, null);
-            //MessageBox.Show("Save Successful!");
+            LoadTimelineDataFromDb_Click(null, null);
+            MessageBox.Show("Save Successful!");
         }
 
         #endregion
