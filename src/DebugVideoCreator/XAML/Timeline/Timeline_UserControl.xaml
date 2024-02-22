@@ -11,12 +11,13 @@
             <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" />
 
             <Separator></Separator>
-            <MenuItem Header="Add Audio Event to Timeline" Click="AddAudioEvent_Click" IsEnabled="False"/>
-            <MenuItem Header="Add Callout 1 to Timeline" Click="AddCallout1_Click" />
-            <MenuItem Header="Add Callout 2 to Timeline" Click="AddCallout2_Click" />
-            <MenuItem Header="Add Video Event to Timeline" Click="AddVideoEvent_Click" />
-            <MenuItem Header="Add Form Event to Timeline" Click="AddFormEvent_Click" />
-            <MenuItem Header="Add Image Event to Timeline using Library" Click="AddImageEventUsingCBLibrary_Click"/>
+            <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False"/>
+            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click" />
+            <MenuItem Header="Add Callout 2" Click="AddCallout2_Click" />
+            <MenuItem Header="Add Video Event" Click="AddVideoEvent_Click" />
+            <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" />
+            <MenuItem Header="Add Image Event using Library" Click="AddImageEventUsingCBLibrary_Click"/>
+            <MenuItem Header="Manage Media" Click="ManageMedia_Click"/>
             <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" IsEnabled="False" />
             <Separator></Separator>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" />

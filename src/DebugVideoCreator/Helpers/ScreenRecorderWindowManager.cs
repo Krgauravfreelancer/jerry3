@@ -20,7 +20,7 @@ namespace VideoCreator.Helpers
         Window window;
         ScreenRecorder_Control Recorder;
         SelectedProjectEvent selectedProjectEvent;
-        internal LoadingAnimation loader;
+        public LoadingAnimation loader;
         public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent)
         {
             window = new Window();

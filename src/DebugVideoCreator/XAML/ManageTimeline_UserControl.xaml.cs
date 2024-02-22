@@ -85,7 +85,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
 
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
-            
+            TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
@@ -260,13 +260,13 @@ namespace VideoCreator.XAML
             screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
             {
                 LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
-                
+
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
-                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true); 
-                
-                
+                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true);
+
+
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
             };
@@ -275,9 +275,50 @@ namespace VideoCreator.XAML
             //{
             //    GeneratedRecorderWindow = null;
             //};
-            
+
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
             var result = screenRecordingUserControl.ShowWindow(GeneratedRecorderWindow);
+            if (result.HasValue)
+            {
+                Refresh();
+            }
+            LoaderHelper.HideLoader(this, loader);
+        }
+
+        private void TimelineUserConrol_ContextMenu_ManageMedia_Clicked(object sender, EventArgs e)
+        {
+            LoaderHelper.ShowLoader(this, loader);
+            var manageMediaWindowManager = new ManageMediaWindowManager();
+            var GeneratedRecorderWindow = manageMediaWindowManager.CreateWindow(selectedProjectEvent);
+            //screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
+            //    await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
+            //    screenRecordingUserControl.RefreshData();
+            //};
+
+            //screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
+                
+            //    // Logic Here
+            //    var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
+            //    var videoevent = videoevents.FirstOrDefault();
+            //    await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true); 
+                
+                
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
+            //    screenRecordingUserControl.RefreshData();
+            //};
+
+            //GeneratedRecorderWindow.Closed += (se, ev) =>
+            //{
+            //    GeneratedRecorderWindow = null;
+            //};
+            
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, manageMediaWindowManager.loader);
+            var result = manageMediaWindowManager.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
             {
                 Refresh();

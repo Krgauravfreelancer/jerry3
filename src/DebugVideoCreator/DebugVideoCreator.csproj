@@ -150,6 +150,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
+    <Reference Include="ManageMedia_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\ManageMedia_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="MediaGenApi_UserControl">
       <HintPath>Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
@@ -342,6 +346,7 @@
     <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
     <Compile Include="Helpers\LogManagerHelper.cs" />
     <Compile Include="Helpers\LoaderHelper.cs" />
+    <Compile Include="Helpers\ManageMediaWindowManager.cs" />
     <Compile Include="Helpers\MediaEventHandlerHelper.cs" />
     <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
     <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
@@ -476,6 +481,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Libraries\ManageMedia_UserControl.dll" />
     <Content Include="Libraries\MediaToolkit.dll" />
     <Content Include="Libraries\NotesManage_UserControl.dll" />
     <Content Include="Libraries\Notes_UserControl.dll" />

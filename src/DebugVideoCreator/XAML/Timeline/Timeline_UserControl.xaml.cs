@@ -31,7 +31,8 @@ namespace VideoCreator.XAML
         //public event EventHandler ContextMenu_AddVideoEvent_Success;
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
-
+        public event EventHandler ContextMenu_ManageMedia_Clicked;
+        
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
@@ -483,6 +484,12 @@ namespace VideoCreator.XAML
         {
             var payload = CalloutPreprocessing(false);
             ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
+        }
+
+        
+        private void ManageMedia_Click(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_ManageMedia_Clicked.Invoke(sender, e);
         }
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)

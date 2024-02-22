@@ -1682,8 +1682,8 @@ namespace Sqllite_Library.Data
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
                             planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
                             planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
-                            planning_mediafull = sqlReader["planning_mediafull"] as byte[],
-                            planning_mediathumb = sqlReader["planning_mediathumb"] as byte[],
+                            //planning_mediafull = sqlReader["planning_mediafull"] as byte[],
+                            //planning_mediathumb = sqlReader["planning_mediathumb"] as byte[],
                             planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
                             planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
 
