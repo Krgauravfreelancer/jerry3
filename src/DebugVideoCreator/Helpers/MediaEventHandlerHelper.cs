@@ -91,13 +91,6 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-
-        public static async Task<VideoEventResponseModel> DeleteVideoEventToServer(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverid, AuthAPIViewModel authApiViewModel)
-        {
-            var result = await authApiViewModel.DeleteVideoEvent(selectedProjectEvent, videoevent_serverid);
-            return result;
-        }
-
         public static async Task<List<ShiftVideoEventModel>> ShiftVideoEventsToServer(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents, AuthAPIViewModel authApiViewModel)
         {
             var result = await authApiViewModel.ShiftVideoEvent(selectedProjectEvent, shiftVideoEvents);

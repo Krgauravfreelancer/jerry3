@@ -699,7 +699,7 @@ namespace Sqllite_Library.Data
             return timeInMillisecond;
         }
 
-        public static string CalcNextEnd(string start, string duration)
+        public static string ShiftRight(string start, string duration)
         {
             if (string.IsNullOrEmpty(start))
                 return "00:00:00.000";
@@ -766,7 +766,7 @@ namespace Sqllite_Library.Data
             //if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
             //    start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_projdet"]));
 
-            var end = CalcNextEnd(start, Convert.ToString(dr["videoevent_duration"]));
+            var end = ShiftRight(start, Convert.ToString(dr["videoevent_duration"]));
 
             var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
             var serverid = Convert.ToInt64(dr["videoevent_serverid"]);
@@ -2210,7 +2210,7 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime)
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyTime(int fk_videoevent_projdet, string endTime)
         {
             var data = new List<CBVShiftVideoEvent>();
 
@@ -3368,12 +3368,13 @@ namespace Sqllite_Library.Data
             Console.WriteLine($@"cbv_notes table delete status for id - {notesId} result - {deleteFlag}");
         }
 
-        public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete, bool isDelelted = true)
         {
+            var deleteValue = isDelelted ? 1 : 0;
             var deleteQueryString = $@" 
                                         update cbv_videoevent 
                                         Set 
-                                           videoevent_isdeleted = 1 
+                                           videoevent_isdeleted = {deleteValue}
                                         WHERE 
                                             videoevent_id = {videoeventId};
                                         ";
@@ -3381,30 +3382,30 @@ namespace Sqllite_Library.Data
             if (cascadeDelete == true)
                 deleteQueryString = $@" update cbv_design
                                         Set 
-                                           design_isdeleted = 1 
+                                           design_isdeleted = {deleteValue} 
                                         WHERE 
                                             fk_design_videoevent = {videoeventId};
 
                                         update cbv_videosegment
                                         Set 
-                                           videosegment_isdeleted = 1
+                                           videosegment_isdeleted = {deleteValue}
                                         WHERE 
                                             videosegment_id = {videoeventId};
 
                                         update cbv_locaudio
                                         Set 
-                                           locaudio_isdeleted = 1
+                                           locaudio_isdeleted = {deleteValue}
                                         WHERE 
                                         fk_locaudio_notes in (Select notes_id from cbv_notes WHERE fk_notes_videoevent = {videoeventId});
 
                                         update cbv_notes
                                         Set 
-                                           notes_isdeleted = 1
+                                           notes_isdeleted = {deleteValue}
                                         WHERE 
                                             fk_notes_videoevent = {videoeventId};
                                         " + deleteQueryString;
             var deleteFlag = DeleteRecordsInTable(deleteQueryString);
-            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} result - {deleteFlag}");
+            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} with deleteFlag = {isDelelted} result - {deleteFlag}");
         }
 
 

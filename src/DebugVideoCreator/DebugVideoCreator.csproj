@@ -340,6 +340,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\DeleteUndeleteHelper.cs" />
     <Compile Include="Helpers\BackgroundProcessHelper.cs" />
     <Compile Include="Helpers\AutofillHandlerHelper.cs" />
     <Compile Include="Helpers\FormHandlerHelper.cs" />
@@ -481,6 +482,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Icons\add-circle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Libraries\ManageMedia_UserControl.dll" />
     <Content Include="Libraries\MediaToolkit.dll" />
     <Content Include="Libraries\NotesManage_UserControl.dll" />

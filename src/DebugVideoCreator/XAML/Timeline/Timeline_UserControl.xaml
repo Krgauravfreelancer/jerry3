@@ -12,7 +12,11 @@
 
             <Separator></Separator>
             <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False"/>
-            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click" />
+            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click">
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/add-circle.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
             <MenuItem Header="Add Callout 2" Click="AddCallout2_Click" />
             <MenuItem Header="Add Video Event" Click="AddVideoEvent_Click" />
             <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" />
@@ -21,6 +25,7 @@
             <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" IsEnabled="False" />
             <Separator></Separator>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" />
+            <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" />
             <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" />
             <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
             <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd"  Click="CloneEventAtEnd_Click"/>

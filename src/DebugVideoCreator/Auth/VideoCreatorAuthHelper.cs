@@ -97,7 +97,7 @@ namespace VideoCreator.Auth
         private T HandleAndShowMessage<T>(string Message, bool ShowErrorMessage = true)
         {
             if (ShowErrorMessage)
-                MessageBox.Show(Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Message?.Length > 200 ? Message.Substring(0,200) : Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return default(T);
         }
 

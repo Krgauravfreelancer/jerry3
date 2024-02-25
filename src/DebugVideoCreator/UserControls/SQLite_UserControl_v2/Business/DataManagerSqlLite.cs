@@ -404,7 +404,12 @@ namespace Sqllite_Library.Business
 
         public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime)
         {
-            return SqlLiteData.GetShiftVideoEventsbyEndTime(fk_videoevent_projdet, endTime);
+            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, endTime);
+        }
+
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyStartTime(int fk_videoevent_projdet, string startTime)
+        {
+            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, startTime);
         }
 
         public static int GetVideoEventsCount()
@@ -559,7 +564,12 @@ namespace Sqllite_Library.Business
 
         public static void DeleteVideoEventsById(int videoeventId, bool cascadeDelete)
         {
-            SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete);
+            SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete, true);
+        }
+
+        public static void UndeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        {
+            SqlLiteData.DeleteVideoEventsById(videoeventId, cascadeDelete, false);
         }
 
         public static void DeleteAllVideoEventsByProjdetId(int projdetId, bool cascadeDelete)
@@ -662,7 +672,12 @@ namespace Sqllite_Library.Business
 
         public static string CalcNextEnd(string start, string duration)
         {
-            return SqlLiteData.CalcNextEnd(start, duration);
+            return SqlLiteData.ShiftRight(start, duration);
+        }
+
+        public static string ShiftRight(string start, string duration)
+        {
+            return SqlLiteData.ShiftRight(start, duration);
         }
 
         public static string ShiftLeft(string time, string durationToShift)

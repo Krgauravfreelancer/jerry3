@@ -587,6 +587,22 @@ namespace VideoCreator.Auth
             catch { return null; }
         }
 
+        public async Task<object> UndeleteVideoEventToServer(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverId)
+        {
+            try
+            {
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent/{videoevent_serverId}/restore";
+                var parameters = new Dictionary<string, string>();
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Update<ParentData<object>>(url, payload);
+                return result?.Data;
+            }
+            catch { return null; }
+        }
+
+        
+
         public async Task<List<ShiftVideoEventModel>> ShiftVideoEvent(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents)
         {
             try

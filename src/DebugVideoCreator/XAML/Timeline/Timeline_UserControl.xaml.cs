@@ -1,23 +1,17 @@
 ﻿using VideoCreator.Models;
-using Newtonsoft.Json;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Threading;
-using Timeline.UserControls.Config;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
-using VideoCreator.Helpers;
+
 namespace VideoCreator.XAML
 {
     public partial class Timeline_UserControl : UserControl
@@ -45,7 +39,8 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TimelineVideoEvent> VideoEventSelectionChanged;
         public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
-        public event EventHandler<int> ContextMenu_DeleteTimelines_Clicked;
+        public event EventHandler<int> ContextMenu_DeleteEventOnTimelines_Clicked;
+        public event EventHandler ContextMenu_UndeleteDeletedEvent_Clicked;
 
         ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
         ITimelineGridControl _timelineGridControl;
@@ -85,6 +80,22 @@ namespace VideoCreator.XAML
                     }
                 }
             }
+        }
+
+        public void EnableUndoDelete(int videoeventLocalId)
+        {
+            string contextMenuKey = "TimelineMenu";
+            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
+            MenuItem_UndoDelete.Header = $"Undo Delete (with id - {videoeventLocalId})";
+            MenuItem_UndoDelete.IsEnabled = (videoeventLocalId > -1);
+        }
+
+        public void DisableUndoDeleteAndReset()
+        {
+            string contextMenuKey = "TimelineMenu";
+            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
+            MenuItem_UndoDelete.Header = $"Undo Delete";
+            MenuItem_UndoDelete.IsEnabled = false;
         }
 
 
@@ -231,7 +242,7 @@ namespace VideoCreator.XAML
             /// Use this event handler when a video event is deleted
             TimelineGridCtrl2.TimelineVideoEventDeleted += (sender, e) =>
             {
-                ContextMenu_DeleteTimelines_Clicked.Invoke(sender, e.TimelineVideoEvent.videoevent_id);
+                ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, e.TimelineVideoEvent.videoevent_id);
                 //DataManagerSqlLite.DeleteVideoEventsById(e.TimelineVideoEvent.videoevent_id, cascadeDelete: true);
             };
         }
@@ -582,6 +593,13 @@ namespace VideoCreator.XAML
             _timelineGridControl.ClearTimeline();
             //listView_trackbarEvents.ItemsSource = null;
         }
+        
+        private void UndeleteDeletedEvent(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_UndeleteDeletedEvent_Clicked.Invoke(sender, e);
+            DisableUndoDeleteAndReset();
+        }
+        
 
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
         {

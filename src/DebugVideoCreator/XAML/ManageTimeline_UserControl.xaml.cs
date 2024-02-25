@@ -1,38 +1,21 @@
-﻿using AudioEditor_UserControl;
-using AudioRecorder_UserControl;
-using Newtonsoft.Json;
-using Sqllite_Library.Business;
+﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using Windows = System.Windows.Controls;
-using Forms = System.Windows.Forms;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
-using AudioPlayer_UserControl;
 using ServerApiCall_UserControl.DTO.VideoEvent;
 using VideoCreator.Auth;
 using System.Threading.Tasks;
-using NAudio.CoreAudioApi.Interfaces;
 using VideoCreator.Helpers;
-using System.Windows.Threading;
-using System.Diagnostics.Contracts;
-using System.Windows.Controls;
-using System.Net;
-using SixLabors.ImageSharp.PixelFormats;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using VideoCreator.Models;
-using System.IO;
 using VideoCreator.MediaLibraryData;
 using System.Linq;
-using System.Windows.Media;
-using ServerApiCall_UserControl.DTO.MediaLibraryModels;
-using System.Drawing;
 using Timeline.UserControls.Models;
 using ServerApiCall_UserControl.DTO;
-using ScreenRecorder_UserControl.Models;
 
 namespace VideoCreator.XAML
 {
@@ -56,6 +39,7 @@ namespace VideoCreator.XAML
         private TrackbarMouseMoveEvent mouseEventToProcess;
         private TimelineVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
+        private int undoVideoEventId = -1;
 
         public ManageTimeline_UserControl(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool _readonlyFlag)
         {
@@ -94,8 +78,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
-            TimelineUserConrol.ContextMenu_DeleteTimelines_Clicked += TimelineUserConrol_DeleteTimelines_Clicked;
-
+            TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines_Clicked;
+            TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
             TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
 
             NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
@@ -121,8 +105,6 @@ namespace VideoCreator.XAML
 
             
         }
-
-        
 
         private void Refresh()
         {
@@ -264,17 +246,10 @@ namespace VideoCreator.XAML
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
-                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true);
-
-
+                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
             };
-
-            //GeneratedRecorderWindow.Closed += (se, ev) =>
-            //{
-            //    GeneratedRecorderWindow = null;
-            //};
 
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
             var result = screenRecordingUserControl.ShowWindow(GeneratedRecorderWindow);
@@ -290,33 +265,6 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader);
             var manageMediaWindowManager = new ManageMediaWindowManager();
             var GeneratedRecorderWindow = manageMediaWindowManager.CreateWindow(selectedProjectEvent);
-            //screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
-            //{
-            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
-            //    await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
-            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
-            //    screenRecordingUserControl.RefreshData();
-            //};
-
-            //screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
-            //{
-            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
-                
-            //    // Logic Here
-            //    var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
-            //    var videoevent = videoevents.FirstOrDefault();
-            //    await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true); 
-                
-                
-            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
-            //    screenRecordingUserControl.RefreshData();
-            //};
-
-            //GeneratedRecorderWindow.Closed += (se, ev) =>
-            //{
-            //    GeneratedRecorderWindow = null;
-            //};
-            
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, manageMediaWindowManager.loader);
             var result = manageMediaWindowManager.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
@@ -325,80 +273,58 @@ namespace VideoCreator.XAML
             }
             LoaderHelper.HideLoader(this, loader);
         }
+        
+        
 
         
-        private async Task DeleteAndShiftEvent(int videoeventLocalId, CBVVideoEvent videoevent,  bool isShift)
+        private async void TimelineUserConrol_DeleteEventOnTimelines_Clicked(object sender, int videoeventLocalId)
         {
-            // Step-1 soft-delete from server the video-event and children
-            var deletedData = await MediaEventHandlerHelper.DeleteVideoEventToServer(selectedProjectEvent, videoevent.videoevent_serverid, authApiViewModel);
-
-            if (isShift)
-            {
-                // Step-2 Fetch next events of deleted event
-                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end);
-
-                // Step-3 Call server API to shift video event and then save locally the shifted events
-                if (tobeShiftedVideoEvents?.Count > 0)
-                {
-                    var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
-                    foreach (var item in tobeShiftedVideoEvents)
-                    {
-                        var model = new ShiftVideoEventModel
-                        {
-                            videoevent_id = (int)item.videoevent_serverid,
-                            videoevent_duration = item.videoevent_duration,
-                            videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
-                            videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
-                        };
-                        tobeServerShiftedVideoEvents.Add(model);
-                    }
-                    var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
-
-                    var dtShiftedVideoEvents = new DataTable();
-                    dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
-                    foreach (var item in serverShiftedVideoEvents)
-                    {
-                        var row = dtShiftedVideoEvents.NewRow();
-                        row["videoevent_serverid"] = item.videoevent_id;
-                        row["videoevent_start"] = item.videoevent_start;
-                        row["videoevent_end"] = item.videoevent_end;
-                        row["videoevent_duration"] = item.videoevent_duration;
-                        dtShiftedVideoEvents.Rows.Add(row);
-                    }
-                    DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
-                }
-            }
-
-            // Step-4 finally Soft delete event and children from local DB
-            DataManagerSqlLite.DeleteVideoEventsById(videoeventLocalId, true); // This will delete from design/notes/videosegment/videoevent
-        }
-
-        
-        #region == Timeline > Delete Media Event ==
-
-        private async void TimelineUserConrol_DeleteTimelines_Clicked(object sender, int videoeventLocalId)
-        {
-            LoaderHelper.ShowLoader(this, loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
+            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
 
             //Logic Here
             var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
             var videoevent = videoevents.FirstOrDefault();
 
             if(videoevent?.videoevent_track == 2)
-                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true);
+                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
             else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-                await DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false);
+                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
 
+            undoVideoEventId = videoeventLocalId; // Very Important to set this for undo delete
+            TimelineUserConrol.EnableUndoDelete(undoVideoEventId);
             LoaderHelper.HideLoader(this, loader);
 
             Refresh();
         }
 
+        private async void TimelineUserConrol_UndeleteDeletedEvent_Clicked(object sender, EventArgs e)
+        {
+            var canUndelete = DeleteUndeleteHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
+            if (canUndelete)
+            {
+                LoaderHelper.ShowLoader(this, loader, $"Undeleting Event & shifting other events");
 
-        #endregion == Timeline > Delete Media Event ==
+                //Logic Here
+                var videoevents = DataManagerSqlLite.GetVideoEventbyId(undoVideoEventId, false, false);
+                var videoevent = videoevents.FirstOrDefault();
+
+
+                if (videoevent?.videoevent_track == 2)
+                    await DeleteUndeleteHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
+                    await DeleteUndeleteHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
+
+
+                undoVideoEventId = -1; // Very Important to set this for undo delete
+                TimelineUserConrol.DisableUndoDeleteAndReset();
+                LoaderHelper.HideLoader(this, loader);
+
+                Refresh();
+
+            }
+
+        }
+
 
         #region == Screen recorder > Add Event ==
         private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
