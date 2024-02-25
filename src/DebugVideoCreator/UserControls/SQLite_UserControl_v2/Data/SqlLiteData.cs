@@ -1130,7 +1130,7 @@ namespace Sqllite_Library.Data
                 using (var command = new SQLiteCommand(InsertQuery, sqlCon))
                 {
                     command.Parameters.Add(new SQLiteParameter("blob1", DbType.Binary) { Value = blob1 });
-                    command.Parameters.Add(new SQLiteParameter("blob2", DbType.Binary) { Value = blob1 });
+                    command.Parameters.Add(new SQLiteParameter("blob2", DbType.Binary) { Value = blob2 });
                     command.ExecuteNonQuery();
                 }
 
@@ -1682,8 +1682,8 @@ namespace Sqllite_Library.Data
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
                             planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
                             planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
-                            //planning_mediafull = sqlReader["planning_mediafull"] as byte[],
-                            //planning_mediathumb = sqlReader["planning_mediathumb"] as byte[],
+                            planning_mediafull = GetBlobMedia(sqlReader, "planning_mediafull"),
+                            planning_mediathumb = GetBlobMedia(sqlReader, "planning_mediathumb"),
                             planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
                             planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
 

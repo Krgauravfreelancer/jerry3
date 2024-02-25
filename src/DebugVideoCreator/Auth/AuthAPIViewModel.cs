@@ -287,6 +287,7 @@ namespace VideoCreator.Auth
 
         public async Task<byte[]> GetSecuredFileByteArray(string url)
         {
+            if(string.IsNullOrEmpty(url)) return null;
             var result = await _apiClientHelper.GetSecuredFileByteArray(url);
             return result;
         }

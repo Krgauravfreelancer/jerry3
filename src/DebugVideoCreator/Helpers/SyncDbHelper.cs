@@ -9,15 +9,10 @@ using Sqllite_Library.Business;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using System.Windows.Shapes;
 using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
@@ -208,7 +203,7 @@ namespace VideoCreator.Helpers
             return insertedId;
         }
 
-        public static List<int> UpsertPlanning(List<PlanningModel> plannings, int localProjectId, ProjectWithId projectModel)
+        public static async Task<List<int>> UpsertPlanning(List<PlanningModel> plannings, int localProjectId, ProjectWithId projectModel, AuthAPIViewModel authApiViewModel)
         {
             InitializeDatabase();
             DataTable dataTable = new DataTable();
@@ -243,8 +238,8 @@ namespace VideoCreator.Helpers
                 row["planning_medialibid"] = planning.planning_medialibid;
                 row["planning_sort"] = planning.planning_sort;
                 row["planning_suggestnotesline"] = planning.planning_suggestnotesline;
-                //row["planning_mediathumb"] = planning.planning_media_thumb;
-                //row["planning_mediafull"] = planning.planning_media_full;
+                row["planning_mediathumb"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_thumb) ;
+                row["planning_mediafull"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_full);
                 row["planning_notesline"] = planning.planning_notesline;
                 row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -260,9 +255,9 @@ namespace VideoCreator.Helpers
             var insertedIds = DataManagerSqlLite.UpsertRowsToPlanning(dataTable, localProjectId);
             return insertedIds;
         }
+ 
 
-
-        private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, ProjectDetail projdet)
+private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, ProjectDetail projdet)
         {
             //Proj Det
             dataTable.Columns.Add("projdet_serverid", typeof(Int64));
