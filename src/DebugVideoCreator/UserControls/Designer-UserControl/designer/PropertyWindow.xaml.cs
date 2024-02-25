@@ -741,12 +741,12 @@ namespace DesignerNp.controls
             if (null == _uiElement && null == _textBox) return;
             if (null != _uiElement)
             {
-                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 300);
+                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 10);
                 _uiElement.SetValue(Canvas.LeftProperty, x);
             }
             if (null != _textBox)
             {
-                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 300);
+                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 10);
                 _textBox.SetValue(Canvas.LeftProperty, x);
             }
             return;

@@ -524,7 +524,8 @@ namespace VideoCreator.XAML
 
         private void RunEvent_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_Run_Clicked.Invoke(sender, e);
+            ManageMedia_Click(sender, e);
+            //ContextMenu_Run_Clicked.Invoke(sender, e);
         }
 
         private void CloneEvent_Click(object sender, RoutedEventArgs e)

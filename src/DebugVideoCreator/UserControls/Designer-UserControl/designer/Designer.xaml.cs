@@ -49,6 +49,7 @@ namespace DesignerNp.controls
             textBox = null;
 
             dataTable = null;
+            this.SizeChanged += UserControl_SizeChanged;
         }
 
         /// <summary>
@@ -548,7 +549,16 @@ namespace DesignerNp.controls
             }
         }
 
-        
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //var usedWidth = 1920 - 1640;
+            //var usedHeight = 1080 - 950;
+            //var NewWidth = e.NewSize.Width - usedWidth;
+            //var NewHeight = e.NewSize.Height - usedHeight;
+            //Console.WriteLine($"sender - {sender}, Changed Size - {e?.NewSize}, Adjusted Size - {NewWidth},{NewHeight}");
+            //scrollbar.Height = NewHeight > 0 ? NewHeight : 0;
+            //scrollbar.Width = NewWidth > 0 ? NewWidth : 0;
+        }
     }
 }
 

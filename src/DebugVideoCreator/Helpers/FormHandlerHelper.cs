@@ -85,7 +85,8 @@ namespace VideoCreator.Helpers
                 Title = string.IsNullOrEmpty(title) ? "Designer" : title,
                 Content = designerUserControl,
                 WindowState = WindowState.Maximized,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
             };
             LoaderHelper.ShowLoader(uc, loader, "Another window is opened ..");
             var result = designUCWindow.ShowDialog();

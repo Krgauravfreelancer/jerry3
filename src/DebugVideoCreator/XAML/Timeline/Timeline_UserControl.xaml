@@ -22,7 +22,7 @@
             <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" />
             <MenuItem Header="Add Image Event using Library" Click="AddImageEventUsingCBLibrary_Click"/>
             <MenuItem Header="Manage Media" Click="ManageMedia_Click"/>
-            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" IsEnabled="False" />
+            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click"/>
             <Separator></Separator>
             <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" />
             <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" />
