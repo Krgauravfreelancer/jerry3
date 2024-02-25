@@ -68,7 +68,8 @@ namespace VideoCreator.XAML
             TimelineUserConrol.Visibility = Visibility.Visible;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
 
-            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked;
+            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_AddImageEventFromCBLibrary_Clicked;
+            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked += TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked;
             TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
@@ -81,6 +82,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines_Clicked;
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
             TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
+            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
 
@@ -89,7 +91,7 @@ namespace VideoCreator.XAML
 
             // Reload Control
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
+            
             //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             //ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
@@ -246,7 +248,7 @@ namespace VideoCreator.XAML
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
-                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
                 screenRecordingUserControl.RefreshData();
             };
@@ -286,9 +288,9 @@ namespace VideoCreator.XAML
             var videoevent = videoevents.FirstOrDefault();
 
             if(videoevent?.videoevent_track == 2)
-                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
             else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-                await DeleteUndeleteHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
 
             undoVideoEventId = videoeventLocalId; // Very Important to set this for undo delete
             TimelineUserConrol.EnableUndoDelete(undoVideoEventId);
@@ -299,7 +301,7 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_UndeleteDeletedEvent_Clicked(object sender, EventArgs e)
         {
-            var canUndelete = DeleteUndeleteHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
+            var canUndelete = ShiftEventsHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
             if (canUndelete)
             {
                 LoaderHelper.ShowLoader(this, loader, $"Undeleting Event & shifting other events");
@@ -310,9 +312,9 @@ namespace VideoCreator.XAML
 
 
                 if (videoevent?.videoevent_track == 2)
-                    await DeleteUndeleteHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                    await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
                 else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-                    await DeleteUndeleteHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
+                    await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
 
 
                 undoVideoEventId = -1; // Very Important to set this for undo delete
@@ -334,7 +336,7 @@ namespace VideoCreator.XAML
                 await ProcessVideoSegmentDataRowByRow(row);
         }
 
-        private async Task ProcessVideoSegmentDataRowByRow(DataRow row)
+        private async Task<int> ProcessVideoSegmentDataRowByRow(DataRow row)
         {
             DataTable dtNotes = null;
             if (row != null && row["videoevent_notes"] != DBNull.Value)
@@ -347,21 +349,20 @@ namespace VideoCreator.XAML
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    await ProcessVideoSegmentDataRowByRow(row);
+                    return await ProcessVideoSegmentDataRowByRow(row);
                 else if (confirmation == MessageBoxResult.No)
-                    FailureFlowForSaveImageorVideo(row);
+                    return FailureFlowForSaveImageorVideo(row);
                 else
-                    return;
+                    return -1;
             }
             else
-            {
-                SuccessFlowForSaveImageorVideo(row, addedData);
-            }
+                return SuccessFlowForSaveImageorVideo(row, addedData);
         }
 
 
-        private void SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
+        private int SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
         {
+            var insertedVideoSegmentId = -1;
             var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectEvent.projdetId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
             if (insertedVideoEventIds?.Count > 0)
@@ -369,17 +370,38 @@ namespace VideoCreator.XAML
                 var videoEventId = insertedVideoEventIds[0];
                 var blob = row["media"] as byte[];
                 var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, videoEventId, addedData.videosegment);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
+                insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
                 if (insertedVideoSegmentId > 0)
                 {
                     Refresh();
-                    // MessageBox.Show($"videosegment record added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 if(addedData?.notes?.Count > 0)
                 {
                     DataManagerSqlLite.InsertRowsToNotes(NotesDataTableToSave(addedData?.notes, videoEventId));
                 }
             }
+            return insertedVideoSegmentId;
+        }
+
+        private int FailureFlowForSaveImageorVideo(DataRow row)
+        {
+            // Save the record locally with server Id = temp and issynced = false
+            var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
+            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projdetId);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            if (insertedVideoEventIds?.Count > 0)
+            {
+                var videoEventId = insertedVideoEventIds[0];
+                var blob = row["media"] as byte[];
+                var localServerVideoSegmentId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
+                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImageLocally(blob, videoEventId, localServerVideoSegmentId);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, videoEventId);
+                if (insertedVideoSegmentId > 0)
+                {
+                    Refresh();
+                }
+            }
+            return -1;
         }
 
         private DataTable NotesDataTableToSave(List<NotesModel> notes, int videoeventId)
@@ -409,7 +431,7 @@ namespace VideoCreator.XAML
 
                 noteRow["notes_id"] = -1;
                 noteRow["fk_notes_videoevent"] = videoeventId;
-                noteRow["notes_line"] = element.notes_line ;
+                noteRow["notes_line"] = element.notes_line;
                 noteRow["notes_wordcount"] = element.notes_wordcount;
                 noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = element.notes_start;
@@ -428,30 +450,7 @@ namespace VideoCreator.XAML
             return notesDataTable;
         }
 
-        private void FailureFlowForSaveImageorVideo(DataRow row)
-        {
-            // Save the record locally with server Id = temp and issynced = false
-            var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
-            var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projdetId);
-            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-            if (insertedVideoEventIds?.Count > 0)
-            {
-                var videoEventId = insertedVideoEventIds[0];
-                var blob = row["media"] as byte[];
-                var localServerVideoSegmentId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
-                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImageLocally(blob, videoEventId, localServerVideoSegmentId);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, videoEventId);
-                if (insertedVideoSegmentId > 0)
-                {
-                    Refresh();
-                    MessageBox.Show($"videosegment record saved locally, background process will try to sync at an interval of {RetryIntervalInSeconds / 60} min.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            else
-            {
-                MessageBox.Show($"No data added to database ", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+
 
 
         #endregion == Screen recorder > Add Event ==
@@ -460,10 +459,13 @@ namespace VideoCreator.XAML
 
 
         #region == ContextMenu > AddImageEvent > Using CB Library ==
-        private void TimelineUserConrol_ContextMenu_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
+
+
+        private void TimelineUserConrol_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
         {
             int trackId = 2;
-            var mediaLibraryUserControl = new MediaLibrary_UserControl(trackId, selectedProjectEvent.projectId, selectedProjectEvent.serverProjectId, authApiViewModel, startTime);
+            var mediaLibraryUserControl = new MediaLibrary_UserControl(trackId, selectedProjectEvent, authApiViewModel, startTime);
+            mediaLibraryUserControl.BtnUseAndSaveClickedEventInMiddle += (MediaEventInMiddle me) => { };
             mediaLibraryUserControl.BtnUseAndSaveClickedEvent += MediaLibraryUserControl_BtnUseAndSaveClickedEvent;
             var window = new Window
             {
@@ -682,7 +684,56 @@ namespace VideoCreator.XAML
             await HandleFormLogic(calloutEvent, EnumTrack.IMAGEORVIDEO, null, true);
         }
 
-        
+        private void TimelineUserConrol_AddFormEventInMiddle_Clicked(object sender, FormOrCloneEvent e)
+        {
+            //LoaderHelper.ShowLoader(this, loader, "Form Window is opened ..");
+            throw new NotImplementedException();
+        }
+
+        private void TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked(object sender, FormOrCloneEvent payload)
+        {
+            var mediaLibraryUserControl = new MediaLibrary_UserControl((int)EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment, payload.timelineVideoEvent);
+
+            mediaLibraryUserControl.BtnUseAndSaveClickedEvent += (DataTable dt) => { };
+            mediaLibraryUserControl.BtnUseAndSaveClickedEventInMiddle += MediaLibraryUserControl_BtnUseAndSaveClickedEventInMiddle;
+            var window = new Window
+            {
+                Title = "Media Library",
+                Content = mediaLibraryUserControl,
+                WindowState = WindowState.Normal,
+                ResizeMode = ResizeMode.CanResize,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
+            LoaderHelper.ShowLoader(window, loader, "Processing...");
+            var result = window.ShowDialog();
+            if (result.HasValue && mediaLibraryUserControl.isEventAdded)
+            {
+                Refresh();
+                mediaLibraryUserControl.Dispose();
+            }
+            else
+                LoaderHelper.HideLoader(this, loader);
+        }
+
+        private async void MediaLibraryUserControl_BtnUseAndSaveClickedEventInMiddle(MediaEventInMiddle mediaEventInMiddle)
+        {
+            var shiftEventLocation = mediaEventInMiddle.shiftVideoEventLocation;
+            var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, shiftEventLocation.videoevent_end);
+            foreach (DataRow row in mediaEventInMiddle?.datatable.Rows)
+            {
+                var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row);
+                if(insertedVideoeventId > 0 && shiftEventLocation.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
+                {
+                    // ShiftAll pending events
+                    await ShiftEventsHelper.ShiftRight(tobeShiftedVideoEvents, Convert.ToString(row["videoevent_duration"]), selectedProjectEvent, authApiViewModel);
+                }
+                Refresh();
+            }
+            LoaderHelper.HideLoader(this, loader);
+        }
+
+
+
 
 
         #endregion

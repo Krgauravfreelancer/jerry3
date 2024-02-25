@@ -30,6 +30,7 @@ using ServerApiCall_UserControl.DTO.MediaLibraryModels;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Linq;
+using Timeline.UserControls.Models;
 
 namespace VideoCreator.MediaLibraryData
 {
@@ -38,8 +39,7 @@ namespace VideoCreator.MediaLibraryData
     /// </summary>
     public partial class MediaLibrary_UserControl : UserControl, IDisposable
     {
-        private int selectedProjectId;
-        private Int64 selectedServerProjectId;
+        private SelectedProjectEvent selectedProjectEvent;
         private readonly AuthAPIViewModel authApiViewModel;
         private string TAGS = string.Empty;
         private int PAGESIZE = 10;
@@ -47,9 +47,14 @@ namespace VideoCreator.MediaLibraryData
         private int TOTALPAGES = 0;
         private int _trackId;
         public event Action<DataTable> BtnUseAndSaveClickedEvent;
+        public event Action<MediaEventInMiddle> BtnUseAndSaveClickedEventInMiddle;
+        private TimelineVideoEvent shiftVideoEventLocation;
         public MediaLibrary selectedImage;
         public bool isEventAdded = false;
         private string videoevent_start;
+
+        
+
 
         public MediaLibrary_UserControl()
         {
@@ -57,20 +62,19 @@ namespace VideoCreator.MediaLibraryData
             videoevent_start = "00:00:00.000";
         }
 
-        public MediaLibrary_UserControl(int trackId, int projectId, Int64 _selectedServerProjectId, AuthAPIViewModel _authApiViewModel, string start = "00:00:00.000")
+        public MediaLibrary_UserControl(int trackId, SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, string start = "00:00:00.000", TimelineVideoEvent _shiftVideoEventLocation = null)
         {
             InitializeComponent();
 
             _trackId = trackId;
-            selectedProjectId = projectId;
-            selectedServerProjectId = _selectedServerProjectId;
+            selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
             loader.Visibility = Visibility.Visible;
             videoevent_start = start;
             FetchAndFillTags();
             FillComboBoxes();
             LoaderHelper.ShowLoader(this, loader, "Fetching and loading data ...");
-
+            shiftVideoEventLocation = _shiftVideoEventLocation;
         }
 
         private async void FetchAndFillTags()
@@ -260,11 +264,11 @@ namespace VideoCreator.MediaLibraryData
 
             var row = dataTable.NewRow();
             //row["videoevent_id"] = -1;
-            row["fk_videoevent_projdet"] = selectedProjectId;
+            row["fk_videoevent_projdet"] = selectedProjectEvent.projdetId;
             row["fk_videoevent_media"] = 1;
             row["videoevent_track"] = _trackId;
             row["videoevent_start"] = videoevent_start;
-            row["videoevent_duration"] = "00:00:10.000"; // TBD
+            row["videoevent_duration"] = "00:00:10.000";
 
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -273,15 +277,20 @@ namespace VideoCreator.MediaLibraryData
             row["videoevent_serverid"] = -1;
             row["videoevent_syncerror"] = string.Empty;
             
-
-            
-
             row["fk_videoevent_screen"] = -1; // Not needed for this case
             var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
             row["media"] = byteArrayIn;
             dataTable.Rows.Add(row);
 
             BtnUseAndSaveClickedEvent.Invoke(dataTable);
+
+            var payload = new MediaEventInMiddle
+            {
+                datatable = dataTable,
+                shiftVideoEventLocation = shiftVideoEventLocation,
+            };
+
+            BtnUseAndSaveClickedEventInMiddle.Invoke(payload);
             isEventAdded = true;
             var myWindow = Window.GetWindow(this);
             myWindow.Close();

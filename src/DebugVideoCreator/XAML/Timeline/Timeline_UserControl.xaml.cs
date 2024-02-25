@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
+using System.Drawing;
 
 namespace VideoCreator.XAML
 {
@@ -25,11 +26,13 @@ namespace VideoCreator.XAML
         //public event EventHandler ContextMenu_AddVideoEvent_Success;
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
+        public event EventHandler<FormOrCloneEvent> ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked;
         public event EventHandler ContextMenu_ManageMedia_Clicked;
         
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
+        
 
         public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
 
@@ -82,22 +85,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        public void EnableUndoDelete(int videoeventLocalId)
-        {
-            string contextMenuKey = "TimelineMenu";
-            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
-            MenuItem_UndoDelete.Header = $"Undo Delete (with id - {videoeventLocalId})";
-            MenuItem_UndoDelete.IsEnabled = (videoeventLocalId > -1);
-        }
-
-        public void DisableUndoDeleteAndReset()
-        {
-            string contextMenuKey = "TimelineMenu";
-            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
-            MenuItem_UndoDelete.Header = $"Undo Delete";
-            MenuItem_UndoDelete.IsEnabled = false;
-        }
-
+        
 
         #region == TimelineUserControl : Load from DB functions ==
 
@@ -322,6 +310,9 @@ namespace VideoCreator.XAML
 
                 var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
                 MenuItem_CloneItemsAtEnd.IsEnabled = (selectedEvent != null);
+
+                var MenuItem_AddImageEventUsingCBLibraryInMiddle = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibraryInMiddle");
+                MenuItem_AddImageEventUsingCBLibraryInMiddle.IsEnabled = (selectedEvent != null);
             }
             else
             {
@@ -336,6 +327,9 @@ namespace VideoCreator.XAML
 
                 var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
                 MenuItem_CloneItemsAtEnd.IsEnabled = false;
+
+                var MenuItem_AddImageEventUsingCBLibraryInMiddle = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibraryInMiddle");
+                MenuItem_AddImageEventUsingCBLibraryInMiddle.IsEnabled = false;
             }
         }
 
@@ -660,56 +654,6 @@ namespace VideoCreator.XAML
         #region == AutoFill Events ==
 
         public event EventHandler<AutofillEvent> Autofill_Clicked;
-        /*
-        private void AddTitleAutofill_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new AutofillEvent
-            {
-                AutofillType = AutofillEnumType.Title,
-                timeAtTheMoment = trackbarTime,
-                Duration = 10
-            };
-            Autofill_Clicked.Invoke(sender, payload);
-        }
-
-        private void AddRequirementAutofill_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new AutofillEvent
-            {
-                AutofillType = AutofillEnumType.Requirement,
-                timeAtTheMoment = trackbarTime,
-                Duration = 10
-            };
-            Autofill_Clicked.Invoke(sender, payload);
-        }
-
-        private void AddObjectiveAutofill_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new AutofillEvent
-            {
-                AutofillType = AutofillEnumType.Objective,
-                timeAtTheMoment = trackbarTime,
-                Duration = 10
-            };
-            Autofill_Clicked.Invoke(sender, payload);
-        }
-
-        private void AddNextAutofill_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new AutofillEvent
-            {
-                AutofillType = AutofillEnumType.Next,
-                timeAtTheMoment = trackbarTime,
-                Duration = 10
-            };
-            Autofill_Clicked.Invoke(sender, payload);
-        }
-
-        */
         private void AddAllAutofill_Click(object sender, RoutedEventArgs e)
         {
             var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
@@ -722,6 +666,50 @@ namespace VideoCreator.XAML
             };
             Autofill_Clicked.Invoke(sender, payload);
         }
+        #endregion
+
+        #region == delete/undelete and shift ==
+        
+        public void EnableUndoDelete(int videoeventLocalId)
+        {
+            string contextMenuKey = "TimelineMenu";
+            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
+            MenuItem_UndoDelete.Header = $"Undo Delete (with id - {videoeventLocalId})";
+            MenuItem_UndoDelete.IsEnabled = (videoeventLocalId > -1);
+        }
+
+        public void DisableUndoDeleteAndReset()
+        {
+            string contextMenuKey = "TimelineMenu";
+            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
+            MenuItem_UndoDelete.Header = $"Undo Delete";
+            MenuItem_UndoDelete.IsEnabled = false;
+        }
+
+        #endregion
+
+
+        #region == Events in Middle needs shift ==
+        
+        private void AddImageEventUsingCBLibraryInMiddle_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent shiftEvent = _timelineGridControl.GetSelectedEvent();
+
+            //var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+            //if (trackbarEvents != null && trackbarEvents?.Count > 0)
+            //    shiftEvent = trackbarEvents[0];
+            //else
+            //    shiftEvent = _timelineGridControl.GetSelectedEvent();
+
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = shiftEvent,
+                timeAtTheMoment = shiftEvent.videoevent_end
+            };
+
+            ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked(sender, payload);
+        }
+
         #endregion
 
     }

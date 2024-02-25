@@ -28,13 +28,11 @@
             <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" />
             <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" />
             <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
-            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd"  Click="CloneEventAtEnd_Click"/>
+            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click"/>
             <Separator></Separator>
-            <!--<MenuItem Header="Add Title Autofill" x:Name="MenuItem_AddTitleAutofill" Click="AddTitleAutofill_Click" />
-            <MenuItem Header="Add Requirement Autofill" x:Name="MenuItem_AddRequirementAutofill" Click="AddRequirementAutofill_Click"/>
-            <MenuItem Header="Add Objective Autofill" x:Name="MenuItem_AddObjectiveAutofill"  Click="AddObjectiveAutofill_Click"/>
-            <MenuItem Header="Add Next Autofill" x:Name="MenuItem_AddNextAutofill" Click="AddNextAutofill_Click"/>-->
             <MenuItem Header="Add All Autofill" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click"/>
+            <Separator />
+            <MenuItem Header="Add Image Event using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click"/>
         </ContextMenu>
     </UserControl.Resources>
     <ScrollViewer Margin="5,5,10,5">

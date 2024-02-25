@@ -340,7 +340,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
-    <Compile Include="Helpers\DeleteUndeleteHelper.cs" />
+    <Compile Include="Helpers\ShiftEventsHelper.cs" />
     <Compile Include="Helpers\BackgroundProcessHelper.cs" />
     <Compile Include="Helpers\AutofillHandlerHelper.cs" />
     <Compile Include="Helpers\FormHandlerHelper.cs" />
@@ -361,6 +361,7 @@
     <Compile Include="Loader\LoadingAnimation.xaml.cs">
       <DependentUpon>LoadingAnimation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\MediaEventInMiddle.cs" />
     <Compile Include="Models\AutofillEvent.cs" />
     <Compile Include="Models\FormOrCloneEvent.cs" />
     <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">

@@ -33,7 +33,7 @@ using FullScreenPlayer_UserControl.Controls;
 
 namespace VideoCreator.Helpers
 {
-    public static class DeleteUndeleteHelper
+    public static class ShiftEventsHelper
     {
         #region == API Calls ==
         private static async Task<VideoEventResponseModel> DeleteVideoEventToServer(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverid, AuthAPIViewModel authApiViewModel)
@@ -121,42 +121,50 @@ namespace VideoCreator.Helpers
                 var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
 
                 // Step-3 Call server API to shift video event and then save locally the shifted events
-                if (tobeShiftedVideoEvents?.Count > 0)
-                {
-                    var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
-                    foreach (var item in tobeShiftedVideoEvents)
-                    {
-                        var model = new ShiftVideoEventModel
-                        {
-                            videoevent_id = (int)item.videoevent_serverid,
-                            videoevent_duration = item.videoevent_duration,
-                            videoevent_start = DataManagerSqlLite.ShiftRight(item.videoevent_start, videoevent.videoevent_duration),
-                            videoevent_end = DataManagerSqlLite.ShiftRight(item.videoevent_end, videoevent.videoevent_duration)
-                        };
-                        tobeServerShiftedVideoEvents.Add(model);
-                    }
-                    var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
-
-                    var dtShiftedVideoEvents = new DataTable();
-                    dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
-                    dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
-                    foreach (var item in serverShiftedVideoEvents)
-                    {
-                        var row = dtShiftedVideoEvents.NewRow();
-                        row["videoevent_serverid"] = item.videoevent_id;
-                        row["videoevent_start"] = item.videoevent_start;
-                        row["videoevent_end"] = item.videoevent_end;
-                        row["videoevent_duration"] = item.videoevent_duration;
-                        dtShiftedVideoEvents.Rows.Add(row);
-                    }
-                    DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
-                }
+                await ShiftRight(tobeShiftedVideoEvents, videoevent.videoevent_duration, selectedProjectEvent, authApiViewModel);
             }
 
             // Step-4 finally Soft delete event and children from local DB
             DataManagerSqlLite.UndeleteVideoEventsById(videoeventLocalId, true); // This will delete from design/notes/videosegment/videoevent
+        }
+
+
+        public async static Task ShiftRight(List<CBVShiftVideoEvent> tobeShiftedVideoEvents, string duration, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        {
+            // Step-3 Call server API to shift video event and then save locally the shifted events
+            if (tobeShiftedVideoEvents?.Count > 0)
+            {
+                var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                foreach (var item in tobeShiftedVideoEvents)
+                {
+                    var model = new ShiftVideoEventModel
+                    {
+                        videoevent_id = (int)item.videoevent_serverid,
+                        videoevent_duration = item.videoevent_duration,
+                        videoevent_start = DataManagerSqlLite.ShiftRight(item.videoevent_start, duration),
+                        videoevent_end = DataManagerSqlLite.ShiftRight(item.videoevent_end, duration)
+                    };
+                    tobeServerShiftedVideoEvents.Add(model);
+                }
+                var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+
+                var dtShiftedVideoEvents = new DataTable();
+                dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                foreach (var item in serverShiftedVideoEvents)
+                {
+                    var row = dtShiftedVideoEvents.NewRow();
+                    row["videoevent_serverid"] = item.videoevent_id;
+                    row["videoevent_start"] = item.videoevent_start;
+                    row["videoevent_end"] = item.videoevent_end;
+                    row["videoevent_duration"] = item.videoevent_duration;
+                    dtShiftedVideoEvents.Rows.Add(row);
+                }
+                DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
+            }
+
         }
 
     }
