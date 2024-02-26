@@ -8,31 +8,90 @@
         mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
-            <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" />
-
-            <Separator></Separator>
-            <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False"/>
-            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click">
+            <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" >
                 <MenuItem.Icon>
-                    <Image Source="../../Icons/add-circle.png" ></Image>
+                    <Image Source="../../Icons/populate.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Callout 2" Click="AddCallout2_Click" />
-            <MenuItem Header="Add Video Event" Click="AddVideoEvent_Click" />
-            <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" />
-            <MenuItem Header="Add Image Event using Library" Click="AddImageEventUsingCBLibrary_Click"/>
-            <MenuItem Header="Manage Media" Click="ManageMedia_Click"/>
-            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click"/>
             <Separator></Separator>
-            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" />
-            <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" />
-            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" />
-            <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click"/>
-            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click"/>
+            <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False">
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/audio.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click">
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/callout1.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Callout 2" Click="AddCallout2_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/callout2.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Video Event" Click="AddVideoEvent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/video.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/form.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Image Event using Library" Click="AddImageEventUsingCBLibrary_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/imageFromLib.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Manage Media" Click="ManageMedia_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/manage-media.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/run.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator></Separator>
-            <MenuItem Header="Add All Autofill" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click"/>
+            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/delete.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/undo.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/save.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/clone.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/clone.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator></Separator>
+            <MenuItem Header="Add All Autofill" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/autofill.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
             <Separator />
-            <MenuItem Header="Add Image Event using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click"/>
+            <MenuItem Header="Add Image Event using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/shift.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
         </ContextMenu>
     </UserControl.Resources>
     <ScrollViewer Margin="5,5,10,5">
