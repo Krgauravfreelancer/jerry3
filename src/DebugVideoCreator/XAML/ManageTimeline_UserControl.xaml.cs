@@ -309,10 +309,6 @@ namespace VideoCreator.XAML
                 uc.RefreshData();
             };
 
-
-
-
-
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
             var result = uc.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
@@ -325,10 +321,74 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_ManageMedia_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            var manageMediaWindowManager = new ManageMediaWindowManager();
-            var GeneratedRecorderWindow = manageMediaWindowManager.CreateWindow(selectedProjectEvent);
-            LoaderHelper.ShowLoader(GeneratedRecorderWindow, manageMediaWindowManager.loader);
-            var result = manageMediaWindowManager.ShowWindow(GeneratedRecorderWindow);
+            var uc = new ManageMediaWindowManager();
+            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent);
+
+            uc.ManageMedia_NotesCreatedEvent += async (DataTable dt) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
+
+                // Logic Here
+                foreach (DataRow noteRow in dt.Rows)
+                {
+                    var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
+                    var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                    if (savedNotes != null)
+                    {
+                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
+                        DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                    }
+                }
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+            uc.ManageMedia_NotesChangedEvent += async (DataTable dt) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
+                // Logic Here
+                foreach (DataRow noteRow in dt.Rows)
+                {
+                    var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
+                    var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                    if (updatedNotes != null)
+                    {
+                        DataManagerSqlLite.UpdateRowsToNotes(noteRow);
+                    }
+                }
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+            uc.ManageMedia_NotesDeletedEvent += async (List<int> Ids) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
+
+                // Logic Here
+                foreach (var noteId in Ids)
+                {
+                    var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
+                    var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
+                    var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
+                    if (deletedNotes != null)
+                    {
+                        DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
+                    }
+                }
+
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+
+
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
+
+
+
+
+
+            var result = uc.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
             {
                 Refresh();

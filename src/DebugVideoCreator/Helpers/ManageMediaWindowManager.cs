@@ -82,132 +82,72 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private void _ManageMedia_NotesCreated(object sender, ManageMedia_UserControl.Controls.NotesChangedArgs e)
+        private void _ManageMedia_NotesCreated(object sender, NotesChangedArgs e)
         {
-            var notedataTable = new DataTable();
-            notedataTable.Columns.Add("notes_id", typeof(int));
-            notedataTable.Columns.Add("fk_notes_videoevent", typeof(int));
-            notedataTable.Columns.Add("notes_line", typeof(string));
-            notedataTable.Columns.Add("notes_wordcount", typeof(int));
-            notedataTable.Columns.Add("notes_index", typeof(int));
-            notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(string));
-            notedataTable.Columns.Add("notes_createdate", typeof(string));
-            notedataTable.Columns.Add("notes_modifydate", typeof(string));
-            notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
-            notedataTable.Columns.Add("notes_issynced", typeof(bool));
-            notedataTable.Columns.Add("notes_serverid", typeof(long));
-            notedataTable.Columns.Add("notes_syncerror", typeof(string));
+            // For calculating the index
+            var notesIndex = new Dictionary<int, int>();
+            foreach (var videoeventId in e.ChangedNotes.Select(x => x.VideoEventID).Distinct())
+            {
+                notesIndex.Add(videoeventId, DataManagerSqlLite.GetMaxIndexForNotes(videoeventId));
+            }
 
+            var notedataTable = GetNotesRawTable();
             foreach (var CreatedElement in e.ChangedNotes)
             {
-                notedataTable.Rows.Clear();
                 var noteRow = notedataTable.NewRow();
-
                 noteRow["notes_id"] = -1;
-                noteRow["fk_notes_videoevent"] = CreatedElement.VideoEventID;
+                noteRow["fk_notes_videoevent"] = DataManagerSqlLite.GetVideoEventbyId(CreatedElement.VideoEventID, false, false)[0].videoevent_serverid;
                 noteRow["notes_line"] = CreatedElement.Item.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = CreatedElement.Item.WordCount;
-                noteRow["notes_start"] = CreatedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = CreatedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                noteRow["notes_isdeleted"] = false;
-                noteRow["notes_issynced"] = false;
-                noteRow["notes_serverid"] = 1;
-                noteRow["notes_syncerror"] = string.Empty;
-
-                notedataTable.Rows.Add(noteRow);
-
-                int ItemIndex = CreateNotes(notedataTable);
-                _ManageMedia.SetNoteID(ItemIndex, CreatedElement.Item);
-            }
-        }
-
-        private void _ManageMedia_NotesDeleted(object sender, ManageMedia_UserControl.Controls.NotesChangedArgs e)
-        {
-            foreach (var DeletedElement in e.ChangedNotes)
-            {
-                DeletedNote(DeletedElement.Item);
-            }
-        }
-
-        private void _ManageMedia_NotesChanged(object sender, ManageMedia_UserControl.Controls.NotesChangedArgs e)
-        {
-
-            foreach (var DeletedElement in e.ChangedNotes)
-            {
-                DeletedNote(DeletedElement.Item);
-            }
-
-
-            var notedataTable = new DataTable();
-            notedataTable.Columns.Add("notes_id", typeof(int));
-            notedataTable.Columns.Add("fk_notes_videoevent", typeof(int));
-            notedataTable.Columns.Add("notes_line", typeof(string));
-            notedataTable.Columns.Add("notes_wordcount", typeof(int));
-            notedataTable.Columns.Add("notes_index", typeof(int));
-            notedataTable.Columns.Add("notes_start", typeof(string));
-            notedataTable.Columns.Add("notes_duration", typeof(string));
-            notedataTable.Columns.Add("notes_createdate", typeof(string));
-            notedataTable.Columns.Add("notes_modifydate", typeof(string));
-            notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
-            notedataTable.Columns.Add("notes_issynced", typeof(bool));
-            notedataTable.Columns.Add("notes_serverid", typeof(long));
-            notedataTable.Columns.Add("notes_syncerror", typeof(string));
-
-
-            foreach (var CreatedElement in e.ChangedNotes)
-            {
-                notedataTable.Rows.Clear();
-                var noteRow = notedataTable.NewRow();
-
-                noteRow["notes_id"] = -1;
-                noteRow["fk_notes_videoevent"] = CreatedElement.VideoEventID;
-                noteRow["notes_line"] = CreatedElement.Item.Text.Replace("'", "''"); ;
-                noteRow["notes_wordcount"] = CreatedElement.Item.WordCount;
+                noteRow["notes_index"] = notesIndex[CreatedElement.VideoEventID];
                 noteRow["notes_start"] = CreatedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_duration"] = CreatedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
-                noteRow["notes_issynced"] = false;
-                noteRow["notes_serverid"] = 1;
+                noteRow["notes_issynced"] = true;
+                noteRow["notes_serverid"] = -1;
                 noteRow["notes_syncerror"] = string.Empty;
-
                 notedataTable.Rows.Add(noteRow);
-
-                int ItemIndex = CreateNotes(notedataTable);
-                _ManageMedia.SetNoteID(ItemIndex, CreatedElement.Item);
+                notesIndex[CreatedElement.VideoEventID]++;
             }
-
+            ManageMedia_NotesCreatedEvent.Invoke(notedataTable);
         }
 
-        private void DeletedNote(TextItem textItem)
+        private void _ManageMedia_NotesChanged(object sender, NotesChangedArgs e)
         {
-            try
+            var notedataTable = GetNotesRawTable();
+            foreach (var ChangedElement in e.ChangedNotes)
             {
-                DataManagerSqlLite.DeleteNotesById(textItem.NoteID);
+                var noteRow = notedataTable.NewRow();
+                var localNote = DataManagerSqlLite.GetNotesbyId(ChangedElement.Item.NoteID)[0];
+                noteRow["notes_id"] = ChangedElement.Item.NoteID;
+                noteRow["fk_notes_videoevent"] = DataManagerSqlLite.GetVideoEventbyId(ChangedElement.VideoEventID, false, false)[0].videoevent_serverid;
+                noteRow["notes_line"] = ChangedElement.Item.Text.Replace("'", "''"); ;
+                noteRow["notes_wordcount"] = ChangedElement.Item.WordCount;
+                noteRow["notes_index"] = localNote.notes_index;
+                noteRow["notes_start"] = ChangedElement.Item.Start.ToString(@"hh\:mm\:ss\.fff");
+                noteRow["notes_duration"] = ChangedElement.Item.Duration.ToString(@"hh\:mm\:ss\.fff");
+                noteRow["notes_createdate"] = localNote.notes_createdate;
+                noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                noteRow["notes_isdeleted"] = localNote.notes_isdeleted;
+                noteRow["notes_issynced"] = localNote.notes_issynced;
+                noteRow["notes_serverid"] = localNote.notes_serverid;
+                noteRow["notes_syncerror"] = string.Empty;
+                notedataTable.Rows.Add(noteRow);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            ManageMedia_NotesChangedEvent.Invoke(notedataTable);
+            //_ManageMedia.SetNoteID(ItemIndex, CreatedElement.Item);
         }
 
-        private int CreateNotes(DataTable dataTable)
+        private void _ManageMedia_NotesDeleted(object sender, NotesChangedArgs e)
         {
-            try
+            var ids = new List<int>();
+            foreach (var deletedItem in e.ChangedNotes)
             {
-                var insertedId = DataManagerSqlLite.InsertRowsToNotes(dataTable);
-                return insertedId;
+                ids.Add(deletedItem.Item.NoteID);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            return -1;
+            ManageMedia_NotesDeletedEvent.Invoke(ids);
         }
 
         public void SetProjectID(int projectID)
@@ -216,7 +156,7 @@ namespace VideoCreator.Helpers
             RefreshData();
         }
 
-        private void RefreshData()
+        public void RefreshData()
         {
             #region Planned Text
 
@@ -319,7 +259,34 @@ namespace VideoCreator.Helpers
 
             #endregion
         }
-        
+
+
+        #region == Added By Kumar ==
+        public event Action<DataTable> ManageMedia_NotesCreatedEvent;
+        public event Action<DataTable> ManageMedia_NotesChangedEvent;
+        public event Action<List<int>> ManageMedia_NotesDeletedEvent;
+
+        private DataTable GetNotesRawTable()
+        {
+            var notedataTable = new DataTable();
+            notedataTable.Columns.Add("notes_id", typeof(int));
+            notedataTable.Columns.Add("fk_notes_videoevent", typeof(int));
+            notedataTable.Columns.Add("notes_line", typeof(string));
+            notedataTable.Columns.Add("notes_wordcount", typeof(int));
+            notedataTable.Columns.Add("notes_index", typeof(int));
+            notedataTable.Columns.Add("notes_start", typeof(string));
+            notedataTable.Columns.Add("notes_duration", typeof(string));
+            notedataTable.Columns.Add("notes_createdate", typeof(string));
+            notedataTable.Columns.Add("notes_modifydate", typeof(string));
+            notedataTable.Columns.Add("notes_isdeleted", typeof(bool));
+            notedataTable.Columns.Add("notes_issynced", typeof(bool));
+            notedataTable.Columns.Add("notes_serverid", typeof(long));
+            notedataTable.Columns.Add("notes_syncerror", typeof(string));
+            return notedataTable;
+        }
+
+
+        #endregion
 
     }
 }
