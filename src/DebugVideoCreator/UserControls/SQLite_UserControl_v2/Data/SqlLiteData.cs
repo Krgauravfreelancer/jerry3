@@ -222,7 +222,7 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE 'cbv_requireautofill' (
                     'requireautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                     'fk_requireautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                    'requireautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'requireautofill_name' TEXT(50) NOT NULL  DEFAULT 'NULL',
                     'requireautofill_importance' INTEGER NOT NULL  DEFAULT 1,
                     'requireautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
                     'requireautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
@@ -241,7 +241,7 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE 'cbv_objectiveautofill' (
                     'objectiveautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                     'fk_objectiveautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                    'objectiveautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'objectiveautofill_name' TEXT(50) NOT NULL  DEFAULT 'NULL',
                     'objectiveautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
                     'objectiveautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'objectiveautofill_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
@@ -259,7 +259,7 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE 'cbv_nextautofill' (
                     'nextautofill_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                     'fk_nextautofill_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                    'nextautofill_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
+                    'nextautofill_name' TEXT(50) NOT NULL  DEFAULT 'NULL',
                     'nextautofill_importance' INTEGER NOT NULL  DEFAULT 1,
                     'nextautofill_active' INTEGER(1) NOT NULL  DEFAULT 1,
                     'nextautofill_createdate' TEXT NOT NULL  DEFAULT 'NULL',
@@ -291,7 +291,7 @@ namespace Sqllite_Library.Data
                         'planning_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                         'fk_planning_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
                         'fk_planning_head' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planninghead' ('planninghead_id'),
-                        'planning_customname' TEXT(20) DEFAULT NULL,
+                        'planning_customname' TEXT(50) DEFAULT NULL,
                         'planning_notesline' TEXT DEFAULT NULL,
                         'planning_medialibid' TEXT(12) DEFAULT NULL,
                         'planning_sort' TEXT NOT NULL  DEFAULT '1',
@@ -3250,9 +3250,9 @@ namespace Sqllite_Library.Data
                 var notes_id = Convert.ToInt32(dr["notes_id"]);
                 var updateQueryString = $@" UPDATE cbv_notes
                                         SET 
-                                            notes_index = {Convert.ToInt32(dr["notes_index"])},
                                             notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
+                                            notes_index = {Convert.ToInt32(dr["notes_index"])},
                                             notes_start = '{Convert.ToString(dr["notes_start"])}',
                                             notes_duration = {Convert.ToString(dr["notes_duration"])},
                                             notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
