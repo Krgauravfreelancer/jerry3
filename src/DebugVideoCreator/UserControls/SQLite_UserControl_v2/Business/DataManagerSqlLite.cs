@@ -444,6 +444,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetNotesbyId(notesId);
         }
 
+        public static int GetMaxIndexForNotes(int fkVideoEventId)
+        {
+            return SqlLiteData.GetMaxIndexForNotes(fkVideoEventId);
+        }
+
         public static List<CBVLocAudio> GetLocAudio(int notesId = -1)
         {
             return SqlLiteData.GetLocAudio(notesId);
@@ -525,6 +530,11 @@ namespace Sqllite_Library.Business
         public static void UpdateRowsToNotes(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToNotes(dataTable);
+        }
+
+        public static void UpdateRowsToNotes(DataRow dr)
+        {
+            SqlLiteData.UpdateRowsToNotes(dr);
         }
 
         public static void UpdateRowsToLocAudio(DataTable dataTable)

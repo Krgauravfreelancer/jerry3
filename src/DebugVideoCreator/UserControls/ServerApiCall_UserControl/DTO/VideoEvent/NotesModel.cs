@@ -34,4 +34,10 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public string notes_modifylocdate { get; set; }
 
     }
+
+    public class NotesModelPut : NotesModelPost
+    {
+        public int notes_id { get; set; }
+
+    }
 }

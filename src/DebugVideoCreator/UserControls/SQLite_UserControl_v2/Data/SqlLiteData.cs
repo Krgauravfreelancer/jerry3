@@ -1249,7 +1249,7 @@ namespace Sqllite_Library.Data
             return null;
         }
 
-        private static int GetMaxIndexForNotes(int fkVideoEventId)
+        public static int GetMaxIndexForNotes(int fkVideoEventId)
         {
             // Check if database is created
             if (false == IsDbCreated())
@@ -1265,7 +1265,7 @@ namespace Sqllite_Library.Data
                 sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
                 sqlCon.Open();
 
-                string sqlQueryString = $@"Select IFNULL(Max(notes_index),0) + 1 from cbv_notes where fk_notes_videoevent = {fkVideoEventId}";
+                string sqlQueryString = $@"Select IFNULL(Max(notes_index),0) + 1 from cbv_notes where fk_notes_videoevent = {fkVideoEventId} and notes_isdeleted = 0";
                 var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
                 count = Convert.ToInt32(sqlQuery.ExecuteScalar());
                 sqlQuery.Dispose();
@@ -3254,7 +3254,7 @@ namespace Sqllite_Library.Data
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
                                             notes_index = {Convert.ToInt32(dr["notes_index"])},
                                             notes_start = '{Convert.ToString(dr["notes_start"])}',
-                                            notes_duration = {Convert.ToString(dr["notes_duration"])},
+                                            notes_duration = '{Convert.ToString(dr["notes_duration"])}',
                                             notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
                                             notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
                                             notes_syncerror = '{Convert.ToString(dr["notes_syncerror"])}',
@@ -3264,6 +3264,30 @@ namespace Sqllite_Library.Data
                 var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
             }
+        }
+
+        public static void UpdateRowsToNotes(DataRow dr)
+        {
+            var modifyDate = Convert.ToString(dr["notes_modifydate"]);
+            if (string.IsNullOrEmpty(modifyDate))
+                modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            var notes_id = Convert.ToInt32(dr["notes_id"]);
+            var updateQueryString = $@" UPDATE cbv_notes
+                                        SET 
+                                            notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
+                                            notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
+                                            notes_index = {Convert.ToInt32(dr["notes_index"])},
+                                            notes_start = '{Convert.ToString(dr["notes_start"])}',
+                                            notes_duration = '{Convert.ToString(dr["notes_duration"])}',
+                                            notes_issynced = {Convert.ToBoolean(dr["notes_issynced"])},
+                                            notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
+                                            notes_syncerror = '{Convert.ToString(dr["notes_syncerror"])}',
+                                            notes_modifydate = '{modifyDate}'
+                                        WHERE 
+                                            notes_id = {notes_id}";
+            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
+            Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
         }
 
         public static void UpdateRowsToLocAudio(DataTable dataTable)

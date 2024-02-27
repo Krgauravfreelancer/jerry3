@@ -33,8 +33,8 @@ namespace VideoCreator.Helpers
             {
                 var notesModel = new NotesModelPost();
                 notesModel.notes_line = Convert.ToString(note["notes_line"]);
-                notesModel.notes_wordcount = Convert.ToInt16(note["notes_wordcount"]);
                 notesModel.notes_index = Convert.ToString(note["notes_index"]);
+                notesModel.notes_wordcount = Convert.ToInt16(note["notes_wordcount"]);
                 notesModel.notes_start = Convert.ToString(note["notes_start"]);
                 notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
                 notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -43,7 +43,65 @@ namespace VideoCreator.Helpers
             return data;
         }
 
+        public static List<NotesModelPost> GetNotesModelList(DataRow note)
+        {
+            var data = new List<NotesModelPost>();
+            
+            var notesModel = new NotesModelPost();
+            notesModel.notes_line = Convert.ToString(note["notes_line"]);
+            notesModel.notes_index = Convert.ToString(note["notes_index"]);
+            notesModel.notes_wordcount = Convert.ToInt16(note["notes_wordcount"]);
+            notesModel.notes_start = Convert.ToString(note["notes_start"]);
+            notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
+            notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            data.Add(notesModel);
+            
+            return data;
+        }
+
+
+        public static List<NotesModelPut> GetNotesModelListPut(DataTable dt)
+        {
+            var data = new List<NotesModelPut>();
+            foreach (DataRow note in dt.Rows)
+            {
+                var notesModel = new NotesModelPut();
+                notesModel.notes_line = Convert.ToString(note["notes_line"]);
+                notesModel.notes_index = Convert.ToString(note["notes_index"]);
+                notesModel.notes_wordcount = Convert.ToInt32(note["notes_wordcount"]);
+                notesModel.notes_start = Convert.ToString(note["notes_start"]);
+                notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
+                notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                notesModel.notes_id = Convert.ToInt32(note["notes_serverid"]);
+                data.Add(notesModel);
+            }
+            return data;
+        }
+
+        public static List<NotesModelPut> GetNotesModelListPut(DataRow note)
+        {
+            var data = new List<NotesModelPut>();
+            var notesModel = new NotesModelPut();
+            notesModel.notes_line = Convert.ToString(note["notes_line"]);
+            notesModel.notes_index = Convert.ToString(note["notes_index"]);
+            notesModel.notes_wordcount = Convert.ToInt32(note["notes_wordcount"]);
+            notesModel.notes_start = Convert.ToString(note["notes_start"]);
+            notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
+            notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            notesModel.notes_id = Convert.ToInt32(note["notes_serverid"]);
+            data.Add(notesModel);
+            return data;
+        }
+
+
         public static DataTable GetNotesDataTableForLocalDB(List<NotesModel> notes, int localVideoEventId)
+        {
+            var dtNotes = GetNotesRawTable();
+            AddNotesRowToDataTable(dtNotes, notes, localVideoEventId);
+            return dtNotes;
+        }
+
+        private static DataTable GetNotesRawTable()
         {
             var dtNotes = new DataTable();
             dtNotes.Columns.Add("notes_id", typeof(int));
@@ -59,8 +117,6 @@ namespace VideoCreator.Helpers
             dtNotes.Columns.Add("notes_issynced", typeof(bool));
             dtNotes.Columns.Add("notes_serverid", typeof(Int64));
             dtNotes.Columns.Add("notes_syncerror", typeof(string));
-
-            AddNotesRowToDataTable(dtNotes, notes, localVideoEventId);
             return dtNotes;
         }
 
@@ -72,8 +128,8 @@ namespace VideoCreator.Helpers
                 dRow["notes_index"] = item.notes_index;
                 dRow["notes_id"] = -1;
                 dRow["notes_line"] = item.notes_line;
-                dRow["notes_start"] = "00:00:00.000";
-                dRow["notes_duration"] = "00:00:00.000"; //TBD
+                dRow["notes_start"] = item.notes_start;
+                dRow["notes_duration"] = item.notes_duration;
                 dRow["notes_createdate"] = item.notes_createdate;
                 dRow["notes_modifydate"] = item.notes_modifydate;
                 dRow["fk_notes_videoevent"] = localVideoEventId;

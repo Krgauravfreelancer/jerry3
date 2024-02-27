@@ -231,30 +231,90 @@ namespace VideoCreator.XAML
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            var screenRecordingUserControl = new ScreenRecorderWindowManager();
-            var GeneratedRecorderWindow = screenRecordingUserControl.CreateWindow(selectedProjectEvent);
-            screenRecordingUserControl.BtnSaveClickedEvent += async (DataTable dt) =>
+            var uc = new ScreenRecorderWindowManager();
+            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent);
+            uc.ScreenRecorder_BtnSaveClickedEvent += async (DataTable dt) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"saving {dt?.Rows.Count} events ..");
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {dt?.Rows.Count} events ..");
                 await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
-                screenRecordingUserControl.RefreshData();
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
             };
 
-            screenRecordingUserControl.BtnDeleteMediaClicked += async (int videoeventLocalId) =>
+            uc.ScreenRecorder_BtnDeleteMediaClicked += async (int videoeventLocalId) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
-
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
-                screenRecordingUserControl.RefreshData();
+                
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
             };
 
-            LoaderHelper.ShowLoader(GeneratedRecorderWindow, screenRecordingUserControl.loader);
-            var result = screenRecordingUserControl.ShowWindow(GeneratedRecorderWindow);
+            uc.ScreenRecorder_NotesCreatedEvent += async (DataTable dt) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
+
+                // Logic Here
+                foreach (DataRow noteRow in dt.Rows)
+                {
+                    var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
+                    var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                    if (savedNotes != null)
+                    {
+                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
+                        DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                    }
+                }
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+            uc.ScreenRecorder_NotesChangedEvent += async (DataTable dt) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
+                // Logic Here
+                foreach (DataRow noteRow in dt.Rows)
+                {
+                    var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
+                    var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                    if (updatedNotes != null)
+                    {
+                        DataManagerSqlLite.UpdateRowsToNotes(noteRow);
+                    }
+                }
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+            uc.ScreenRecorder_NotesDeletedEvent += async (List<int> Ids) =>
+            {
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
+
+                // Logic Here
+                foreach (var noteId in Ids)
+                {
+                    var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
+                    var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
+                    var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
+                    if (deletedNotes != null)
+                    {
+                        DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
+                    }
+                }
+
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
+            };
+
+
+
+
+
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
+            var result = uc.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
             {
                 Refresh();
