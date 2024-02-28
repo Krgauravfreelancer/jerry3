@@ -7,6 +7,7 @@
     <CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
     <CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
     <CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -19,7 +20,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -71,7 +71,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>DebugVideoCreator_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>VideoCreator_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
@@ -538,6 +538,7 @@
     <Content Include="Libraries\TimePicker_UserControl.dll" />
     <Content Include="Libraries\VideoToImage_UserControl.dll" />
     <Content Include="Media\Screencast1.mp4" />
+    <None Include="VideoCreator_TemporaryKey.pfx" />
     <Resource Include="MediaLibraryData\Resources\last.png" />
     <Resource Include="MediaLibraryData\Resources\next.png" />
     <Resource Include="MediaLibraryData\Resources\previous.png" />
@@ -566,7 +567,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="DebugVideoCreator_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
@@ -675,9 +675,7 @@
   </Target>
   <Import Project="packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>if $(Configuration) == Release (..\..\Libraries\libz inject-dll --assembly DebugVideoCreator.exe --include *.dll --move)
-
-</PostBuildEvent>
+    <PostBuildEvent>if $(Configuration) == Release (..\..\Libraries\libz inject-dll --assembly VideoCreator.exe --include *.dll --move)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.118.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
   <Import Project="packages\Vosk.0.3.38\build\Vosk.targets" Condition="Exists('packages\Vosk.0.3.38\build\Vosk.targets')" />
