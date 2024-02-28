@@ -20,6 +20,9 @@ namespace DesignerNp.controls
     /// </summary>
     public partial class ShapeBar : UserControl
     {
+        /// <summary>
+        /// ShapeBar Constructor
+        /// </summary>
         public ShapeBar()
         {
             InitializeComponent();

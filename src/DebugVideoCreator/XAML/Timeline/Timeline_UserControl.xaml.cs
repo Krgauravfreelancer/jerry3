@@ -36,7 +36,7 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
 
-        public event EventHandler ContextMenu_Run_Clicked;
+        //public event EventHandler ContextMenu_Run_Clicked;
 
         public event EventHandler<FormOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
@@ -49,7 +49,7 @@ namespace VideoCreator.XAML
         ITimelineGridControl _timelineGridControl;
         private bool ReadOnly;
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
-        int i = 0;
+        //int i;
         public Timeline_UserControl()
         {
             InitializeComponent();
@@ -220,7 +220,7 @@ namespace VideoCreator.XAML
             TimelineGridCtrl2.TrackbarMouseMoved += (sender, e) =>
             {
                 dispatcherTimer.Tick -= TrackBarMouseMovedAndStopped;
-                i = 0;
+                //i = 0;
                 dispatcherTimer.Tick += new EventHandler(TrackBarMouseMovedAndStopped);
                 dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
                 dispatcherTimer.Start();

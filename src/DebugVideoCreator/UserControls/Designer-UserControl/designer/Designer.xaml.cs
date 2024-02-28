@@ -27,7 +27,14 @@ namespace DesignerNp.controls
     /// </summary>
     public partial class Designer : UserControl
     {
+        /// <summary>
+        /// PropertyWindow propertyWindow
+        /// </summary>
         public PropertyWindow propertyWindow { get; set; }
+
+        /// <summary>
+        /// ShapeBar shapeBar
+        /// </summary>
         public ShapeBar shapeBar { get; set; }
 
         bool isPressed;

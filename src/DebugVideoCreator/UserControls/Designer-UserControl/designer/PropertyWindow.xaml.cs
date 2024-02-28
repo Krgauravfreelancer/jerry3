@@ -34,6 +34,9 @@ namespace DesignerNp.controls
         private Point startPosition;
         private double userWidth; // width set by user
 
+        /// <summary>
+        /// PropertyWindow Constructor
+        /// </summary>
         public PropertyWindow()
         {
             InitializeComponent();
@@ -64,6 +67,9 @@ namespace DesignerNp.controls
             Application.Current.MainWindow.MouseMove += MainWindow_MouseMove;
         }
 
+        /// <summary>
+        /// TextBox textBox
+        /// </summary>
         public TextBox textBox
         {
             get { return _textBox; }
@@ -73,6 +79,9 @@ namespace DesignerNp.controls
                 updateProperties();
             }
         }
+        /// <summary>
+        /// UIElement uiElement
+        /// </summary>
         public UIElement uiElement
         {
             get { return _uiElement; }

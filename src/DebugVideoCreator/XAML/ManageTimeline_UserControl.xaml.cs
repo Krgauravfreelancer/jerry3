@@ -74,7 +74,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
-            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
+            //TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
@@ -213,20 +213,20 @@ namespace VideoCreator.XAML
 
         #region == Video Event Context Menu ==
 
-        private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
-        {
-            var fsp_uc = new FullScreen_UserControl(true, true);
-            fsp_uc.SetSelectedProjectIdAndReset(selectedProjectEvent.projectId);
-            var window = new Window
-            {
-                Title = "Full Screen Player",
-                Content = fsp_uc,
-                ResizeMode = ResizeMode.CanResize,
-                WindowState = WindowState.Maximized,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            var result = window.ShowDialog();
-        }
+        //private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
+        //{
+        //    var fsp_uc = new FullScreen_UserControl(true, true);
+        //    fsp_uc.SetSelectedProjectIdAndReset(selectedProjectEvent.projectId);
+        //    var window = new Window
+        //    {
+        //        Title = "Full Screen Player",
+        //        Content = fsp_uc,
+        //        ResizeMode = ResizeMode.CanResize,
+        //        WindowState = WindowState.Maximized,
+        //        WindowStartupLocation = WindowStartupLocation.CenterScreen
+        //    };
+        //    var result = window.ShowDialog();
+        //}
 
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
