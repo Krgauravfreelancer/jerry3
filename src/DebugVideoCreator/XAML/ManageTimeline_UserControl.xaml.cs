@@ -628,12 +628,14 @@ namespace VideoCreator.XAML
                 if (response != null)
                 {
                     var videoEventDt = new VideoEventDatatable();
+                    videoEventDt.Columns.Add("videoevent_origduration", typeof(string)); // temp TBD
                     DataRow dataRow = videoEventDt.NewRow();
                     dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
                     dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
                     dataRow["videoevent_track"] = response.videoevent_track;
                     dataRow["videoevent_start"] = response.videoevent_start;
                     dataRow["videoevent_duration"] = response.videoevent_duration;
+                    dataRow["videoevent_origduration"] = response.videoevent_origduration;
                     dataRow["videoevent_end"] = response.videoevent_end;
                     dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
                     dataRow["videoevent_issynced"] = response.videoevent_issynced;

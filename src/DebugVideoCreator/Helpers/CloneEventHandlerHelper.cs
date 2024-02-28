@@ -41,8 +41,9 @@ namespace VideoCreator.Helpers
                 objToSync.fk_videoevent_media = videoEvent.fk_videoevent_media;
                 objToSync.videoevent_track = videoEvent.videoevent_track;
                 objToSync.videoevent_start = startTime;
-                objToSync.videoevent_duration = videoEvent.videoevent_duration;
                 objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(startTime, videoEvent.videoevent_duration);
+                objToSync.videoevent_duration = videoEvent.videoevent_duration;
+                objToSync.videoevent_origduration = videoEvent.videoevent_origduration;
                 objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 objToSync.design.AddRange(GetDesignModelList(dtDesign));
                 objToSync.notes.AddRange(GetNotesModelList(dtNotes));
@@ -307,6 +308,7 @@ namespace VideoCreator.Helpers
             row["videoevent_start"] = addedData.videoevent.videoevent_start;
             row["videoevent_track"] = addedData.videoevent.videoevent_track;
             row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
+            row["videoevent_origduration"] = addedData.videoevent.videoevent_origduration;
             row["fk_videoevent_media"] = addedData.videoevent.fk_videoevent_media;
             row["videoevent_createdate"] = addedData.videoevent.videoevent_createdate;
             row["videoevent_modifydate"] = addedData.videoevent.videoevent_modifydate;
@@ -325,6 +327,7 @@ namespace VideoCreator.Helpers
             dt.Columns.Add("fk_videoevent_projdet", typeof(int));
             dt.Columns.Add("videoevent_start", typeof(string));
             dt.Columns.Add("videoevent_duration", typeof(string));
+            dt.Columns.Add("videoevent_origduration", typeof(string));
             dt.Columns.Add("videoevent_track", typeof(int));
             dt.Columns.Add("fk_videoevent_media", typeof(int));
             dt.Columns.Add("videoevent_createdate", typeof(string));

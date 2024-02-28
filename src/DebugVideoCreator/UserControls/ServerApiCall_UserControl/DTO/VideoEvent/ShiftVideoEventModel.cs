@@ -11,6 +11,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public int videoevent_id { get; set; }
         public string videoevent_start { get; set; }
         public string videoevent_duration { get; set; }
+        public string videoevent_origduration { get; set; }
         public string videoevent_end { get; set; }
     }
 

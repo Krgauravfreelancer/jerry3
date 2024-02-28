@@ -37,6 +37,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_track = (int)EnumTrack.IMAGEORVIDEO; // TBD
             objToSync.videoevent_start = Convert.ToString(row["videoevent_start"]);
             objToSync.videoevent_duration = Convert.ToString(row["videoevent_duration"]);
+            objToSync.videoevent_origduration = Convert.ToString(row["videoevent_origduration"]);
             objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(objToSync.videoevent_start, objToSync.videoevent_duration);
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0] : (byte[])row["media"];
@@ -68,6 +69,8 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_track = videoevent.videoevent_track;
             objToSync.videoevent_start = videoevent.videoevent_start;
             objToSync.videoevent_duration = Convert.ToString(videoevent.videoevent_duration);
+            objToSync.videoevent_origduration = Convert.ToString(videoevent.videoevent_duration); // TBD
+            //objToSync.videoevent_origduration = Convert.ToString(videoevent.videoevent_origduration);
             objToSync.videoevent_end = videoevent.EndTime?.ToString(@"hh\:mm\:ss\.fff") ?? videoevent.videoevent_end;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, videoevent.videoevent_serverid, objToSync);
@@ -81,6 +84,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_track = videoEvent.videoevent_track;
             objToSync.videoevent_start = videoEvent.videoevent_start;
             objToSync.videoevent_duration = videoEvent.videoevent_duration;
+            objToSync.videoevent_origduration = videoEvent.videoevent_origduration;
             objToSync.videoevent_end = videoEvent.videoevent_end;
             objToSync.videoevent_modifylocdate = videoEvent.videoevent_createdate.ToString("yyyy-MM-dd HH:mm:ss");
             if (videoEvent?.videosegment_data?.Count > 0)
@@ -107,6 +111,7 @@ namespace VideoCreator.Helpers
             row["videoevent_start"] = addedData.videoevent.videoevent_start;
             row["videoevent_track"] = addedData.videoevent.videoevent_track;
             row["videoevent_duration"] = addedData.videoevent.videoevent_duration;
+            row["videoevent_origduration"] = addedData.videoevent.videoevent_origduration;
             row["fk_videoevent_media"] = addedData.videoevent.fk_videoevent_media;
             row["videoevent_createdate"] = addedData.videoevent.videoevent_createdate;
             row["videoevent_modifydate"] = addedData.videoevent.videoevent_modifydate;
@@ -128,6 +133,7 @@ namespace VideoCreator.Helpers
             row["videoevent_start"] = videoevent.videoevent_start;
             row["videoevent_track"] = videoevent.videoevent_track;
             row["videoevent_duration"] = videoevent.videoevent_duration;
+            row["videoevent_origduration"] = videoevent.videoevent_origduration;
             row["fk_videoevent_media"] = videoevent.fk_videoevent_media;
             row["videoevent_createdate"] = videoevent.videoevent_createdate;
             row["videoevent_modifydate"] = videoevent.videoevent_modifydate;
@@ -170,6 +176,7 @@ namespace VideoCreator.Helpers
             row["videoevent_start"] = "00:00:00.000"; // TBD
             row["videoevent_track"] = 2; // TBD
             row["videoevent_duration"] = Convert.ToString(datarow["videoevent_duration"]);
+            row["videoevent_origduration"] = Convert.ToString(datarow["videoevent_origduration"]);
             row["fk_videoevent_media"] = (int)datarow["fk_videoevent_media"];
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -224,6 +231,7 @@ namespace VideoCreator.Helpers
             dtVideoEvent.Columns.Add("fk_videoevent_projdet", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_start", typeof(string));
             dtVideoEvent.Columns.Add("videoevent_duration", typeof(string));
+            dtVideoEvent.Columns.Add("videoevent_origduration", typeof(string));
             dtVideoEvent.Columns.Add("videoevent_track", typeof(int));
             dtVideoEvent.Columns.Add("fk_videoevent_media", typeof(int));
             dtVideoEvent.Columns.Add("videoevent_createdate", typeof(string));

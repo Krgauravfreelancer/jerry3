@@ -245,6 +245,7 @@ namespace VideoCreator.MediaLibraryData
             dataTable.Columns.Add("videoevent_track", typeof(int));
             dataTable.Columns.Add("videoevent_start", typeof(string));
             dataTable.Columns.Add("videoevent_duration", typeof(string));
+            dataTable.Columns.Add("videoevent_origduration", typeof(string));
             dataTable.Columns.Add("videoevent_createdate", typeof(string));
             dataTable.Columns.Add("videoevent_modifydate", typeof(string));
 
@@ -269,7 +270,7 @@ namespace VideoCreator.MediaLibraryData
             row["videoevent_track"] = _trackId;
             row["videoevent_start"] = videoevent_start;
             row["videoevent_duration"] = "00:00:10.000";
-
+            row["videoevent_origduration"] = "00:00:10.000";
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_isdeleted"] = false;

@@ -645,8 +645,8 @@ namespace VideoCreator.XAML
             //    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
             //}
 
-            LoadTimelineDataFromDb_Click(null, null);
-            MessageBox.Show("Save Successful!");
+            //LoadTimelineDataFromDb_Click(null, null);
+            //MessageBox.Show("Save Successful!");
         }
 
         #endregion

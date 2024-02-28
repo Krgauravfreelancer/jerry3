@@ -11,6 +11,7 @@ namespace Sqllite_Library.Models
         public int videoevent_track { get; set; }
         public string videoevent_start { get; set; }
         public string videoevent_duration { get; set; }
+        public string videoevent_origduration { get; set; }
         public string videoevent_end { get; set; }
         public DateTime videoevent_createdate { get; set; }
         public DateTime videoevent_modifydate { get; set; }

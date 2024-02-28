@@ -174,6 +174,7 @@ namespace VideoCreator.Helpers
                     dataTable.Columns.Add("videoevent_track", typeof(int));
                     dataTable.Columns.Add("videoevent_start", typeof(string));
                     dataTable.Columns.Add("videoevent_duration", typeof(string));
+                    dataTable.Columns.Add("videoevent_origduration", typeof(string));
                     dataTable.Columns.Add("videoevent_createdate", typeof(string));
                     dataTable.Columns.Add("videoevent_modifydate", typeof(string));
                     dataTable.Columns.Add("media", typeof(byte[])); // Media Column
@@ -213,8 +214,8 @@ namespace VideoCreator.Helpers
                             mediaId = 2;
                         }
 
-                        row["videoevent_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
-
+                        row["videoevent_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff");
+                        row["videoevent_origduration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff");
                         row["fk_videoevent_media"] = mediaId;
 
                         row["fk_videoevent_screen"] = -1; // Not needed for this case

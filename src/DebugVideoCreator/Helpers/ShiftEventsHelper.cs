@@ -81,6 +81,7 @@ namespace VideoCreator.Helpers
                         {
                             videoevent_id = (int)item.videoevent_serverid,
                             videoevent_duration = item.videoevent_duration,
+                            videoevent_origduration = item.videoevent_origduration,
                             videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
                             videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
                         };
@@ -93,6 +94,7 @@ namespace VideoCreator.Helpers
                     dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
                     dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
                     dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                    dtShiftedVideoEvents.Columns.Add("videoevent_origduration", typeof(string));
                     foreach (var item in serverShiftedVideoEvents)
                     {
                         var row = dtShiftedVideoEvents.NewRow();
@@ -100,6 +102,7 @@ namespace VideoCreator.Helpers
                         row["videoevent_start"] = item.videoevent_start;
                         row["videoevent_end"] = item.videoevent_end;
                         row["videoevent_duration"] = item.videoevent_duration;
+                        row["videoevent_origduration"] = item.videoevent_origduration;
                         dtShiftedVideoEvents.Rows.Add(row);
                     }
                     DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
@@ -141,6 +144,7 @@ namespace VideoCreator.Helpers
                     {
                         videoevent_id = (int)item.videoevent_serverid,
                         videoevent_duration = item.videoevent_duration,
+                        videoevent_origduration = item.videoevent_origduration,
                         videoevent_start = DataManagerSqlLite.ShiftRight(item.videoevent_start, duration),
                         videoevent_end = DataManagerSqlLite.ShiftRight(item.videoevent_end, duration)
                     };
@@ -153,6 +157,7 @@ namespace VideoCreator.Helpers
                 dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
                 dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
                 dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_origduration", typeof(string));
                 foreach (var item in serverShiftedVideoEvents)
                 {
                     var row = dtShiftedVideoEvents.NewRow();
@@ -160,6 +165,7 @@ namespace VideoCreator.Helpers
                     row["videoevent_start"] = item.videoevent_start;
                     row["videoevent_end"] = item.videoevent_end;
                     row["videoevent_duration"] = item.videoevent_duration;
+                    row["videoevent_origduration"] = item.videoevent_origduration;
                     dtShiftedVideoEvents.Rows.Add(row);
                 }
                 DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
