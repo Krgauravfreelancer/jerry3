@@ -1,25 +1,10 @@
-﻿using VideoCreator.Models;
-using ServerApiCall_UserControl.DTO;
-using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
 using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers

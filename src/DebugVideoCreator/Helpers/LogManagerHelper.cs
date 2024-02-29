@@ -1,52 +1,53 @@
-﻿using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using VideoCreator.Models;
-using Newtonsoft.Json;
-using Sqllite_Library.Business;
-using Sqllite_Library.Models;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using System.Xml.Linq;
-using VideoCreator.Auth;
-using VideoCreator.Loader;
-using VideoCreator.XAML;
+﻿using System;
 using NLog;
-using NLog.Fluent;
-using System.Diagnostics;
 
 namespace VideoCreator.Helpers
 {
     public static class LogManagerHelper
     {
-        public static void WriteVerboseLog(UserControl uc, string log, string className)
+        public static void WriteVerboseLog(string log,
+        [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
         {
             var isVerboseLogging = VideoCreator.Properties.Settings.Default.VerboseLogging;
-            var logger = LogManager.GetLogger(uc.GetType().FullName);
             if (isVerboseLogging)
-                logger.Info(log, uc, DateTime.Now);
+            {
+                string location = sourceFilePath;
+
+                if (location.Contains("\\"))
+                {
+                    string[] temp = location.Split('\\');
+                    location = temp[temp.Length - 1].Replace(".cs", "");
+                }
+
+                var Method = memberName;
+                var className = location;
+
+                var logger = LogManager.GetLogger($"{className}.cs >> {memberName} >> LineNumber-{sourceLineNumber}");
+                logger.Info($"{Environment.NewLine}\t{log}", DateTime.Now);
+            }
         }
 
-        public static void WriteVerboseLog(Window w, string log)
+        public static void WriteErroreLog(string log,
+        [System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+        [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+        [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
         {
-            var isVerboseLogging = VideoCreator.Properties.Settings.Default.VerboseLogging;
-            var logger = LogManager.GetLogger(w.GetType().FullName);
-            if (isVerboseLogging)
-                logger.Info(log, w, DateTime.Now);
+            string location = sourceFilePath;
+
+            if (location.Contains("\\"))
+            {
+                string[] temp = location.Split('\\');
+                location = temp[temp.Length - 1].Replace(".cs", "");
+            }
+
+            var Method = memberName;
+            var className = location;
+
+            var logger = LogManager.GetLogger($"{className}.cs >> {memberName} >> LineNumber-{sourceLineNumber}");
+            logger.Error($"{Environment.NewLine}\t{log}", DateTime.Now);
+            
         }
     }
 }

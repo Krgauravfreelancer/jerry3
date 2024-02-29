@@ -39,19 +39,21 @@ namespace VideoCreator.XAML
 
         public MainWindow()
         {
+            LogManagerHelper.WriteVerboseLog("Starting the windows application");
             InitializeComponent();
             authApiViewModel = new AuthAPIViewModel();
         }
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            LogManagerHelper.WriteVerboseLog("Initiating Application shutdown");
             Application.Current.Shutdown();
+            LogManagerHelper.WriteVerboseLog("Application shutdown completed");
         }
 
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            LogManagerHelper.WriteVerboseLog(this, "Starting the windows application !! Inside OnControlLoaded...");
             // AutoFill();
             await Login();
             await SyncApp();
@@ -114,6 +116,8 @@ namespace VideoCreator.XAML
 
         private List<ProjectListUI> RemoveUnnecessaryFields(List<ProjectList> projects)
         {
+            if (projects == null)
+                return null;
             foreach(var item in projects)
             {
                 var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id && x.project_version == item.projdet_version);
@@ -262,7 +266,7 @@ namespace VideoCreator.XAML
 
             CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
             CBVProjdet cbvProjDet = cbvProject.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
-
+            
             var selectedProjectEvent = new SelectedProjectEvent
             {
                 projectId = selectedItem?.project_localId ?? -1,
@@ -270,7 +274,7 @@ namespace VideoCreator.XAML
                 projdetId = cbvProjDet?.projdet_id ?? -1,
                 serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
             };
-            
+            string obj = JsonConvert.SerializeObject(selectedProjectEvent);
             var readonlyFlag = selectedItem.projstatus_name == "AVAILABLE" && selectedItem.current_version == false;
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
 

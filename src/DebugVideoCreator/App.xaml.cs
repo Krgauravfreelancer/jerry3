@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using VideoCreator.Helpers;
 
 namespace VideoCreator
 {
@@ -47,7 +48,7 @@ namespace VideoCreator
                 $"\n{exception}\n\nDo you want to continue?" +
                 $"\n\n(if you click Yes you will continue with your work, if you click No the application will close)";
 
-            logger.Error($"Exception Occured. Please see below - {exception}{Environment.NewLine}StackTrace : {e.Exception.StackTrace}", this, DateTime.Now);
+            LogManagerHelper.WriteErroreLog($"Exception Occured. Please see below - {exception}{Environment.NewLine}StackTrace : {e.Exception.StackTrace}");
 
             if (MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.YesNoCancel, MessageBoxImage.Error) == MessageBoxResult.No)
             {

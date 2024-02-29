@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using System.Windows.Forms.VisualStyles;
 using DesignerNp.controls;
 using VideoCreator.Models;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.Auth
 {
@@ -287,14 +288,14 @@ namespace VideoCreator.Auth
 
         public async Task<byte[]> GetSecuredFileByteArray(string url)
         {
-            if(string.IsNullOrEmpty(url)) return null;
+            if (string.IsNullOrEmpty(url)) return null;
             var result = await _apiClientHelper.GetSecuredFileByteArray(url);
             return result;
         }
 
 
         #endregion
-        
+
         #region == Video Event ==
 
         public async Task<ParentDataList<AllVideoEventResponseModel>> GetAllVideoEventsbyProjdetId(SelectedProjectEvent selectedProjectEvent)
@@ -314,7 +315,6 @@ namespace VideoCreator.Auth
                 //_apiClientHelper.ErrorMessage = "No Internet !!";
                 //throw new Exception("No Internet !!");
                 var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent-notes-design-videosegment";
-
                 var multipart = new MultipartFormDataContent();
                 // FK
                 var requestbodyContent_FK = new StringContent(videoEventModel.fk_videoevent_media.ToString());
@@ -361,7 +361,6 @@ namespace VideoCreator.Auth
                     requestbodyContent_design.Headers.Add("Content-Disposition", "form-data; name=\"design\"");
                     multipart.Add(requestbodyContent_design);
                 }
-
                 string pathWithFilename = string.Empty;
                 StreamContent fileStreamContent = null;
                 FileStream fileReadStream = null;
@@ -377,6 +376,8 @@ namespace VideoCreator.Auth
                         filename = "design" + filename + ".png";
 
                     var currentDirectory = Directory.GetCurrentDirectory();
+                    if (!Directory.Exists($"{currentDirectory}\\Media"))
+                        Directory.CreateDirectory($"{currentDirectory}\\Media");
                     pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
                     var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
                     file.Write(videoEventModel.videosegment_media_bytes, 0, videoEventModel.videosegment_media_bytes.Length);
@@ -386,7 +387,6 @@ namespace VideoCreator.Auth
                     fileStreamContent = new StreamContent(fileReadStream);
                     fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
                     multipart.Add(fileStreamContent);
-
 
                     // LOC DATE
                     var requestbodyContent_VideoSegmentLOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
@@ -406,7 +406,12 @@ namespace VideoCreator.Auth
                 }
                 return result?.Data;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
         }
 
         public async Task<VideoEventModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
@@ -429,7 +434,12 @@ namespace VideoCreator.Auth
                 var result = await _apiClientHelper.Update<ParentData<VideoEventModel>>(url, payload);
                 return result?.Data;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
         }
 
         public async Task<VideoEventResponseModel> DeleteVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverId)
@@ -443,7 +453,12 @@ namespace VideoCreator.Auth
                 var result = await _apiClientHelper.Delete<ParentData<VideoEventResponseModel>>(url, payload);
                 return result?.Data;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
         }
 
         public async Task<object> UndeleteVideoEventToServer(SelectedProjectEvent selectedProjectEvent, Int64 videoevent_serverId)
@@ -457,10 +472,14 @@ namespace VideoCreator.Auth
                 var result = await _apiClientHelper.Update<ParentData<object>>(url, payload);
                 return result?.Data;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                return null;
+            }
         }
 
-        
+
 
         public async Task<List<ShiftVideoEventModel>> ShiftVideoEvent(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents)
         {
@@ -476,7 +495,12 @@ namespace VideoCreator.Auth
                 var result = await _apiClientHelper.Update<ParentData<List<ShiftVideoEventModel>>>(url, payload);
                 return result?.Data;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
         }
 
 

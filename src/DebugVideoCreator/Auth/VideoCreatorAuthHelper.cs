@@ -12,6 +12,7 @@ using System.Drawing.Printing;
 using NAudio.CoreAudioApi;
 using System.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.Auth
 {
@@ -96,6 +97,7 @@ namespace VideoCreator.Auth
 
         private T HandleAndShowMessage<T>(string Message, bool ShowErrorMessage = true)
         {
+            LogManagerHelper.WriteErroreLog(Message);
             if (ShowErrorMessage)
                 MessageBox.Show(Message?.Length > 200 ? Message.Substring(0,200) : Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return default(T);
