@@ -36,6 +36,7 @@ namespace VideoCreator.XAML
         private List<CBVProjectForJoin> downloadedProjects;
         private List<ProjectListUI> availableProjectsDataSource;
         private ProjectListUI selectedItem;
+        Window manageTimelineWindow;
 
         public MainWindow()
         {
@@ -47,6 +48,11 @@ namespace VideoCreator.XAML
         private void Window_Closed(object sender, EventArgs e)
         {
             LogManagerHelper.WriteVerboseLog("Initiating Application shutdown");
+            if (manageTimelineWindow != null)
+            {
+                manageTimelineWindow.Close();
+                manageTimelineWindow = null;
+            }
             Application.Current.Shutdown();
             LogManagerHelper.WriteVerboseLog("Application shutdown completed");
         }
@@ -264,6 +270,12 @@ namespace VideoCreator.XAML
             if (PreValidations() == false)
                 return;
 
+            if (manageTimelineWindow != null)
+            {
+                MessageBox.Show("Another Window is already opened", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
             CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
             CBVProjdet cbvProjDet = cbvProject.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
             
@@ -278,16 +290,18 @@ namespace VideoCreator.XAML
             var readonlyFlag = selectedItem.projstatus_name == "AVAILABLE" && selectedItem.current_version == false;
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
 
-            var window = new Window
+            manageTimelineWindow = new Window
             {
                 Title = "Manage Timeline",
                 Content = manageTimeline_UserControl,
                 WindowState = WindowState.Maximized,
             };
-
-            var result = window.ShowDialog();
-            if (result.HasValue)
+            manageTimelineWindow.Closed += (object s, EventArgs er) =>
+            {
                 manageTimeline_UserControl.Dispose();
+                manageTimelineWindow = null;
+            };
+            manageTimelineWindow.Show();
             await InitialiseAndRefreshScreen();
         }
 
