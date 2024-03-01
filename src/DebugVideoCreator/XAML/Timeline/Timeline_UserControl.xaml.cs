@@ -28,11 +28,11 @@ namespace VideoCreator.XAML
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked;
         public event EventHandler ContextMenu_ManageMedia_Clicked;
-        
+
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
-        
+
 
         public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
 
@@ -85,7 +85,6 @@ namespace VideoCreator.XAML
             }
         }
 
-        
 
         #region == TimelineUserControl : Load from DB functions ==
 
@@ -235,37 +234,6 @@ namespace VideoCreator.XAML
             };
         }
 
-        private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
-        {
-            if (TimelineGridCtrl2._isTrackbarLineDragInProg == false)
-            {
-
-                dispatcherTimer.Stop();
-                var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-                //TrackbarTimepicker.Value = trackBarPosition;
-                //TrackbarTimepicker.Set(trackBarPosition.ToString(@"hh\:mm\:ss\.fff"));
-
-
-                var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-                var getImageOrVideo = trackbarEvents?.Find(x => x.videoevent_track == 2);
-                if(getImageOrVideo != null)
-                {
-                    var start = getImageOrVideo.StartTime;
-                    trackBarPosition = trackBarPosition - start;
-                }
-
-                //listView_trackbarEvents.ItemsSource = trackbarEvents;
-                //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
-                var payload = new TrackbarMouseMoveEvent
-                {
-                    timeAtTheMoment = trackBarPosition.ToString(@"hh\:mm\:ss\.fff"),
-                    videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList(),
-                    isAnyVideo = trackbarEvents?.Find(x => x.fk_videoevent_media == 2) != null,
-                };
-                TrackbarMouse_Moved.Invoke(sender, payload);
-            }
-        }
-
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             // This event handler will be called when the context menu is opening
@@ -286,7 +254,7 @@ namespace VideoCreator.XAML
             try
             {
                 //var timeSpanInput = TimeSpan.Parse(TrackbarTimepicker.Get());
-                //_timelineGridControl.MoveTrackbar(timeSpanInput);
+                //_timelineGridControl.MoveTrackbarToTimeSpan(timeSpanInput, true);
             }
             catch
             {
@@ -418,33 +386,6 @@ namespace VideoCreator.XAML
             throw new NotImplementedException();
         }
 
-        private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
-        {
-            TimelineVideoEvent selectedEvent;
-            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-            if (trackbarEvents != null && trackbarEvents?.Count > 0)
-                selectedEvent = trackbarEvents[0];
-            else
-                selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)
-            {
-                var emptyPayload = new FormOrCloneEvent
-                {
-                    timelineVideoEvent = selectedEvent,
-                    timeAtTheMoment = trackbarTime
-                };
-                return emptyPayload;
-            }
-            var payload = new FormOrCloneEvent
-            {
-                timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = IsCallout ? trackbarTime : DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId)
-            };
-            return payload;
-        }
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
             //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
@@ -485,24 +426,6 @@ namespace VideoCreator.XAML
             ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
         }
 
-        private void AddFormEvent_Click(object sender, RoutedEventArgs e)
-        {
-            var payload = CalloutPreprocessing(false);
-            ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
-        }
-
-        
-        private void ManageMedia_Click(object sender, RoutedEventArgs e)
-        {
-            ContextMenu_ManageMedia_Clicked.Invoke(sender, e);
-        }
-
-        private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId);
-            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
-        }
-
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
             //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
@@ -522,61 +445,6 @@ namespace VideoCreator.XAML
             ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
         }
 
-        private void RunEvent_Click(object sender, RoutedEventArgs e)
-        {
-            ManageMedia_Click(sender, e);
-            //ContextMenu_Run_Clicked.Invoke(sender, e);
-        }
-
-        private void CloneEvent_Click(object sender, RoutedEventArgs e)
-        {
-            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            if (selectedEvent == null)
-            {
-                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-
-            var isSameEventPresent = trackbarEvents?.Find(x => x.videoevent_track == selectedEvent.videoevent_track);
-
-            if (isSameEventPresent != null)
-            {
-                MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new FormOrCloneEvent
-            {
-                timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = trackbarTime
-            };
-            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
-
-        }
-
-        private void CloneEventAtEnd_Click(object sender, RoutedEventArgs e)
-        {
-            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            if (selectedEvent == null)
-            {
-                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            var trackbarTime = DataManagerSqlLite.GetNextStart(1, selectedProjectEvent.projdetId);
-            var payload = new FormOrCloneEvent
-            {
-                timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = trackbarTime
-            };
-            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
-        }
-
-
-
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
             //int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
@@ -588,13 +456,13 @@ namespace VideoCreator.XAML
             _timelineGridControl.ClearTimeline();
             //listView_trackbarEvents.ItemsSource = null;
         }
-        
+
         private void UndeleteDeletedEvent(object sender, RoutedEventArgs e)
         {
             ContextMenu_UndeleteDeletedEvent_Clicked.Invoke(sender, e);
             DisableUndoDeleteAndReset();
         }
-        
+
 
         private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
         {
@@ -670,7 +538,7 @@ namespace VideoCreator.XAML
         #endregion
 
         #region == delete/undelete and shift ==
-        
+
         public void EnableUndoDelete(int videoeventLocalId)
         {
             string contextMenuKey = "TimelineMenu";
@@ -691,7 +559,7 @@ namespace VideoCreator.XAML
 
 
         #region == Events in Middle needs shift ==
-        
+
         private void AddImageEventUsingCBLibraryInMiddle_Click(object sender, RoutedEventArgs e)
         {
             TimelineVideoEvent shiftEvent = _timelineGridControl.GetSelectedEvent();
@@ -709,6 +577,140 @@ namespace VideoCreator.XAML
             };
 
             ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked(sender, payload);
+        }
+
+        #endregion
+
+
+        #region == KG Added Events ==
+        private void TrackBarMouseMovedAndStopped(object sender, EventArgs ea)
+        {
+            if (TimelineGridCtrl2._isTrackbarLineDragInProg == false)
+            {
+
+                dispatcherTimer.Stop();
+                var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+                //TrackbarTimepicker.Value = trackBarPosition;
+                //TrackbarTimepicker.Set(trackBarPosition.ToString(@"hh\:mm\:ss\.fff"));
+
+
+                var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+                var getImageOrVideo = trackbarEvents?.Find(x => x.videoevent_track == 2);
+                if (getImageOrVideo != null)
+                {
+                    var start = getImageOrVideo.StartTime;
+                    trackBarPosition = trackBarPosition - start;
+                }
+
+                //listView_trackbarEvents.ItemsSource = trackbarEvents;
+                //Console.WriteLine($"Mouse.Captured - {Mouse.LeftButton == MouseButtonState.Pressed}, {Mouse.LeftButton == MouseButtonState.Released}");
+                var payload = new TrackbarMouseMoveEvent
+                {
+                    timeAtTheMoment = trackBarPosition.ToString(@"hh\:mm\:ss\.fff"),
+                    videoeventIds = trackbarEvents?.GroupBy(x => x.videoevent_id).Select(x => x.First().videoevent_id).ToList(),
+                    isAnyVideo = trackbarEvents?.Find(x => x.fk_videoevent_media == 2) != null,
+                };
+                TrackbarMouse_Moved.Invoke(sender, payload);
+            }
+        }
+
+        private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
+        {
+            TimelineVideoEvent selectedEvent;
+            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
+            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+            if (trackbarEvents != null && trackbarEvents?.Count > 0)
+                selectedEvent = trackbarEvents[0];
+            else
+                selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)
+            {
+                var emptyPayload = new FormOrCloneEvent
+                {
+                    timelineVideoEvent = selectedEvent,
+                    timeAtTheMoment = trackbarTime
+                };
+                return emptyPayload;
+            }
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = IsCallout ? trackbarTime : DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId)
+            };
+            return payload;
+        }
+
+        private void AddFormEvent_Click(object sender, RoutedEventArgs e)
+        {
+            var payload = CalloutPreprocessing(false);
+            ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
+        }
+
+
+        private void ManageMedia_Click(object sender, RoutedEventArgs e)
+        {
+            ContextMenu_ManageMedia_Clicked.Invoke(sender, e);
+        }
+
+        private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId);
+            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
+        }
+
+        private void RunEvent_Click(object sender, RoutedEventArgs e)
+        {
+            ManageMedia_Click(sender, e);
+            //ContextMenu_Run_Clicked.Invoke(sender, e);
+        }
+
+        private void CloneEvent_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
+
+            var isSameEventPresent = trackbarEvents?.Find(x => x.videoevent_track == selectedEvent.videoevent_track);
+
+            if (isSameEventPresent != null)
+            {
+                MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
+            var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+
+        }
+
+        private void CloneEventAtEnd_Click(object sender, RoutedEventArgs e)
+        {
+            TimelineVideoEvent selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            if (selectedEvent == null)
+            {
+                MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            var trackbarTime = DataManagerSqlLite.GetNextStart(1, selectedProjectEvent.projdetId);
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
         }
 
         #endregion
