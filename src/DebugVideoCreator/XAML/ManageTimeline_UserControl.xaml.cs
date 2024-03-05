@@ -75,7 +75,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
-            //TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
+            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
@@ -214,20 +214,28 @@ namespace VideoCreator.XAML
 
         #region == Video Event Context Menu ==
 
-        //private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
-        //{
-        //    var fsp_uc = new FullScreen_UserControl(true, true);
-        //    fsp_uc.SetSelectedProjectIdAndReset(selectedProjectEvent.projectId);
-        //    var window = new Window
-        //    {
-        //        Title = "Full Screen Player",
-        //        Content = fsp_uc,
-        //        ResizeMode = ResizeMode.CanResize,
-        //        WindowState = WindowState.Maximized,
-        //        WindowStartupLocation = WindowStartupLocation.CenterScreen
-        //    };
-        //    var result = window.ShowDialog();
-        //}
+        private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
+        {
+            LoaderHelper.ShowLoader(this, loader);
+            var uc = new ManageMediaWindowManager();
+            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent, readOnly: true);
+
+            uc.ManageMedia_NotesCreatedEvent += (DataTable dt) => { };
+            uc.ManageMedia_NotesChangedEvent += (DataTable dt) => { };
+            uc.ManageMedia_NotesDeletedEvent += (List<int> DeletedIds) => { };
+            uc.ManageMedia_AddVideoEvents += (DataTable dt) => { };
+            uc.ManageMedia_DeletedVideoEvents += (int videoeventLocalId) => { };
+            uc.ManageMedia_AdjustVideoEvents += (DataTable table) => { };
+            
+            // Logic to Display window
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
+            var result = uc.ShowWindow(GeneratedRecorderWindow);
+            if (result.HasValue)
+            {
+                Refresh();
+            }
+            LoaderHelper.HideLoader(this, loader);
+        }
 
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
@@ -237,7 +245,7 @@ namespace VideoCreator.XAML
             uc.ScreenRecorder_BtnSaveClickedEvent += async (DataTable dt) =>
             {
                 LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {dt?.Rows.Count} events ..");
-                await ScreenRecordingUserControl_BtnSaveClickedEvent(dt);
+                await AddVideoEvent_Clicked(dt);
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
                 uc.RefreshData();
             };
@@ -339,7 +347,10 @@ namespace VideoCreator.XAML
             {
                 await ManageMedia_NotesDeletedEvent(GeneratedRecorderWindow, DeletedIds, uc);
             };
-            
+            uc.ManageMedia_AddVideoEvents += async (DataTable dt) =>
+            {
+                await ManageMedia_AddVideoEvents(GeneratedRecorderWindow, dt, uc);
+            };
             uc.ManageMedia_DeletedVideoEvents += async (int videoeventLocalId) =>
             {
                 await ManageMedia_DeletedVideoEvents(GeneratedRecorderWindow, videoeventLocalId, uc);
@@ -360,6 +371,15 @@ namespace VideoCreator.XAML
         }
 
         #region == Manage Media VideoEvent Section==
+
+        private async Task ManageMedia_AddVideoEvents(Window GeneratedRecorderWindow, DataTable datatable, ManageMediaWindowManager uc)
+        {
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {datatable?.Rows.Count} events ..");
+            await AddVideoEvent_Clicked(datatable);
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            uc.RefreshData();
+        }
+        
         private async Task ManageMedia_DeletedVideoEvents(Window GeneratedRecorderWindow, int videoeventLocalId, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events"); 
@@ -493,8 +513,9 @@ namespace VideoCreator.XAML
         }
 
 
-        #region == Screen recorder > Add Event ==
-        private async Task ScreenRecordingUserControl_BtnSaveClickedEvent(DataTable dataTable)
+        #region == Add Video/Image Event ==
+
+        private async Task AddVideoEvent_Clicked(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
             foreach (DataRow row in dataTable.Rows)
@@ -618,7 +639,7 @@ namespace VideoCreator.XAML
 
 
 
-        #endregion == Screen recorder > Add Event ==
+        #endregion == Add Video/Image Event ==
 
         #endregion
 

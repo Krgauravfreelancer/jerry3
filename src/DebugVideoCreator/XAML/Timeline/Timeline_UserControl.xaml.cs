@@ -23,7 +23,6 @@ namespace VideoCreator.XAML
         private AuthAPIViewModel authApiViewModel;
 
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
-        //public event EventHandler ContextMenu_AddVideoEvent_Success;
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked;
@@ -36,7 +35,7 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TrackbarMouseMoveEvent> TrackbarMouse_Moved;
 
-        //public event EventHandler ContextMenu_Run_Clicked;
+        public event EventHandler ContextMenu_Run_Clicked;
 
         public event EventHandler<FormOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
@@ -662,8 +661,7 @@ namespace VideoCreator.XAML
 
         private void RunEvent_Click(object sender, RoutedEventArgs e)
         {
-            ManageMedia_Click(sender, e);
-            //ContextMenu_Run_Clicked.Invoke(sender, e);
+            ContextMenu_Run_Clicked.Invoke(sender, e);
         }
 
         private void CloneEvent_Click(object sender, RoutedEventArgs e)

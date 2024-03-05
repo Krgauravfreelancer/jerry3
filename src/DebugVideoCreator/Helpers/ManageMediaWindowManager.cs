@@ -25,13 +25,16 @@ namespace VideoCreator.Helpers
         SelectedProjectEvent selectedProjectEvent;
         public LoadingAnimation loader;
         bool WasDataSaved = false;
-        public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent)
+        bool ReadOnly = false;
+
+        public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent, bool readOnly = false)
         {
             _Window = new Window();
             _Window.Width = 1200;
             _Window.Height = 620;
+            ReadOnly = readOnly;
             _Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            _ManageMedia = new ManageMedia_Control();
+            _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             selectedProjectEvent = _selectedProjectEvent;
             //ProjectID = Selected_ID;
 
