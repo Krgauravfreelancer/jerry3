@@ -173,5 +173,46 @@ namespace VideoCreator.Helpers
 
         }
 
+        public async static Task ManageMediaAdjustVideoEvents(DataTable tobeSAdjustedVideoEvents, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        {
+            if (tobeSAdjustedVideoEvents?.Rows?.Count > 0)
+            {
+                var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                foreach (DataRow row in tobeSAdjustedVideoEvents.Rows)
+                {
+                    var model = new ShiftVideoEventModel
+                    {
+                        videoevent_id = Convert.ToInt32(row["videoevent_serverid"]),
+                        videoevent_duration = Convert.ToString(row["videoevent_duration"]),
+                        videoevent_origduration = Convert.ToString(row["videoevent_origduration"]),
+                        videoevent_start = Convert.ToString(row["videoevent_start"]),
+                        videoevent_end = Convert.ToString(row["videoevent_end"]),
+                    };
+                    tobeServerShiftedVideoEvents.Add(model);
+                }
+                var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+
+                var dtShiftedVideoEvents = new DataTable();
+                dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                dtShiftedVideoEvents.Columns.Add("videoevent_origduration", typeof(string));
+                foreach (var item in serverShiftedVideoEvents)
+                {
+                    var row = dtShiftedVideoEvents.NewRow();
+                    row["videoevent_serverid"] = item.videoevent_id;
+                    row["videoevent_start"] = item.videoevent_start;
+                    row["videoevent_end"] = item.videoevent_end;
+                    row["videoevent_duration"] = item.videoevent_duration;
+                    row["videoevent_origduration"] = item.videoevent_origduration;
+                    dtShiftedVideoEvents.Rows.Add(row);
+                }
+                DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
+            }
+
+        }
+
+
     }
 }

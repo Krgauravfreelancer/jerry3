@@ -16,6 +16,7 @@ using VideoCreator.MediaLibraryData;
 using System.Linq;
 using Timeline.UserControls.Models;
 using ServerApiCall_UserControl.DTO;
+using System.Windows.Media.Imaging;
 
 namespace VideoCreator.XAML
 {
@@ -79,7 +80,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
             TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
-            TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines_Clicked;
+            TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
             TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
@@ -318,6 +319,8 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
+
+        #region == Manage Media Section ==
         private void TimelineUserConrol_ContextMenu_ManageMedia_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -326,68 +329,28 @@ namespace VideoCreator.XAML
 
             uc.ManageMedia_NotesCreatedEvent += async (DataTable dt) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
-
-                // Logic Here
-                foreach (DataRow noteRow in dt.Rows)
-                {
-                    var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
-                    var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
-                    if (savedNotes != null)
-                    {
-                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
-                        DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
-                    }
-                }
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
+                await ManageMedia_NotesCreatedEvent(GeneratedRecorderWindow, dt, uc);
             };
-
             uc.ManageMedia_NotesChangedEvent += async (DataTable dt) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
-                // Logic Here
-                foreach (DataRow noteRow in dt.Rows)
-                {
-                    var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
-                    var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
-                    if (updatedNotes != null)
-                    {
-                        DataManagerSqlLite.UpdateRowsToNotes(noteRow);
-                    }
-                }
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
+                await ManageMedia_NotesChangedEvent(GeneratedRecorderWindow, dt, uc);
             };
-
-            uc.ManageMedia_NotesDeletedEvent += async (List<int> Ids) =>
+            uc.ManageMedia_NotesDeletedEvent += async (List<int> DeletedIds) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
-
-                // Logic Here
-                foreach (var noteId in Ids)
-                {
-                    var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
-                    var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
-                    var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
-                    if (deletedNotes != null)
-                    {
-                        DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
-                    }
-                }
-
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
+                await ManageMedia_NotesDeletedEvent(GeneratedRecorderWindow, DeletedIds, uc);
+            };
+            
+            uc.ManageMedia_DeletedVideoEvents += async (int videoeventLocalId) =>
+            {
+                await ManageMedia_DeletedVideoEvents(GeneratedRecorderWindow, videoeventLocalId, uc);
+            };
+            uc.ManageMedia_AdjustVideoEvents += async (DataTable table) =>
+            {
+                await ManageMedia_AdjustVideoEvents(GeneratedRecorderWindow, table, uc);
             };
 
-
-
+            // Logic to Display window
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
-
-
-
-
-
             var result = uc.ShowWindow(GeneratedRecorderWindow);
             if (result.HasValue)
             {
@@ -395,28 +358,110 @@ namespace VideoCreator.XAML
             }
             LoaderHelper.HideLoader(this, loader);
         }
-        
-        
 
-        
-        private async void TimelineUserConrol_DeleteEventOnTimelines_Clicked(object sender, int videoeventLocalId)
+        #region == Manage Media VideoEvent Section==
+        private async Task ManageMedia_DeletedVideoEvents(Window GeneratedRecorderWindow, int videoeventLocalId, ManageMediaWindowManager uc)
         {
-            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
+            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events"); 
+            await HandleDeleteLogicForVideoEvent(videoeventLocalId);
+            Refresh();
+            LoaderHelper.HideLoader(this, loader);
+        }
 
+        private async Task ManageMedia_AdjustVideoEvents(Window GeneratedRecorderWindow, DataTable table, ManageMediaWindowManager uc)
+        {
+            LoaderHelper.ShowLoader(this, loader, $"Adjusting Video Events");
+            await ShiftEventsHelper.ManageMediaAdjustVideoEvents(table, selectedProjectEvent, authApiViewModel);
+            LoaderHelper.HideLoader(this, loader);
+        }
+
+        #endregion
+
+        #region == Manage Media Notes Section ==
+
+        private async Task ManageMedia_NotesCreatedEvent(Window GeneratedRecorderWindow, DataTable dt, ManageMediaWindowManager uc)
+        {
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
+
+            // Logic Here
+            foreach (DataRow noteRow in dt.Rows)
+            {
+                var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
+                var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                if (savedNotes != null)
+                {
+                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
+                    DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+                }
+            }
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            uc.RefreshData();
+        }
+        
+        private async Task ManageMedia_NotesChangedEvent(Window GeneratedRecorderWindow, DataTable dt, ManageMediaWindowManager uc)
+        {
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
+            // Logic Here
+            foreach (DataRow noteRow in dt.Rows)
+            {
+                var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
+                var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                if (updatedNotes != null)
+                {
+                    DataManagerSqlLite.UpdateRowsToNotes(noteRow);
+                }
+            }
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            uc.RefreshData();
+        }
+
+        private async Task ManageMedia_NotesDeletedEvent(Window GeneratedRecorderWindow, List<int> Ids, ManageMediaWindowManager uc)
+        {
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
+
+            // Logic Here
+            foreach (var noteId in Ids)
+            {
+                var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
+                var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
+                var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
+                if (deletedNotes != null)
+                {
+                    DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
+                }
+            }
+
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            uc.RefreshData();
+        }
+
+        #endregion == Manage Media Notes Section ==
+
+        #endregion
+
+        private async Task HandleDeleteLogicForVideoEvent(int videoeventLocalId)
+        {
             //Logic Here
             var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
             var videoevent = videoevents.FirstOrDefault();
 
-            if(videoevent?.videoevent_track == 2)
+            if (videoevent?.videoevent_track == 2)
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
             else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
 
-            undoVideoEventId = videoeventLocalId; // Very Important to set this for undo delete
-            TimelineUserConrol.EnableUndoDelete(undoVideoEventId);
-            LoaderHelper.HideLoader(this, loader);
+            //TBD - we need to shift the callout events as well///
+        }
 
+        
+        private async void TimelineUserConrol_DeleteEventOnTimelines(object sender, int videoeventLocalId)
+        {
+            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
+            undoVideoEventId = videoeventLocalId; // Very Important to set this for undo delete
+            await HandleDeleteLogicForVideoEvent(videoeventLocalId);
+            TimelineUserConrol.EnableUndoDelete(undoVideoEventId);
             Refresh();
+            LoaderHelper.HideLoader(this, loader);
         }
 
         private async void TimelineUserConrol_UndeleteDeletedEvent_Clicked(object sender, EventArgs e)
