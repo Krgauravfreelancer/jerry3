@@ -17,6 +17,7 @@ using System.Linq;
 using Timeline.UserControls.Models;
 using ServerApiCall_UserControl.DTO;
 using System.Windows.Media.Imaging;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 
 namespace VideoCreator.XAML
 {
@@ -256,7 +257,7 @@ namespace VideoCreator.XAML
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel);
                 
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
                 uc.RefreshData();
@@ -462,15 +463,39 @@ namespace VideoCreator.XAML
         private async Task HandleDeleteLogicForVideoEvent(int videoeventLocalId)
         {
             //Logic Here
-            var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
-            var videoevent = videoevents.FirstOrDefault();
+            var videoevent = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false)?.FirstOrDefault();
 
             if (videoevent?.videoevent_track == 2)
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel);
             else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.CALLOUT1, selectedProjectEvent, authApiViewModel);
 
-            //TBD - we need to shift the callout events as well///
+            //TBD - we need to shift the callout events as well
+            var overlappedCallouts = DataManagerSqlLite.GetOverlappingCalloutsByTime(selectedProjectEvent.projdetId, videoevent.videoevent_start, videoevent.videoevent_end);
+            if(overlappedCallouts?.Count > 0)
+            {
+                   var confirmation = MessageBox.Show($"You have {overlappedCallouts?.Count} overlapping callouts !! " +
+                        $"{Environment.NewLine}{Environment.NewLine}Press 'Yes' to Delete all and Shift callouts, " +
+                        $"{Environment.NewLine}Press 'No' to leave callouts as is", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    
+                
+                if (confirmation == MessageBoxResult.Yes)
+                {
+                    foreach(var item in overlappedCallouts)
+                    {
+
+                    }
+                }
+                else
+                {
+                    // Do Nothing
+                }
+            }
+            else
+            {
+                // Shift the callouts as well by equal duration
+            }
+
         }
 
         

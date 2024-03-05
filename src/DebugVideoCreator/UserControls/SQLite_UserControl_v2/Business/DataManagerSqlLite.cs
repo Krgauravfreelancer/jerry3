@@ -402,16 +402,21 @@ namespace Sqllite_Library.Business
         }
 
 
-        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime)
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
-            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, endTime);
+            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, endTime, track);
         }
 
-        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyStartTime(int fk_videoevent_projdet, string startTime)
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyStartTime(int fk_videoevent_projdet, string startTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
-            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, startTime);
+            return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, startTime, track);
         }
 
+        public static List<CBVVideoEvent> GetOverlappingCalloutsByTime(int fk_videoevent_projdet, string startTime, string endtime)
+        {
+            return SqlLiteData.GetOverlappingCalloutsByTime(fk_videoevent_projdet, startTime, endtime);
+        }
+        
         public static int GetVideoEventsCount()
         {
             return SqlLiteData.GetCount("cbv_videoevent");

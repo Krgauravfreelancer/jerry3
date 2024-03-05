@@ -1804,81 +1804,6 @@ namespace Sqllite_Library.Data
 
         }
 
-        //   public static List<CBVWIPOrArchivedProjectList> GetWIPOrArchivedProjectList(bool archivedFlag, bool wipFlag = false)
-        //   {
-        //       var projects = new List<CBVWIPOrArchivedProjectList>();
-
-        //       // Check if database is created
-        //       if (false == IsDbCreated())
-        //           throw new Exception("Database is not present.");
-        //       string sqlQueryString = "SELECT project_id, project_serverid, project_videotitle, project_version, project_date FROM cbv_project ";
-
-        //       if (wipFlag)
-        //           sqlQueryString = $@"
-        //               SELECT P.project_id, project_serverid, P.project_videotitle, P.project_version, P.project_date, 
-        //                       CASE 
-        //                  When VECount.VideoEventCount is NULL Then 0
-        //                  When VECount.VideoEventCount = 0 Then 0
-        //                  Else 1
-        //                 End project_started,
-        //                 CASE 
-        //                     When VECount.VideoEventCount Is Null Then 0
-        //                     Else VECount.VideoEventCount 
-        //                 End project_videoeventcount
-        //               FROM cbv_project P
-        //            /* LEFT JOIN (
-        //                           Select fk_videoevent_project, count(fk_videoevent_project) as VideoEventCount
-        //                           from cbv_videoevent VE 
-        //                  group by fk_videoevent_project
-        //                           ) as VECount on VECount.fk_videoevent_project = P.project_id */
-        //" ;
-
-        //       sqlQueryString += $@" WHERE project_archived={archivedFlag} and project_isdeleted = 0";
-
-        //       SQLiteConnection sqlCon = null;
-        //       try
-        //       {
-        //           string fileName = RegisteryHelper.GetFileName();
-
-        //           // Open Database connection 
-        //           sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-        //           sqlCon.Open();
-
-        //           var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-        //           using (var sqlReader = sqlQuery.ExecuteReader())
-        //           {
-        //               while (sqlReader.Read())
-        //               {
-        //                   var project = new CBVWIPOrArchivedProjectList
-        //                   {
-        //                       project_id = Convert.ToInt32(sqlReader["project_id"]),
-        //                       project_serverid = Convert.ToInt32(sqlReader["project_serverid"]),
-        //                       project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
-        //                       project_version = Convert.ToInt32(sqlReader["project_version"]),
-        //                       project_date = Convert.ToDateTime(sqlReader["project_date"]),
-        //                   };
-        //                   if (wipFlag)
-        //                   {
-        //                       project.project_started = Convert.ToBoolean(sqlReader["project_started"]);
-        //                       project.project_videoeventcount = Convert.ToInt32(sqlReader["project_videoeventcount"]);
-        //                   }
-        //                   projects.Add(project);
-        //               }
-        //           }
-        //           // Close database
-        //           sqlQuery.Dispose();
-        //           sqlCon.Close();
-        //       }
-        //       catch (Exception)
-        //       {
-        //           if (null != sqlCon)
-        //               sqlCon.Close();
-        //           throw;
-        //       }
-
-        //       return projects;
-        //   }
-
         public static List<CBVProjdet> GetProjectDetails(int projectId)
         {
             var data = new List<CBVProjdet>();
@@ -2121,6 +2046,8 @@ namespace Sqllite_Library.Data
 
         #endregion
 
+
+
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false, bool designFlag = false)
         {
             var data = new List<CBVVideoEvent>();
@@ -2212,13 +2139,21 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyTime(int fk_videoevent_projdet, string endTime)
+        public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyTime(int fk_videoevent_projdet, string endTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
             var data = new List<CBVShiftVideoEvent>();
 
             // Check if database is created
             if (false == IsDbCreated())
                 throw new Exception("Database is not present.");
+
+            string whereTrackClause = "";
+            if (track == EnumTrack.IMAGEORVIDEO)
+                whereTrackClause = $@"videoevent_track = {(int)track}";
+            else
+                whereTrackClause = $@"videoevent_track > {(int)EnumTrack.IMAGEORVIDEO}"; // For callout1 and callout 2
+
+
 
             string sqlQueryString = $@" Select 
 	                                        videoevent_id,
@@ -2232,7 +2167,7 @@ namespace Sqllite_Library.Data
                                         where 
 	                                        videoevent_start >= '{endTime}'
 	                                        And fk_videoevent_projdet = {fk_videoevent_projdet}
-	                                        And videoevent_track = 2  
+	                                        And {whereTrackClause}
 	                                        And videoevent_isdeleted = 0
                                         Order By
 	                                        videoevent_start,
@@ -2258,6 +2193,75 @@ namespace Sqllite_Library.Data
             return data;
 
             
+        }
+
+        public static List<CBVVideoEvent> GetOverlappingCalloutsByTime(int fk_videoevent_projdet, string startTime, string endtime)
+        {
+            var data = new List<CBVVideoEvent>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@" Select 
+	                                        * 
+                                        from 
+	                                        cbv_videoevent 
+                                        where 
+	                                        videoevent_track > 2
+	                                        AND videoevent_isdeleted = 0
+	                                        AND fk_videoevent_projdet = {fk_videoevent_projdet}
+	                                        AND (
+		                                        videoevent_start BETWEEN '{startTime}' AND '{endtime}'
+		                                        OR 
+		                                        videoevent_end BETWEEN '{startTime}' AND '{endtime}'
+		                                        )";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVideoEvent
+                        {
+                            videoevent_id = Convert.ToInt32(sqlReader["videoevent_id"]),
+                            fk_videoevent_projdet = Convert.ToInt32(sqlReader["fk_videoevent_projdet"]),
+                            fk_videoevent_media = Convert.ToInt32(sqlReader["fk_videoevent_media"]),
+                            videoevent_track = Convert.ToInt32(sqlReader["videoevent_track"]),
+                            videoevent_start = Convert.ToString(sqlReader["videoevent_start"]),
+                            videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
+                            videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
+                            videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
+                            videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
+                            videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                sqlCon?.Close();
+                throw;
+            }
+
+            return data;
         }
 
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId, bool dependentDataFlag = true)

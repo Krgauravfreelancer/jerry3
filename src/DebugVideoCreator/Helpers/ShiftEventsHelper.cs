@@ -61,7 +61,7 @@ namespace VideoCreator.Helpers
             return true;
         }
 
-        public static async Task DeleteAndShiftEvent(int videoeventLocalId, CBVVideoEvent videoevent, bool isShift, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        public static async Task DeleteAndShiftEvent(int videoeventLocalId, CBVVideoEvent videoevent, bool isShift, EnumTrack track, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             // Step-1 soft-delete from server the video-event and children
             var deletedData = await DeleteVideoEventToServer(selectedProjectEvent, videoevent.videoevent_serverid, authApiViewModel);
@@ -69,7 +69,7 @@ namespace VideoCreator.Helpers
             if (isShift)
             {
                 // Step-2 Fetch next events of deleted event
-                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end);
+                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end, track);
 
                 // Step-3 Call server API to shift video event and then save locally the shifted events
                 if (tobeShiftedVideoEvents?.Count > 0)
