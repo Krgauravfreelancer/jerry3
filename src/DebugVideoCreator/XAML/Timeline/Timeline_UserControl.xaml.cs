@@ -206,31 +206,39 @@ namespace VideoCreator.XAML
             LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             /// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
-            TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
-            {
-                HasData = _timelineGridControl.HasData();
-                var selectedEvent = _timelineGridControl.GetSelectedEvent();
-                ResetMenuItems(HasData, selectedEvent);
-                VideoEventSelectionChanged.Invoke(sender, selectedEvent);
-            };
+            TimelineGridCtrl2.TimelineSelectionChanged -= TimelineSelectionChanged;
+            TimelineGridCtrl2.TimelineSelectionChanged += TimelineSelectionChanged;
 
             /// use this event handler when the trackbar was moved by mouse action
-            TimelineGridCtrl2.TrackbarMouseMoved += (sender, e) =>
-            {
-                dispatcherTimer.Tick -= TrackBarMouseMovedAndStopped;
-                //i = 0;
-                dispatcherTimer.Tick += new EventHandler(TrackBarMouseMovedAndStopped);
-                dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
-                dispatcherTimer.Start();
-
-            };
+            TimelineGridCtrl2.TrackbarMouseMoved -= TrackbarMouseMoved;
+            TimelineGridCtrl2.TrackbarMouseMoved += TrackbarMouseMoved;
 
             /// Use this event handler when a video event is deleted
-            TimelineGridCtrl2.TimelineVideoEventDeleted += (sender, e) =>
-            {
-                ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, e.TimelineVideoEvent.videoevent_id);
-                //DataManagerSqlLite.DeleteVideoEventsById(e.TimelineVideoEvent.videoevent_id, cascadeDelete: true);
-            };
+            TimelineGridCtrl2.TimelineVideoEventDeleted -= TimelineVideoEventDeleted;
+            TimelineGridCtrl2.TimelineVideoEventDeleted += TimelineVideoEventDeleted;
+        }
+
+        private void TimelineSelectionChanged(object sender, EventArgs e)
+        {
+            HasData = _timelineGridControl.HasData();
+            var selectedEvent = _timelineGridControl.GetSelectedEvent();
+            ResetMenuItems(HasData, selectedEvent);
+            VideoEventSelectionChanged.Invoke(sender, selectedEvent);
+        }
+
+        private void TrackbarMouseMoved(object sender, EventArgs e)
+        {
+            dispatcherTimer.Tick -= TrackBarMouseMovedAndStopped;
+            //i = 0;
+            dispatcherTimer.Tick += new EventHandler(TrackBarMouseMovedAndStopped);
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(50);
+            dispatcherTimer.Start();
+        }
+
+        private void TimelineVideoEventDeleted(object sender, TimelineVideoEventArgs e)
+        {
+            ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, e.TimelineVideoEvent.videoevent_id);
+            //DataManagerSqlLite.DeleteVideoEventsById(e.TimelineVideoEvent.videoevent_id, cascadeDelete: true);
         }
 
         private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)

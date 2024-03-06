@@ -61,15 +61,15 @@ namespace VideoCreator.Helpers
             return true;
         }
 
-        public static async Task DeleteAndShiftEvent(int videoeventLocalId, CBVVideoEvent videoevent, bool isShift, EnumTrack track, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        public static async Task DeleteAndShiftEvent(int videoeventLocalId, long videoevent_serverid, bool isShift, EnumTrack track, string duration, string videoevent_end, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             // Step-1 soft-delete from server the video-event and children
-            var deletedData = await DeleteVideoEventToServer(selectedProjectEvent, videoevent.videoevent_serverid, authApiViewModel);
+            var deletedData = await DeleteVideoEventToServer(selectedProjectEvent, videoevent_serverid, authApiViewModel);
 
             if (isShift)
             {
                 // Step-2 Fetch next events of deleted event
-                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end, track);
+                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent_end, track);
 
                 // Step-3 Call server API to shift video event and then save locally the shifted events
                 if (tobeShiftedVideoEvents?.Count > 0)
@@ -82,8 +82,8 @@ namespace VideoCreator.Helpers
                             videoevent_id = (int)item.videoevent_serverid,
                             videoevent_duration = item.videoevent_duration,
                             videoevent_origduration = item.videoevent_origduration,
-                            videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
-                            videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
+                            videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, duration),
+                            videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, duration)
                         };
                         tobeServerShiftedVideoEvents.Add(model);
                     }

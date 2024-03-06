@@ -257,7 +257,7 @@ namespace VideoCreator.XAML
                 // Logic Here
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel);
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
                 
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
                 uc.RefreshData();
@@ -466,36 +466,110 @@ namespace VideoCreator.XAML
             var videoevent = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false)?.FirstOrDefault();
 
             if (videoevent?.videoevent_track == 2)
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel);
-            else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent: videoevent, isShift: true, EnumTrack.CALLOUT1, selectedProjectEvent, authApiViewModel);
-
-            //TBD - we need to shift the callout events as well
-            var overlappedCallouts = DataManagerSqlLite.GetOverlappingCalloutsByTime(selectedProjectEvent.projdetId, videoevent.videoevent_start, videoevent.videoevent_end);
-            if(overlappedCallouts?.Count > 0)
             {
-                   var confirmation = MessageBox.Show($"You have {overlappedCallouts?.Count} overlapping callouts !! " +
-                        $"{Environment.NewLine}{Environment.NewLine}Press 'Yes' to Delete all and Shift callouts, " +
-                        $"{Environment.NewLine}Press 'No' to leave callouts as is", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
                 
-                if (confirmation == MessageBoxResult.Yes)
+                //TBD - we need to shift the callout events as well
+                var overlappedCallouts = DataManagerSqlLite.GetOverlappingCalloutsByTime(selectedProjectEvent.projdetId, videoevent.videoevent_start, videoevent.videoevent_end);
+                if (overlappedCallouts?.Count > 0)
                 {
-                    foreach(var item in overlappedCallouts)
+                    var confirmation = MessageBox.Show($"You have {overlappedCallouts?.Count} overlapping callouts. Do you want to delete and shift callouts ? " ,"Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (confirmation == MessageBoxResult.Yes)
                     {
+                        //Step 1: Delete all overlapping items
+                        foreach (var item in overlappedCallouts)
+                        {
+                            await ShiftEventsHelper.DeleteAndShiftEvent(item.videoevent_id, item.videoevent_serverid, isShift: false, EnumTrack.CALLOUT1, item.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
+                        }
+                        //Step 2: Find all videoevents, which needs to be shifted
+                        var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end, EnumTrack.CALLOUT1);
+                        // Step-3 Call server API to shift video event and then save locally the shifted events
+                        if (tobeShiftedVideoEvents?.Count > 0)
+                        {
+                            var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                            foreach (var item in tobeShiftedVideoEvents)
+                            {
+                                var model = new ShiftVideoEventModel
+                                {
+                                    videoevent_id = (int)item.videoevent_serverid,
+                                    videoevent_duration = item.videoevent_duration,
+                                    videoevent_origduration = item.videoevent_origduration,
+                                    videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
+                                    videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
+                                };
+                                tobeServerShiftedVideoEvents.Add(model);
+                            }
+                            var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
 
+                            var dtShiftedVideoEvents = new DataTable();
+                            dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                            dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                            dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                            dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                            dtShiftedVideoEvents.Columns.Add("videoevent_origduration", typeof(string));
+                            foreach (var item in serverShiftedVideoEvents)
+                            {
+                                var row = dtShiftedVideoEvents.NewRow();
+                                row["videoevent_serverid"] = item.videoevent_id;
+                                row["videoevent_start"] = item.videoevent_start;
+                                row["videoevent_end"] = item.videoevent_end;
+                                row["videoevent_duration"] = item.videoevent_duration;
+                                row["videoevent_origduration"] = item.videoevent_origduration;
+                                dtShiftedVideoEvents.Rows.Add(row);
+                            }
+                            DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
+                        }
+                    }
+                    else
+                    {
+                        // Do Nothing
                     }
                 }
                 else
                 {
-                    // Do Nothing
+                    // Shift the callouts as well by equal duration
+                    //Step 2: Find all videoevents, which needs to be shifted
+                    var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyEndTime(selectedProjectEvent.projdetId, videoevent.videoevent_end, EnumTrack.CALLOUT1);
+                    // Step-3 Call server API to shift video event and then save locally the shifted events
+                    if (tobeShiftedVideoEvents?.Count > 0)
+                    {
+                        var tobeServerShiftedVideoEvents = new List<ShiftVideoEventModel>();
+                        foreach (var item in tobeShiftedVideoEvents)
+                        {
+                            var model = new ShiftVideoEventModel
+                            {
+                                videoevent_id = (int)item.videoevent_serverid,
+                                videoevent_duration = item.videoevent_duration,
+                                videoevent_origduration = item.videoevent_origduration,
+                                videoevent_end = DataManagerSqlLite.ShiftLeft(item.videoevent_end, videoevent.videoevent_duration),
+                                videoevent_start = DataManagerSqlLite.ShiftLeft(item.videoevent_start, videoevent.videoevent_duration)
+                            };
+                            tobeServerShiftedVideoEvents.Add(model);
+                        }
+                        var serverShiftedVideoEvents = await MediaEventHandlerHelper.ShiftVideoEventsToServer(selectedProjectEvent, tobeServerShiftedVideoEvents, authApiViewModel);
+
+                        var dtShiftedVideoEvents = new DataTable();
+                        dtShiftedVideoEvents.Columns.Add("videoevent_serverid", typeof(Int64));
+                        dtShiftedVideoEvents.Columns.Add("videoevent_start", typeof(string));
+                        dtShiftedVideoEvents.Columns.Add("videoevent_end", typeof(string));
+                        dtShiftedVideoEvents.Columns.Add("videoevent_duration", typeof(string));
+                        dtShiftedVideoEvents.Columns.Add("videoevent_origduration", typeof(string));
+                        foreach (var item in serverShiftedVideoEvents)
+                        {
+                            var row = dtShiftedVideoEvents.NewRow();
+                            row["videoevent_serverid"] = item.videoevent_id;
+                            row["videoevent_start"] = item.videoevent_start;
+                            row["videoevent_end"] = item.videoevent_end;
+                            row["videoevent_duration"] = item.videoevent_duration;
+                            row["videoevent_origduration"] = item.videoevent_origduration;
+                            dtShiftedVideoEvents.Rows.Add(row);
+                        }
+                        DataManagerSqlLite.ShiftVideoEvents(dtShiftedVideoEvents);
+                    }
                 }
             }
-            else
-            {
-                // Shift the callouts as well by equal duration
-            }
-
+            else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
+                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: false, EnumTrack.CALLOUT1, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
         }
 
         
