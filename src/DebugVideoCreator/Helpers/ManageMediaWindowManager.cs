@@ -76,6 +76,7 @@ namespace VideoCreator.Helpers
 
         public bool? ShowWindow(Window window)
         {
+            _Window = window;
             LoaderHelper.HideLoader(window, loader);
             var result = window.ShowDialog();
             return result;
@@ -104,6 +105,7 @@ namespace VideoCreator.Helpers
 
         private void _ManageMedia_ManageMediaSave(object sender, ManageMediaSaveEventArgs e)
         {
+            LoaderHelper.ShowLoader(_Window, loader);
             List<Media> CreatedVideoEvents = e.CreatedVideoEvents;
             List<Media> DeletedVideoEvents = e.DeletedVideoEvents;
             List<Media> ChangedVideoEvents = e.ChangedVideoEvents;
@@ -151,7 +153,7 @@ namespace VideoCreator.Helpers
                 _ManageMedia.SetProjectInfo(selectedProjectEvent.projectId);
                 RefreshData();
             }
-
+            LoaderHelper.HideLoader(_Window, loader);
         }
 
         #endregion
@@ -175,6 +177,8 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("videoevent_issynced", typeof(bool));
             dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
             dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+
+            dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
 
             // Since this table has Referential Integrity, so lets push one by one
 
