@@ -175,7 +175,7 @@ namespace VideoCreator.Helpers
 
             var row = dataTable.NewRow();
             row["project_id"] = -1;
-            row["project_videotitle"] = projectModel.project_videotitle;
+            row["project_videotitle"] = projectModel.project_videotitle?.Replace("'", "''");
             row["project_currwfstep"] = projectModel.project_currwfstep ?? "";
             row["project_uploaded"] = false;
             row["fk_project_background"] = 1;
@@ -233,14 +233,13 @@ namespace VideoCreator.Helpers
                 row["planning_id"] = -1;
                 row["fk_planning_project"] = localProjectId;
                 row["fk_planning_head"] = planning.fk_planning_head;
-                row["planning_customname"] = planning.planning_customname;
-                row["planning_notesline"] = planning.planning_notesline;
-                row["planning_medialibid"] = planning.planning_medialibid;
+                row["planning_customname"] = planning.planning_customname?.Replace("'", "''");
+                row["planning_notesline"] = planning.planning_notesline?.Replace("'", "''");
+                row["planning_medialibid"] = planning.planning_medialibid?.Replace("'", "''");
                 row["planning_sort"] = planning.planning_sort;
-                row["planning_suggestnotesline"] = planning.planning_suggestnotesline;
+                row["planning_suggestnotesline"] = planning.planning_suggestnotesline?.Replace("'", "''");
                 row["planning_mediathumb"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_thumb) ;
                 row["planning_mediafull"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_full);
-                row["planning_notesline"] = planning.planning_notesline;
                 row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -270,9 +269,9 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
             if (projdet != null)
             {
                 row["projdet_serverid"] = projdet.projdet_id;
-                row["projdet_version"] = projdet.projdet_version;
+                row["projdet_version"] = projdet.projdet_version?.Replace("'", "''");
                 row["projdet_currver"] = projdet.projdet_currver;
-                row["projdet_comments"] = projdet.projdet_comments;
+                row["projdet_comments"] = projdet.projdet_comments?.Replace("'", "''");
                 row["projdet_createdate"] = projdet.projdet_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["projdet_modifydate"] = projdet.projdet_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             }
@@ -304,7 +303,7 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
                     var row = dataTable.NewRow();
                     row["requireautofill_id"] = -1;
                     row["fk_requireautofill_project"] = item.fk_requireautofill_project;
-                    row["requireautofill_name"] = item.requireautofill_name;
+                    row["requireautofill_name"] = item.requireautofill_name?.Replace("'", "''");
                     row["requireautofill_importance"] = item.requireautofill_importance;
                     row["requireautofill_active"] = item.requireautofill_active;
                     // Local Columns
@@ -345,7 +344,7 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
                     var row = dataTable.NewRow();
                     row["objectiveautofill_id"] = -1;
                     row["fk_objectiveautofill_project"] = item.fk_objectiveautofill_project;
-                    row["objectiveautofill_name"] = item.objectiveautofill_name;
+                    row["objectiveautofill_name"] = item.objectiveautofill_name?.Replace("'", "''");
                     //row["objectiveautofill_importance"] = item.objectiveautofill_importance;
                     row["objectiveautofill_active"] = item.objectiveautofill_active;
                     // Local Columns
@@ -386,7 +385,7 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
                     var row = dataTable.NewRow();
                     row["nextautofill_id"] = -1;
                     row["fk_nextautofill_project"] = item.fk_nextautofill_project;
-                    row["nextautofill_name"] = item.nextautofill_name;
+                    row["nextautofill_name"] = item.nextautofill_name?.Replace("'", "''");
                     row["nextautofill_importance"] = item.nextautofill_importance;
                     row["nextautofill_active"] = item.nextautofill_active;
                     // Local Columns
