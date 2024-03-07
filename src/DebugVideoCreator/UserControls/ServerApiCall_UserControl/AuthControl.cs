@@ -20,13 +20,6 @@ namespace ServerApiCall_UserControl
         public AuthControl()
         { }
 
-        public string InitConnection()
-        {
-            Auth_ServerAPICall_Helper.InitializeClient();
-            var failureMessage = ReadCredentialsFromRegistry();
-            return failureMessage;
-        }
-
         public string InitConnection(string baseURI)
         {
             Auth_ServerAPICall_Helper.InitializeClient(baseURI);

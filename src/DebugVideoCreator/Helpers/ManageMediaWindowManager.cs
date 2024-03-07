@@ -10,6 +10,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VideoCreator.Auth;
 using VideoCreator.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
 using ManageMediaType = ManageMedia_UserControl.Classes.MediaType;
@@ -29,13 +30,10 @@ namespace VideoCreator.Helpers
 
         public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent, bool readOnly = false)
         {
-            _Window = new Window();
-            _Window.Width = 1200;
-            _Window.Height = 620;
-            ReadOnly = readOnly;
-            _Window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
+            ReadOnly = readOnly;
             selectedProjectEvent = _selectedProjectEvent;
+
             //ProjectID = Selected_ID;
 
             //if (Selected_ID != -1)
@@ -49,20 +47,21 @@ namespace VideoCreator.Helpers
                 _ManageMedia.CloseWindow += _ManageMedia_CloseWindow;
                 _ManageMedia.ManageMediaSave += _ManageMedia_ManageMediaSave;
             }
+            _Window = new Window
+            {
+                Width = 1200,
+                Height = 620,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                Content = AddLoaderAndReturnContent(),
+            };
             _Window.Closing += _Window_Closing;
-            _Window.Content = AddLoaderAndReturnContent(_ManageMedia);
+
             //window.Show();
             return _Window;
         }
 
-        private Grid AddLoaderAndReturnContent(ManageMedia_Control _ManageMedia)
+        private Grid AddLoaderAndReturnContent()
         {
-            var grid = new Grid
-            {
-                Name = "parentGrid"
-            };
-            grid.Children.Add(_ManageMedia);
-
             loader = new LoadingAnimation
             {
                 Name = "loader",
@@ -70,15 +69,19 @@ namespace VideoCreator.Helpers
                 VerticalAlignment = VerticalAlignment.Center,
                 Visibility = Visibility.Hidden,
             };
+            var grid = new Grid
+            {
+                Name = "parentGrid",
+            };
+            grid.Children.Add(_ManageMedia);
             grid.Children.Add(loader);
             return grid;
         }
 
-        public bool? ShowWindow(Window window)
+        public bool? ShowWindow()
         {
-            _Window = window;
-            LoaderHelper.HideLoader(window, loader);
-            var result = window.ShowDialog();
+            LoaderHelper.HideLoader(_Window, loader);
+            var result = _Window.ShowDialog();
             return result;
         }
 
@@ -114,33 +117,39 @@ namespace VideoCreator.Helpers
             List<SCModels.TextItem> ChangedNotes = e.ChangedNotes;
 
             //Delete Video Events ----------------------
-            foreach (Media media in DeletedVideoEvents)
-            {
-                ManageMedia_DeletedVideoEvents.Invoke(media.VideoEventID);
-                //DeleteVideoEvent(media);
-            }
+            if(DeletedVideoEvents?.Count > 0)
+                foreach (Media media in DeletedVideoEvents)
+                {
+                    ManageMedia_DeletedVideoEvents.Invoke(media.VideoEventID);
+                    //DeleteVideoEvent(media);
+                }
 
             //Delete Notes -----------------------------
             //foreach (TextItem textItem in DeletedNotes)
             //    DeletedNote(textItem);
             var deletedNotesIds = DeletedNotes.Select(x => x.NoteID).ToList();
-            ManageMedia_NotesDeletedEvent.Invoke(deletedNotesIds);
+            if (deletedNotesIds?.Count > 0)
+                ManageMedia_NotesDeletedEvent.Invoke(deletedNotesIds);
 
             //Change Video Events
             //foreach (Media media in ChangedVideoEvents)
             //    ChangeVideoEvent(ChangedVideoEvents);
-            ChangeVideoEvent(ChangedVideoEvents);
+            if (ChangedVideoEvents?.Count > 0)
+                ChangeVideoEvent(ChangedVideoEvents);
 
             //Change Notes
-            ChangeNotes(ChangedNotes);
+            if (ChangedNotes?.Count > 0)
+                ChangeNotes(ChangedNotes);
 
             //Create Video Events
             //foreach (Media media in CreatedVideoEvents)
             //    CreateVideoEvent(media);
-            CreateVideoEvent(CreatedVideoEvents);
-            
+            if (CreatedVideoEvents?.Count > 0)
+                CreateVideoEvent(CreatedVideoEvents);
+
             //Create Notes - This list only contains notes created on existing VideoEvents
-            CreateNotes(CreatedNotes);
+            if (CreatedNotes?.Count > 0)
+                CreateNotes(CreatedNotes);
 
 
             if (e.CloseOnSave)
@@ -153,7 +162,6 @@ namespace VideoCreator.Helpers
                 _ManageMedia.SetProjectInfo(selectedProjectEvent.projectId);
                 RefreshData();
             }
-            LoaderHelper.HideLoader(_Window, loader);
         }
 
         #endregion
@@ -282,10 +290,9 @@ namespace VideoCreator.Helpers
             var notedataTable = GetNotesRawTable();
             foreach (var CreatedNote in CreatedNotes)
             {
-                notedataTable.Rows.Clear();
                 var noteRow = notedataTable.NewRow();
                 noteRow["notes_id"] = -1;
-                noteRow["fk_notes_videoevent"] = DataManagerSqlLite.GetVideoEventbyId(CreatedNote.VideoEventID, false, false)[0].videoevent_serverid;
+                noteRow["fk_notes_videoevent"] = CreatedNote.VideoEventID;// DataManagerSqlLite.GetVideoEventbyId(CreatedNote.VideoEventID, false, false)[0].videoevent_id;
                 noteRow["notes_line"] = CreatedNote.TextItem.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = CreatedNote.TextItem.WordCount;
                 noteRow["notes_index"] = notesIndex[CreatedNote.VideoEventID];
@@ -299,7 +306,7 @@ namespace VideoCreator.Helpers
                 noteRow["notes_syncerror"] = string.Empty;
                 notedataTable.Rows.Add(noteRow);
                 notesIndex[CreatedNote.VideoEventID]++;
-               
+
             }
             ManageMedia_NotesCreatedEvent.Invoke(notedataTable);
         }
@@ -315,6 +322,9 @@ namespace VideoCreator.Helpers
             notedataTable.Columns.Add("notes_duration", typeof(string));
             notedataTable.Columns.Add("notes_modifydate", typeof(string));
             notedataTable.Columns.Add("notes_serverid", typeof(long));
+            notedataTable.Columns.Add("fk_notes_videoevent", typeof(long));
+            notedataTable.Columns.Add("notes_issynced", typeof(bool));
+            notedataTable.Columns.Add("notes_syncerror", typeof(string));
 
             foreach (var ChangedElement in textItems)
             {
@@ -322,7 +332,7 @@ namespace VideoCreator.Helpers
 
                 notedataTable.Rows.Clear();
                 var noteRow = notedataTable.NewRow();
-
+                
                 noteRow["notes_id"] = ChangedElement.NoteID;
                 noteRow["notes_line"] = ChangedElement.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = ChangedElement.WordCount;
@@ -331,6 +341,9 @@ namespace VideoCreator.Helpers
                 noteRow["notes_duration"] = ChangedElement.Duration.ToString(@"hh\:mm\:ss\.fff");
                 noteRow["notes_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_serverid"] = note.notes_serverid;
+                noteRow["notes_issynced"] = true;
+                noteRow["notes_syncerror"] = string.Empty;
+                noteRow["fk_notes_videoevent"] = note.fk_notes_videoevent;
                 notedataTable.Rows.Add(noteRow);
             }
             ManageMedia_NotesChangedEvent.Invoke(notedataTable);
@@ -521,7 +534,6 @@ namespace VideoCreator.Helpers
             notedataTable.Columns.Add("notes_syncerror", typeof(string));
             return notedataTable;
         }
-
 
         #endregion
 

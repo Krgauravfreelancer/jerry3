@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using NLog;
 
 namespace VideoCreator.Helpers
@@ -10,7 +11,7 @@ namespace VideoCreator.Helpers
         [System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
         [System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
         {
-            var isVerboseLogging = VideoCreator.Properties.Settings.Default.VerboseLogging;
+            var isVerboseLogging = Convert.ToBoolean(ConfigurationManager.AppSettings.Get("VerboseLogging"));
             if (isVerboseLogging)
             {
                 string location = sourceFilePath;

@@ -6,14 +6,10 @@ namespace ServerApiCall_UserControl.Helpers
 {
     public class Auth_ServerAPICall_Helper
     {
-        private readonly static string baseAddress = "https://stage-sftp.commercial-base.com/";
-        //private readonly static string baseAddress = "https://sftp.commercial-base.com/";
         public static HttpClient HttpApiClient { get; set; }
         
-        public static void InitializeClient(string baseURI = null)
+        public static void InitializeClient(string baseURI)
         {
-            if (string.IsNullOrEmpty(baseURI))
-                baseURI = baseAddress;
             HttpApiClient = new HttpClient
             {
                 BaseAddress = new Uri(baseURI)

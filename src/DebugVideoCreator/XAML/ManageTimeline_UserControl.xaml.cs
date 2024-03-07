@@ -52,7 +52,11 @@ namespace VideoCreator.XAML
             var subjectText = "Project Id - " + selectedProjectEvent.projectId;
             lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}" : subjectText;
             InitializeChildren();
-            new Action(async () => await ConfirmAndSyncServerDataToLocalDB())();
+            new Action(async () =>
+            {
+                await SyncServerEventsHelper.ConfirmAndSyncServerDataToLocalDB(this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
+                Refresh();
+            })();
 
             BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData);
             loader.Visibility = Visibility.Hidden;
@@ -93,7 +97,7 @@ namespace VideoCreator.XAML
 
             // Reload Control
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            
+
             //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             //ResetAudioContextMenu();
             NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
@@ -107,7 +111,7 @@ namespace VideoCreator.XAML
             // NotesUserConrol.HandleVideoEventSelectionChanged();
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
 
-            
+
         }
 
         private void Refresh()
@@ -227,10 +231,10 @@ namespace VideoCreator.XAML
             uc.ManageMedia_AddVideoEvents += (DataTable dt) => { };
             uc.ManageMedia_DeletedVideoEvents += (int videoeventLocalId) => { };
             uc.ManageMedia_AdjustVideoEvents += (DataTable table) => { };
-            
+
             // Logic to Display window
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
-            var result = uc.ShowWindow(GeneratedRecorderWindow);
+            var result = uc.ShowWindow();
             if (result.HasValue)
             {
                 Refresh();
@@ -258,7 +262,7 @@ namespace VideoCreator.XAML
                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
                 var videoevent = videoevents.FirstOrDefault();
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
-                
+
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
                 uc.RefreshData();
             };
@@ -335,6 +339,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader);
             var uc = new ManageMediaWindowManager();
             var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent);
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
 
             uc.ManageMedia_NotesCreatedEvent += async (DataTable dt) =>
             {
@@ -362,8 +367,8 @@ namespace VideoCreator.XAML
             };
 
             // Logic to Display window
-            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
-            var result = uc.ShowWindow(GeneratedRecorderWindow);
+            
+            var result = uc.ShowWindow();
             if (result.HasValue)
             {
                 Refresh();
@@ -377,15 +382,15 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {datatable?.Rows.Count} events ..");
             await AddVideoEvent_Clicked(datatable);
-            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
             uc.RefreshData();
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
         }
-        
+
         private async Task ManageMedia_DeletedVideoEvents(Window GeneratedRecorderWindow, int videoeventLocalId, ManageMediaWindowManager uc)
         {
-            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events"); 
+            LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
             await HandleDeleteLogicForVideoEvent(videoeventLocalId);
-            Refresh();
+            uc.RefreshData();
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -402,23 +407,24 @@ namespace VideoCreator.XAML
 
         private async Task ManageMedia_NotesCreatedEvent(Window GeneratedRecorderWindow, DataTable dt, ManageMediaWindowManager uc)
         {
-            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
-
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows.Count} notes ..");
             // Logic Here
             foreach (DataRow noteRow in dt.Rows)
             {
                 var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
-                var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                var localVideoEventId = Convert.ToInt32(noteRow["fk_notes_videoevent"]);
+                var selectedServerVideoEventId = DataManagerSqlLite.GetVideoEventbyId(localVideoEventId, false, false)[0].videoevent_serverid;
+                var savedNotes = await authApiViewModel.POSTNotes(selectedServerVideoEventId, notes);
                 if (savedNotes != null)
                 {
-                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
+                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, localVideoEventId);
                     DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
                 }
             }
-            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
             uc.RefreshData();
+            LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
         }
-        
+
         private async Task ManageMedia_NotesChangedEvent(Window GeneratedRecorderWindow, DataTable dt, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
@@ -426,7 +432,9 @@ namespace VideoCreator.XAML
             foreach (DataRow noteRow in dt.Rows)
             {
                 var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
-                var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                var localVideoEventId = Convert.ToInt32(noteRow["fk_notes_videoevent"]);
+                var selectedServerVideoEventId = DataManagerSqlLite.GetVideoEventbyId(localVideoEventId, false, false)[0].videoevent_serverid;
+                var updatedNotes = await authApiViewModel.PUTNotes(selectedServerVideoEventId, notes);
                 if (updatedNotes != null)
                 {
                     DataManagerSqlLite.UpdateRowsToNotes(noteRow);
@@ -468,12 +476,12 @@ namespace VideoCreator.XAML
             if (videoevent?.videoevent_track == 2)
             {
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
-                
+
                 //TBD - we need to shift the callout events as well
                 var overlappedCallouts = DataManagerSqlLite.GetOverlappingCalloutsByTime(selectedProjectEvent.projdetId, videoevent.videoevent_start, videoevent.videoevent_end);
                 if (overlappedCallouts?.Count > 0)
                 {
-                    var confirmation = MessageBox.Show($"You have {overlappedCallouts?.Count} overlapping callouts. Do you want to delete and shift callouts ? " ,"Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    var confirmation = MessageBox.Show($"You have {overlappedCallouts?.Count} overlapping callouts. Do you want to delete and shift callouts ? ", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     if (confirmation == MessageBoxResult.Yes)
                     {
                         //Step 1: Delete all overlapping items
@@ -572,7 +580,7 @@ namespace VideoCreator.XAML
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: false, EnumTrack.CALLOUT1, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
         }
 
-        
+
         private async void TimelineUserConrol_DeleteEventOnTimelines(object sender, int videoeventLocalId)
         {
             LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
@@ -660,7 +668,7 @@ namespace VideoCreator.XAML
                 {
                     Refresh();
                 }
-                if(addedData?.notes?.Count > 0)
+                if (addedData?.notes?.Count > 0)
                 {
                     DataManagerSqlLite.InsertRowsToNotes(NotesDataTableToSave(addedData?.notes, videoEventId));
                 }
@@ -1009,7 +1017,7 @@ namespace VideoCreator.XAML
             foreach (DataRow row in mediaEventInMiddle?.datatable.Rows)
             {
                 var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row);
-                if(insertedVideoeventId > 0 && shiftEventLocation.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
+                if (insertedVideoeventId > 0 && shiftEventLocation.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
                 {
                     // ShiftAll pending events
                     await ShiftEventsHelper.ShiftRight(tobeShiftedVideoEvents, Convert.ToString(row["videoevent_duration"]), selectedProjectEvent, authApiViewModel);
@@ -1031,7 +1039,7 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(this, loader);
             var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
-            if(backgroundImagePath == null)
+            if (backgroundImagePath == null)
             {
                 MessageBox.Show($"No Background found, autofill cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -1040,9 +1048,9 @@ namespace VideoCreator.XAML
                 await AutofillHandlerHelper.Process(autofillEvent, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
                 TimelineUserConrol.InitializeTimeline();
             }
-                
 
-            
+
+
             LoaderHelper.HideLoader(this, loader);
         }
         #endregion
@@ -1510,92 +1518,9 @@ namespace VideoCreator.XAML
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (confirm == MessageBoxResult.Yes)
             {
-                await SyncServerDataToLocalDB(null);
-                
+                await SyncServerEventsHelper.SyncServerDataToLocalDB(null, this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
             }
         }
-
-        private async Task ConfirmAndSyncServerDataToLocalDB()
-        {
-            var localVideoEventCount = DataManagerSqlLite.GetVideoEventCountProjectAndDetailId(selectedProjectEvent.projectId, selectedProjectEvent.projdetId);
-            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
-            if (serverVideoEventData != null && serverVideoEventData.Data?.Count > localVideoEventCount)
-            {
-                btnDownloadServerData.IsEnabled = true;
-                var result = MessageBox.Show($@"Server has {serverVideoEventData.Data.Count} events while local DB has {localVideoEventCount} events. 
-    {Environment.NewLine}Do you want to download server data to local?", "Sync Data", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                    await SyncServerDataToLocalDB(serverVideoEventData);
-                else
-                {
-                    btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
-                    btnDownloadServerData.IsEnabled = true;
-                }
-            }
-            else 
-            {
-                btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
-                btnDownloadServerData.IsEnabled = false;
-            }
-        }
-
-        private async Task SyncServerDataToLocalDB(ParentDataList<AllVideoEventResponseModel> serverVideoEventData)
-        {
-            if(serverVideoEventData == null) serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
-            LoaderHelper.ShowLoader(this, loader);
-            // Step1: Lets clear the local DB
-            DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
-            foreach (var videoEvent in serverVideoEventData?.Data)
-            {
-                var localVideoEventId = SaveVideoEvent(videoEvent);
-                if (videoEvent?.design?.Count > 0)
-                    SaveDesign(localVideoEventId, videoEvent?.design);
-                if (videoEvent?.notes?.Count > 0)
-                    SaveNotes(localVideoEventId, videoEvent?.notes);
-                if (videoEvent?.videosegment != null)
-                    await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment);
-            }
-            //InitializeChildren();
-            Refresh();
-            btnDownloadServerData.Content = $@"Download Server Data";
-            btnDownloadServerData.IsEnabled = false;
-            LoaderHelper.HideLoader(this, loader);
-            MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-        }
-
-
-        private int SaveVideoEvent(AllVideoEventResponseModel videoevent)
-        {
-            var dt = MediaEventHandlerHelper.GetVideoEventTableWithData(selectedProjectEvent.projdetId, videoevent);
-            var result = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
-            return result?.Count > 0 ? result[0] : -1;
-        }
-
-        private void SaveDesign(int localVideoEventId, List<DesignModel> allDesigns)
-        {
-            var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCallout(allDesigns, localVideoEventId);
-            DataManagerSqlLite.InsertRowsToDesign(dtDesign);
-        }
-
-        private async Task SaveVideoSegment(int localVideoEventId, VideoSegmentModel videosegment)
-        {
-            var downloadUrl = videosegment.videosegment_download_url;
-
-            if (!string.IsNullOrEmpty(downloadUrl))
-            {
-                byte[] bytes = await authApiViewModel.GetSecuredFileByteArray(downloadUrl);
-                var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(bytes, localVideoEventId, videosegment);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
-
-            }
-        }
-
-        private void SaveNotes(int localVideoEventId, List<NotesModel> notes)
-        {
-            var dtNotes = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(notes, localVideoEventId);
-            DataManagerSqlLite.InsertRowsToNotes(dtNotes);
-        }
-
 
         public void Dispose()
         {

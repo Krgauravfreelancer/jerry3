@@ -776,7 +776,7 @@ namespace Sqllite_Library.Data
             var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
             values.Add($"({dr["fk_videoevent_projdet"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', '{end}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', '{end}', '{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
 
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =

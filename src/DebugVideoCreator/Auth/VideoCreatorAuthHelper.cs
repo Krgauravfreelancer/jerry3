@@ -13,6 +13,7 @@ using NAudio.CoreAudioApi;
 using System.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
 using VideoCreator.Helpers;
+using System.Configuration;
 
 namespace VideoCreator.Auth
 {
@@ -24,6 +25,7 @@ namespace VideoCreator.Auth
         public string TokenNumber { get; set; }
         public string ErrorMessage { get; set; }
         const string NO_LOGIN_MESSAGE = "Please login first !!!";
+        const string NO_SERVERURL_MESSAGE = "No Server URL Found, please check config file !!!";
 
         #region == Properties ==
 
@@ -60,8 +62,10 @@ namespace VideoCreator.Auth
                 MessageBox.Show(AccessKey, "Credentials Issue", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
-
-            var failureMessage = authCtrl.InitConnection();
+            var serverUrl = ConfigurationManager.AppSettings.Get("serverUrl");
+            if(string.IsNullOrEmpty(serverUrl))
+                throw new Exception(NO_SERVERURL_MESSAGE);
+            var failureMessage = authCtrl.InitConnection(serverUrl);
             if (!string.IsNullOrEmpty(failureMessage))
             {
                 MessageBox.Show(failureMessage, "VideoCreatorAuthHelper > InitConnection", MessageBoxButton.OK, MessageBoxImage.Error);

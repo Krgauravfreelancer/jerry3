@@ -12,7 +12,6 @@ namespace ServerApiCall_UserControl
 {
     public interface IAuthControl
     {
-        string InitConnection();
         string InitConnection(string baseURI);
         Task<LoginResponseModel> Login(string macAddress, string accessKey);
         Task<LogoutResponseModel> Logout();
