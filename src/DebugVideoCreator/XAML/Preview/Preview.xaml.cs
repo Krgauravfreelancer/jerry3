@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VideoCreator.Helpers;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -28,8 +29,8 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class Preview : UserControl
     {
-        string imageOutputFolder = $"{Directory.GetCurrentDirectory()}\\ExtractedImages";
-        string videoOutputFolder = $"{Directory.GetCurrentDirectory()}\\Media";
+        string imagePreviewFolder = PathHelper.GetTempPath("PreviewImages");
+        string mediaPreviewFolder = PathHelper.GetTempPath("PreviewMedia");
         public bool isProcessing = false;
         public Preview()
         {
@@ -53,18 +54,18 @@ namespace VideoCreator.XAML
 
         private void CleanUp()
         {
-            if (Directory.Exists(imageOutputFolder))
+            if (Directory.Exists(imagePreviewFolder))
             {
-                var diImage = new DirectoryInfo(imageOutputFolder);
+                var diImage = new DirectoryInfo(imagePreviewFolder);
                 foreach (FileInfo file in diImage?.GetFiles())
                     file.Delete();
                 foreach (DirectoryInfo dir in diImage?.GetDirectories())
                     dir.Delete(true);
             }
 
-            if (Directory.Exists(videoOutputFolder))
+            if (Directory.Exists(mediaPreviewFolder))
             {
-                var diVideo = new DirectoryInfo(videoOutputFolder);
+                var diVideo = new DirectoryInfo(mediaPreviewFolder);
                 foreach (FileInfo file in diVideo?.GetFiles())
                     file.Delete();
                 foreach (DirectoryInfo dir in diVideo?.GetDirectories())
@@ -97,7 +98,7 @@ namespace VideoCreator.XAML
                     }
                     else
                     {
-                        var VideoFileName = $"{videoOutputFolder}\\video_{videoevent?.videoevent_id}.mp4";
+                        var VideoFileName = $"{mediaPreviewFolder}\\video_{videoevent?.videoevent_id}.mp4";
                         if (!File.Exists(VideoFileName))
                         {
                             Stream t = new FileStream(VideoFileName, FileMode.Create);
@@ -105,7 +106,7 @@ namespace VideoCreator.XAML
                             b.Write(videoevent.videosegment_data[0].videosegment_media);
                             t.Close();
                         }
-                        var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, videoOutputFolder, mouseMovedEvent.timeAtTheMoment);
+                        var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, mediaPreviewFolder, mouseMovedEvent.timeAtTheMoment);
                         var convertedImage = await video2image.ConvertVideoToImage(true);
                         var bmp = new Bitmap(convertedImage);
                         bmps.Add(bmp);

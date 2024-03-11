@@ -16,6 +16,7 @@ using System.IO;
 using System.Xml;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using VideoCreator.Models;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -165,13 +166,13 @@ namespace VideoCreator.XAML
                     using (var ms = new MemoryStream(blob))
                     {
                         var filename = $"image_{DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-ffffff")}.jpg";
-                        var filepath = $@"{Directory.GetCurrentDirectory()}\{filename}";
-                        using (var fs = new FileStream(filepath, FileMode.Create))
+                        var pathWithFilename = $@"{PathHelper.GetTempPath("designer")}\{filename}";
+                        using (var fs = new FileStream(pathWithFilename, FileMode.Create))
                         {
                             ms.WriteTo(fs);
                         }
                         //return $"<Image Stretch=\"Uniform\" StretchDirection=\"DownOnly\" Width=\"{width}\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
-                        return $"<Image Width=\"1920\" Height=\"1080\" x:Name=\"bgImage\" Source=\"{filepath}\" Panel.ZIndex=\"0\"/>";
+                        return $"<Image Width=\"1920\" Height=\"1080\" x:Name=\"bgImage\" Source=\"{pathWithFilename}\" Panel.ZIndex=\"0\"/>";
                     }
                 }
             }
@@ -249,8 +250,8 @@ namespace VideoCreator.XAML
             }
         }
 
-        #region == Autofill ==
-        public DataTable AutofillSetup()
+        #region == Autofill/Planning ==
+        public DataTable AutofillorPlanningSetup()
         {
             var bgImageXAML = GetBackgroundImageElement();
             designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));

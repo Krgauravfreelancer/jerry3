@@ -29,6 +29,7 @@ using Timeline.UserControls.Models;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Xml;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.Helpers
 {
@@ -40,20 +41,7 @@ namespace VideoCreator.Helpers
 
         private static string CreateOrReturnEmptyDirectory()
         {
-            var directoryName = Directory.GetCurrentDirectory() + "\\BackgroundImageForAutofill";
-            if(!Directory.Exists(directoryName))
-                Directory.CreateDirectory(directoryName);
-            else
-            {
-                DirectoryInfo di = new DirectoryInfo(directoryName);
-                foreach (DirectoryInfo dir in di.GetDirectories())
-                {
-                    foreach (FileInfo file in dir.GetFiles())
-                    {
-                        file.Delete();
-                    }
-                }
-            }
+            var directoryName = PathHelper.GetTempPath("BackgroundImageForAutofill");
             return directoryName;
         }
 
@@ -77,7 +65,7 @@ namespace VideoCreator.Helpers
         public static async Task Process(AutofillEvent autofillEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
-            var designElements = designerUserControl.AutofillSetup();
+            var designElements = designerUserControl.AutofillorPlanningSetup();
 
             if (autofillEvent.AutofillType == AutofillEnumType.Title)
             {

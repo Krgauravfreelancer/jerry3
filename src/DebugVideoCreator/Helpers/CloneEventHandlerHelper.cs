@@ -136,7 +136,7 @@ namespace VideoCreator.Helpers
             return dtNotes;
         }
 
-        private static List<NotesModelPost> GetNotesModelList(DataTable dt)
+        public static List<NotesModelPost> GetNotesModelList(DataTable dt)
         {
             var data = new List<NotesModelPost>();
             foreach (DataRow note in dt.Rows)

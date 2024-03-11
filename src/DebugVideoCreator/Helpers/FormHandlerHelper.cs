@@ -13,6 +13,7 @@ using VideoCreator.Auth;
 using VideoCreator.Loader;
 using VideoCreator.XAML;
 using System.Linq;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.Helpers
 {
@@ -24,13 +25,12 @@ namespace VideoCreator.Helpers
 
         public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
+            var temp = PathHelper.GetTempPath("form");
             var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true, false);
-
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {
-                var VideoFileName = $"{currentDirectory}\\Media\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
+                var VideoFileName = $"{temp}\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
                 var outputFolder = $"C:\\commercialBase\\ExtractedImages";
 
                 Stream t = new FileStream(VideoFileName, FileMode.Create);

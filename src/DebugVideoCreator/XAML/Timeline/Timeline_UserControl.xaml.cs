@@ -12,6 +12,8 @@ using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
 using System.Drawing;
+using FullScreenPlayer_UserControl.Controls;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -529,8 +531,7 @@ namespace VideoCreator.XAML
 
         #region == AutoFill Events ==
 
-        public event EventHandler<AutofillEvent> Autofill_Clicked;
-        private void AddAllAutofill_Click(object sender, RoutedEventArgs e)
+        private async void AddAllAutofill_Click(object sender, RoutedEventArgs e)
         {
             var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
             var payload = new AutofillEvent
@@ -540,7 +541,46 @@ namespace VideoCreator.XAML
                 DurationInSec = 10,
                 Duration = "00:00:10.000"
             };
-            Autofill_Clicked.Invoke(sender, payload);
+            LoaderHelper.ShowLoader(this, loader);
+            var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
+            if (backgroundImagePath == null)
+            {
+                MessageBox.Show($"No Background found, autofill cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                await AutofillHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
+                InitializeTimeline();
+            }
+            LoaderHelper.HideLoader(this, loader);
+        }
+
+        #endregion
+
+        #region == Planning Events ==
+        private async void AddPlanningEvents_Click(object sender, RoutedEventArgs e)
+        {
+            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
+            var payload = new PlanningEvent
+            {
+                Type = EnumPlanningHead.All,
+                TimeAtTheMoment = trackbarTime
+            };
+
+            LoaderHelper.ShowLoader(this, loader);
+            var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent();
+            if (backgroundImagePath == null)
+                MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+            else
+            {
+                await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
+                InitializeTimeline();
+            }
+
+
+
+            LoaderHelper.HideLoader(this, loader);
+
         }
         #endregion
 
@@ -710,7 +750,7 @@ namespace VideoCreator.XAML
                 MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            var trackbarTime = DataManagerSqlLite.GetNextStart(1, selectedProjectEvent.projdetId);
+            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
             var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,

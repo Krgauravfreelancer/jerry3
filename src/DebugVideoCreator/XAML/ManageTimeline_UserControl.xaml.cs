@@ -87,7 +87,6 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
             TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
-            TimelineUserConrol.Autofill_Clicked += TimelineUserConrol_Autofill_Clicked;
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
@@ -1031,28 +1030,6 @@ namespace VideoCreator.XAML
 
 
 
-        #endregion
-
-
-        #region == Autofill Event ==
-        private async void TimelineUserConrol_Autofill_Clicked(object sender, AutofillEvent autofillEvent)
-        {
-            LoaderHelper.ShowLoader(this, loader);
-            var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
-            if (backgroundImagePath == null)
-            {
-                MessageBox.Show($"No Background found, autofill cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                await AutofillHandlerHelper.Process(autofillEvent, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
-                TimelineUserConrol.InitializeTimeline();
-            }
-
-
-
-            LoaderHelper.HideLoader(this, loader);
-        }
         #endregion
 
 

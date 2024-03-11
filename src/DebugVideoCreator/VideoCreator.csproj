@@ -340,6 +340,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\PlanningHandlerHelper.cs" />
     <Compile Include="Helpers\ShiftEventsHelper.cs" />
     <Compile Include="Helpers\BackgroundProcessHelper.cs" />
     <Compile Include="Helpers\AutofillHandlerHelper.cs" />
@@ -354,7 +355,6 @@
     <Compile Include="Helpers\ScreenRecorderWindowManager.cs" />
     <Compile Include="Helpers\SyncServerEventsHelper.cs" />
     <Compile Include="Helpers\SyncDbHelper.cs" />
-    <Compile Include="Helpers\InitialiseDbHelper.cs" />
     <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="Loader\Block.xaml.cs">
       <DependentUpon>Block.xaml</DependentUpon>
@@ -362,6 +362,7 @@
     <Compile Include="Loader\LoadingAnimation.xaml.cs">
       <DependentUpon>LoadingAnimation.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\PlanningEvent.cs" />
     <Compile Include="Models\MediaEventInMiddle.cs" />
     <Compile Include="Models\AutofillEvent.cs" />
     <Compile Include="Models\FormOrCloneEvent.cs" />

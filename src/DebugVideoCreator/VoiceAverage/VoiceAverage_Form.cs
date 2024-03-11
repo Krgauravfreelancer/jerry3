@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator
 {
@@ -109,7 +110,7 @@ namespace VideoCreator
             stopwatch = Stopwatch.StartNew();
             dt.Start();
             audioFilename = "\\_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".wav";
-            objRecord = new VoiceAverageHelper(0, Directory.GetCurrentDirectory() + "\\VoiceRecordings\\", audioFilename);
+            objRecord = new VoiceAverageHelper(0, PathHelper.GetTempPath("VoiceRecordings"), audioFilename);
             objRecord.StartRecording(sender, e);
         }
 

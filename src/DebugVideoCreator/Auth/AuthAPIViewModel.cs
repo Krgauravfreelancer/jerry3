@@ -23,6 +23,7 @@ using System.Windows.Forms.VisualStyles;
 using DesignerNp.controls;
 using VideoCreator.Models;
 using VideoCreator.Helpers;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.Auth
 {
@@ -275,12 +276,16 @@ namespace VideoCreator.Auth
 
         public async Task<string> DownloadBackground(int backgroundId, string extension)
         {
+            string result = Path.GetTempPath();
+            Console.WriteLine(result);
+
+
             var url = $"api/connect/background/download/{backgroundId}";
             var filename = $"background_{DateTime.Now:yyyyMMddhhmmss.ffff}.{extension}";
             var success = await _apiClientHelper.GetFile(url, filename);
             if (success)
             {
-                var filepath = $@"{Directory.GetCurrentDirectory()}\\{filename}";
+                var filepath = $@"{PathHelper.GetTempPath("background")}\\{filename}";
                 return filepath;
             }
             return null;
@@ -375,10 +380,8 @@ namespace VideoCreator.Auth
                     else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.FORM)
                         filename = "design" + filename + ".png";
 
-                    var currentDirectory = Directory.GetCurrentDirectory();
-                    if (!Directory.Exists($"{currentDirectory}\\Media"))
-                        Directory.CreateDirectory($"{currentDirectory}\\Media");
-                    pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
+                    var temp = PathHelper.GetTempPath("videoevent") ;
+                    pathWithFilename = $"{temp}\\{filename}";
                     var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
                     file.Write(videoEventModel.videosegment_media_bytes, 0, videoEventModel.videosegment_media_bytes.Length);
                     file.Close();
@@ -522,8 +525,8 @@ namespace VideoCreator.Auth
                 else if (MediaType == EnumMedia.FORM)
                     filename = $"design_{filename}.png";
 
-                var currentDirectory = Directory.GetCurrentDirectory();
-                pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
+                var temp = PathHelper.GetTempPath("videosegment");
+                pathWithFilename = $"{temp}\\{filename}";
                 var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
                 file.Write(blob, 0, blob.Length);
                 file.Close();
@@ -639,8 +642,8 @@ namespace VideoCreator.Auth
                 //File
                 var filename = $"design_{Guid.NewGuid()}.png";
 
-                var currentDirectory = Directory.GetCurrentDirectory();
-                pathWithFilename = $"{currentDirectory}\\Media\\{filename}";
+                var temp = PathHelper.GetTempPath("videoevent");
+                pathWithFilename = $"{temp}\\{filename}";
                 var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
                 file.Write(blob, 0, blob.Length);
                 file.Close();

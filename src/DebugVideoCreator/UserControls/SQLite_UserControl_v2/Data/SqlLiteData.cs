@@ -405,7 +405,7 @@ namespace Sqllite_Library.Data
             string sqlQueryString = @"CREATE TABLE IF NOT EXISTS 'cbv_notes' (
                 'notes_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
                 'fk_notes_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
-                'notes_line' TEXT(255) NOT NULL  DEFAULT 'NULL',
+                'notes_line' TEXT NOT NULL  DEFAULT 'NULL',
                 'notes_wordcount' INTEGER NOT NULL  DEFAULT 0,
                 'notes_index' INTEGER NOT NULL DEFAULT 0,
                 'notes_start' TEXT(12) NOT NULL DEFAULT '00.00.00.000',
@@ -699,6 +699,16 @@ namespace Sqllite_Library.Data
             var timeInMillisecond = (timeinSecond * 1000) + Convert.ToInt32(ms);
             return timeInMillisecond;
         }
+
+        public static string GetTimespanFromSeconds(int seconds)
+        {
+            int s = seconds % 60;
+            seconds /= 60;
+            int mins = seconds % 60;
+            int hours = seconds / 60;
+            return string.Format("{0:D2}:{1:D2}:{2:D2}.000", hours, mins, s);
+        }
+
 
         public static string ShiftRight(string start, string duration)
         {

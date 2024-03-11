@@ -1,5 +1,6 @@
 ﻿using FullScreenPlayer_UserControl.Models;
 using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
@@ -138,7 +139,7 @@ namespace VideoCreator.XAML
 
             if (playAudioFlag && finalBytes.Length > 0)
             {
-                var directory = Directory.GetCurrentDirectory() + "\\" + DateTime.UtcNow.ToString("yyyy-MM-dd-hh-mm-ss") + ".mp3";
+                var directory = PathHelper.GetTempPath("audio") + "\\" + DateTime.UtcNow.ToString("yyyy-MM-dd-hh-mm-ss") + ".mp3";
                 File.WriteAllBytes(directory, finalBytes);
                 _backgroundMusic.Open(new Uri(directory));
                 _backgroundMusic.MediaEnded += new EventHandler(BackgroundMusic_Ended);

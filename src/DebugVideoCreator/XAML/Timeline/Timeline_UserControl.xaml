@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
-        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl"
-        mc:Ignorable="d">
+        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl" xmlns:loader="clr-namespace:VideoCreator.Loader"
+             mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
             <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" >
@@ -80,8 +80,13 @@
                     <Image Source="../../Icons/clone.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <Separator></Separator>
-            <MenuItem Header="Add All Autofill" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click" >
+            <Separator />
+            <MenuItem Header="Add All Autofills" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/autofill.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Planning Events" x:Name="MenuItem_AddPlanningEvents"  Click="AddPlanningEvents_Click" >
                 <MenuItem.Icon>
                     <Image Source="../../Icons/autofill.png" ></Image>
                 </MenuItem.Icon>
@@ -148,6 +153,8 @@
 
 
                     </StackPanel>
+                    <loader:LoadingAnimation  x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
+
                 </Grid>
             </DockPanel>
 

@@ -6,6 +6,7 @@ using ServerApiCall_UserControl.DTO.Media;
 using ServerApiCall_UserControl.DTO.Projects;
 using ServerApiCall_UserControl.DTO.Screen;
 using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -111,8 +112,6 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("fk_background_company", typeof(int));
             dataTable.Columns.Add("background_media", typeof(byte[]));
             dataTable.Columns.Add("background_active", typeof(bool));
-
-            var currentDirectory = Directory.GetCurrentDirectory();
 
             foreach (var item in data)
             {
@@ -497,7 +496,7 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
             dataTable.Columns.Add("background_media", typeof(byte[]));
             dataTable.Columns.Add("background_active", typeof(bool));
 
-            var currentDirectory = Directory.GetCurrentDirectory();
+            var currentDirectory = PathHelper.GetTempPath("background");
 
             var row = dataTable.NewRow();
             row["background_id"] = -1;
@@ -588,33 +587,32 @@ private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, Pr
 
         public static void PopulateLOCAudioTable()
         {
-            DataTable dataTable = new DataTable();
-            dataTable.Columns.Add("locaudio_id", typeof(int));
-            dataTable.Columns.Add("fk_locaudio_notes", typeof(int));
-            dataTable.Columns.Add("locaudio_media", typeof(byte[]));
-            dataTable.Columns.Add("locaudio_createdate", typeof(string));
-            dataTable.Columns.Add("locaudio_modifydate", typeof(string));
+            //DataTable dataTable = new DataTable();
+            //dataTable.Columns.Add("locaudio_id", typeof(int));
+            //dataTable.Columns.Add("fk_locaudio_notes", typeof(int));
+            //dataTable.Columns.Add("locaudio_media", typeof(byte[]));
+            //dataTable.Columns.Add("locaudio_createdate", typeof(string));
+            //dataTable.Columns.Add("locaudio_modifydate", typeof(string));
 
-            var currentDirectory = Directory.GetCurrentDirectory();
+            //var currentDirectory = PathHelper.GetTempPath("loc");
+            //var row = dataTable.NewRow();
+            //row["locaudio_id"] = -1;
+            //row["fk_locaudio_notes"] = 1;
+            //row["locaudio_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            //row["locaudio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var row = dataTable.NewRow();
-            row["locaudio_id"] = -1;
-            row["fk_locaudio_notes"] = 1;
-            row["locaudio_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            row["locaudio_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-            var path = $"{currentDirectory}\\Media\\Audio1.mp3";
-            using (var fileStream = new FileStream(path, FileMode.Open))
-            {
-                byte[] mp3Byte = StreamToByteArray(fileStream, 0);
-                row["locaudio_media"] = mp3Byte;
-            }
-            dataTable.Rows.Add(row);
+            //var path = $"{currentDirectory}\\Media\\Audio1.mp3";
+            //using (var fileStream = new FileStream(path, FileMode.Open))
+            //{
+            //    byte[] mp3Byte = StreamToByteArray(fileStream, 0);
+            //    row["locaudio_media"] = mp3Byte;
+            //}
+            //dataTable.Rows.Add(row);
 
 
-            var insertedIds = DataManagerSqlLite.InsertRowsToLocAudio(dataTable);
-            if (insertedIds.Count > 0)
-                MessageBox.Show("Loc Audio Inserted to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            //var insertedIds = DataManagerSqlLite.InsertRowsToLocAudio(dataTable);
+            //if (insertedIds.Count > 0)
+            //    MessageBox.Show("Loc Audio Inserted to Database", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         #endregion

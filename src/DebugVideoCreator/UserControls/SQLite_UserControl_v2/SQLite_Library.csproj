@@ -114,6 +114,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Helpers\RegisteryHelper.cs" />
     <Compile Include="Models\CBVPlanning.cs" />
     <Compile Include="Models\CBVPlanningHead.cs" />

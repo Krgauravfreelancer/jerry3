@@ -25,6 +25,7 @@ using NAudio.Wave;
 using System.Linq;
 using VideoCreator.Models;
 using ServerApiCall_UserControl.DTO.AutofillModels;
+using Sqllite_Library.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -54,6 +55,7 @@ namespace VideoCreator.XAML
                 manageTimelineWindow = null;
             }
             Application.Current.Shutdown();
+            PathHelper.ClearTempDirectories();
             LogManagerHelper.WriteVerboseLog("Application shutdown completed");
         }
 
@@ -345,10 +347,10 @@ namespace VideoCreator.XAML
         
 
 
-        private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
-        {
-            InitialiseDbHelper.PopulateLOCAudioTable();
-        }
+        //private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
+        //{
+        //    InitialiseDbHelper.PopulateLOCAudioTable();
+        //}
 
         private void BtnGetLOCAudio_Click(object sender, RoutedEventArgs e)
         {

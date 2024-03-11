@@ -705,5 +705,10 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetMillisecondsFromTimespan(timespan);
         }
 
+        public static string GetTimespanFromSeconds(int seconds)
+        {
+            return SqlLiteData.GetTimespanFromSeconds(seconds);
+        }
+
     }
 }
