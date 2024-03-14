@@ -1,19 +1,19 @@
-﻿using ServerApiCall_UserControl.DTO.VideoEvent;
-using VideoCreator.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using VideoCreator.Auth;
 using VideoCreator.Loader;
+using VideoCreator.Models;
 using VideoCreator.XAML;
-using System.Linq;
-using Sqllite_Library.Helpers;
 
 namespace VideoCreator.Helpers
 {
@@ -136,7 +136,7 @@ namespace VideoCreator.Helpers
             }
 
 
-            
+
         }
 
         private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)

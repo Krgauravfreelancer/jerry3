@@ -114,14 +114,14 @@ namespace VideoCreator.XAML
                 //{
                 //    byte[] MediaData = videoSegments[0].videosegment_media;
 
-                    //PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
+                //PlaylistItem playlistItem = new PlaylistItem(mediaType, start, duration, MediaData);
 
-                    //playlist.Add(playlistItem);
+                //playlist.Add(playlistItem);
                 //}
 
 
                 var allNotes = DataManagerSqlLite.GetNotes(item.videoevent_id);
-                
+
 
                 foreach (var note in allNotes)
                 {
@@ -145,7 +145,7 @@ namespace VideoCreator.XAML
                 _backgroundMusic.MediaEnded += new EventHandler(BackgroundMusic_Ended);
                 _backgroundMusic.Play();
             }
-            if(playVideoAudioFlag)
+            if (playVideoAudioFlag)
                 Player.Play();
         }
 

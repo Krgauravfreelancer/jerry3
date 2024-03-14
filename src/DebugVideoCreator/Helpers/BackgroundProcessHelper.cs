@@ -1,16 +1,11 @@
-﻿using VideoCreator.Models;
-using Sqllite_Library.Business;
+﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using VideoCreator.Auth;
-using VideoCreator.Helpers;
 
 namespace VideoCreator.Helpers
 {
@@ -40,7 +35,7 @@ namespace VideoCreator.Helpers
             dispatcherTimer.Tick += new EventHandler(RunBackgroundProcess);
             dispatcherTimer.Interval = TimeSpan.FromSeconds(RetryIntervalInSeconds);
             dispatcherTimer.Start();
-            
+
         }
 
         private static void RunBackgroundProcessFrequently(object sender, EventArgs e)
@@ -113,7 +108,7 @@ namespace VideoCreator.Helpers
                 foreach (var design in videoEvent?.design_data)
                 {
                     var serverDesign = addedData.design.Where(y => y.design_xml.Equals(design.design_xml)).FirstOrDefault();
-                    if(serverDesign != null)
+                    if (serverDesign != null)
                         DataManagerSqlLite.UpdateDesignDataTableServerId(design.design_id, serverDesign.design_id, authApiViewModel.GetError());
                 }
                 return true;

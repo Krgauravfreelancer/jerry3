@@ -1,8 +1,6 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ServerApiCall_UserControl.DTO.VideoEvent
+﻿namespace ServerApiCall_UserControl.DTO.VideoEvent
 {
-    public class DesignModel: DesignModelPost
+    public class DesignModel : DesignModelPost
     {
         //Optional Fields for POST
         public int fk_design_createdby { get; set; }

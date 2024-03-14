@@ -1,5 +1,4 @@
-﻿using Sqllite_Library.Business;
-using Sqllite_Library.Models;
+﻿using Sqllite_Library.Models;
 using System;
 using System.Data;
 using System.Windows;
@@ -79,10 +78,10 @@ namespace Notes_UserControl
 
         private void btnInsertLongPause_Click(object sender, RoutedEventArgs e)
         {
-            var caretIndex = txtNotes.CaretIndex; 
+            var caretIndex = txtNotes.CaretIndex;
             txtNotes.Text = NotesHelpers.InsertPause(NotesHelpers.LONGPAUSE, txtNotes.Text, txtNotes.CaretIndex);
             txtNotes.Focus();
-            txtNotes.CaretIndex = caretIndex + NotesHelpers.LONGPAUSE.Length + 2; 
+            txtNotes.CaretIndex = caretIndex + NotesHelpers.LONGPAUSE.Length + 2;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -104,7 +103,7 @@ namespace Notes_UserControl
             dtNotes.Columns.Add("notes_syncerror", typeof(string));
 
             var dRow = dtNotes.NewRow();
-            
+
             dRow["notes_line"] = txtNotes.Text;
             dRow["notes_start"] = "00:00:00.000";
             dRow["notes_duration"] = "00:00:00.000"; //TBD
@@ -139,7 +138,7 @@ namespace Notes_UserControl
                     DelayAction(3000, new Action(() => { updateSingleNoteEvent?.Invoke(this, dtNotes); }));
             }
 
-            
+
             ((Window)this.Parent).Close();
         }
 

@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace DesignerNp.controls
 {
@@ -84,12 +74,12 @@ namespace DesignerNp.controls
         public DataTable GetDesign()
         {
 
-            if ( null == dataTable)
+            if (null == dataTable)
             {
                 dataTable = InitDataTable();
             }
 
-            for(int index = 0; index < container.Children.Count; index++)
+            for (int index = 0; index < container.Children.Count; index++)
             {
                 UIElement uIElement = container.Children[index];
                 string xaml = XamlWriter.Save(uIElement);
@@ -99,7 +89,7 @@ namespace DesignerNp.controls
                     // Update the exesting 
                     dataTable.Rows[index]["xaml"] = xaml;
                 }
-                else 
+                else
                 {
                     // Create new
                     DataRow dataRow = dataTable.NewRow();
@@ -127,7 +117,7 @@ namespace DesignerNp.controls
         public void LoadDesign(DataTable dataTable)
         {
             this.dataTable = dataTable;
-            if(container.Children.Count > 0)
+            if (container.Children.Count > 0)
                 container.Children.Clear();
 
             if (null != dataTable && dataTable.Rows?.Count > 0)
@@ -244,12 +234,12 @@ namespace DesignerNp.controls
                         Line arrowLine = (Line)arrowCanvas.Children[0];
                         arrowLine.Opacity = 0.5;
                         Line arrowHead = (Line)arrowCanvas.Children[1];
-                        arrowHead.Opacity = 0.5;    
+                        arrowHead.Opacity = 0.5;
                     }
                 }
-                
 
-                 
+
+
                 uiElement.Opacity = 0.5;
 
                 isPressed = true;
@@ -285,7 +275,7 @@ namespace DesignerNp.controls
                 uiElement.ReleaseMouseCapture();
                 isPressed = false;
 
-               
+
 
                 Type type = e.Source.GetType();
                 if (type.Name == "TextBox")
@@ -456,7 +446,7 @@ namespace DesignerNp.controls
                             uiElement.SetValue(Canvas.LeftProperty, (double)uiElement.GetValue(Canvas.LeftProperty) + daltaX);
                         }
                     }
-                    
+
                     startPosition = position;
                 }
             }
@@ -471,7 +461,7 @@ namespace DesignerNp.controls
         {
             int index = -1;
 
-            if ( null == uiElement )
+            if (null == uiElement)
             {
                 return;
             }
@@ -479,7 +469,7 @@ namespace DesignerNp.controls
             if (e.Key == Key.Delete)
             {
                 Type type = uiElement.GetType();
-                switch(type.Name)
+                switch (type.Name)
                 {
                     case "Rectangle":
                     case "Ellipse":
@@ -520,12 +510,12 @@ namespace DesignerNp.controls
 
         private void container_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if((bool)e.NewValue)
+            if ((bool)e.NewValue)
             {
                 propertyWindow.Visibility = Visibility.Visible;
                 shapeBar.Visibility = Visibility.Visible;
             }
-            else 
+            else
             {
                 propertyWindow.Visibility = Visibility.Hidden;
                 shapeBar.Visibility = Visibility.Hidden;

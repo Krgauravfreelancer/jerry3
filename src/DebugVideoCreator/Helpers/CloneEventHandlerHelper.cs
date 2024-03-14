@@ -1,26 +1,10 @@
-﻿using VideoCreator.Models;
-using NAudio.CoreAudioApi.Interfaces;
-using ServerApiCall_UserControl.DTO;
-using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
 using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
@@ -47,7 +31,7 @@ namespace VideoCreator.Helpers
                 objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 objToSync.design.AddRange(GetDesignModelList(dtDesign));
                 objToSync.notes.AddRange(GetNotesModelList(dtNotes));
-               
+
                 if (blob != null)
                     objToSync.videosegment_media_bytes = blob;
 
@@ -56,7 +40,7 @@ namespace VideoCreator.Helpers
             }
             return null;
         }
-        
+
         public static byte[] GetBlobBytes(DataTable dt)
         {
             foreach (DataRow row in dt.Rows)
@@ -92,7 +76,7 @@ namespace VideoCreator.Helpers
 
             return dt;
         }
-        
+
         private static DataTable GetNotesDataTableClient(List<CBVNotes> notes, int localVideoEventId = -1)
         {
             var dtNotes = GetRawNotesDataTable();
@@ -341,6 +325,6 @@ namespace VideoCreator.Helpers
         }
         #endregion
 
-        
+
     }
 }

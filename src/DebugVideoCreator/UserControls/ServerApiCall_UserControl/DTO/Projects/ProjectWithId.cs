@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
 
 namespace ServerApiCall_UserControl.DTO.Projects
 {
@@ -22,7 +20,7 @@ namespace ServerApiCall_UserControl.DTO.Projects
         public List<ProjectDetail> project_detail { get; set; }
 
     }
-    
+
 }
 
 

@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing.Imaging;
+﻿using MediaToolkit;
+using MediaToolkit.Model;
+using MediaToolkit.Options;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
-
-using MediaToolkit;
-using MediaToolkit.Model;
-using MediaToolkit.Options;
 
 namespace VideoToImage_UserControl
 {
@@ -156,13 +150,13 @@ namespace VideoToImage_UserControl
             {
                 using (var engine = new Engine())
                 {
-                    var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period)};
+                    var options = new ConversionOptions { Seek = TimeSpan.FromSeconds(Period) };
                     var outputFile = new MediaFile { Filename = imageFileName };
-                    if(isPreview)
+                    if (isPreview)
                         engine.GetThumbnail(Mp4Media, outputFile, options);
                     else
                         engine.Convert(Mp4Media, outputFile, options);
-                    
+
                 }
             });
 

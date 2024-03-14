@@ -1,24 +1,7 @@
-﻿using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using Sqllite_Library.Business;
-using Sqllite_Library.Models;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using VideoCreator.Auth;
 
 namespace VideoCreator.Helpers
 {
@@ -46,7 +29,7 @@ namespace VideoCreator.Helpers
         public static List<NotesModelPost> GetNotesModelList(DataRow note)
         {
             var data = new List<NotesModelPost>();
-            
+
             var notesModel = new NotesModelPost();
             notesModel.notes_line = Convert.ToString(note["notes_line"]);
             notesModel.notes_index = Convert.ToString(note["notes_index"]);
@@ -55,7 +38,7 @@ namespace VideoCreator.Helpers
             notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
             notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             data.Add(notesModel);
-            
+
             return data;
         }
 
@@ -140,7 +123,7 @@ namespace VideoCreator.Helpers
                 dRow["notes_syncerror"] = "";
                 dt.Rows.Add(dRow);
             }
-            
+
             return dt;
         }
 

@@ -1,26 +1,14 @@
-﻿using VideoCreator.Models;
-using GalaSoft.MvvmLight.Messaging;
-using Sqllite_Library.Business;
-using Sqllite_Library.Models;
+﻿using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using VideoCreator.Helpers;
-using Sqllite_Library.Helpers;
+using VideoCreator.Models;
 
 namespace VideoCreator.XAML
 {
@@ -76,12 +64,12 @@ namespace VideoCreator.XAML
         public async void Process(TrackbarMouseMoveEvent mouseMovedEvent)
         {
             isProcessing = true;
-            LoaderHelper.ShowLoader(this, loader, "Processing Preview ..." ,false);
+            LoaderHelper.ShowLoader(this, loader, "Processing Preview ...", false);
             var bmps = new List<System.Drawing.Bitmap>();
             foreach (var id in mouseMovedEvent.videoeventIds)
             {
                 var videoevent = DataManagerSqlLite.GetVideoEventbyId(id, true, false).FirstOrDefault();
-                if (videoevent != null && videoevent?.videosegment_data?.Count > 0) 
+                if (videoevent != null && videoevent?.videosegment_data?.Count > 0)
                 {
                     if (videoevent.fk_videoevent_media == 1 || videoevent.fk_videoevent_media == 4)
                     {
@@ -118,11 +106,11 @@ namespace VideoCreator.XAML
 
             if (finalImage != null)
                 previewImage.Source = Convert(finalImage);
-             finalImage.Dispose();
+            finalImage.Dispose();
             LoaderHelper.HideLoader(this, loader);
             isProcessing = false;
         }
-        
+
 
         private System.Drawing.Bitmap CombineBitmap(List<System.Drawing.Bitmap> images)
         {
@@ -151,7 +139,7 @@ namespace VideoCreator.XAML
                 }
                 else if (cmbResolution.SelectedIndex == 3)
                 {
-                    width = 430; 
+                    width = 430;
                     height = 270;
                 }
                 else if (cmbResolution.SelectedIndex == 5)

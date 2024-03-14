@@ -38,7 +38,7 @@ namespace VideoCreator.Helpers
             return data;
         }
 
-        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, byte[] blob,  SelectedProjectEvent selectedProjectEvent, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", string duration = "00:00:10.000")
+        public static async Task<VideoEventResponseModel> PostVideoEventToServerForDesign(DataTable dtDesign, byte[] blob, SelectedProjectEvent selectedProjectEvent, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", string duration = "00:00:10.000")
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
@@ -194,7 +194,7 @@ namespace VideoCreator.Helpers
         public static DataTable GetVideoSegmentDataTableForCallout(byte[] blob, int videoeventId, VideoSegmentModel videosegment)
         {
             var dtVideoEvent = GetVideoSegmentDataTable();
-                
+
             var row = dtVideoEvent.NewRow();
             row["videosegment_id"] = videoeventId;
             row["videosegment_media"] = blob;
@@ -244,6 +244,6 @@ namespace VideoCreator.Helpers
 
         #endregion
 
-        
+
     }
 }

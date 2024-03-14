@@ -12,7 +12,7 @@ namespace ServerApiCall_UserControl.DTO.FinalMp4
 
         [JsonPropertyName("finalmp4_version")]
         public int finalmp4_version { get; set; }
-        
+
         [JsonPropertyName("finalmp4_comments")]
         public string finalmp4_comments { get; set; }
 

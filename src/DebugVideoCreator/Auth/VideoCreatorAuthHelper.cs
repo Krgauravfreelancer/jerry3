@@ -1,19 +1,15 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
+using ServerApiCall_UserControl;
+using System;
+using System.Configuration;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows;
-using GalaSoft.MvvmLight;
-using ServerApiCall_UserControl;
-using System.Net.NetworkInformation;
-using System.Net.Http;
-using System.IO;
-using Newtonsoft.Json;
-using System.Net;
-using System.Drawing.Printing;
-using NAudio.CoreAudioApi;
-using System.Collections;
-using System.Runtime.InteropServices.WindowsRuntime;
 using VideoCreator.Helpers;
-using System.Configuration;
 
 namespace VideoCreator.Auth
 {
@@ -63,7 +59,7 @@ namespace VideoCreator.Auth
                 Application.Current.Shutdown();
             }
             var serverUrl = ConfigurationManager.AppSettings.Get("serverUrl");
-            if(string.IsNullOrEmpty(serverUrl))
+            if (string.IsNullOrEmpty(serverUrl))
                 throw new Exception(NO_SERVERURL_MESSAGE);
             var failureMessage = authCtrl.InitConnection(serverUrl);
             if (!string.IsNullOrEmpty(failureMessage))
@@ -103,7 +99,7 @@ namespace VideoCreator.Auth
         {
             LogManagerHelper.WriteErroreLog(Message);
             if (ShowErrorMessage)
-                MessageBox.Show(Message?.Length > 200 ? Message.Substring(0,200) : Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Message?.Length > 200 ? Message.Substring(0, 200) : Message, "API Error", MessageBoxButton.OK, MessageBoxImage.Error);
             return default(T);
         }
 
@@ -180,7 +176,7 @@ namespace VideoCreator.Auth
             return true;
         }
 
-        
+
         public async Task<T> Create<T>(string url, FormUrlEncodedContent payload)
         {
             IsBusy = true;

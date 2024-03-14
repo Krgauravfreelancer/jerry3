@@ -7,6 +7,6 @@ namespace Sqllite_Library.Models
         public SQLiteCommand SQLiteCommand { get; set; }
         public SQLiteConnection SQLiteConnection { get; set; }
         public SQLiteDataReader SQLiteDataReader { get; set; }
-        
+
     }
 }

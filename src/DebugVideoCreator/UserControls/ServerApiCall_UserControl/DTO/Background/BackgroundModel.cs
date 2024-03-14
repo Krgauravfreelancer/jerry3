@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ServerApiCall_UserControl.DTO.Background
+﻿namespace ServerApiCall_UserControl.DTO.Background
 {
     public class BackgroundModel
     {

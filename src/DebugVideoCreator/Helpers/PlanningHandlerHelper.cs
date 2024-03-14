@@ -1,38 +1,24 @@
-﻿using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using VideoCreator.Models;
-using Newtonsoft.Json;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.IO;
-using System.Net;
-using System.Reflection;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Xml;
 using VideoCreator.Auth;
 using VideoCreator.Loader;
+using VideoCreator.Models;
 using VideoCreator.XAML;
-using System.Linq;
-using Timeline.UserControls.Models;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using System.Xml;
-using Sqllite_Library.Helpers;
-using System.Linq.Expressions;
-using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace VideoCreator.Helpers
 {
@@ -62,7 +48,7 @@ namespace VideoCreator.Helpers
         {
             var directory = CreateOrReturnEmptyDirectory();
             var backgrounds = DataManagerSqlLite.GetBackground();
-            if(backgrounds != null && backgrounds.Count > 0)
+            if (backgrounds != null && backgrounds.Count > 0)
             {
                 var backgroundBytes = backgrounds.FirstOrDefault().background_media;
                 var imagePath = $"{directory}\\backgroundimage_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
@@ -82,13 +68,13 @@ namespace VideoCreator.Helpers
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
             var designElements = designerUserControl.PlanningSetup();
 
-            if(planningEvent.Type == EnumPlanningHead.All)
+            if (planningEvent.Type == EnumPlanningHead.All)
             {
                 var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 //Add Title
                 await AddProjectNameSlide(planningEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                 int increment = 1;
-                foreach(var item in data)
+                foreach (var item in data)
                 {
                     switch (item.fk_planning_head)
                     {
@@ -168,7 +154,7 @@ namespace VideoCreator.Helpers
                 screenType = 4;
             else if (planningType == EnumPlanningHead.NextUp)
                 screenType = 7;
-            
+
             // Design Elements
             var rowHeading = designerUserControl.GetNewRow();
             rowHeading["design_id"] = -1;
@@ -275,7 +261,7 @@ namespace VideoCreator.Helpers
 
         private static string GetBulletPoints(string BulletText, int bulletNumber = 1)
         {
-            if(BulletText.Length <= 80)
+            if (BulletText.Length <= 80)
             {
                 var top = 250 + (bulletNumber * 200);
                 var title = $"<TextBox AcceptsReturn=\"True\" TextWrapping=\"Wrap\" BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"45\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{BulletText}</TextBox>";
@@ -283,21 +269,21 @@ namespace VideoCreator.Helpers
             }
             else
             {
-                var converted = Regex.Replace(BulletText, "(.{80})", "$1###"); 
+                var converted = Regex.Replace(BulletText, "(.{80})", "$1###");
                 var arr = converted.Split(new string[] { "###" }, StringSplitOptions.None);
                 var title = "";
                 int i = 0;
-                foreach( var item in arr)
+                foreach (var item in arr)
                 {
                     var top = 250 + (bulletNumber * 200) + i;
-                    var text = i >= 120 ? item + "..." : item ;
+                    var text = i >= 120 ? item + "..." : item;
                     title += $"<TextBox AcceptsReturn=\"True\" TextWrapping=\"Wrap\" BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"35\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{text}</TextBox>" + Environment.NewLine;
                     i = i + 40;
                     if (i >= 160) break;
                 }
                 return title;
             }
-            
+
         }
 
         private static string GetBulletCircle(int bulletNumber = 1)
@@ -335,7 +321,7 @@ namespace VideoCreator.Helpers
                 }
                 else
                 {
-                    for (int i = canvas.Children.Count-1; i >= 0; i--)
+                    for (int i = canvas.Children.Count - 1; i >= 0; i--)
                     {
                         UIElement element = canvas.Children[i];
                         canvas.Children.RemoveAt(i);
@@ -362,15 +348,15 @@ namespace VideoCreator.Helpers
             memoryStream.Close();
             return blob;
         }
-        
+
         private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, int IncrementBySeconds)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             VideoEventResponseModel addedData;
-            
+
             EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds));
             addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, $"{DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds)}");
-            
+
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -403,7 +389,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(startTime, duration); // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(DesignEventHandlerHelper.GetDesignModelList(dtDesign));
-            if(dtNotes != null && dtNotes.Rows.Count > 0)
+            if (dtNotes != null && dtNotes.Rows.Count > 0)
                 objToSync.notes.AddRange(CloneEventHandlerHelper.GetNotesModelList(dtNotes));
             objToSync.videosegment_media_bytes = blob;
             var result = await authApiViewModel.POSTVideoEvent(selectedProjectEvent, objToSync);
@@ -456,7 +442,7 @@ namespace VideoCreator.Helpers
         }
 
 
-       
+
 
         #endregion
 

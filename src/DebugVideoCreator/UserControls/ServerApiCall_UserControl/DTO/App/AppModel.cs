@@ -9,7 +9,7 @@ namespace ServerApiCall_UserControl.DTO.App
 
         [JsonPropertyName("write")]
         public int Write { get; set; }
-        
+
         [JsonPropertyName("talk")]
         public int Talk { get; set; }
 

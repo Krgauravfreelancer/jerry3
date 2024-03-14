@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Configuration;
-using NLog;
 
 namespace VideoCreator.Helpers
 {
@@ -48,7 +48,7 @@ namespace VideoCreator.Helpers
 
             var logger = LogManager.GetLogger($"{className}.cs >> {memberName} >> LineNumber-{sourceLineNumber}");
             logger.Error($"{Environment.NewLine}\t{log}", DateTime.Now);
-            
+
         }
     }
 }

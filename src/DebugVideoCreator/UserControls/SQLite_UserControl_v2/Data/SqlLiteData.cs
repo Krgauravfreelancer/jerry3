@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Data.SQLite;
+﻿using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using Sqllite_Library.Helpers;
-using System.Windows;
+using System.Data.SQLite;
+using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace Sqllite_Library.Data
 {
@@ -685,8 +685,8 @@ namespace Sqllite_Library.Data
                 return "00:00:00.000";
 
             var ms = start.Length > 8 ? start.Split('.')[1] : "000";
-            
-            
+
+
             var array = start.Length > 8 ? start.Remove(8).Split(':') : start.Split(':');
             var startTimeinSecond = (Convert.ToInt32(array[0]) * 3600) + (Convert.ToInt32(array[1]) * 60) + (Convert.ToInt32(array[2]));
             //var time = startTimeinSecond * 1000 + ms;
@@ -719,7 +719,7 @@ namespace Sqllite_Library.Data
             var durationtime = GetMillisecondsFromTimespan(durationToShift);
 
             var endTime = starttime - durationtime;
-            if(endTime < 0)
+            if (endTime < 0)
                 return "00:00:00.000";
             var endtimeInMs = endTime % 1000;
             endTime = endTime / 1000;
@@ -1905,8 +1905,8 @@ namespace Sqllite_Library.Data
                 throw new Exception("Database is not present.");
 
             string sqlQueryString = $@"SELECT * FROM cbv_videoevent where videoevent_id = {videoeventId}";
-            
-            if(designFlag)
+
+            if (designFlag)
                 sqlQueryString = $@"SELECT 
                                         VE.*, D.fk_design_screen, D.fk_design_background 
                                     FROM 
@@ -1915,7 +1915,7 @@ namespace Sqllite_Library.Data
                                     where 
                                         VE.videoevent_id = {videoeventId}
                                     LIMIT 1";
-            
+
             SQLiteConnection sqlCon = null;
             try
             {
@@ -1948,13 +1948,13 @@ namespace Sqllite_Library.Data
                             videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
                         };
 
-                        if(designFlag)
+                        if (designFlag)
                         {
                             obj.fk_design_background = Convert.ToInt32(sqlReader["fk_design_background"]);
                             obj.fk_design_screen = Convert.ToInt32(sqlReader["fk_design_screen"]);
                         }
 
-                            
+
                         if (dependentDataFlag)
                         {
                             var videoEventId = sqlReader.GetInt32(0);
@@ -2040,7 +2040,7 @@ namespace Sqllite_Library.Data
             }
             return data;
 
-            
+
         }
 
         public static List<CBVVideoEvent> GetOverlappingCalloutsByTime(int fk_videoevent_projdet, string startTime, string endtime)
@@ -2183,7 +2183,7 @@ namespace Sqllite_Library.Data
 
             return data;
         }
-        
+
         public static List<CBVVideoEvent> GetVideoEvents(int projdetId, bool dependentDataFlag = false, bool designFlag = false)
         {
             var data = new List<CBVVideoEvent>();
@@ -2194,7 +2194,7 @@ namespace Sqllite_Library.Data
 
             string sqlQueryString = $@"SELECT VE.* FROM cbv_videoevent VE";
 
-            if(designFlag)
+            if (designFlag)
                 sqlQueryString = $@"SELECT 
                                         VE.*, D.fk_design_screen, D.fk_design_background 
                                     FROM 
@@ -2267,8 +2267,8 @@ namespace Sqllite_Library.Data
                 sqlCon?.Close();
                 throw;
             }
-            
-            return data.GroupBy(x => x.videoevent_id).Select(p=>p.First()).Distinct().ToList();
+
+            return data.GroupBy(x => x.videoevent_id).Select(p => p.First()).Distinct().ToList();
         }
 
         /*
@@ -2968,7 +2968,7 @@ namespace Sqllite_Library.Data
         {
             foreach (DataRow dr in dataTable.Rows)
             {
-                
+
                 var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
                 var videoevent_serverid = Convert.ToInt32(dr["videoevent_serverid"]);
@@ -3483,7 +3483,7 @@ namespace Sqllite_Library.Data
                                                    Select '{planninghead_name}', {planninghead_sort}
                                                 WHERE {whereClause};";
                 var upsertFlag = InsertRecordsInTable("cbv_planninghead", upsertQueryString);
-                
+
                 Console.WriteLine($@"cbv_planninghead table upsert status for id - {planninghead_id}, name -{planninghead_id} & sort - {planninghead_sort} |  result - {upsertFlag}");
             }
         }

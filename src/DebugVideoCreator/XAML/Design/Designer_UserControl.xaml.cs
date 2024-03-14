@@ -1,22 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Sqllite_Library.Helpers;
+using Sqllite_Library.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
 //using System.Collections.Generic;
 using System.Windows;
-using System.Data;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Linq;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using Newtonsoft.Json;
-using Sqllite_Library.Models;
-using System.Windows.Threading;
-using System.ComponentModel;
-using System.IO;
-using System.Xml;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using VideoCreator.Models;
-using Sqllite_Library.Helpers;
 
 namespace VideoCreator.XAML
 {
@@ -40,7 +31,7 @@ namespace VideoCreator.XAML
             InitializeComponent();
             selectedProjectId = _selectedProjectId;
             isFormEvent = _isFormEvent;
-            if (_isImagePathGiven) 
+            if (_isImagePathGiven)
                 imagePath = _backgroundDatastring;
             else
                 BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);

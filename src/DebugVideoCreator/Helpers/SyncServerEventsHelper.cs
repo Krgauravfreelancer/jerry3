@@ -1,18 +1,9 @@
 ﻿using ServerApiCall_UserControl.DTO;
-using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
 using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,14 +21,14 @@ namespace VideoCreator.Helpers
             var localVideoEventCount = DataManagerSqlLite.GetVideoEventCountProjectAndDetailId(selectedProjectEvent.projectId, selectedProjectEvent.projdetId);
             // Get Server Video Event
             var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
-            
+
             if (serverVideoEventData != null && serverVideoEventData.Data?.Count > localVideoEventCount)
             {
                 btnDownloadServerData.IsEnabled = true;
                 var message = $@"Server has {serverVideoEventData.Data.Count} events while local DB has {localVideoEventCount} events.{Environment.NewLine}Do you want to download server data to local?";
                 var result = MessageBox.Show(message, "Sync Data", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
-                    await SyncServerDataToLocalDB(serverVideoEventData, uc, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel) ;
+                    await SyncServerDataToLocalDB(serverVideoEventData, uc, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
                 else
                 {
                     btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
@@ -51,11 +42,11 @@ namespace VideoCreator.Helpers
             }
         }
 
-        public static async Task SyncServerDataToLocalDB(ParentDataList<AllVideoEventResponseModel> serverVideoEventData, ManageTimeline_UserControl uc, Button btnDownloadServerData, SelectedProjectEvent selectedProjectEvent, LoadingAnimation loader, AuthAPIViewModel authApiViewModel )
+        public static async Task SyncServerDataToLocalDB(ParentDataList<AllVideoEventResponseModel> serverVideoEventData, ManageTimeline_UserControl uc, Button btnDownloadServerData, SelectedProjectEvent selectedProjectEvent, LoadingAnimation loader, AuthAPIViewModel authApiViewModel)
         {
             if (serverVideoEventData == null) serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
             LoaderHelper.ShowLoader(uc, loader);
-            
+
             // Step1: Lets clear the local DB
             DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
             int i = 1;

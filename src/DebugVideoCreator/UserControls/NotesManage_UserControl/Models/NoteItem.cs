@@ -2,7 +2,7 @@
 
 namespace NotesManage_UserControl.Models
 {
-    public class NoteItem: ObservableObject
+    public class NoteItem : ObservableObject
     {
         private int id;
         private string item;

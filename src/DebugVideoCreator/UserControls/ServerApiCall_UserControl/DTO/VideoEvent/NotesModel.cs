@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace ServerApiCall_UserControl.DTO.VideoEvent
 {
-    public class NotesResponseModel: NotesModel
+    public class NotesResponseModel : NotesModel
     {
         public List<NotesModel> Notes { get; set; }
     }

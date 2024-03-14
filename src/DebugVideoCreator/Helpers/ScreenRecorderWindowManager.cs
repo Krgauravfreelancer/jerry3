@@ -1,5 +1,5 @@
-﻿using ScreenRecorder_UserControl.Models;
-using ScreenRecorder_UserControl;
+﻿using ScreenRecorder_UserControl;
+using ScreenRecorder_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using VideoCreator.Loader;

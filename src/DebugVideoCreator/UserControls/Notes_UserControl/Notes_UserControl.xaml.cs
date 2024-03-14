@@ -1,7 +1,6 @@
 ﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,7 +35,7 @@ namespace Notes_UserControl
 
         #region == Public Functions ==
 
-        
+
 
         public void InitializeNotes(SelectedProjectEvent _selectedProjectEvent, int videoEvent_id = -1, bool readonlyMode = false)
         {
@@ -241,7 +240,7 @@ namespace Notes_UserControl
                 Header = "Add New Note"
             };
             addNewNoteQuery.Click += ContextMenu_AddNewNoteClickEvent;
-            addNewNoteQuery.IsEnabled = !ReadOnly; 
+            addNewNoteQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(addNewNoteQuery);
 
             var voiceGenerateAllNotesQuery = new MenuItem
@@ -249,7 +248,7 @@ namespace Notes_UserControl
                 Header = "Generate Voice For All Notes"
             };
             voiceGenerateAllNotesQuery.Click += ContextMenu_GenerateVoiceAllNotesClickEvent;
-            voiceGenerateAllNotesQuery.IsEnabled = !ReadOnly; 
+            voiceGenerateAllNotesQuery.IsEnabled = !ReadOnly;
             contextMenu.Items.Add(voiceGenerateAllNotesQuery);
 
             contextMenu.Items.Add(new Separator());

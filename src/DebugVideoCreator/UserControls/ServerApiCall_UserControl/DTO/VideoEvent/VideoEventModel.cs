@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace ServerApiCall_UserControl.DTO.VideoEvent
 {
@@ -42,7 +41,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
 
     }
 
-    public class AllVideoEventResponseModel: VideoEventResponseObject
+    public class AllVideoEventResponseModel : VideoEventResponseObject
     {
         public List<NotesModel> notes { get; set; }
         public List<DesignModel> design { get; set; }

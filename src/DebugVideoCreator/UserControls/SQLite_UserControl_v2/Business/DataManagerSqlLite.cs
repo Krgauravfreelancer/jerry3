@@ -1,9 +1,9 @@
-﻿using System;
-using Sqllite_Library.Data;
-using Sqllite_Library.Models;
-using System.Data;
-using System.Collections.Generic;
+﻿using Sqllite_Library.Data;
 using Sqllite_Library.Helpers;
+using Sqllite_Library.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace Sqllite_Library.Business
@@ -396,7 +396,7 @@ namespace Sqllite_Library.Business
         {
             return SqlLiteData.GetOverlappingCalloutsByTime(fk_videoevent_projdet, startTime, endtime);
         }
-        
+
         public static int GetVideoEventsCount()
         {
             return SqlLiteData.GetCount("cbv_videoevent");
@@ -574,7 +574,7 @@ namespace Sqllite_Library.Business
 
         #endregion
 
-        
+
         #region == Upsert Methods ==
         public static void UpsertRowsToApp(DataTable dataTable)
         {

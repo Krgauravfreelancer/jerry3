@@ -19,9 +19,9 @@ namespace VideoCreator.Helpers
 
         public static void ShowLoader(UserControl usercontrol, LoadingAnimation loader, string message = "", bool disableParentWindow = true)
         {
-            if (usercontrol == null) 
+            if (usercontrol == null)
                 return;
-            
+
             var mywindow = Window.GetWindow(usercontrol);
             if (mywindow == null)
                 return;

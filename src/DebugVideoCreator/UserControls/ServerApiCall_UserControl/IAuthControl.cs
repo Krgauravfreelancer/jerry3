@@ -1,11 +1,6 @@
 ﻿//using Renci.SshNet.Sftp;
 using ServerApiCall_UserControl.DTO;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerApiCall_UserControl
@@ -16,7 +11,7 @@ namespace ServerApiCall_UserControl
         Task<LoginResponseModel> Login(string macAddress, string accessKey);
         Task<LogoutResponseModel> Logout();
         void SetToken(string token);
-        void SetMACAddress(string macAddress);        
+        void SetMACAddress(string macAddress);
         void SetAccessKey(string accessKey);
         string ReadApiKeyFromRegistry();
 

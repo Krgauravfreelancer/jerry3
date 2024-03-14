@@ -1,24 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Xml.Linq;
-using Xceed.Wpf.Toolkit;
 
 namespace DesignerNp.controls
 {
@@ -73,8 +59,8 @@ namespace DesignerNp.controls
         public TextBox textBox
         {
             get { return _textBox; }
-            set 
-            { 
+            set
+            {
                 _textBox = value;
                 updateProperties();
             }
@@ -296,7 +282,7 @@ namespace DesignerNp.controls
             double positionX;
             if (!double.TryParse(txtPositionX.Text, out positionX)) return;
 
-            if ( null != _textBox )
+            if (null != _textBox)
             {
                 _textBox.SetValue(Canvas.LeftProperty, positionX);
             }
@@ -514,7 +500,7 @@ namespace DesignerNp.controls
         private void colorPicker_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<Color?> e)
         {
             //https://stackoverflow.com/questions/6808739/how-to-convert-color-code-into-media-brush
-            
+
             if (null == _uiElement && null == _textBox) return;
 
             Color color = (Color)e.NewValue;
@@ -522,7 +508,7 @@ namespace DesignerNp.controls
             var converter = new BrushConverter();
             Brush brush = (Brush)converter.ConvertFromString(color.ToString());
 
-            if ( null != _textBox )
+            if (null != _textBox)
             {
                 _textBox.Foreground = brush;
             }
@@ -651,7 +637,7 @@ namespace DesignerNp.controls
             closeSelf();
         }
 
-    
+
 
         private void openSelf()
         {
@@ -689,8 +675,8 @@ namespace DesignerNp.controls
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            if ( false == IsPinned)
-            { 
+            if (false == IsPinned)
+            {
                 closeSelf();
             }
         }
@@ -703,7 +689,7 @@ namespace DesignerNp.controls
 
         private void btnPin_Unchecked(object sender, RoutedEventArgs e)
         {
-            IsPinned=false;
+            IsPinned = false;
 
             ToggleButton toggle = sender as ToggleButton;
         }
@@ -716,10 +702,10 @@ namespace DesignerNp.controls
 
         private void MainWindow_MouseMove(object sender, MouseEventArgs e)
         {
-            if(isPressed)
+            if (isPressed)
             {
                 Point currentPosition = Mouse.GetPosition(Application.Current.MainWindow);
-                
+
                 double newWidth = this.Width + startPosition.X - currentPosition.X;
                 if (newWidth > 0)
                 {
@@ -738,7 +724,7 @@ namespace DesignerNp.controls
         private void leftAlign_Click(object sender, RoutedEventArgs e)
         {
             if (null == _uiElement && null == _textBox) return;
-            if(null != _uiElement)
+            if (null != _uiElement)
                 _uiElement.SetValue(Canvas.LeftProperty, 10.0);
             if (null != _textBox)
                 _textBox.SetValue(Canvas.LeftProperty, 10.0);
@@ -766,12 +752,12 @@ namespace DesignerNp.controls
             if (null == _uiElement && null == _textBox) return;
             if (null != _uiElement)
             {
-                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 10)/2;
+                var x = Convert.ToDouble(1920 - _uiElement.RenderSize.Width - 10) / 2;
                 _uiElement.SetValue(Canvas.LeftProperty, x);
             }
             if (null != _textBox)
             {
-                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 10)/2;
+                var x = Convert.ToDouble(1920 - _textBox.RenderSize.Width - 10) / 2;
                 _textBox.SetValue(Canvas.LeftProperty, x);
             }
             return;

@@ -1,37 +1,28 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using ServerApiCall_UserControl.DTO.Background;
+using ServerApiCall_UserControl.DTO.Projects;
+using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
+using Sqllite_Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
-using System.Windows;
-using Sqllite_Library.Business;
-using VideoCreator.Helpers;
 using System.Threading.Tasks;
-using VideoCreator.Auth;
-using System.Windows.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Background;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
-using Sqllite_Library.Models;
-using System.IO;
-using ServerApiCall_UserControl.Helpers;
-using System.Windows.Input;
-using VideoCreator.MediaLibraryData;
-using NLog;
-using NLog.Config;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using NAudio.Wave;
-using System.Linq;
-using VideoCreator.Models;
-using Sqllite_Library.Helpers;
+using System.Windows.Media;
+using VideoCreator.Auth;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.XAML
 {
     public partial class MainWindow : Window, IDisposable
     {
         private readonly AuthAPIViewModel authApiViewModel;
-       
+
         private List<ProjectList> availableProjects;
         private List<CBVProjectForJoin> downloadedProjects;
         private List<ProjectListUI> availableProjectsDataSource;
@@ -114,8 +105,8 @@ namespace VideoCreator.XAML
             }
             var selected = selectedItem; //make a local copy;
             datagrid.ItemsSource = availableProjectsDataSource;
-            if(selected != null)
-                datagrid.SelectedItem = availableProjectsDataSource?.Find(x=>x.project_id == selected.project_id && x.projdet_version == selected.projdet_version); 
+            if (selected != null)
+                datagrid.SelectedItem = availableProjectsDataSource?.Find(x => x.project_id == selected.project_id && x.projdet_version == selected.projdet_version);
             datagrid.Visibility = Visibility.Visible;
             manageStack.Visibility = Visibility.Visible;
         }
@@ -124,7 +115,7 @@ namespace VideoCreator.XAML
         {
             if (projects == null)
                 return null;
-            foreach(var item in projects)
+            foreach (var item in projects)
             {
                 var proj = downloadedProjects.Find(x => x.project_serverid == item.project_id && x.project_version == item.projdet_version);
                 var isExist = proj != null;
@@ -143,7 +134,7 @@ namespace VideoCreator.XAML
         }
 
 
-        
+
 
 
         #region == API and Auth Events ==
@@ -240,7 +231,7 @@ namespace VideoCreator.XAML
 
         private void SetWelcomeMessage(bool isLogOut = false)
         {
-            if(isLogOut) { this.Title = "Video Creator"; return;  }
+            if (isLogOut) { this.Title = "Video Creator"; return; }
             var userId = authApiViewModel.GetLoggedInUser();
             if (string.IsNullOrEmpty(userId))
                 this.Title = "Video Creator";
@@ -257,7 +248,7 @@ namespace VideoCreator.XAML
                 MessageBox.Show("Please select one recrod from Grid", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
-            else if(selectedItem.projstatus_name != "AVAILABLE")
+            else if (selectedItem.projstatus_name != "AVAILABLE")
             {
                 MessageBox.Show("You need to download the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
@@ -278,7 +269,7 @@ namespace VideoCreator.XAML
 
             CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
             CBVProjdet cbvProjDet = cbvProject.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
-            
+
             var selectedProjectEvent = new SelectedProjectEvent
             {
                 projectId = selectedItem?.project_localId ?? -1,
@@ -342,7 +333,7 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        
+
 
 
         //private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)

@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Documents;
-using System;
 using System.Windows.Media;
 
 namespace Notes_UserControl

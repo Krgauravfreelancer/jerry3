@@ -1,23 +1,20 @@
-﻿using Sqllite_Library.Business;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
+using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
-using Windows = System.Windows.Controls;
+using Timeline.UserControls.Models;
+using VideoCreator.Auth;
+using VideoCreator.Helpers;
+using VideoCreator.MediaLibraryData;
+using VideoCreator.Models;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using VideoCreator.Auth;
-using System.Threading.Tasks;
-using VideoCreator.Helpers;
-using VideoCreator.Models;
-using VideoCreator.MediaLibraryData;
-using System.Linq;
-using Timeline.UserControls.Models;
-using ServerApiCall_UserControl.DTO;
-using System.Windows.Media.Imaging;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using Windows = System.Windows.Controls;
 
 namespace VideoCreator.XAML
 {
@@ -366,7 +363,7 @@ namespace VideoCreator.XAML
             };
 
             // Logic to Display window
-            
+
             var result = uc.ShowWindow();
             if (result.HasValue)
             {

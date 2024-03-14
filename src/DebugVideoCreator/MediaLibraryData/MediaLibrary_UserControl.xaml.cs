@@ -1,36 +1,20 @@
-﻿using AudioEditor_UserControl;
-using AudioRecorder_UserControl;
-using Newtonsoft.Json;
-using Sqllite_Library.Business;
+﻿using ServerApiCall_UserControl.DTO.MediaLibraryModels;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows;
-using Windows = System.Windows.Controls;
-using Forms = System.Windows.Forms;
-using MessageBox = System.Windows.MessageBox;
-using UserControl = System.Windows.Controls.UserControl;
-using AudioPlayer_UserControl;
-using ServerApiCall_UserControl.DTO.VideoEvent;
-using VideoCreator.Auth;
-using System.Threading.Tasks;
-using NAudio.CoreAudioApi.Interfaces;
-using VideoCreator.Helpers;
-using System.Windows.Threading;
-using System.Diagnostics.Contracts;
-using System.Windows.Controls;
-using System.Net;
-using SixLabors.ImageSharp.PixelFormats;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using VideoCreator.Models;
 using System.IO;
-using Xceed.Wpf.Toolkit.Panels;
-using ServerApiCall_UserControl.DTO.MediaLibraryModels;
-using System.Windows.Media.Imaging;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
-using System.Linq;
+using System.Windows.Media.Imaging;
 using Timeline.UserControls.Models;
+using VideoCreator.Auth;
+using VideoCreator.Helpers;
+using VideoCreator.Models;
+using UserControl = System.Windows.Controls.UserControl;
+using Windows = System.Windows.Controls;
 
 namespace VideoCreator.MediaLibraryData
 {
@@ -53,7 +37,7 @@ namespace VideoCreator.MediaLibraryData
         public bool isEventAdded = false;
         private string videoevent_start;
 
-        
+
 
 
         public MediaLibrary_UserControl()
@@ -277,7 +261,7 @@ namespace VideoCreator.MediaLibraryData
             row["videoevent_issynced"] = false;
             row["videoevent_serverid"] = -1;
             row["videoevent_syncerror"] = string.Empty;
-            
+
             row["fk_videoevent_screen"] = -1; // Not needed for this case
             var byteArrayIn = await authApiViewModel.GetSecuredFileByteArray(selectedImage?.media_download_link);
             row["media"] = byteArrayIn;

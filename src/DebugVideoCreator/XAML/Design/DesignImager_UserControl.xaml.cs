@@ -1,17 +1,11 @@
-﻿using System;
+﻿using Sqllite_Library.Business;
+using Sqllite_Library.Models;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Xml;
-using Sqllite_Library.Business;
-using Sqllite_Library.Models;
 
 namespace VideoCreator.XAML
 {
@@ -59,7 +53,7 @@ namespace VideoCreator.XAML
             dataTable.Columns.Add("id", typeof(int));
             dataTable.Columns.Add("xaml", typeof(string));
 
-            foreach(DataRow row in designTable.Rows)
+            foreach (DataRow row in designTable.Rows)
             {
                 var dataRow = dataTable.NewRow();
                 dataRow["id"] = -1;

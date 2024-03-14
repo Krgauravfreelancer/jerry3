@@ -7,7 +7,7 @@ namespace ServerApiCall_UserControl.Helpers
     public class Auth_ServerAPICall_Helper
     {
         public static HttpClient HttpApiClient { get; set; }
-        
+
         public static void InitializeClient(string baseURI)
         {
             HttpApiClient = new HttpClient

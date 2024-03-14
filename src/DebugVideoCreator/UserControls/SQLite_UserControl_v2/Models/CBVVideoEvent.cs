@@ -29,7 +29,7 @@ namespace Sqllite_Library.Models
         public int fk_design_background { get; set; }
         public CBVVideoEvent()
         {
-            audio_data =  new List<CBVAudio>();
+            audio_data = new List<CBVAudio>();
             videosegment_data = new List<CBVVideoSegment>();
             design_data = new List<CBVDesign>();
             notes_data = new List<CBVNotes>();

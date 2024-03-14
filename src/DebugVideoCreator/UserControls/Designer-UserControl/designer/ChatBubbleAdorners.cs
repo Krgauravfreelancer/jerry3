@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -12,7 +6,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace DesignerNp.controls
 {
@@ -191,9 +184,9 @@ namespace DesignerNp.controls
             double.TryParse(pointTok[0], out X);
             double.TryParse(pointTok[1], out Y);
 
-            bubblePoint.Arrange(new Rect(X-5, Y-5, 10, 10));
+            bubblePoint.Arrange(new Rect(X - 5, Y - 5, 10, 10));
 
-            
+
             // Based on arc end point 
             char[] arcSeperators = new char[] { ' ', ',' };
             string[] arcParts = toks[1].Split(arcSeperators, StringSplitOptions.RemoveEmptyEntries);
@@ -201,12 +194,12 @@ namespace DesignerNp.controls
             double.TryParse(arcParts[5], out X);
             double.TryParse(arcParts[6], out Y);
 
-            resize.Arrange(new Rect(X+5, Y+5, 10, 10));
+            resize.Arrange(new Rect(X + 5, Y + 5, 10, 10));
 
             rotate.Arrange(new Rect(AdornedElement.DesiredSize.Width / 2 - 5, -30, 10, 10));
 
 
-            
+
             return base.ArrangeOverride(finalSize);
         }
     }

@@ -1,15 +1,14 @@
-﻿using VideoCreator.VoiceAverage;
-using Sqllite_Library.Business;
+﻿using Sqllite_Library.Business;
+using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using Sqllite_Library.Helpers;
+using VideoCreator.VoiceAverage;
 
 namespace VideoCreator
 {
@@ -25,8 +24,8 @@ namespace VideoCreator
         public MessageBoxResult response;
         public string newAverage;
         public string audioFilename;
-        
-        
+
+
         public VoiceAverage_Form()
         {
             InitializeComponent();
@@ -72,7 +71,7 @@ namespace VideoCreator
         {
             if (audioFilename.Length >= 0)
             {
-               response = System.Windows.MessageBox.Show("Do you want to save voice average? ", "Voice Average Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                response = System.Windows.MessageBox.Show("Do you want to save voice average? ", "Voice Average Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             }
         }
 
@@ -84,11 +83,12 @@ namespace VideoCreator
             {
                 if (audioFilename.Length >= 0)
                 {
-                    btnPlayRecording.Text = "Stop Recording"; 
-                    await Task.Run(() => {
+                    btnPlayRecording.Text = "Stop Recording";
+                    await Task.Run(() =>
+                    {
                         objRecord.RecordPlay(sender, e);
                     });
-                    
+
                     //Thread.Sleep(Convert.ToInt32((objRecord.GetDuration() * 1000) + 1000));
                     //btnPlayRecording.Text = "Play Recording";
                 }
@@ -124,7 +124,7 @@ namespace VideoCreator
             stopwatch.Stop();
             dt.Stop();
 
-            
+
             CalcAverage();
             SaveToDatabase();
         }

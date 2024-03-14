@@ -1,26 +1,10 @@
-﻿using VideoCreator.Models;
-using Newtonsoft.Json;
-using ServerApiCall_UserControl.DTO;
-using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO.Background;
-using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Projects;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.VideoEvent;
+﻿using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
-using System.IO;
-using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Markup;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
 
@@ -41,7 +25,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(objToSync.videoevent_start, objToSync.videoevent_duration);
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.videosegment_media_bytes = row["media"] == null ? new byte[0] : (byte[])row["media"];
-            if(dtNotes != null && dtNotes.Rows.Count > 0)
+            if (dtNotes != null && dtNotes.Rows.Count > 0)
             {
                 objToSync.notes = new List<NotesModelPost>();
                 foreach (DataRow dr in dtNotes.Rows)
@@ -54,7 +38,7 @@ namespace VideoCreator.Helpers
                         notes_start = "0", //Convert.ToString(dr["notes_start"]),
                         notes_duration = Convert.ToString(dr["notes_duration"]),
                         notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
-                    }; 
+                    };
                     objToSync.notes.Add(note);
                 }
             }
@@ -123,7 +107,7 @@ namespace VideoCreator.Helpers
             return dtVideoEvent;
         }
 
-        
+
         public static DataTable GetVideoEventTableWithData(int selectedProjdetId, AllVideoEventResponseModel videoevent)
         {
             var dt = GetVideoEventDataTable();
@@ -244,6 +228,6 @@ namespace VideoCreator.Helpers
         }
 
         #endregion
-       
+
     }
 }

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AudioPlayer_UserControl;
+using Sqllite_Library.Business;
+using Sqllite_Library.Models;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using AudioPlayer_UserControl;
-using Sqllite_Library.Models;
-using Sqllite_Library.Business;
 
 namespace VideoCreator.XAML
 {
@@ -49,7 +49,7 @@ namespace VideoCreator.XAML
                 var allNotes = DataManagerSqlLite.GetNotes(videoevent.videoevent_id);
                 var finalBytes = new byte[] { };
 
-                foreach(var note in allNotes)
+                foreach (var note in allNotes)
                 {
                     var data = DataManagerSqlLite.GetLocAudio(note.notes_id);
                     if (data != null && data.Count > 0)
@@ -58,11 +58,11 @@ namespace VideoCreator.XAML
                         finalBytes = Combine(finalBytes, byteMedia);
                     }
                 }
-                if(finalBytes.Length > 0)
+                if (finalBytes.Length > 0)
                 {
                     WavePlayer_UC.LoadAudio(finalBytes);
                 }
-                    
+
             }
         }
 

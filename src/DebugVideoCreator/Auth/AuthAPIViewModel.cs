@@ -1,29 +1,24 @@
 ﻿using GalaSoft.MvvmLight;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using ServerApiCall_UserControl.DTO.Projects;
+using Newtonsoft.Json;
+using ServerApiCall_UserControl.DTO;
+using ServerApiCall_UserControl.DTO.App;
 using ServerApiCall_UserControl.DTO.Background;
 using ServerApiCall_UserControl.DTO.Company;
-using ServerApiCall_UserControl.DTO.FinalMp4;
 using ServerApiCall_UserControl.DTO.Media;
-using ServerApiCall_UserControl.DTO.Screen;
-using ServerApiCall_UserControl.DTO.App;
-using ServerApiCall_UserControl.DTO;
-using ServerApiCall_UserControl.DTO.VideoEvent;
 using ServerApiCall_UserControl.DTO.MediaLibraryModels;
-using System.Net.Http;
-using System.Windows;
-using System.Text;
-using System.IO;
-using System.Runtime.CompilerServices;
-using Sqllite_Library.Models;
-using Newtonsoft.Json;
-using System.Windows.Forms.VisualStyles;
-using DesignerNp.controls;
-using VideoCreator.Models;
-using VideoCreator.Helpers;
+using ServerApiCall_UserControl.DTO.Projects;
+using ServerApiCall_UserControl.DTO.Screen;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Helpers;
+using Sqllite_Library.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using VideoCreator.Helpers;
 
 namespace VideoCreator.Auth
 {
@@ -380,7 +375,7 @@ namespace VideoCreator.Auth
                     else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.FORM)
                         filename = "design" + filename + ".png";
 
-                    var temp = PathHelper.GetTempPath("videoevent") ;
+                    var temp = PathHelper.GetTempPath("videoevent");
                     pathWithFilename = $"{temp}\\{filename}";
                     var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
                     file.Write(videoEventModel.videosegment_media_bytes, 0, videoEventModel.videosegment_media_bytes.Length);

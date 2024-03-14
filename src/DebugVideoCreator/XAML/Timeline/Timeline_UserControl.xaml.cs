@@ -1,5 +1,4 @@
-﻿using VideoCreator.Models;
-using Sqllite_Library.Business;
+﻿using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
@@ -11,9 +10,8 @@ using System.Windows.Threading;
 using Timeline.UserControls.Controls;
 using Timeline.UserControls.Models;
 using VideoCreator.Auth;
-using System.Drawing;
-using FullScreenPlayer_UserControl.Controls;
 using VideoCreator.Helpers;
+using VideoCreator.Models;
 
 namespace VideoCreator.XAML
 {

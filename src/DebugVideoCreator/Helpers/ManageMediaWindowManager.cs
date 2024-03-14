@@ -10,12 +10,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using VideoCreator.Auth;
 using VideoCreator.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
 using ManageMediaType = ManageMedia_UserControl.Classes.MediaType;
-using MoanageMediaControls = ManageMedia_UserControl.Controls;
-using SC = ScreenRecorder_UserControl;
 using SCModels = ScreenRecorder_UserControl.Models;
 
 namespace VideoCreator.Helpers
@@ -120,7 +117,7 @@ namespace VideoCreator.Helpers
             List<SCModels.TextItem> ChangedNotes = e.ChangedNotes;
 
             //Delete Video Events ----------------------
-            if(DeletedVideoEvents?.Count > 0)
+            if (DeletedVideoEvents?.Count > 0)
                 foreach (Media media in DeletedVideoEvents)
                 {
                     ManageMedia_DeletedVideoEvents.Invoke(media.VideoEventID);
@@ -335,7 +332,7 @@ namespace VideoCreator.Helpers
 
                 notedataTable.Rows.Clear();
                 var noteRow = notedataTable.NewRow();
-                
+
                 noteRow["notes_id"] = ChangedElement.NoteID;
                 noteRow["notes_line"] = ChangedElement.Text.Replace("'", "''"); ;
                 noteRow["notes_wordcount"] = ChangedElement.WordCount;

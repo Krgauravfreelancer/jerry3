@@ -16,7 +16,7 @@ namespace NotesManage_UserControl
         public NotesManageCtrl()
         {
             InitializeComponent();
-            viewModel= new NotesManageViewModel();
+            viewModel = new NotesManageViewModel();
             DataContext = viewModel;
         }
         public void LoadItemsForEdit(DataTable dt)
@@ -32,8 +32,8 @@ namespace NotesManage_UserControl
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-             dtable = viewModel.SaveItems();
-            
+            dtable = viewModel.SaveItems();
+
             //Capture above table on parent form Closing event via GetSavedData()
             var myWindow = Window.GetWindow(this);
             myWindow.Close();
@@ -47,14 +47,14 @@ namespace NotesManage_UserControl
 
         private void btnMoveUp_Click(object sender, RoutedEventArgs e)
         {
-            var currItem = (NoteItem) dgList.SelectedItem;
+            var currItem = (NoteItem)dgList.SelectedItem;
             var allNotes = viewModel.GetAllNotes();
             int idx = allNotes.IndexOf(currItem);
-            if(idx != 0 && idx != -1)
+            if (idx != 0 && idx != -1)
             {
-               int idxOfPrevious = idx -1;
+                int idxOfPrevious = idx - 1;
                 allNotes.RemoveAt(idx);
-                allNotes.Insert(idxOfPrevious, currItem); 
+                allNotes.Insert(idxOfPrevious, currItem);
                 viewModel.SetNoteItems(allNotes);
                 dgList.SelectedItem = currItem;
             }
@@ -65,7 +65,7 @@ namespace NotesManage_UserControl
             var currItem = (NoteItem)dgList.SelectedItem;
             var allNotes = viewModel.GetAllNotes();
             int idx = allNotes.IndexOf(currItem);
-            if (idx != allNotes.Count-1 && idx != -1)
+            if (idx != allNotes.Count - 1 && idx != -1)
             {
                 int idxOfNext = idx + 1;
                 allNotes.RemoveAt(idx);

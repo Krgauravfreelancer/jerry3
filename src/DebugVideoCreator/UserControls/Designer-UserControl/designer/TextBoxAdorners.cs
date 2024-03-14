@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 
 namespace DesignerNp.controls
@@ -117,11 +112,11 @@ namespace DesignerNp.controls
 
             ScaleTransform scaleTransform = (ScaleTransform)textBox.LayoutTransform;
 
-            double oldWidth = textBox.RenderSize.Width; 
+            double oldWidth = textBox.RenderSize.Width;
             double oldHeight = textBox.RenderSize.Height;
 
-            double newWwidth = oldWidth + e.HorizontalChange/scaleTransform.ScaleX;
-            double newhHeight = oldHeight + e.VerticalChange/scaleTransform.ScaleY;
+            double newWwidth = oldWidth + e.HorizontalChange / scaleTransform.ScaleX;
+            double newhHeight = oldHeight + e.VerticalChange / scaleTransform.ScaleY;
 
             if (newWwidth > 0 && newhHeight > 0)
             {
@@ -160,7 +155,7 @@ namespace DesignerNp.controls
                 scaleY = scaleTransform.ScaleY;
             }
 
-            rotate.Arrange(new Rect(AdornedElement.RenderSize.Width / 2 - (5/scaleX), -5/scaleY, 10, 10));
+            rotate.Arrange(new Rect(AdornedElement.RenderSize.Width / 2 - (5 / scaleX), -5 / scaleY, 10, 10));
 
             resize.Arrange(new Rect(AdornedElement.RenderSize.Width - 5, AdornedElement.RenderSize.Height - 5, 10, 10));
 
@@ -171,7 +166,7 @@ namespace DesignerNp.controls
         public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
         {
             TextBox textBox = (TextBox)AdornedElement;
-           
+
             if ("ScaleTransform" == textBox.LayoutTransform.GetType().Name)
             {
                 ScaleTransform scaleTransform = (ScaleTransform)textBox.LayoutTransform;

@@ -1,11 +1,6 @@
-﻿using NLog.Config;
-using NLog;
+﻿using NLog;
+using NLog.Config;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using VideoCreator.Helpers;
@@ -30,7 +25,7 @@ namespace VideoCreator
 
         void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            ShowUnhandledException(e);    
+            ShowUnhandledException(e);
         }
 
         void ShowUnhandledException(DispatcherUnhandledExceptionEventArgs e)
@@ -69,5 +64,5 @@ namespace VideoCreator
             return stats;
         }
     }
-            
+
 }

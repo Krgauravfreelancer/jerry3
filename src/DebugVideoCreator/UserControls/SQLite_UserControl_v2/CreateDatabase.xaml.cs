@@ -1,6 +1,4 @@
-﻿using Sqllite_Library.Business;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Sqllite_Library
 {

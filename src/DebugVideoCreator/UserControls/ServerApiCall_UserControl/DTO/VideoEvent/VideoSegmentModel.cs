@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ServerApiCall_UserControl.DTO.VideoEvent
+﻿namespace ServerApiCall_UserControl.DTO.VideoEvent
 {
     public class VideoSegmentPostResponse
     {
