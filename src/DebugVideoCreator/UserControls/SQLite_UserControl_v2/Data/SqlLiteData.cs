@@ -86,6 +86,9 @@ namespace Sqllite_Library.Data
 
             CreatePlanningHeadTable(sqlCon);
             CreatePlanningTable(sqlCon);
+            CreatePlanningMediaTable(sqlCon);
+            CreatePlanningDescTable(sqlCon);
+            CreatePlanningBulletTable(sqlCon);
 
             CreateReviewTable(sqlCon);
             CreateReviewImageTable(sqlCon);
@@ -227,23 +230,50 @@ namespace Sqllite_Library.Data
         private static void CreatePlanningTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE 'cbv_planning' (
-                        'planning_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
-                        'fk_planning_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                        'fk_planning_head' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planninghead' ('planninghead_id'),
-                        'planning_customname' TEXT(50) DEFAULT NULL,
-                        'planning_notesline' TEXT DEFAULT NULL,
-                        'planning_medialibid' TEXT(12) DEFAULT NULL,
-                        'planning_sort' TEXT NOT NULL  DEFAULT '1',
-                        'planning_suggestnotesline' TEXT DEFAULT NULL,
-                        'planning_mediathumb' NONE DEFAULT NULL,
-                        'planning_mediafull' NONE DEFAULT NULL,
-                        'planning_createdate' TEXT NOT NULL  DEFAULT 'NULL',
-                        'planning_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
-                        'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
-                        'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
-                        'planning_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
-                        'planning_isEdited' INTEGER(1) NOT NULL  DEFAULT 0,
-                        UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                            'planning_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                            'fk_planning_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
+                            'fk_planning_head' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planninghead' ('planninghead_id'),
+                            'planning_customname' TEXT(50) DEFAULT NULL,
+                            'planning_notesline' TEXT DEFAULT NULL,
+                            'planning_medialibid' TEXT(12) DEFAULT NULL,
+                            'planning_sort' TEXT NOT NULL  DEFAULT '1',
+                            'planning_suggestnotesline' TEXT DEFAULT NULL,
+                            'planning_createdate' TEXT NOT NULL  DEFAULT NULL,
+                            'planning_modifydate' TEXT NOT NULL  DEFAULT 'NULL',
+                            'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
+                            'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
+                            'planning_syncerror' TEXT(50) NOT NULL  DEFAULT NULL,
+                            'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
+                            UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                        );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreatePlanningMediaTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_planningmedia' (
+                            'planningmedia_id' TEXT NOT NULL  DEFAULT 'NULL' PRIMARY KEY REFERENCES 'cbv_planning' ('planning_id'),
+                            'planningmedia_mediathumb' NONE NOT NULL  DEFAULT NULL,
+                            'planningmedia_mediafull' NONE NOT NULL  DEFAULT NULL
+                        );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreatePlanningDescTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_planningdesc' (
+                            'planningdesc_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY REFERENCES 'cbv_planning' ('planning_id'),
+                            'planningdesc_line' TEXT(100) NOT NULL  DEFAULT NULL
+                        );";
+            CreateTableHelper(sqlQueryString, sqlCon);
+        }
+
+        private static void CreatePlanningBulletTable(SQLiteConnection sqlCon)
+        {
+            string sqlQueryString = @"CREATE TABLE 'cbv_planningbullet' (
+                            'planningbullet_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
+                            'fk_planningbullet_desc' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planningdesc' ('planningdesc_id'),
+                            'planningbullet_line' TEXT(50) NOT NULL  DEFAULT NULL
                         );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -261,7 +291,7 @@ namespace Sqllite_Library.Data
                     'review_serverid' INTEGER NOT NULL  DEFAULT 1,
                     'review_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                     'review_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
-                    'review_isEdited' INTEGER(1) NOT NULL  DEFAULT 0
+                    'review_isedited' INTEGER(1) NOT NULL  DEFAULT 0
                     );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -1640,7 +1670,7 @@ namespace Sqllite_Library.Data
                             planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
                             planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
                             planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
-                            planning_isEdited = Convert.ToBoolean(sqlReader["planning_isEdited"]),
+                            planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
 
                         };
                         data.Add(obj);
@@ -3553,19 +3583,19 @@ namespace Sqllite_Library.Data
 
                 var serverid = Convert.ToInt64(dr["planning_serverid"]);
                 var issynced = Convert.ToInt16(dr["planning_issynced"]);
-                var isEdited = Convert.ToInt16(dr["planning_isEdited"]);
+                var isedited = Convert.ToInt16(dr["planning_isedited"]);
 
                 var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', @blob1, @blob2, " +
-                    $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isEdited})");
+                    $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isedited})");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_planning 
                     (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, planning_mediathumb, planning_mediafull, 
-                        planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isEdited) 
+                        planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isedited) 
                 VALUES 
                     {valuesString}";
 

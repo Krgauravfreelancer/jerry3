@@ -20,6 +20,6 @@ namespace Sqllite_Library.Models
         public Int64 planning_serverid { get; set; }
         public bool planning_issynced { get; set; }
         public string planning_syncerror { get; set; }
-        public bool planning_isEdited { get; set; }
+        public bool planning_isedited { get; set; }
     }
 }

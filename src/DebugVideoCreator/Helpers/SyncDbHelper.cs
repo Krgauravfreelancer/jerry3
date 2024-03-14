@@ -214,7 +214,7 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("planning_serverid", typeof(Int64));
             dataTable.Columns.Add("planning_issynced", typeof(bool));
             dataTable.Columns.Add("planning_syncerror", typeof(string));
-            dataTable.Columns.Add("planning_isEdited", typeof(bool));
+            dataTable.Columns.Add("planning_isedited", typeof(bool));
 
             foreach (var planning in plannings)
             {
@@ -235,7 +235,7 @@ namespace VideoCreator.Helpers
                 row["planning_serverid"] = planning.planning_id;
                 row["planning_issynced"] = true;
                 row["planning_syncerror"] = "";
-                row["planning_isEdited"] = false;
+                row["planning_isedited"] = false;
 
                 dataTable.Rows.Add(row);
             }

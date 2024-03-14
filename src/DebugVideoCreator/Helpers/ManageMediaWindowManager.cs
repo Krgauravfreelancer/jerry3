@@ -14,6 +14,7 @@ using VideoCreator.Auth;
 using VideoCreator.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
 using ManageMediaType = ManageMedia_UserControl.Classes.MediaType;
+using MoanageMediaControls = ManageMedia_UserControl.Controls;
 using SC = ScreenRecorder_UserControl;
 using SCModels = ScreenRecorder_UserControl.Models;
 
@@ -33,6 +34,8 @@ namespace VideoCreator.Helpers
             _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             ReadOnly = readOnly;
             selectedProjectEvent = _selectedProjectEvent;
+
+            //var obj = MoanageMediaControls.TimeLine.RecalculateVideoEventDuration
 
             //ProjectID = Selected_ID;
 
