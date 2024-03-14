@@ -43,8 +43,8 @@ namespace VideoCreator.Helpers
         private static int RetryIntervalInSeconds = 300;
         private static string EventStartTime = "00:00:00.000";
         private static string EventEndTime = "00:00:00.000";
-        private static string NotesStartTime = "00:00:00.000";
-        private static string NoteEndTime = "00:00:00.000";
+        //private static string NotesStartTime = "00:00:00.000";
+        //private static string NoteEndTime = "00:00:00.000";
         private static int notesIndex = 1;
         private static string CreateOrReturnEmptyDirectory()
         {
@@ -80,13 +80,13 @@ namespace VideoCreator.Helpers
             EventStartTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId);
 
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
-            var designElements = designerUserControl.AutofillorPlanningSetup();
+            var designElements = designerUserControl.PlanningSetup();
 
             if(planningEvent.Type == EnumPlanningHead.All)
             {
                 var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 //Add Title
-                await AddProjectNameAutoFill(planningEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                await AddProjectNameSlide(planningEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                 int increment = 1;
                 foreach(var item in data)
                 {
@@ -125,28 +125,10 @@ namespace VideoCreator.Helpers
                     }
                 }
             }
-
-            //if (autofillEvent.AutofillType == AutofillEnumType.All)
-            //{
-            //    var result = DataManagerSqlLite.GetAutofillByProjectId(selectedProjectEvent.projectId, true, true, true, true);
-                
-            //    // requirements
-            //    var req = result?.require_autofill?.Select(x => x.requireautofill_name)?.ToList();
-            //    await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 1, AutofillEnumType.Requirement, req);
-
-            //    // objectives
-            //    var objectives = result?.objective_autofill?.Select(x => x.objectiveautofill_name)?.ToList();
-            //    await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 2, AutofillEnumType.Objective, objectives);
-                
-            //    // next
-            //    var next = result?.next_autofill?.Select(x => x.nextautofill_name)?.ToList();
-            //    await AddOthersAutofill(autofillEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, 3, AutofillEnumType.Next, next);
-            //}
-            //MessageBox.Show($"Autofill events added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
 
-        private static async Task<bool?> AddProjectNameAutoFill(PlanningEvent planningEvent, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddProjectNameSlide(PlanningEvent planningEvent, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var title = DataManagerSqlLite.GetProjectById(selectedProjectEvent.projectId, false)?.project_videotitle;
             if (string.IsNullOrEmpty(title))
@@ -158,7 +140,7 @@ namespace VideoCreator.Helpers
 
             rowTitle["design_id"] = -1;
             rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = (int)AutofillEnumType.Title;
+            rowTitle["fk_design_screen"] = 1; // (int)EnumPlanningHead.Title;
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -166,9 +148,9 @@ namespace VideoCreator.Helpers
             designerUserControl.AddNewRowToDatatable(rowTitle);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImageAutofillSetup(designerUserControl.dataTableAdd);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await PlanningSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, IncrementBySeconds: 10);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, IncrementBySeconds: 10);
             return result;
         }
 
@@ -248,78 +230,11 @@ namespace VideoCreator.Helpers
             notedataTable.Rows.Add(noteRow);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImageAutofillSetup(designerUserControl.dataTableAdd);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await PlanningSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, duration);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, duration);
             return result;
         }
-
-        /*
-        private static async Task<bool?> AddPlanningElementWithMedia(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy, EnumPlanningHead planningType, List<string> data)
-        {
-            if (data == null || data.Count == 0) { return false; }
-
-            designerUserControl.ClearDatatable();
-            FillBackgroundRowForPlanning(designElements, designerUserControl, planningType);
-
-            var screenType = 1; // for title/default
-            if (planningType == EnumPlanningHead.Introduction)
-                screenType = 2;
-            else if (planningType == EnumPlanningHead.Requirements)
-                screenType = 3;
-            else if (planningType == EnumPlanningHead.Objectives)
-                screenType = 4;
-            else if (planningType == EnumPlanningHead.Custom || planningType == EnumPlanningHead.Video)
-                screenType = 5;
-            else if (planningType == EnumPlanningHead.Conclusion)
-                screenType = 6;
-            else if (planningType == EnumPlanningHead.NextUp)
-                screenType = 7;
-
-            // Design Elements
-            var rowHeading = designerUserControl.GetNewRow();
-            rowHeading["design_id"] = -1;
-            rowHeading["fk_design_videoevent"] = -1;
-            rowHeading["fk_design_screen"] = screenType;
-            rowHeading["fk_design_background"] = 1;
-            rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_xml"] = GetHeading($"{planningType} heading is here -");
-            designerUserControl.AddNewRowToDatatable(rowHeading);
-
-            for (var i = 0; i < data.Count; i++)
-            {
-                var rowCircle = designerUserControl.GetNewRow();
-
-                rowCircle["design_id"] = -1;
-                rowCircle["fk_design_videoevent"] = -1;
-                rowCircle["fk_design_screen"] = screenType;
-                rowCircle["fk_design_background"] = 1;
-                rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_xml"] = GetBulletCircle(i + 1);
-                designerUserControl.AddNewRowToDatatable(rowCircle);
-
-
-                var rowText = designerUserControl.GetNewRow();
-
-                rowText["design_id"] = -1;
-                rowText["fk_design_videoevent"] = -1;
-                rowText["fk_design_screen"] = screenType;
-                rowText["fk_design_background"] = 1;
-                rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_xml"] = GetBulletPoints($"{data[i]}", i + 1);
-                designerUserControl.AddNewRowToDatatable(rowText);
-            }
-
-            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImageAutofillSetup(designerUserControl.dataTableAdd);
-            designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await PlanningSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, planningEvent, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, IncrementBy);
-            return result;
-        }
-        */
 
         private static void FillBackgroundRowForPlanning(DataTable designElements, Designer_UserControl designerUserControl, EnumPlanningHead planningType)
         {
@@ -392,7 +307,7 @@ namespace VideoCreator.Helpers
             return circle;
         }
 
-        public static byte[] XMLToImageAutofillSetup(DataTable dataTable)
+        public static byte[] XMLToImagePlanningSetup(DataTable dataTable)
         {
             // Get the Image as byte stream 
             Canvas container = new Canvas();
@@ -448,7 +363,7 @@ namespace VideoCreator.Helpers
             return blob;
         }
         
-        private static async Task<bool?> PlanningSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, int IncrementBySeconds)
+        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, int IncrementBySeconds)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             VideoEventResponseModel addedData;
@@ -463,9 +378,9 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await PlanningSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, IncrementBySeconds);
+                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, IncrementBySeconds);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForAutofill(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, $"{DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds)}", (int)track, selectedProjectEvent);
+                    return FailureFlowForPlanning(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, $"{DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds)}", (int)track, selectedProjectEvent);
                 else
                     return null;
             }
@@ -519,7 +434,7 @@ namespace VideoCreator.Helpers
         }
 
 
-        private static bool FailureFlowForAutofill(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
+        private static bool FailureFlowForPlanning(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
         {
             // Save the record locally with server Id = temp and issynced = false
             var blob = dtVideoSegmentMaster.Rows[0]["videosegment_media"] as byte[];

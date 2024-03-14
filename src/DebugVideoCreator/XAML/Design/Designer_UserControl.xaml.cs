@@ -250,8 +250,8 @@ namespace VideoCreator.XAML
             }
         }
 
-        #region == Autofill/Planning ==
-        public DataTable AutofillorPlanningSetup()
+        #region == Planning ==
+        public DataTable PlanningSetup()
         {
             var bgImageXAML = GetBackgroundImageElement();
             designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));

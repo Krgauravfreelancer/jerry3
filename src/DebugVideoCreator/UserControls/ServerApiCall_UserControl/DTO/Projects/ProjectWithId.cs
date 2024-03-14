@@ -1,5 +1,4 @@
-﻿using ServerApiCall_UserControl.DTO.AutofillModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -21,7 +20,6 @@ namespace ServerApiCall_UserControl.DTO.Projects
         public int fk_project_createdby { get; set; }
         public object fk_project_modifyby { get; set; }
         public List<ProjectDetail> project_detail { get; set; }
-        public Autofill autofill { get; set; }
 
     }
     

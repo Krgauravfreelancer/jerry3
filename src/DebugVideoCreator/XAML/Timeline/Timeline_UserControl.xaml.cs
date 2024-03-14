@@ -529,34 +529,6 @@ namespace VideoCreator.XAML
         #endregion
 
 
-        #region == AutoFill Events ==
-
-        private async void AddAllAutofill_Click(object sender, RoutedEventArgs e)
-        {
-            var trackbarTime = TimelineGridCtrl2.TrackbarPosition.ToString(@"hh\:mm\:ss\.fff");
-            var payload = new AutofillEvent
-            {
-                AutofillType = AutofillEnumType.All,
-                timeAtTheMoment = trackbarTime,
-                DurationInSec = 10,
-                Duration = "00:00:10.000"
-            };
-            LoaderHelper.ShowLoader(this, loader);
-            var backgroundImagePath = AutofillHandlerHelper.CheckIfBackgroundPresent();
-            if (backgroundImagePath == null)
-            {
-                MessageBox.Show($"No Background found, autofill cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-            {
-                await AutofillHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
-                InitializeTimeline();
-            }
-            LoaderHelper.HideLoader(this, loader);
-        }
-
-        #endregion
-
         #region == Planning Events ==
         private async void AddPlanningEvents_Click(object sender, RoutedEventArgs e)
         {

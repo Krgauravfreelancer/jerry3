@@ -359,26 +359,6 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetCount("cbv_voiceaverage");
         }
 
-        public static CBVAutofill GetAutofillByProjectId(int ProjectId, bool requirmentFlag, bool objectiveFlag, bool nextFlag, bool onlyActive = true)
-        {
-            return SqlLiteData.GetAutofillByProjectId(ProjectId, requirmentFlag, objectiveFlag, nextFlag, onlyActive);
-        }
-
-        public static CBVNextAutofill GetNextAutofillById(int NextAutofillId, bool onlyActive = true)
-        {
-            return SqlLiteData.GetNextAutofillById(NextAutofillId, onlyActive).FirstOrDefault();
-        }
-
-        public static CBVRequireAutofill GetRequireAutofillById(int RequireAutofillId, bool onlyActive = true)
-        {
-            return SqlLiteData.GetRequireAutofillById(RequireAutofillId, onlyActive).FirstOrDefault();
-        }
-
-        public static CBVObjectiveAutofill GetObjectiveAutofillById(int ObjectiveAutofillId, bool onlyActive = true)
-        {
-            return SqlLiteData.GetObjectiveAutofillById(ObjectiveAutofillId, onlyActive).FirstOrDefault();
-        }
-
         public static int GetVideoEventCountProjectAndDetailId(int ProjectId, int ProjectdetailId)
         {
             return SqlLiteData.GetVideoEventCountProjectAndDetailId(ProjectId, ProjectdetailId);
@@ -642,23 +622,7 @@ namespace Sqllite_Library.Business
 
             var projectId = SqlLiteData.IsProjectAvailable(projectServerId);
             if (projectId == -1)
-            {
                 projectId = SqlLiteData.UpsertRowsToProject(data);
-                foreach (DataRow row in data.Rows)
-                {
-                    var requirements = row["require_autofill"] as DataTable;
-                    if (requirements != null)
-                        SqlLiteData.InsertRowsToRequireAutofill(requirements, projectId);
-
-                    var objective = row["objective_autofill"] as DataTable;
-                    if (objective != null)
-                        SqlLiteData.InsertRowsToObjectiveAutofill(objective, projectId);
-
-                    var next = row["next_autofill"] as DataTable;
-                    if (next != null)
-                        SqlLiteData.InsertRowsToNextAutofill(next, projectId);
-                }
-            }
 
             if (projdetAvailable)
                 SqlLiteData.InsertRowsToProjectDetail(data, projectId);

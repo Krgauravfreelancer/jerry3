@@ -24,7 +24,6 @@ using System.Windows.Data;
 using NAudio.Wave;
 using System.Linq;
 using VideoCreator.Models;
-using ServerApiCall_UserControl.DTO.AutofillModels;
 using Sqllite_Library.Helpers;
 
 namespace VideoCreator.XAML
@@ -62,7 +61,6 @@ namespace VideoCreator.XAML
         private async void OnControlLoaded(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            // AutoFill();
             await Login();
             await SyncApp();
             await SyncMedia();

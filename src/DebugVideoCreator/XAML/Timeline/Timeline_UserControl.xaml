@@ -81,14 +81,9 @@
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Add All Autofills" x:Name="MenuItem_AddAllAutofill"  Click="AddAllAutofill_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/autofill.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
             <MenuItem Header="Add Planning Events" x:Name="MenuItem_AddPlanningEvents"  Click="AddPlanningEvents_Click" >
                 <MenuItem.Icon>
-                    <Image Source="../../Icons/autofill.png" ></Image>
+                    <Image Source="../../Icons/planning.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />

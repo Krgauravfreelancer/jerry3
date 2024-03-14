@@ -343,7 +343,6 @@
     <Compile Include="Helpers\PlanningHandlerHelper.cs" />
     <Compile Include="Helpers\ShiftEventsHelper.cs" />
     <Compile Include="Helpers\BackgroundProcessHelper.cs" />
-    <Compile Include="Helpers\AutofillHandlerHelper.cs" />
     <Compile Include="Helpers\FormHandlerHelper.cs" />
     <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
     <Compile Include="Helpers\LogManagerHelper.cs" />
@@ -364,7 +363,6 @@
     </Compile>
     <Compile Include="Models\PlanningEvent.cs" />
     <Compile Include="Models\MediaEventInMiddle.cs" />
-    <Compile Include="Models\AutofillEvent.cs" />
     <Compile Include="Models\FormOrCloneEvent.cs" />
     <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
       <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
@@ -483,7 +481,7 @@
     <Content Include="Icons\audio.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icons\autofill.png">
+    <Content Include="Icons\planning.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Icons\callout1.png">
