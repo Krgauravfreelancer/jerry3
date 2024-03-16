@@ -1,4 +1,6 @@
-﻿namespace ServerApiCall_UserControl.DTO.Background
+﻿using System.Collections.Generic;
+
+namespace ServerApiCall_UserControl.DTO.Background
 {
     public class PlanningModel
     {
@@ -20,5 +22,31 @@
         public int fk_planning_createdby { get; set; }
         public int fk_planning_modifyby { get; set; }
         public bool planning_approved { get; set; }
+
+        public List<PlanningDesc> planningdesc { get; set; }
     }
+
+
+    public class PlanningBullet
+    {
+        public int planningbullet_id { get; set; }
+        public int fk_planningbullet_desc { get; set; }
+        public string planningbullet_line { get; set; }
+    }
+
+    public class PlanningDesc
+    {
+        public int planningdesc_id { get; set; }
+        public string planningdesc_line { get; set; }
+        public List<PlanningBullet> bullet { get; set; }
+    }
+
+    // Only for local DB
+    public class PlanningMedia
+    {
+        public int planningmedia_id { get; set; }
+        public string planningmedia_mediathumb { get; set; }
+        public string planningmedia_mediafull { get; set; }
+    }
+
 }

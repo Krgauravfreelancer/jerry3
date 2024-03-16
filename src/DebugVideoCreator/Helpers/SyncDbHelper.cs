@@ -205,16 +205,15 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("planning_medialibid", typeof(string));
             dataTable.Columns.Add("planning_sort", typeof(int));
             dataTable.Columns.Add("planning_suggestnotesline", typeof(string));
-            dataTable.Columns.Add("planning_mediathumb", typeof(byte[]));
-            dataTable.Columns.Add("planning_mediafull", typeof(byte[]));
-
             dataTable.Columns.Add("planning_createdate", typeof(string));
             dataTable.Columns.Add("planning_modifydate", typeof(string));
-
             dataTable.Columns.Add("planning_serverid", typeof(Int64));
             dataTable.Columns.Add("planning_issynced", typeof(bool));
             dataTable.Columns.Add("planning_syncerror", typeof(string));
             dataTable.Columns.Add("planning_isedited", typeof(bool));
+            dataTable.Columns.Add("planning_desc", typeof(DataTable));
+            dataTable.Columns.Add("planning_media", typeof(DataTable));
+
 
             foreach (var planning in plannings)
             {
@@ -227,15 +226,17 @@ namespace VideoCreator.Helpers
                 row["planning_medialibid"] = planning.planning_medialibid?.Replace("'", "''");
                 row["planning_sort"] = planning.planning_sort;
                 row["planning_suggestnotesline"] = planning.planning_suggestnotesline?.Replace("'", "''");
-                row["planning_mediathumb"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_thumb);
-                row["planning_mediafull"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_full);
                 row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-
                 row["planning_serverid"] = planning.planning_id;
                 row["planning_issynced"] = true;
                 row["planning_syncerror"] = "";
                 row["planning_isedited"] = false;
+                //Dependent Tables
+                if (planning.planningdesc?.Count > 0)
+                    row["planning_desc"] = GetPlanningDescriptionDataTable(planning.planningdesc);
+                if (!string.IsNullOrEmpty(planning.planning_media_thumb) && !string.IsNullOrEmpty(planning.planning_media_full))
+                    row["planning_media"] = await GetPlanningMediaDataTable(planning, authApiViewModel);
 
                 dataTable.Rows.Add(row);
             }
@@ -244,6 +245,54 @@ namespace VideoCreator.Helpers
             return insertedIds;
         }
 
+        public static DataTable GetPlanningDescriptionDataTable(List<PlanningDesc> descritions)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("planningdesc_id", typeof(int));
+            dataTable.Columns.Add("planningdesc_line", typeof(string));
+            dataTable.Columns.Add("planningdesc_bullet", typeof(DataTable));
+            foreach (var desc in descritions)
+            {
+                var row = dataTable.NewRow();
+                row["planningdesc_id"] = -1;
+                row["planningdesc_line"] = desc.planningdesc_line;
+                row["planningdesc_bullet"] = GetPlanningBulletDataTable(desc.bullet);
+                dataTable.Rows.Add(row);
+            }
+            return dataTable;
+        }
+
+        public static DataTable GetPlanningBulletDataTable(List<PlanningBullet> bullets)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("planningbullet_id", typeof(int));
+            dataTable.Columns.Add("fk_planningbullet_desc", typeof(int));
+            dataTable.Columns.Add("planningbullet_line", typeof(string));
+            foreach (var bullet in bullets)
+            {
+                var row = dataTable.NewRow();
+                row["planningbullet_id"] = -1;
+                row["fk_planningbullet_desc"] = -1;
+                row["planningbullet_line"] = bullet.planningbullet_line;
+                dataTable.Rows.Add(row);
+            }
+            return dataTable;
+        }
+
+        public static async Task<DataTable> GetPlanningMediaDataTable(PlanningModel planning, AuthAPIViewModel authApiViewModel)
+        {
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("planningmedia_id", typeof(int));
+            dataTable.Columns.Add("planningmedia_mediathumb", typeof(byte[]));
+            dataTable.Columns.Add("planningmedia_mediafull", typeof(byte[]));
+
+            var row = dataTable.NewRow();
+            row["planningmedia_id"] = -1;
+            row["planningmedia_mediathumb"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_thumb);
+            row["planningmedia_mediafull"] = await authApiViewModel.GetSecuredFileByteArray(planning.planning_media_full);
+            dataTable.Rows.Add(row);
+            return dataTable;
+        }
 
         private static DataTable FillProjectDetails(DataTable dataTable, DataRow row, ProjectDetail projdet)
         {

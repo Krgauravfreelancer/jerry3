@@ -1,4 +1,4 @@
-﻿namespace Sqllite_Library.Models
+﻿namespace Sqllite_Library.Models.Planning
 {
     public class CBVPlanningHead
     {

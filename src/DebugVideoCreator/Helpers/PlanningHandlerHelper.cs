@@ -1,7 +1,9 @@
-﻿using ServerApiCall_UserControl.DTO.VideoEvent;
+﻿using LocalVoiceGen_UserControl.Helpers;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
+using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -29,7 +31,7 @@ namespace VideoCreator.Helpers
         private static int RetryIntervalInSeconds = 300;
         private static string EventStartTime = "00:00:00.000";
         private static string EventEndTime = "00:00:00.000";
-        //private static string NotesStartTime = "00:00:00.000";
+        private static string NotesStartTime = "00:00:00.000";
         //private static string NoteEndTime = "00:00:00.000";
         private static int notesIndex = 1;
         private static string CreateOrReturnEmptyDirectory()
@@ -136,7 +138,7 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, IncrementBySeconds: 10);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:00.000");
             return result;
         }
 
@@ -196,17 +198,19 @@ namespace VideoCreator.Helpers
             // Lets add notes
             var notedataTable = GetNotesRawTable();
             var notes = string.Join(Environment.NewLine, data);
-            var notesWordCount = notes?.Split(' ').Length ?? 0;
-            var duration = notesWordCount / 3;
+
+            //var obj = MoanageMediaControls.TimeLine.RecalculateVideoEventDuration
+            TimeSpan measuredTimespan = TextMeasurement.Measure(notes);
+            var notes_duration = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
 
             var noteRow = notedataTable.NewRow();
             noteRow["notes_id"] = -1;
             noteRow["fk_notes_videoevent"] = -1;
             noteRow["notes_line"] = notes?.Replace("'", "''");
-            noteRow["notes_wordcount"] = notesWordCount;
+            noteRow["notes_wordcount"] = notes?.Split(' ').Length ?? 0;
             noteRow["notes_index"] = notesIndex++;
-            noteRow["notes_start"] = "00:00:00.000";
-            noteRow["notes_duration"] = DataManagerSqlLite.GetTimespanFromSeconds(duration);
+            noteRow["notes_start"] = NotesStartTime;
+            noteRow["notes_duration"] = notes_duration;
             noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             noteRow["notes_isdeleted"] = false;
@@ -218,7 +222,7 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, duration);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration);
             return result;
         }
 
@@ -349,13 +353,13 @@ namespace VideoCreator.Helpers
             return blob;
         }
 
-        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, int IncrementBySeconds)
+        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, string duration)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             VideoEventResponseModel addedData;
 
-            EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds));
-            addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, $"{DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds)}");
+            EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, duration);
+            addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, duration);
 
             if (addedData == null)
             {
@@ -364,9 +368,9 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, IncrementBySeconds);
+                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForPlanning(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, $"{DataManagerSqlLite.GetTimespanFromSeconds(IncrementBySeconds)}", (int)track, selectedProjectEvent);
+                    return FailureFlowForPlanning(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent);
                 else
                     return null;
             }

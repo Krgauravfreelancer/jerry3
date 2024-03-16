@@ -1,6 +1,7 @@
 ﻿using Sqllite_Library.Data;
 using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
+using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -324,9 +325,9 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetPlanningHead();
         }
 
-        public static List<CBVPlanning> GetPlanning(int projectId)
+        public static List<CBVPlanning> GetPlanning(int projectId, bool dependentFlag = true)
         {
-            return SqlLiteData.GetPlanning(projectId);
+            return SqlLiteData.GetPlanning(projectId, dependentFlag);
         }
 
         public static List<CBVProjectForJoin> GetDownloadedProjectList()

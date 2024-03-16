@@ -127,7 +127,6 @@ namespace VideoCreator.Auth
 
         public async Task<List<PlanningModel>> GetPlanningsByProjectId(int projectId)
         {
-            //var url = $"api/connect/project/3/planning";
             var url = $"api/connect/project/{projectId}/planning";
             var result = await _apiClientHelper.Get<ParentData<List<PlanningModel>>>(url);
             return result?.Data != null ? result.Data : null;

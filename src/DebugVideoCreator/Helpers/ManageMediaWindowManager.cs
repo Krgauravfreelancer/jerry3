@@ -3,6 +3,7 @@ using ManageMedia_UserControl.Classes;
 using ManageMedia_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
+using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,8 +32,6 @@ namespace VideoCreator.Helpers
             _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             ReadOnly = readOnly;
             selectedProjectEvent = _selectedProjectEvent;
-
-            //var obj = MoanageMediaControls.TimeLine.RecalculateVideoEventDuration
 
             //ProjectID = Selected_ID;
 
@@ -393,16 +392,16 @@ namespace VideoCreator.Helpers
                                 SortKey = CurrentPlanning.planning_sort
                             });
 
-                            if (CurrentPlanning.planning_mediathumb != null && CurrentPlanning.planning_mediafull != null)
-                            {
-                                CurrentGroup.Images.Add(new PlannedImage()
-                                {
-                                    PlannedTextID = CurrentPlanning.planning_id,
-                                    Image = CurrentPlanning.planning_mediafull,
-                                    SortKey = CurrentPlanning.planning_sort,
-                                    ThumbNail = CurrentPlanning.planning_mediathumb,
-                                });
-                            }
+                            //if (CurrentPlanning.planning_mediathumb != null && CurrentPlanning.planning_mediafull != null)
+                            //{
+                            //    CurrentGroup.Images.Add(new PlannedImage()
+                            //    {
+                            //        PlannedTextID = CurrentPlanning.planning_id,
+                            //        Image = CurrentPlanning.planning_mediafull,
+                            //        SortKey = CurrentPlanning.planning_sort,
+                            //        ThumbNail = CurrentPlanning.planning_mediathumb,
+                            //    });
+                            //}
 
                             if (CurrentPlanning.planning_suggestnotesline != "" && CurrentPlanning.planning_suggestnotesline != null)
                             {

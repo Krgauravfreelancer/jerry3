@@ -1,5 +1,6 @@
 ﻿using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
+using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -1540,53 +1541,6 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVPlanningHead> GetPlanningHead()
-        {
-            var data = new List<CBVPlanningHead>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-
-            string sqlQueryString = $@"SELECT * FROM cbv_planninghead";
-
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
-                {
-                    while (sqlReader.Read())
-                    {
-                        var obj = new CBVPlanningHead
-                        {
-                            planninghead_id = Convert.ToInt32(sqlReader["planninghead_id"]),
-                            planninghead_name = Convert.ToString(sqlReader["planninghead_name"]),
-                            planninghead_sort = Convert.ToInt32(sqlReader["planninghead_sort"]),
-                        };
-                        data.Add(obj);
-                    }
-                }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
-            }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-
-            return data;
-        }
-
         public static int IsProjectPlanningAvailable(int projectId)
         {
             int planning_id = -1;
@@ -1624,70 +1578,6 @@ namespace Sqllite_Library.Data
                 throw;
             }
             return planning_id;
-        }
-
-
-
-        public static List<CBVPlanning> GetPlanning(int projectId)
-        {
-            var data = new List<CBVPlanning>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-
-            string sqlQueryString = $@"SELECT * FROM cbv_planning where fk_planning_project = {projectId}";
-
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
-                {
-                    while (sqlReader.Read())
-                    {
-                        var obj = new CBVPlanning
-                        {
-                            planning_id = Convert.ToInt32(sqlReader["planning_id"]),
-                            fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
-                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
-                            planning_customname = Convert.ToString(sqlReader["planning_customname"]),
-                            planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
-                            planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
-                            planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
-                            planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
-                            planning_mediafull = GetBlobMedia(sqlReader, "planning_mediafull"),
-                            planning_mediathumb = GetBlobMedia(sqlReader, "planning_mediathumb"),
-                            planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
-                            planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
-
-                            planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
-                            planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
-                            planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
-                            planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
-
-                        };
-                        data.Add(obj);
-                    }
-                }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
-            }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-
-            return data;
         }
 
         public static int IsProjectAvailable(int projectServerId)
@@ -1895,6 +1785,264 @@ namespace Sqllite_Library.Data
 
             return data;
         }
+
+
+        #region == Planning GET ==
+
+        public static List<CBVPlanningHead> GetPlanningHead()
+        {
+            var data = new List<CBVPlanningHead>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planninghead";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanningHead
+                        {
+                            planninghead_id = Convert.ToInt32(sqlReader["planninghead_id"]),
+                            planninghead_name = Convert.ToString(sqlReader["planninghead_name"]),
+                            planninghead_sort = Convert.ToInt32(sqlReader["planninghead_sort"]),
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
+        public static List<CBVPlanning> GetPlanning(int projectId, bool dependentData = true)
+        {
+            var data = new List<CBVPlanning>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planning where fk_planning_project = {projectId}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var planningId = Convert.ToInt32(sqlReader["planning_id"]);
+                        var obj = new CBVPlanning
+                        {
+                            planning_id = planningId,
+                            fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
+                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
+                            planning_customname = Convert.ToString(sqlReader["planning_customname"]),
+                            planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
+                            planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
+                            planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
+                            planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
+                            planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
+                            planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
+                            planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
+                            planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
+                            planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
+                            planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                        };
+
+                        if (dependentData)
+                        {
+                            obj.planning_desc = GetPlanningDescriptions(planningId);
+                            obj.planning_media = GetPlanningMedia(planningId);
+                        }
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
+        public static List<CBVPlanningDesc> GetPlanningDescriptions(int planning_id)
+        {
+            var data = new List<CBVPlanningDesc>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planningdesc where planningdesc_id = {planning_id}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanningDesc
+                        {
+                            planningdesc_id = Convert.ToInt32(sqlReader["planningdesc_id"]),
+                            planningdesc_line = Convert.ToString(sqlReader["planningdesc_line"]),
+                            planningdesc_bullets = GetPlanningBullets(Convert.ToInt32(sqlReader["planningdesc_id"]))
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
+        public static List<CBVPlanningBullet> GetPlanningBullets(int planningdesc_id)
+        {
+            var data = new List<CBVPlanningBullet>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planningbullet where fk_planningbullet_desc = {planningdesc_id}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanningBullet
+                        {
+                            planningbullet_id = Convert.ToInt32(sqlReader["planningbullet_id"]),
+                            fk_planningbullet_desc = Convert.ToInt32(sqlReader["fk_planningbullet_desc"]),
+                            planningbullet_line = Convert.ToString(sqlReader["planningbullet_line"]),
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
+        public static List<CBVPlanningMedia> GetPlanningMedia(int planning_id)
+        {
+            var data = new List<CBVPlanningMedia>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planningmedia where planningmedia_id = {planning_id}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVPlanningMedia
+                        {
+                            planningmedia_id = Convert.ToInt32(sqlReader["planningmedia_id"]),
+                            planningmedia_mediafull = GetBlobMedia(sqlReader, "planningmedia_mediafull"),
+                            planningmedia_mediathumb = GetBlobMedia(sqlReader, "planningmedia_mediathumb")
+                        };
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return data;
+        }
+
+        #endregion
 
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId, bool dependentDataFlag = false, bool designFlag = false)
         {
@@ -3588,22 +3736,96 @@ namespace Sqllite_Library.Data
                 var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
-                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', @blob1, @blob2, " +
+                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
                     $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isedited})");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_planning 
-                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, planning_mediathumb, planning_mediafull, 
+                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
                         planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isedited) 
                 VALUES 
                     {valuesString}";
 
-                var insertedId = Insert2BlobRecordsInTable("cbv_planning", sqlQueryString, dr["planning_mediathumb"] != DBNull.Value ? dr["planning_mediathumb"] as byte[] : null, dr["planning_mediafull"] != DBNull.Value ? dr["planning_mediafull"] as byte[] : null);
+                var insertedId = InsertRecordsInTable("cbv_planning", sqlQueryString);
+
+                //Logic for PlanningDesc && Bullets
+                var dtDesc = dr["planning_desc"] as DataTable;
+                if (dtDesc != null && dtDesc.Rows?.Count > 0)
+                    InsertRowsToPlanningDesc(dtDesc, insertedId);
+
+                //Logic for PlanningMedia
+                var dtMedia = dr["planning_media"] as DataTable;
+                if (dtMedia != null && dtMedia.Rows?.Count > 0)
+                    InsertRowsToPlanningMedia(dtMedia, insertedId);
+
                 ids.Add(insertedId);
             }
             return ids;
         }
+
+        public static List<int> InsertRowsToPlanningDesc(DataTable dataTable, int planning_id)
+        {
+            var ids = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var valuesString = $"({planning_id}, '{dr["planningdesc_line"]}')";
+                string sqlQueryString =
+                    $@" INSERT INTO  cbv_planningdesc 
+                            (planningdesc_id, planningdesc_line) 
+                        VALUES 
+                            {valuesString}";
+
+                var insertedId = InsertRecordsInTable("cbv_planningdesc", sqlQueryString); // return -1 always
+                //Logic for Bullets
+                var dtbullet = dr["planningdesc_bullet"] as DataTable;
+                if (dtbullet != null && dtbullet.Rows?.Count > 0)
+                    InsertRowsToPlanningBullet(dtbullet, planning_id);
+                ids.Add(planning_id);
+            }
+            return ids;
+        }
+
+        public static List<int> InsertRowsToPlanningBullet(DataTable dataTable, int planningdesc_id)
+        {
+            var ids = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var valuesString = $"({planningdesc_id}, '{dr["planningbullet_line"]}')";
+                string sqlQueryString =
+                    $@" INSERT INTO  cbv_planningbullet 
+                            (fk_planningbullet_desc, planningbullet_line) 
+                        VALUES 
+                            {valuesString}";
+
+                var insertedId = InsertRecordsInTable("cbv_planningbullet", sqlQueryString);
+                ids.Add(insertedId);
+            }
+            return ids;
+        }
+
+        public static List<int> InsertRowsToPlanningMedia(DataTable dataTable, int planning_id)
+        {
+            var ids = new List<int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var valuesString = $"({planning_id}, @blob1, @blob2)";
+                string sqlQueryString =
+                    $@" INSERT INTO  cbv_planningmedia 
+                            (planningmedia_id, planningmedia_mediathumb, planningmedia_mediafull) 
+                        VALUES 
+                            {valuesString}";
+
+                var insertedId = Insert2BlobRecordsInTable("cbv_planningmedia", sqlQueryString,
+                            dr["planningmedia_mediathumb"] != DBNull.Value ? dr["planningmedia_mediathumb"] as byte[] : null,
+                            dr["planningmedia_mediafull"] != DBNull.Value ? dr["planningmedia_mediafull"] as byte[] : null);
+                ids.Add(insertedId);
+            }
+            return ids;
+        }
+
+
+
 
         #endregion
 

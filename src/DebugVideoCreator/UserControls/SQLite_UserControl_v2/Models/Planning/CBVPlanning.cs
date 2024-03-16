@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Sqllite_Library.Models
+namespace Sqllite_Library.Models.Planning
 {
     public class CBVPlanning
     {
@@ -12,8 +13,7 @@ namespace Sqllite_Library.Models
         public int planning_medialibid { get; set; }
         public int planning_sort { get; set; }
         public string planning_suggestnotesline { get; set; }
-        public byte[] planning_mediathumb { get; set; }
-        public byte[] planning_mediafull { get; set; }
+
         public DateTime planning_createdate { get; set; }
         public DateTime planning_modifydate { get; set; }
 
@@ -21,5 +21,8 @@ namespace Sqllite_Library.Models
         public bool planning_issynced { get; set; }
         public string planning_syncerror { get; set; }
         public bool planning_isedited { get; set; }
+
+        public List<CBVPlanningDesc> planning_desc { get; set; }
+        public List<CBVPlanningMedia> planning_media { get; set; }
     }
 }
