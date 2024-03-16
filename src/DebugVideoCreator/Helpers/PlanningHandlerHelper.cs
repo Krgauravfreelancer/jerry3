@@ -26,7 +26,7 @@ namespace VideoCreator.Helpers
 {
     public static class PlanningHandlerHelper
     {
-        #region === Form/Design Functions ==
+        #region === Planning Functions ==
 
         private static int RetryIntervalInSeconds = 300;
         private static string EventStartTime = "00:00:00.000";
@@ -74,37 +74,33 @@ namespace VideoCreator.Helpers
             {
                 var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 //Add Title
-                await AddProjectNameSlide(planningEvent, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                 int increment = 1;
                 foreach (var item in data)
                 {
                     switch (item.fk_planning_head)
                     {
+                        case (int)EnumPlanningHead.Text:
                         case (int)EnumPlanningHead.Introduction:
                             // code block
+                            await AddIntroductionSlide((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
                         case (int)EnumPlanningHead.Requirements:
-                            // code block - requirements
-                            var req = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
-                            await AddPlanningElementWithDesign(designElements, designerUserControl, selectedProjectEvent, authApiViewModel, increment++, EnumPlanningHead.Requirements, req);
-                            break;
                         case (int)EnumPlanningHead.Objectives:
-                            // code block - Objectives
-                            var objs = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
-                            await AddPlanningElementWithDesign(designElements, designerUserControl, selectedProjectEvent, authApiViewModel, increment++, EnumPlanningHead.Objectives, objs);
+                        case (int)EnumPlanningHead.Conclusion:
+                        case (int)EnumPlanningHead.NextUp:
+                        case (int)EnumPlanningHead.Bullet:
+                            // code block - requirements
+                            //var req = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+                            //await AddPlanningElementWithDesign(designElements, designerUserControl, selectedProjectEvent, authApiViewModel, increment++, (EnumPlanningHead)item.fk_planning_head, req);
                             break;
                         case (int)EnumPlanningHead.Video:
                             // code block
                             break;
-                        case (int)EnumPlanningHead.Conclusion:
+                        case (int)EnumPlanningHead.Custom:
                             // code block
                             break;
-                        case (int)EnumPlanningHead.NextUp:
-                            // code block - NextUp
-                            var nextUp = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
-                            await AddPlanningElementWithDesign(designElements, designerUserControl, selectedProjectEvent, authApiViewModel, increment++, EnumPlanningHead.NextUp, nextUp);
-                            break;
-                        case (int)EnumPlanningHead.Custom:
+                        case (int)EnumPlanningHead.Image:
                             // code block
                             break;
                         default:
@@ -116,11 +112,9 @@ namespace VideoCreator.Helpers
         }
 
 
-        private static async Task<bool?> AddProjectNameSlide(PlanningEvent planningEvent, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddProjectNameSlide(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var title = DataManagerSqlLite.GetProjectById(selectedProjectEvent.projectId, false)?.project_videotitle;
-            if (string.IsNullOrEmpty(title))
-                title = "Sample Video Title for the first Video element";
 
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, EnumPlanningHead.Title);
@@ -128,7 +122,7 @@ namespace VideoCreator.Helpers
 
             rowTitle["design_id"] = -1;
             rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = 1; // (int)EnumPlanningHead.Title;
+            rowTitle["fk_design_screen"] = (int)EnumScreen.Title;
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -142,7 +136,32 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private static async Task<bool?> AddPlanningElementWithDesign(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy, EnumPlanningHead planningType, List<string> data)
+
+        private static async Task<bool?> AddIntroductionSlide(EnumPlanningHead planningHead, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        {
+            var text = item?.planning_desc[0]?.planningdesc_line;
+            designerUserControl.ClearDatatable();
+            FillBackgroundRowForPlanning(designElements, designerUserControl, EnumPlanningHead.Title);
+            var rowTitle = designerUserControl.GetNewRow();
+
+            rowTitle["design_id"] = -1;
+            rowTitle["fk_design_videoevent"] = -1;
+            rowTitle["fk_design_screen"] = (int)EnumScreen.Title;
+            rowTitle["fk_design_background"] = 1;
+            rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            rowTitle["design_xml"] = GetTitleElement(text);
+            designerUserControl.AddNewRowToDatatable(rowTitle);
+
+            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
+            designImagerUserControl.SaveToDataTable(finalBlob);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:00.000");
+            return result;
+        }
+
+
+        private static async Task<bool?> AddPlanningElementWithDesign(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy, EnumPlanningHead planningType, List<string> data, string notes_duration)
         {
             if (data == null || data.Count == 0) { return false; }
 
@@ -195,29 +214,7 @@ namespace VideoCreator.Helpers
                 designerUserControl.AddNewRowToDatatable(rowText);
                 j++;
             }
-            // Lets add notes
-            var notedataTable = GetNotesRawTable();
-            var notes = string.Join(Environment.NewLine, data);
-
-            //var obj = MoanageMediaControls.TimeLine.RecalculateVideoEventDuration
-            TimeSpan measuredTimespan = TextMeasurement.Measure(notes);
-            var notes_duration = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
-
-            var noteRow = notedataTable.NewRow();
-            noteRow["notes_id"] = -1;
-            noteRow["fk_notes_videoevent"] = -1;
-            noteRow["notes_line"] = notes?.Replace("'", "''");
-            noteRow["notes_wordcount"] = notes?.Split(' ').Length ?? 0;
-            noteRow["notes_index"] = notesIndex++;
-            noteRow["notes_start"] = NotesStartTime;
-            noteRow["notes_duration"] = notes_duration;
-            noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            noteRow["notes_isdeleted"] = false;
-            noteRow["notes_issynced"] = true;
-            noteRow["notes_serverid"] = -1;
-            noteRow["notes_syncerror"] = string.Empty;
-            notedataTable.Rows.Add(noteRow);
+            var notedataTable = GetNotesDatatable(data, out notes_duration);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
@@ -248,6 +245,34 @@ namespace VideoCreator.Helpers
                 rowDesign["design_xml"] = row["xaml"];
                 designerUserControl.AddNewRowToDatatable(rowDesign);
             }
+        }
+
+
+        private static DataTable GetNotesDatatable(List<string> data, out string notes_duration)
+        {
+            // Lets add notes
+            var notedataTable = GetNotesRawTable();
+            var notes = string.Join(Environment.NewLine, data);
+            TimeSpan measuredTimespan = TextMeasurement.Measure(notes);
+            notes_duration = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
+
+            var noteRow = notedataTable.NewRow();
+            noteRow["notes_id"] = -1;
+            noteRow["fk_notes_videoevent"] = -1;
+            noteRow["notes_line"] = notes?.Replace("'", "''");
+            noteRow["notes_wordcount"] = notes?.Split(' ').Length ?? 0;
+            noteRow["notes_index"] = notesIndex++;
+            noteRow["notes_start"] = NotesStartTime;
+            noteRow["notes_duration"] = notes_duration;
+            noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            noteRow["notes_isdeleted"] = false;
+            noteRow["notes_issynced"] = true;
+            noteRow["notes_serverid"] = -1;
+            noteRow["notes_syncerror"] = string.Empty;
+            notedataTable.Rows.Add(noteRow);
+
+            return notedataTable;
         }
 
         private static string GetTitleElement(string Text)
