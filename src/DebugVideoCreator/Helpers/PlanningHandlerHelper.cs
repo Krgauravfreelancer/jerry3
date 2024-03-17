@@ -65,6 +65,7 @@ namespace VideoCreator.Helpers
 
         public static async Task Process(PlanningEvent planningEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
+            LoaderHelper.ShowLoader(uc, loader, "Starting ...");
             EventStartTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId);
 
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
@@ -72,18 +73,21 @@ namespace VideoCreator.Helpers
 
             if (planningEvent.Type == EnumPlanningHead.All)
             {
-                var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
+                var allPlanningData = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
+                var data = allPlanningData?.Where(x => x.fk_planning_head != (int)EnumPlanningHead.Video && x.fk_planning_head != (int)EnumPlanningHead.Custom).ToList();
+                LoaderHelper.ShowLoader(uc, loader, $"Processing 0/{data.Count} ...");
                 //Add Title
                 await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
-                int increment = 1;
+                int cntr = 1;
                 foreach (var item in data)
                 {
+                    LoaderHelper.ShowLoader(uc, loader, $"Processing {(EnumPlanningHead)Enum.ToObject(typeof(EnumPlanningHead), item.fk_planning_head)} {cntr++}/{data.Count} ...");
                     switch (item.fk_planning_head)
                     {
                         case (int)EnumPlanningHead.Text:
                         case (int)EnumPlanningHead.Introduction:
                             // code block
-                            await AddIntroductionSlide((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                            await AddIntroductionOrTextSlide((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
                         case (int)EnumPlanningHead.Requirements:
                         case (int)EnumPlanningHead.Objectives:
@@ -91,8 +95,7 @@ namespace VideoCreator.Helpers
                         case (int)EnumPlanningHead.NextUp:
                         case (int)EnumPlanningHead.Bullet:
                             // code block - requirements
-                            //var req = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
-                            //await AddPlanningElementWithDesign(designElements, designerUserControl, selectedProjectEvent, authApiViewModel, increment++, (EnumPlanningHead)item.fk_planning_head, req);
+                            await AddPlanningElementWithDesign(item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, (EnumPlanningHead)item.fk_planning_head);
                             break;
                         case (int)EnumPlanningHead.Video:
                             // code block
@@ -132,21 +135,20 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:00.000");
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000");
             return result;
         }
 
-
-        private static async Task<bool?> AddIntroductionSlide(EnumPlanningHead planningHead, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddIntroductionOrTextSlide(EnumPlanningHead planningHead, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var text = item?.planning_desc[0]?.planningdesc_line;
             designerUserControl.ClearDatatable();
-            FillBackgroundRowForPlanning(designElements, designerUserControl, EnumPlanningHead.Title);
+            FillBackgroundRowForPlanning(designElements, designerUserControl, planningHead);
             var rowTitle = designerUserControl.GetNewRow();
 
             rowTitle["design_id"] = -1;
             rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = (int)EnumScreen.Title;
+            rowTitle["fk_design_screen"] = (int)EnumScreen.Intro;
             rowTitle["fk_design_background"] = 1;
             rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -156,45 +158,45 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:00.000");
+            
+            var dtNotes = GetNotesDatatable(item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList(), out string notes_duration);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration);
             return result;
         }
 
 
-        private static async Task<bool?> AddPlanningElementWithDesign(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, int IncrementBy, EnumPlanningHead planningType, List<string> data, string notes_duration)
+        private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumPlanningHead planningType)
         {
-            if (data == null || data.Count == 0) { return false; }
+            if (item == null || item.planning_desc?.Count == 0 || item.planning_desc[0].planningdesc_bullets?.Count == 0) { return false; }
+
+            var heading = item?.planning_desc[0]?.planningdesc_line ?? "No heading Found" ;
 
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, planningType);
+            var screen = GetScreenTypeId(planningType);
 
-            var screenType = 1; // for title/default
-            if (planningType == EnumPlanningHead.Requirements)
-                screenType = 3;
-            else if (planningType == EnumPlanningHead.Objectives)
-                screenType = 4;
-            else if (planningType == EnumPlanningHead.NextUp)
-                screenType = 7;
-
-            // Design Elements
+            // Design Elements - Heading
             var rowHeading = designerUserControl.GetNewRow();
             rowHeading["design_id"] = -1;
             rowHeading["fk_design_videoevent"] = -1;
-            rowHeading["fk_design_screen"] = screenType;
+            rowHeading["fk_design_screen"] = screen;
             rowHeading["fk_design_background"] = 1;
             rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_xml"] = GetHeading($"{planningType} heading is here -");
+            rowHeading["design_xml"] = GetHeading($"{heading}");
             designerUserControl.AddNewRowToDatatable(rowHeading);
+            
             int j = 0;
-            for (var i = 0; i < data.Count; i++)
+            for (var i = 0; i < item.planning_desc[0].planningdesc_bullets.Count; i++) // Bullet Circle + text
             {
-                if (string.IsNullOrEmpty(data[i])) continue;
+                var bulletText = item.planning_desc[0].planningdesc_bullets[i].planningbullet_line;
+                if (string.IsNullOrEmpty(bulletText)) continue;
+
                 var rowCircle = designerUserControl.GetNewRow();
 
                 rowCircle["design_id"] = -1;
                 rowCircle["fk_design_videoevent"] = -1;
-                rowCircle["fk_design_screen"] = screenType;
+                rowCircle["fk_design_screen"] = screen;
                 rowCircle["fk_design_background"] = 1;
                 rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -206,15 +208,17 @@ namespace VideoCreator.Helpers
 
                 rowText["design_id"] = -1;
                 rowText["fk_design_videoevent"] = -1;
-                rowText["fk_design_screen"] = screenType;
+                rowText["fk_design_screen"] = screen;
                 rowText["fk_design_background"] = 1;
                 rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_xml"] = GetBulletPoints($"{data[i]}", j + 1);
+                rowText["design_xml"] = GetBulletPoints($"{bulletText}", j + 1);
                 designerUserControl.AddNewRowToDatatable(rowText);
                 j++;
             }
-            var notedataTable = GetNotesDatatable(data, out notes_duration);
+
+            var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+            var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
@@ -225,13 +229,7 @@ namespace VideoCreator.Helpers
 
         private static void FillBackgroundRowForPlanning(DataTable designElements, Designer_UserControl designerUserControl, EnumPlanningHead planningType)
         {
-            var screen = 1;
-            if (planningType == EnumPlanningHead.Requirements)
-                screen = 3;
-            else if (planningType == EnumPlanningHead.Objectives)
-                screen = 4;
-            else if (planningType == EnumPlanningHead.NextUp)
-                screen = 7;
+            var screen = GetScreenTypeId(planningType);
             // background Image
             foreach (DataRow row in designElements.Rows)
             {
@@ -275,6 +273,28 @@ namespace VideoCreator.Helpers
             return notedataTable;
         }
 
+
+        private static int GetScreenTypeId(EnumPlanningHead planningType)
+        {
+            var screen = (int)EnumScreen.Custom;
+            if (planningType == EnumPlanningHead.Title)
+                screen = (int)EnumScreen.Title;
+            else if (planningType == EnumPlanningHead.Requirements)
+                screen = (int)EnumScreen.Requirements;
+            else if (planningType == EnumPlanningHead.Objectives)
+                screen = (int)EnumScreen.Objectives;
+            else if (planningType == EnumPlanningHead.NextUp)
+                screen = (int)EnumScreen.Next;
+            else if (planningType == EnumPlanningHead.Introduction || planningType == EnumPlanningHead.Text)
+                screen = (int)EnumScreen.Intro;
+            else if (planningType == EnumPlanningHead.Custom || planningType == EnumPlanningHead.Image || planningType == EnumPlanningHead.Video)
+                screen = (int)EnumScreen.Custom;
+            else if (planningType == EnumPlanningHead.Conclusion)
+                screen = (int)EnumScreen.Conclusion;
+            return screen;
+        }
+
+
         private static string GetTitleElement(string Text)
         {
             var title = $"<TextBox BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontWeight = \"800\" FontSize=\"60\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"300\" Canvas.Top=\"450\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{Text.ToUpper()}</TextBox>";
@@ -292,7 +312,7 @@ namespace VideoCreator.Helpers
         {
             if (BulletText.Length <= 80)
             {
-                var top = 250 + (bulletNumber * 200);
+                var top = 250 + (bulletNumber * 150);
                 var title = $"<TextBox AcceptsReturn=\"True\" TextWrapping=\"Wrap\" BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"45\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{BulletText}</TextBox>";
                 return title;
             }
@@ -304,7 +324,7 @@ namespace VideoCreator.Helpers
                 int i = 0;
                 foreach (var item in arr)
                 {
-                    var top = 250 + (bulletNumber * 200) + i;
+                    var top = 250 + (bulletNumber * 150) + i;
                     var text = i >= 120 ? item + "..." : item;
                     title += $"<TextBox AcceptsReturn=\"True\" TextWrapping=\"Wrap\" BorderThickness=\"0,0,0,0\" Background=\"#00FFFFFF\" Foreground=\"#FFF0F8FF\" FontSize=\"35\" Cursor=\"Arrow\" AllowDrop=\"False\" Focusable=\"False\" Canvas.Left=\"430\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><TextBox.RenderTransform><RotateTransform Angle=\"0\" /></TextBox.RenderTransform>{text}</TextBox>" + Environment.NewLine;
                     i = i + 40;
@@ -317,7 +337,7 @@ namespace VideoCreator.Helpers
 
         private static string GetBulletCircle(int bulletNumber = 1)
         {
-            var top = 280 + (bulletNumber * 200);
+            var top = 280 + (bulletNumber * 150);
             var circle = $"<Ellipse Fill=\"#00000000\" Stroke=\"#FFF0F8FF\" StrokeThickness=\"10\" StrokeDashArray=\"\" Width=\"20\" Height=\"20\" Opacity=\"1\" Canvas.Left=\"380\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><Ellipse.RenderTransform><RotateTransform Angle=\"0\" /></Ellipse.RenderTransform></Ellipse>";
             return circle;
         }

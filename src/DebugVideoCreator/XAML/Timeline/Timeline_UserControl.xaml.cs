@@ -538,7 +538,6 @@ namespace VideoCreator.XAML
                 TimeAtTheMoment = trackbarTime
             };
 
-            LoaderHelper.ShowLoader(this, loader);
             var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent();
             if (backgroundImagePath == null)
                 MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -547,9 +546,6 @@ namespace VideoCreator.XAML
                 await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
                 InitializeTimeline();
             }
-
-
-
             LoaderHelper.HideLoader(this, loader);
 
         }
