@@ -244,8 +244,8 @@ namespace Sqllite_Library.Data
                             'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
                             'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                             'planning_syncerror' TEXT(50) NOT NULL  DEFAULT NULL,
-                            'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
-                            UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                            'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0
+                            ,UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
                         );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }

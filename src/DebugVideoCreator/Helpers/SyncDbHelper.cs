@@ -255,7 +255,7 @@ namespace VideoCreator.Helpers
             {
                 var row = dataTable.NewRow();
                 row["planningdesc_id"] = -1;
-                row["planningdesc_line"] = desc.planningdesc_line;
+                row["planningdesc_line"] = desc.planningdesc_line?.Replace("'", "''");
                 row["planningdesc_bullet"] = GetPlanningBulletDataTable(desc.bullet);
                 dataTable.Rows.Add(row);
             }
@@ -273,7 +273,7 @@ namespace VideoCreator.Helpers
                 var row = dataTable.NewRow();
                 row["planningbullet_id"] = -1;
                 row["fk_planningbullet_desc"] = -1;
-                row["planningbullet_line"] = bullet.planningbullet_line;
+                row["planningbullet_line"] = bullet.planningbullet_line?.Replace("'", "''");
                 dataTable.Rows.Add(row);
             }
             return dataTable;
