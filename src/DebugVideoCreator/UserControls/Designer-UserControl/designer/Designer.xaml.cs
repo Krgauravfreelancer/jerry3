@@ -139,10 +139,13 @@ namespace DesignerNp.controls
                 {
                     UIElement uIElement = container.Children[index];
                     var xamlString = XamlWriter.Save(uIElement);
-                    xaml += xamlString + Environment.NewLine;
+                    if (index < container.Children.Count - 1)
+                        xaml += xamlString + Environment.NewLine;
+                    else
+                        xaml += xamlString;
                 }
                 dataRow["xaml"] = xaml;
-                if(isAdd)
+                if (isAdd)
                     dataTable.Rows.Add(dataRow);
             }
             return dataTable;
@@ -258,9 +261,21 @@ namespace DesignerNp.controls
             StringReader stringReader = new StringReader(wrapped);
             XmlReader xmlReader = XmlReader.Create(stringReader);
             Canvas canvas = (Canvas)XamlReader.Load(xmlReader);
-            UIElement uIElement = canvas.Children[0];
-            canvas.Children.RemoveAt(0);
-            container.Children.Add(uIElement);
+            if (canvas.Children.Count == 1)
+            {
+                UIElement element = canvas.Children[0];
+                canvas.Children.RemoveAt(0);
+                container.Children.Add(element);
+            }
+            else
+            {
+                while (canvas.Children.Count > 0)
+                {
+                    UIElement element = canvas.Children[0];
+                    canvas.Children.RemoveAt(0);
+                    container.Children.Add(element);
+                }
+            }
         }
 
 

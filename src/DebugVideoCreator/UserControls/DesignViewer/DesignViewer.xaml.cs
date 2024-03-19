@@ -59,10 +59,10 @@ namespace DesignViewerNp.controls
             }
             else
             {
-                for (int i = canvas.Children.Count - 1; i >= 0; i--)
+                while (canvas.Children.Count > 0)
                 {
-                    UIElement element = canvas.Children[i];
-                    canvas.Children.RemoveAt(i);
+                    UIElement element = canvas.Children[0];
+                    canvas.Children.RemoveAt(0);
                     container.Children.Add(element);
                 }
             }

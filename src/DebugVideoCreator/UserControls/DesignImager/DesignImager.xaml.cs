@@ -109,7 +109,7 @@ namespace DesignImagerNp.controls
             StringReader stringReader = new StringReader(wrapped);
             XmlReader xmlReader = XmlReader.Create(stringReader);
             Canvas canvas = (Canvas)XamlReader.Load(xmlReader);
-            canvas.RenderSize = new Size(1920, 1080);
+
             if (canvas.Children.Count == 1)
             {
                 UIElement element = canvas.Children[0];
@@ -118,18 +118,13 @@ namespace DesignImagerNp.controls
             }
             else
             {
-                for (int i = canvas.Children.Count - 1; i >= 0; i--)
+                while (canvas.Children.Count > 0)
                 {
-                    UIElement element = canvas.Children[i];
-                    canvas.Children.RemoveAt(i);
+                    UIElement element = canvas.Children[0];
+                    canvas.Children.RemoveAt(0);
                     container.Children.Add(element);
                 }
             }
-
-
-            //UIElement uIElement = canvas.Children[0];
-            //canvas.Children.RemoveAt(0);
-            //container.Children.Add(uIElement);
         }
 
         private DataTable InitDataTable()
