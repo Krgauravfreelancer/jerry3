@@ -75,13 +75,13 @@ namespace VideoCreator.Helpers
             {
                 var allPlanningData = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 var data = allPlanningData?.Where(x => x.fk_planning_head != (int)EnumPlanningHead.Video && x.fk_planning_head != (int)EnumPlanningHead.Custom).ToList();
-                LoaderHelper.ShowLoader(uc, loader, $"Processing 0/{data.Count} ...");
+                loader.setTextBlockMessage($"Processing 0/{data.Count} ...");
                 //Add Title
                 await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                 int cntr = 1;
                 foreach (var item in data)
                 {
-                    LoaderHelper.ShowLoader(uc, loader, $"Processing {(EnumPlanningHead)Enum.ToObject(typeof(EnumPlanningHead), item.fk_planning_head)} {cntr++}/{data.Count} ...");
+                    loader.setTextBlockMessage($"Processing {(EnumPlanningHead)Enum.ToObject(typeof(EnumPlanningHead), item.fk_planning_head)} {cntr++}/{data.Count} ...");
                     switch (item.fk_planning_head)
                     {
                         case (int)EnumPlanningHead.Text:
@@ -122,16 +122,8 @@ namespace VideoCreator.Helpers
 
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, EnumPlanningHead.Title);
-            var rowTitle = designerUserControl.GetNewRow();
-
-            rowTitle["design_id"] = -1;
-            rowTitle["fk_design_videoevent"] = -1;
-            rowTitle["fk_design_screen"] = (int)EnumScreen.Title;
-            rowTitle["fk_design_background"] = 1;
-            rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowTitle["design_xml"] = GetTitleElement(title).Replace("'", "''");
-            designerUserControl.AddNewRowToDatatable(rowTitle);
+            DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+            rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(title).Replace("'", "''");
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
@@ -147,16 +139,8 @@ namespace VideoCreator.Helpers
                 var text = item?.planning_desc[0]?.planningdesc_line;
                 designerUserControl.ClearDatatable();
                 FillBackgroundRowForPlanning(designElements, designerUserControl, planningHead);
-                var rowTitle = designerUserControl.GetNewRow();
-
-                rowTitle["design_id"] = -1;
-                rowTitle["fk_design_videoevent"] = -1;
-                rowTitle["fk_design_screen"] = (int)EnumScreen.Intro;
-                rowTitle["fk_design_background"] = 1;
-                rowTitle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowTitle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowTitle["design_xml"] = GetTitleElement(text).Replace("'", "''");
-                designerUserControl.AddNewRowToDatatable(rowTitle);
+                DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+                rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
                 var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
                 var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
@@ -232,48 +216,25 @@ namespace VideoCreator.Helpers
             FillBackgroundRowForPlanning(designElements, designerUserControl, planningType);
             var screen = GetScreenTypeId(planningType);
 
+            DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
             // Design Elements - Heading
-            var rowHeading = designerUserControl.GetNewRow();
-            rowHeading["design_id"] = -1;
-            rowHeading["fk_design_videoevent"] = -1;
-            rowHeading["fk_design_screen"] = screen;
-            rowHeading["fk_design_background"] = 1;
-            rowHeading["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            rowHeading["design_xml"] = GetHeading($"{heading}").Replace("'", "''");
-            designerUserControl.AddNewRowToDatatable(rowHeading);
+            rowTitle["design_xml"] += Environment.NewLine + GetHeading($"{heading}").Replace("'", "''");
 
             int j = 0;
-            for (var i = 0; i < item.planning_desc[0].planningdesc_bullets.Count; i++) // Bullet Circle + text
+            var bullets = string.Empty;
+            var bulletCount = item.planning_desc[0].planningdesc_bullets.Count;
+            for (var i = 0; i < bulletCount; i++) // Bullet Circle + text
             {
                 var bulletText = item.planning_desc[0].planningdesc_bullets[i].planningbullet_line;
                 if (string.IsNullOrEmpty(bulletText)) continue;
-
-                var rowCircle = designerUserControl.GetNewRow();
-
-                rowCircle["design_id"] = -1;
-                rowCircle["fk_design_videoevent"] = -1;
-                rowCircle["fk_design_screen"] = screen;
-                rowCircle["fk_design_background"] = 1;
-                rowCircle["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowCircle["design_xml"] = GetBulletCircle(j + 1).Replace("'", "''");
-                designerUserControl.AddNewRowToDatatable(rowCircle);
-
-
-                var rowText = designerUserControl.GetNewRow();
-
-                rowText["design_id"] = -1;
-                rowText["fk_design_videoevent"] = -1;
-                rowText["fk_design_screen"] = screen;
-                rowText["fk_design_background"] = 1;
-                rowText["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowText["design_xml"] = GetBulletPoints($"{bulletText}", j + 1).Replace("'", "''");
-                designerUserControl.AddNewRowToDatatable(rowText);
+                bullets += GetBulletCircle(j + 1).Replace("'", "''") + Environment.NewLine;
+                if (i < bulletCount - 1)
+                    bullets += GetBulletPoints($"{bulletText}", j + 1).Replace("'", "''") + Environment.NewLine;
+                else
+                    bullets += GetBulletPoints($"{bulletText}", j + 1).Replace("'", "''");
                 j++;
             }
-
+            rowTitle["design_xml"] += Environment.NewLine + bullets;
             var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
 
@@ -316,7 +277,7 @@ namespace VideoCreator.Helpers
                 notes_duration = "00:00:10.000";
                 return null;
             }
-                
+
 
             if (notes?.Length > 0)
             {
