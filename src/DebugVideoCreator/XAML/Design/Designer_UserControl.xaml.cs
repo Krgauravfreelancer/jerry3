@@ -57,7 +57,7 @@ namespace VideoCreator.XAML
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
 
-            cbShowBackground.IsEnabled = !isFormEvent;
+            //cbShowBackground.IsEnabled = !isFormEvent;
         }
 
         private DataTable createDesignDbDataTable()
