@@ -25,13 +25,12 @@ namespace VideoCreator.Helpers
 
         public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
         {
-            var temp = PathHelper.GetTempPath("form");
+            var outputFolder = PathHelper.GetTempPath("form");
             var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true, false);
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {
-                var VideoFileName = $"{temp}\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
-                var outputFolder = $"C:\\commercialBase\\ExtractedImages";
+                var VideoFileName = $"{outputFolder}\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
 
                 Stream t = new FileStream(VideoFileName, FileMode.Create);
                 BinaryWriter b = new BinaryWriter(t);
@@ -46,7 +45,7 @@ namespace VideoCreator.Helpers
             var imageEvent = videoEvents.Where(x => x.fk_videoevent_media == 1 || x.fk_videoevent_media == 4).FirstOrDefault();
             if (imageEvent != null)
             {
-                var imagePath = $"C:\\commercialBase\\ExtractedImages\\image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
+                var imagePath = $"{outputFolder}\\image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
 
                 Stream t = new FileStream(imagePath, FileMode.Create);
                 BinaryWriter b = new BinaryWriter(t);
