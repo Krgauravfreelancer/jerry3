@@ -217,8 +217,13 @@ namespace VideoCreator.XAML
             foreach (DataRow row in dtElements.Rows)
             {
                 //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
-                if (!isFormEvent && row["xaml"].ToString().StartsWith("<Image"))
-                    continue;
+                var xaml = Convert.ToString(row["xaml"]);
+                if (!isFormEvent && xaml.StartsWith("<Image"))
+                {
+                    var imageEndIndex = xaml.IndexOf("/>");
+                    xaml = xaml.Substring(imageEndIndex + 2).Trim();
+                }
+                    
 
                 var rowDesign = dataTableAdd.NewRow();
 
@@ -228,7 +233,7 @@ namespace VideoCreator.XAML
                 rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                rowDesign["design_xml"] = row["xaml"];
+                rowDesign["design_xml"] = xaml;
                 dataTableAdd.Rows.Add(rowDesign);
                 //if (-1 == (int)row["id"])
                 //{
