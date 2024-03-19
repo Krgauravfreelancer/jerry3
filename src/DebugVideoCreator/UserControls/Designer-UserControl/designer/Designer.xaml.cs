@@ -71,7 +71,7 @@ namespace DesignerNp.controls
         /// - Type: string<br/>
         /// </summary>
         /// <returns>The design in xaml string</returns>
-        public DataTable GetDesign()
+        public DataTable GetDesign_()
         {
 
             if (null == dataTable)
@@ -99,6 +99,52 @@ namespace DesignerNp.controls
                 }
             }
 
+            return dataTable;
+        }
+
+        /// <summary>
+        /// Returns a design in the datatable with the following columns 
+        /// Column 0: <br/>
+        /// - Name: id:<br/>
+        /// - Type: int<br/>
+        /// Column 1: <br/>
+        /// - Name: xaml<br/>
+        /// - Type: string<br/>
+        /// </summary>
+        /// <returns>The design in xaml string</returns>
+        public DataTable GetDesign()
+        {
+            if (null == dataTable)
+            {
+                dataTable = InitDataTable();
+            }
+            // Create new
+            bool isAdd = false;
+            if (container.Children.Count > 0)
+            {
+                DataRow dataRow = default(DataRow);
+                if (dataTable.Rows.Count == 1)
+                {
+                    dataRow = dataTable.Rows[0];
+                    isAdd = false;
+                }
+                else if (dataTable.Rows.Count == 0)
+                {
+                    dataRow = dataTable.NewRow();
+                    dataRow["id"] = -1;
+                    isAdd = true;
+                }
+                var xaml = string.Empty;
+                for (int index = 0; index < container.Children.Count; index++)
+                {
+                    UIElement uIElement = container.Children[index];
+                    var xamlString = XamlWriter.Save(uIElement);
+                    xaml += xamlString + Environment.NewLine;
+                }
+                dataRow["xaml"] = xaml;
+                if(isAdd)
+                    dataTable.Rows.Add(dataRow);
+            }
             return dataTable;
         }
 

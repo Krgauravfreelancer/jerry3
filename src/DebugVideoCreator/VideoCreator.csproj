@@ -119,14 +119,6 @@
     <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
-    <Reference Include="DesignImager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\DesignImager.dll</HintPath>
-    </Reference>
-    <Reference Include="DesignViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\DesignViewer.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -626,6 +618,14 @@
     <ProjectReference Include="UserControls\Designer-UserControl\designer\designer.csproj">
       <Project>{e7717082-151e-4ce2-96f7-fff228ea8854}</Project>
       <Name>designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\DesignImager\DesignImager.csproj">
+      <Project>{cc6e035c-150e-43d6-aadd-a1f6fe558e96}</Project>
+      <Name>DesignImager</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\DesignViewer\DesignViewer.csproj">
+      <Project>{81e1ac70-ce77-49e9-8261-8c094c4ac1c3}</Project>
+      <Name>DesignViewer</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\NotesManage_UserControl\NotesManage_UserControl.csproj">
       <Project>{623a80c5-b24c-40cc-a96b-582e8b61099a}</Project>

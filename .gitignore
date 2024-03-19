@@ -384,3 +384,13 @@
 /src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/bin/Release
 /src/DebugVideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/obj/Release
 /src/DebugVideoCreator/.vs/VideoCreator
+/src/DebugVideoCreator/UserControls/DesignViewer/obj
+/src/DebugVideoCreator/UserControls/DesignViewer/bin
+/src/DebugVideoCreator/UserControls/DesignImager/obj
+/src/DebugVideoCreator/UserControls/DesignImager/bin
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/.vs
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/DesignImager/bin
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/DesignImager/obj
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/packages
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/wrapper/bin
+/src/DebugVideoCreator/UserControls/DesignImagerUserControl/wrapper/obj

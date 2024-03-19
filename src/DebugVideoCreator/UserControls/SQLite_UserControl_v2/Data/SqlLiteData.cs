@@ -419,7 +419,7 @@ namespace Sqllite_Library.Data
                 'fk_design_videoevent' INTEGER NOT NULL  DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id'),
                 'fk_design_background' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_background' ('background_id'),
                 'fk_design_screen' INTEGER NOT NULL DEFAULT 1 REFERENCES 'cbv_screen'('screen_id'),
-                'design_xml' TEXT(255) NOT NULL  DEFAULT 'NULL',
+                'design_xml' TEXT NOT NULL  DEFAULT 'NULL',
                 'design_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'design_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'design_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
