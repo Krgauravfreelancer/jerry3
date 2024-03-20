@@ -28,7 +28,7 @@
 
 
         <!--<Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>-->
-        <DataGrid ContextMenuOpening="GridContextMenuOpening" x:Name="datagrid" IsReadOnly="True" SelectionMode="Single" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="28" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" >
+        <DataGrid ContextMenuOpening="GridContextMenuOpening" x:Name="datagrid" IsReadOnly="True" SelectionMode="Single" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" >
 
             <DataGrid.ContextMenu>
                 <ContextMenu>
