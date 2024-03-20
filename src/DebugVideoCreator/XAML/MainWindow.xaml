@@ -18,9 +18,9 @@
         <StackPanel Orientation="Vertical" Margin="700,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Width="450">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Height="35" VerticalAlignment="Top">
                 <Button x:Name="btnLogin" Content="Login" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnLogin_Click" Height="25" Width="100" 
-                        Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+                       Background="#ececec" BorderBrush="#3381CC" FontWeight="Bold"/>
                 <Button x:Name="btnLogout" Content="Logout" IsEnabled="False" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" 
-                    Click="BtnLogout_Click" Height="25" Width="100" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold"/>
+                    Click="BtnLogout_Click" Height="25" Width="100" Background="#ececec" BorderBrush="#3381CC" FontWeight="Bold"/>
             </StackPanel>
             <!--<TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>-->
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
@@ -28,18 +28,27 @@
 
 
         <!--<Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>-->
-        <DataGrid x:Name="datagrid" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" />
+        <DataGrid ContextMenuOpening="GridContextMenuOpening" x:Name="datagrid" IsReadOnly="True" SelectionMode="Single" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="28" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" >
 
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="ManageProjectMenu" Header="Manage" Click="ManageProjectMenu_Click" />
+                    <MenuItem x:Name="DownloadProjectMenu" Header="Download" Click="DownloadProjectMenu_Click" />
+                    <MenuItem x:Name="ReviewProjectMenu" Header="Review" IsEnabled="False" />
+                    <MenuItem x:Name="SubmitProjectMenu" Header="Submit" Click="SubmitProjectMenu_Click" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+
+
+        </DataGrid>
        
-        <StackPanel x:Name="manageStack" Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
-            <Button Content="Manage Timeline" HorizontalAlignment="Left" VerticalAlignment="Top" Click="BtnManageTimeline_Click" Height="25" Width="180" 
-                    Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnManageTimelineButton" IsEnabled="False"/>
-            <Button Content="Download Project" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnDownloadLocally_Click" 
-                    Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnDownloadProject" IsEnabled="False"/>
+
+        <StackPanel x:Name="manageApplicationStack" Orientation="Horizontal" Margin="0,0,0,10" HorizontalAlignment="Center" Height="35" VerticalAlignment="Bottom" Visibility="Hidden">
+            <Button Content="Close" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnClose_Click" 
+                    Height="25" Width="180" Background="#ececec" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnClose"/>
             <Button Content="Refresh" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnRefresh_Click" 
-                    Height="25" Width="180" Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnRefresh"/>
-            <Button Content="View Planning Count" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Click="BtnViewPlanning_Click" Height="25" Width="180" 
-        Foreground="#3381CC" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnViewPlanning"/>
+                    Height="25" Width="180" Background="#ececec" BorderBrush="#3381CC" FontWeight="Bold" x:Name="btnRefresh"/>
+            
 
         </StackPanel>
         <!--<StackPanel Orientation="Horizontal" Margin="0,650,0,0" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top">
@@ -49,23 +58,4 @@
         </StackPanel>-->
         <loader:LoadingAnimation x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
     </Grid>
-    <Window.Resources>
-        <!-- DataGrid style -->
-        <Style x:Key="DataGridStyle1" TargetType="{x:Type DataGrid}">
-            <Setter Property="ColumnHeaderStyle" Value="{DynamicResource ColumnHeaderStyle1}"/>
-        </Style>
-        <!-- DataGridColumnHeader style -->
-        <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="#3381CC"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Padding" Value="5" />
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="ToolTip" Value="Click to sort."/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Resources>
-
 </Window>

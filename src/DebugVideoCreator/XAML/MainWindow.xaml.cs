@@ -12,8 +12,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 
@@ -66,15 +68,64 @@ namespace VideoCreator.XAML
 
         private string GetHeaderName(string name)
         {
-            var output = "";
-            if (!string.IsNullOrEmpty(name))
+            if (name.ToLower() == "project_id".ToLower())
+                return "ID";
+            else if (name.ToLower() == "project_videotitle".ToLower())
+                return "TITLES";
+            else if (name.ToLower() == "projstatus_name".ToLower())
+                return "STATUS";
+            else if (name.ToLower() == "project_downloaded".ToLower())
+                return "DOWNLOADED";
+            else if (name.ToLower() == "current_version".ToLower())
+                return "CURRENT VERSION";
+            else if (name.ToLower() == "projdet_version".ToLower())
+                return "VERSION";
+            else if (name.ToLower() == "project_localId".ToLower())
+                return "LOCAL ID";
+            else
             {
-                foreach (var input in name.Split('_'))
+                var output = "";
+                if (!string.IsNullOrEmpty(name))
                 {
-                    output += input.First().ToString().ToUpper() + input.Substring(1) + ' ';
+                    foreach (var input in name.Split('_'))
+                    {
+                        output += input.First().ToString().ToUpper() + input.Substring(1) + ' ';
+                    }
                 }
+                return output;
             }
-            return output;
+        }
+
+        private int GetWidth(string name)
+        {
+            if (name.ToLower() == "project_id".ToLower())
+                return 75;
+            else if (name.ToLower() == "project_videotitle".ToLower())
+                return 500;
+            else if (name.ToLower() == "projstatus_name".ToLower())
+                return 150;
+            else if (name.ToLower() == "project_downloaded".ToLower())
+                return 150;
+            else if (name.ToLower() == "current_version".ToLower())
+                return 150;
+            else if (name.ToLower() == "projdet_version".ToLower())
+                return 100;
+            return 50;
+        }
+
+        private Style GetStyle(string name)
+        {
+            var style = new Style(typeof(DataGridColumnHeader));
+            style.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+            style.Setters.Add(new Setter(BackgroundProperty, (SolidColorBrush)new BrushConverter().ConvertFrom("#3381CC")));
+            style.Setters.Add(new Setter(ForegroundProperty, new SolidColorBrush(Colors.White)));
+            style.Setters.Add(new Setter(BorderBrushProperty, new SolidColorBrush(Colors.White)));
+            style.Setters.Add(new Setter(BorderThicknessProperty, new Thickness(0.5)));
+            style.Setters.Add(new Setter(PaddingProperty, new Thickness(5)));
+            style.Setters.Add(new Setter(PaddingProperty, new Thickness(5)));
+            style.Setters.Add(new Setter(FontSizeProperty, (double)13));
+            style.Setters.Add(new Setter(FontWeightProperty, FontWeight.FromOpenTypeWeight(700)));
+            return style;
         }
 
 
@@ -92,13 +143,24 @@ namespace VideoCreator.XAML
                     foreach (PropertyInfo prop in item.GetType().GetProperties())
                     {
                         var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                        if (type == typeof(System.Collections.Generic.List<string>))
-                        {
-                            datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name) });
-                        }
+                        if (prop.Name == "project_localId")
+                        { }
                         else
                         {
-                            datagrid.Columns.Add(new DataGridTextColumn() { Header = GetHeaderName(prop.Name), Binding = new Binding(prop.Name) });
+                            if (type == typeof(System.Collections.Generic.List<string>))
+                            {
+                                datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name) });
+                            }
+                            else
+                            {
+                                datagrid.Columns.Add(new DataGridTextColumn()
+                                {
+                                    Header = GetHeaderName(prop.Name),
+                                    Binding = new Binding(prop.Name),
+                                    Width = GetWidth(prop.Name),
+                                    HeaderStyle = GetStyle(prop.Name)
+                                });
+                            }
                         }
                     }
                 }
@@ -108,7 +170,82 @@ namespace VideoCreator.XAML
             if (selected != null)
                 datagrid.SelectedItem = availableProjectsDataSource?.Find(x => x.project_id == selected.project_id && x.projdet_version == selected.projdet_version);
             datagrid.Visibility = Visibility.Visible;
-            manageStack.Visibility = Visibility.Visible;
+            manageApplicationStack.Visibility = Visibility.Visible;
+        }
+
+        private void GridContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            DataGridCell cell;
+            DataGridRow row;
+
+            var dep = FindVisualParentAsDataGridSubComponent((DependencyObject)e.OriginalSource);
+            if (dep == null)
+                return;
+
+            FindCellAndRow(dep, out cell, out row);
+            if (dep is DataGridColumnHeader || dep is DataGridRow)
+            {
+                e.Handled = true;
+                return;
+            }
+
+            var selectedRow = row.Item as ProjectListUI;
+            if (selectedRow != null)
+            {
+                ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                SubmitProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
+            }
+
+        }
+
+        public static void FindCellAndRow(DependencyObject originalSource, out DataGridCell cell, out DataGridRow row)
+        {
+            cell = originalSource as DataGridCell;
+            if (cell == null)
+            {
+                row = null;
+                return;
+            }
+
+            // Walk the visual tree to find the cell's parent row.
+            while ((originalSource != null) && !(originalSource is DataGridRow))
+            {
+                if (originalSource is Visual || originalSource is Visual3D)
+                {
+                    originalSource = VisualTreeHelper.GetParent(originalSource);
+                }
+                else
+                {
+                    // If we're in Logical Land then we must walk up the logical tree 
+                    // until we find a Visual/Visual3D to get us back to Visual Land.
+                    // See: http://www.codeproject.com/Articles/21495/Understanding-the-Visual-Tree-and-Logical-Tree-in
+                    originalSource = LogicalTreeHelper.GetParent(originalSource);
+                }
+            }
+
+            row = originalSource as DataGridRow;
+        }
+        public static DependencyObject FindVisualParentAsDataGridSubComponent(DependencyObject originalSource)
+        {
+            // iteratively traverse the visual tree
+            while ((originalSource != null) && !(originalSource is DataGridCell)
+                && !(originalSource is DataGridColumnHeader) && !(originalSource is DataGridRow))
+            {
+                if (originalSource is Visual || originalSource is Visual3D)
+                {
+                    originalSource = VisualTreeHelper.GetParent(originalSource);
+                }
+                else
+                {
+                    // If we're in Logical Land then we must walk 
+                    // up the logical tree until we find a 
+                    // Visual/Visual3D to get us back to Visual Land.
+                    originalSource = LogicalTreeHelper.GetParent(originalSource);
+                }
+            }
+
+            return originalSource;
         }
 
         private List<ProjectListUI> RemoveUnnecessaryFields(List<ProjectList> projects)
@@ -121,7 +258,7 @@ namespace VideoCreator.XAML
                 var isExist = proj != null;
                 if (isExist)
                 {
-                    item.projstatus_name = "AVAILABLE";
+                    item.project_downloaded = "YES";
                     item.project_localId = proj.project_id;
                 }
                 else
@@ -248,7 +385,7 @@ namespace VideoCreator.XAML
                 MessageBox.Show("Please select one recrod from Grid", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
-            else if (selectedItem.projstatus_name != "AVAILABLE")
+            else if (selectedItem.project_downloaded != "YES")
             {
                 MessageBox.Show("You need to download the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
@@ -256,7 +393,7 @@ namespace VideoCreator.XAML
             return true;
         }
 
-        private async void BtnManageTimeline_Click(object sender, RoutedEventArgs e)
+        private async void ManageProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             if (PreValidations() == false)
                 return;
@@ -278,7 +415,7 @@ namespace VideoCreator.XAML
                 serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
             };
             string obj = JsonConvert.SerializeObject(selectedProjectEvent);
-            var readonlyFlag = selectedItem.projstatus_name == "AVAILABLE" && selectedItem.current_version == false;
+            var readonlyFlag = selectedItem.project_downloaded == "YES" && selectedItem.current_version == false;
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
 
             manageTimelineWindow = new Window
@@ -296,7 +433,7 @@ namespace VideoCreator.XAML
             await InitialiseAndRefreshScreen();
         }
 
-        private async void BtnDownloadLocally_Click(object sender, RoutedEventArgs e)
+        private async void DownloadProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
 
@@ -317,20 +454,22 @@ namespace VideoCreator.XAML
                 MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);
         }
 
-        private void BtnViewPlanning_Click(object sender, RoutedEventArgs e)
+        private void SubmitProjectMenu_Click(object sender, RoutedEventArgs e)
         {
-            if (PreValidations() == false)
-                return;
-
-            var planning = DataManagerSqlLite.GetPlanning(selectedItem.project_localId);
-            MessageBox.Show($"{planning?.Count} rows found in planning for projectId = {selectedItem.project_id}", "Planning Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("Coming Soon !!", "Submit Project", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
 
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
             await InitialiseAndRefreshScreen();
             LoaderHelper.HideLoader(this, loader);
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
 
 
@@ -356,8 +495,8 @@ namespace VideoCreator.XAML
         private void datagrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             selectedItem = datagrid.SelectedItem != null ? (ProjectListUI)datagrid.SelectedItem : null;
-            btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.projstatus_name == "AVAILABLE";
-            btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.projstatus_name != "AVAILABLE";
+            //btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.project_downloaded == "YES";
+            //btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.project_downloaded != "YES";
         }
 
 

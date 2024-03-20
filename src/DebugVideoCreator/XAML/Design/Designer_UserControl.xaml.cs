@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-//using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -223,7 +222,7 @@ namespace VideoCreator.XAML
                     var imageEndIndex = xaml.IndexOf("/>");
                     xaml = xaml.Substring(imageEndIndex + 2).Trim();
                 }
-                    
+
 
                 var rowDesign = dataTableAdd.NewRow();
 
