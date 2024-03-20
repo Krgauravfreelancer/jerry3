@@ -32,10 +32,26 @@
 
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem x:Name="ManageProjectMenu" Header="Manage" Click="ManageProjectMenu_Click" />
-                    <MenuItem x:Name="DownloadProjectMenu" Header="Download" Click="DownloadProjectMenu_Click" />
-                    <MenuItem x:Name="ReviewProjectMenu" Header="Review" IsEnabled="False" />
-                    <MenuItem x:Name="SubmitProjectMenu" Header="Submit" Click="SubmitProjectMenu_Click" />
+                    <MenuItem x:Name="ManageProjectMenu" Header="Manage" Click="ManageProjectMenu_Click" >
+                        <MenuItem.Icon>
+                            <Image Source="../Icons/Manage/manage.png" ></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="DownloadProjectMenu" Header="Download" Click="DownloadProjectMenu_Click" >
+                        <MenuItem.Icon>
+                            <Image Source="../Icons/Manage/download.png" ></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="ReviewProjectMenu" Header="Review" IsEnabled="False" >
+                        <MenuItem.Icon>
+                            <Image Source="../Icons/Manage/review.png" ></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="SubmitProjectMenu" Header="Submit" Click="SubmitProjectMenu_Click" >
+                        <MenuItem.Icon>
+                            <Image Source="../Icons/Manage/submit.png" ></Image>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </DataGrid.ContextMenu>
 
