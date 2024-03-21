@@ -29,6 +29,7 @@ namespace VideoCreator.XAML
         private List<CBVProjectForJoin> downloadedProjects;
         private List<ProjectListUI> availableProjectsDataSource;
         private ProjectListUI selectedItem;
+        private SelectedProjectEvent selectedProjectEvent;
         Window manageTimelineWindow;
 
         public MainWindow()
@@ -404,16 +405,8 @@ namespace VideoCreator.XAML
                 return;
             }
 
-            CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
-            CBVProjdet cbvProjDet = cbvProject.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
-
-            var selectedProjectEvent = new SelectedProjectEvent
-            {
-                projectId = selectedItem?.project_localId ?? -1,
-                serverProjectId = selectedItem?.project_id ?? -1,
-                projdetId = cbvProjDet?.projdet_id ?? -1,
-                serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
-            };
+            if (selectedProjectEvent == null)
+                return;
             string obj = JsonConvert.SerializeObject(selectedProjectEvent);
             var readonlyFlag = selectedItem.project_downloaded == "YES" && selectedItem.current_version == false;
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
@@ -454,9 +447,10 @@ namespace VideoCreator.XAML
                 MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);
         }
 
-        private void SubmitProjectMenu_Click(object sender, RoutedEventArgs e)
+        private async void SubmitProjectMenu_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Coming Soon !!", "Submit Project", MessageBoxButton.OK, MessageBoxImage.Information);
+            var submitProjectMessage = await authApiViewModel.SubmitProject(selectedProjectEvent);
+            MessageBox.Show($"{submitProjectMessage}", "Submit Project", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
 
@@ -495,6 +489,21 @@ namespace VideoCreator.XAML
         private void datagrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             selectedItem = datagrid.SelectedItem != null ? (ProjectListUI)datagrid.SelectedItem : null;
+            if (selectedItem != null)
+            {
+                CBVProject cbvProject = DataManagerSqlLite.GetProjectById(selectedItem.project_localId, true);
+                CBVProjdet cbvProjDet = cbvProject?.projdet_data?.Find(x => x.projdet_version == selectedItem.projdet_version);
+
+                selectedProjectEvent = new SelectedProjectEvent
+                {
+                    projectId = selectedItem?.project_localId ?? -1,
+                    serverProjectId = selectedItem?.project_id ?? -1,
+                    projdetId = cbvProjDet?.projdet_id ?? -1,
+                    serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
+                };
+            }
+            else
+                selectedProjectEvent = null;
             //btnManageTimelineButton.IsEnabled = selectedItem != null && selectedItem.project_downloaded == "YES";
             //btnDownloadProject.IsEnabled = selectedItem != null && selectedItem.project_downloaded != "YES";
         }

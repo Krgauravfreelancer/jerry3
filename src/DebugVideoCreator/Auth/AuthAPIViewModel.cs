@@ -132,6 +132,15 @@ namespace VideoCreator.Auth
             return result?.Data != null ? result.Data : null;
         }
 
+        public async Task<string> SubmitProject(SelectedProjectEvent selectedProjectEvent)
+        {
+            var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/submit";
+            var parameters = new Dictionary<string, string>();
+            var payload = new FormUrlEncodedContent(parameters);
+            var result = await _apiClientHelper.Update<ParentData<object>>(url, payload);
+            return result?.Message;
+        }
+        
         //public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
         //{
         //    var url = $"api/connect/project/accept-reject";

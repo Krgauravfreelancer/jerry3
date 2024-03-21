@@ -155,55 +155,58 @@ namespace VideoCreator.Helpers
 
         private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumPlanningHead planningType)
         {
-            var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
-            var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
-            EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, string.IsNullOrEmpty(notes_duration) ? "00:00:10.000" : notes_duration);
-            var dataTable = new DataTable();
-            dataTable.Columns.Add("videoevent_id", typeof(int));
-            dataTable.Columns.Add("fk_videoevent_projdet", typeof(int));
-            dataTable.Columns.Add("fk_videoevent_media", typeof(int));
-            dataTable.Columns.Add("videoevent_track", typeof(int));
-            dataTable.Columns.Add("videoevent_start", typeof(string));
-            dataTable.Columns.Add("videoevent_duration", typeof(string));
-            dataTable.Columns.Add("videoevent_origduration", typeof(string));
-            dataTable.Columns.Add("videoevent_createdate", typeof(string));
-            dataTable.Columns.Add("videoevent_modifydate", typeof(string));
-            dataTable.Columns.Add("media", typeof(byte[])); // Media Column
-            dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen    
-            dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
-            dataTable.Columns.Add("videoevent_issynced", typeof(bool));
-            dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
-            dataTable.Columns.Add("videoevent_syncerror", typeof(string));
-            dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
+            if (item?.planning_media?.Count > 0) {
+                var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+                var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
+                EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, string.IsNullOrEmpty(notes_duration) ? "00:00:10.000" : notes_duration);
+                var dataTable = new DataTable();
+                dataTable.Columns.Add("videoevent_id", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_projdet", typeof(int));
+                dataTable.Columns.Add("fk_videoevent_media", typeof(int));
+                dataTable.Columns.Add("videoevent_track", typeof(int));
+                dataTable.Columns.Add("videoevent_start", typeof(string));
+                dataTable.Columns.Add("videoevent_duration", typeof(string));
+                dataTable.Columns.Add("videoevent_origduration", typeof(string));
+                dataTable.Columns.Add("videoevent_createdate", typeof(string));
+                dataTable.Columns.Add("videoevent_modifydate", typeof(string));
+                dataTable.Columns.Add("media", typeof(byte[])); // Media Column
+                dataTable.Columns.Add("fk_videoevent_screen", typeof(int));//temp column for screen    
+                dataTable.Columns.Add("videoevent_isdeleted", typeof(bool));
+                dataTable.Columns.Add("videoevent_issynced", typeof(bool));
+                dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
+                dataTable.Columns.Add("videoevent_syncerror", typeof(string));
+                dataTable.Columns.Add("videoevent_notes", typeof(DataTable));
 
-            // Since this table has Referential Integrity, so lets push one by one
-            dataTable.Rows.Clear();
+                // Since this table has Referential Integrity, so lets push one by one
+                dataTable.Rows.Clear();
 
-            var row = dataTable.NewRow();
-            //row["videoevent_id"] = -1;
-            row["fk_videoevent_projdet"] = selectedProjectEvent.projdetId;
-            row["fk_videoevent_media"] = 1;
-            row["videoevent_track"] = EnumTrack.IMAGEORVIDEO;
-            row["videoevent_start"] = EventStartTime;
-            row["videoevent_duration"] = notes_duration;
-            row["videoevent_origduration"] = notes_duration;
-            row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            row["videoevent_isdeleted"] = false;
-            row["videoevent_issynced"] = false;
-            row["videoevent_serverid"] = -1;
-            row["videoevent_syncerror"] = string.Empty;
-            row["fk_videoevent_screen"] = GetScreenTypeId(planningType);
-            row["videoevent_notes"] = notedataTable;
-            var byteArrayIn = item?.planning_media[0]?.planningmedia_mediafull;
-            row["media"] = byteArrayIn;
-            dataTable.Rows.Add(row);
-            foreach (DataRow itemRow in dataTable.Rows)
-            {
-                var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel);
+                var row = dataTable.NewRow();
+                //row["videoevent_id"] = -1;
+                row["fk_videoevent_projdet"] = selectedProjectEvent.projdetId;
+                row["fk_videoevent_media"] = 1;
+                row["videoevent_track"] = EnumTrack.IMAGEORVIDEO;
+                row["videoevent_start"] = EventStartTime;
+                row["videoevent_duration"] = notes_duration;
+                row["videoevent_origduration"] = notes_duration;
+                row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                row["videoevent_isdeleted"] = false;
+                row["videoevent_issynced"] = false;
+                row["videoevent_serverid"] = -1;
+                row["videoevent_syncerror"] = string.Empty;
+                row["fk_videoevent_screen"] = GetScreenTypeId(planningType);
+                row["videoevent_notes"] = notedataTable;
+                var byteArrayIn = item?.planning_media[0]?.planningmedia_mediafull;
+                row["media"] = byteArrayIn;
+                dataTable.Rows.Add(row);
+                foreach (DataRow itemRow in dataTable.Rows)
+                {
+                    var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel);
+                }
+                EventStartTime = EventEndTime; // Reset it for next time
+                return true;
             }
-            EventStartTime = EventEndTime; // Reset it for next time
-            return true;
+            return false;
         }
 
         private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumPlanningHead planningType)
