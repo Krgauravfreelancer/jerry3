@@ -211,6 +211,7 @@ namespace Sqllite_Library.Data
                     'projdet_currver' INTEGER(1) NOT NULL  DEFAULT 0,
                     'projdet_comments' TEXT(100) DEFAULT NULL,
                     'projdet_serverid' INTEGER NOT NULL DEFAULT 0,
+                    'projdet_submitted' INTEGER(1) NOT NULL  DEFAULT 0,
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
@@ -3375,6 +3376,22 @@ namespace Sqllite_Library.Data
                 var updateFlag = ExecuteNonQueryInTable(updateQueryString);
                 Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
             }
+        }
+
+
+        public static void SetProjectDetailSubmitted(int projdet_id)
+        {
+            var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            var updateQueryString = $@" UPDATE cbv_projdet 
+                                    SET 
+                                        projdet_submitted = 1,
+                                        projdet_modifydate = '{modifyDate}'
+                                    WHERE 
+                                        projdet_id = {projdet_id}";
+            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
+            Console.WriteLine($@"cbv_projdet table update status for id - {projdet_id} result - {updateFlag}");
+            
         }
 
         #endregion

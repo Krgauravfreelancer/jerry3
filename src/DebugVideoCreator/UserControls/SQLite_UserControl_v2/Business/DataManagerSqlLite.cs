@@ -548,6 +548,11 @@ namespace Sqllite_Library.Business
             SqlLiteData.ShiftVideoEvents(dataTable);
         }
 
+        public static void SetProjectDetailSubmitted(int projdet_id)
+        {
+            SqlLiteData.SetProjectDetailSubmitted(projdet_id);
+        }
+
         #endregion
 
 

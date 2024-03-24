@@ -391,6 +391,11 @@ namespace VideoCreator.XAML
                 MessageBox.Show("You need to download the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
+            else if (selectedItem.projstatus_name?.ToLower() == "review")
+            {
+                MessageBox.Show("Project is already submitted.", "READ ONLY", MessageBoxButton.OK, MessageBoxImage.Information);
+                return false;
+            }
             return true;
         }
 
@@ -450,6 +455,7 @@ namespace VideoCreator.XAML
         private async void SubmitProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             var submitProjectMessage = await authApiViewModel.SubmitProject(selectedProjectEvent);
+            //DataManagerSqlLite.SetProjectDetailSubmitted(selectedProjectEvent.projdetId);
             MessageBox.Show($"{submitProjectMessage}", "Submit Project", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
