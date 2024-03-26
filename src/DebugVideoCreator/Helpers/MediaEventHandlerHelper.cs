@@ -55,7 +55,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_duration = Convert.ToString(videoevent.videoevent_duration);
             objToSync.videoevent_origduration = Convert.ToString(videoevent.videoevent_duration); // TBD
             //objToSync.videoevent_origduration = Convert.ToString(videoevent.videoevent_origduration);
-            objToSync.videoevent_end = videoevent.EndTime?.ToString(@"hh\:mm\:ss\.fff") ?? videoevent.videoevent_end;
+            //objToSync.videoevent_end = videoevent.EndTime?.ToString(@"hh\:mm\:ss\.fff") ?? videoevent.videoevent_end;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, videoevent.videoevent_serverid, objToSync);
             return result;

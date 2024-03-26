@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Timeline.UserControls.Models;
+using Timeline.UserControls.Models.Datatables;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 using VideoCreator.MediaLibraryData;
@@ -36,7 +37,7 @@ namespace VideoCreator.XAML
 
 
         private TrackbarMouseMoveEvent mouseEventToProcess;
-        private TimelineVideoEvent selectedVideoEvent;
+        private CBVVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
         private int undoVideoEventId = -1;
 
@@ -86,9 +87,9 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
             TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
-            NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
+            //NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
 
-            NotesUserConrol.Visibility = Visibility.Visible;
+            //NotesUserConrol.Visibility = Visibility.Visible;
 
 
             // Reload Control
@@ -96,14 +97,14 @@ namespace VideoCreator.XAML
 
             //AudioUserConrol.SetSelected(selectedProjectId, selectedVideoEventId, selectedVideoEvent, ReadOnly);
             //ResetAudioContextMenu();
-            NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
-            NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
-            NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
+            //NotesUserConrol.locAudioAddedEvent += NotesUserConrol_locAudioAddedEvent;
+            //NotesUserConrol.locAudioShowEvent += NotesUserConrol_locAudioShowEvent;
+            //NotesUserConrol.locAudioManageEvent += NotesUserConrol_locAudioManageEvent;
 
-            NotesUserConrol.saveNotesEvent += NotesUserConrol_saveNotesEvent;
-            NotesUserConrol.saveSingleNoteEvent += NotesUserConrol_saveSingleNoteEvent;
-            NotesUserConrol.updateSingleNoteEvent += NotesUserConrol_updateSingleNoteEvent;
-            NotesUserConrol.deleteSingleNoteEvent += NotesUserConrol_deleteSingleNoteEvent;
+            //NotesUserConrol.saveNotesEvent += NotesUserConrol_saveNotesEvent;
+            //NotesUserConrol.saveSingleNoteEvent += NotesUserConrol_saveSingleNoteEvent;
+            //NotesUserConrol.updateSingleNoteEvent += NotesUserConrol_updateSingleNoteEvent;
+            //NotesUserConrol.deleteSingleNoteEvent += NotesUserConrol_deleteSingleNoteEvent;
             // NotesUserConrol.HandleVideoEventSelectionChanged();
             //FSPClosed = new EventHandler(this.Parent, new EventArgs());
 
@@ -112,103 +113,103 @@ namespace VideoCreator.XAML
 
         private void Refresh()
         {
-            TimelineUserConrol.InitializeTimeline();
+            TimelineUserConrol.Refresh();
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
-            NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
+            //NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
         }
 
 
         #region === Notes Event Handler event ==
 
-        private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
-        {
-            if (selectedVideoEvent != null)
-            {
-                // Step 1. Save to server
-                var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-                var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
-                if (savedNotes != null)
-                {
-                    // Step 2. Now save the notes to local DB
-                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
-                    DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
-                }
-                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
-            }
-        }
+        //private async void NotesUserConrol_saveNotesEvent(object sender, DataTable datatable)
+        //{
+        //    if (selectedVideoEvent != null)
+        //    {
+        //        // Step 1. Save to server
+        //        var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+        //        var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+        //        if (savedNotes != null)
+        //        {
+        //            // Step 2. Now save the notes to local DB
+        //            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+        //            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+        //        }
+        //        NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        //    }
+        //}
 
-        private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
-        {
-            if (selectedVideoEvent != null)
-            {
-                var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
-                if (result?.Status == "success")
-                {
-                    DataManagerSqlLite.DeleteNotesById(notes.notes_id);
-                    NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
-                }
-            }
-        }
+        //private async void NotesUserConrol_deleteSingleNoteEvent(object sender, CBVNotes notes)
+        //{
+        //    if (selectedVideoEvent != null)
+        //    {
+        //        var result = await authApiViewModel.DeleteNotesById(selectedVideoEvent.videoevent_serverid, notes.notes_serverid);
+        //        if (result?.Status == "success")
+        //        {
+        //            DataManagerSqlLite.DeleteNotesById(notes.notes_id);
+        //            NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        //        }
+        //    }
+        //}
 
 
-        private async void NotesUserConrol_saveSingleNoteEvent(object sender, DataTable datatable)
-        {
-            if (selectedVideoEvent != null)
-            {// Step 1. Save to server
-                var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
-                var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
+        //private async void NotesUserConrol_saveSingleNoteEvent(object sender, DataTable datatable)
+        //{
+        //    if (selectedVideoEvent != null)
+        //    {// Step 1. Save to server
+        //        var notes = NotesEventHandlerHelper.GetNotesModelList(datatable);
+        //        var savedNotes = await authApiViewModel.POSTNotes(selectedVideoEvent.videoevent_serverid, notes);
 
-                // Step 2. Now save the notes to local DB
-                var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
-                DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+        //        // Step 2. Now save the notes to local DB
+        //        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, selectedVideoEventId);
+        //        DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
 
-                NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
-            }
-        }
+        //        NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        //    }
+        //}
 
-        private void NotesUserConrol_updateSingleNoteEvent(object sender, DataTable datatable)
-        {
-            throw new NotImplementedException();
-        }
+        //private void NotesUserConrol_updateSingleNoteEvent(object sender, DataTable datatable)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        private void NotesUserConrol_locAudioManageEvent(object sender, int notesId)
-        {
-            //var uc = new LocalVoice_UserControl(selectedVideoEventId, notesId);
-            //var window = new Window
-            //{
-            //    Title = $"Manage Audio For {notesId} notes",
-            //    Content = uc,
-            //    SizeToContent = SizeToContent.WidthAndHeight,
-            //    ResizeMode = ResizeMode.NoResize,
-            //    HorizontalAlignment = HorizontalAlignment.Center,
-            //    VerticalAlignment = VerticalAlignment.Center,
-            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
-            //};
-            //var result = window.ShowDialog();
-            //NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
-        }
+        //private void NotesUserConrol_locAudioManageEvent(object sender, int notesId)
+        //{
+        //    //var uc = new LocalVoice_UserControl(selectedVideoEventId, notesId);
+        //    //var window = new Window
+        //    //{
+        //    //    Title = $"Manage Audio For {notesId} notes",
+        //    //    Content = uc,
+        //    //    SizeToContent = SizeToContent.WidthAndHeight,
+        //    //    ResizeMode = ResizeMode.NoResize,
+        //    //    HorizontalAlignment = HorizontalAlignment.Center,
+        //    //    VerticalAlignment = VerticalAlignment.Center,
+        //    //    WindowStartupLocation = WindowStartupLocation.CenterScreen
+        //    //};
+        //    //var result = window.ShowDialog();
+        //    //NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        //}
 
-        private void NotesUserConrol_locAudioShowEvent(object sender, EventArgs e)
-        {
-            //var uc = new LocalVoice_UserControl(selectedVideoEventId);
-            //var window = new Window
-            //{
-            //    Title = "Generate Local Voice",
-            //    Content = uc,
-            //    SizeToContent = SizeToContent.WidthAndHeight,
-            //    ResizeMode = ResizeMode.NoResize,
-            //    HorizontalAlignment = HorizontalAlignment.Center,
-            //    VerticalAlignment = VerticalAlignment.Center,
-            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
-            //};
-            //var result = window.ShowDialog();
-            //NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
-        }
+        //private void NotesUserConrol_locAudioShowEvent(object sender, EventArgs e)
+        //{
+        //    //var uc = new LocalVoice_UserControl(selectedVideoEventId);
+        //    //var window = new Window
+        //    //{
+        //    //    Title = "Generate Local Voice",
+        //    //    Content = uc,
+        //    //    SizeToContent = SizeToContent.WidthAndHeight,
+        //    //    ResizeMode = ResizeMode.NoResize,
+        //    //    HorizontalAlignment = HorizontalAlignment.Center,
+        //    //    VerticalAlignment = VerticalAlignment.Center,
+        //    //    WindowStartupLocation = WindowStartupLocation.CenterScreen
+        //    //};
+        //    //var result = window.ShowDialog();
+        //    //NotesUserConrol.DisplayAllNotesForSelectedVideoEvent();
+        //}
 
-        private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
-        {
-            //ResetAudio();
-        }
+        //private void NotesUserConrol_locAudioAddedEvent(object sender, EventArgs e)
+        //{
+        //    //ResetAudio();
+        //}
 
 
         #endregion
@@ -813,24 +814,37 @@ namespace VideoCreator.XAML
                     DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
                 }
             }
-            TimelineUserConrol.InitializeTimeline();
+            TimelineUserConrol.Refresh();
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineVideoEvent selectedEvent)
+        private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineSelectedEvent selectedEvent)
         {
-            selectedVideoEvent = selectedEvent;
+            if(selectedEvent.Track == TrackNumber.Notes)
+            {
+                selectedVideoEvent = null;
+            }
+            else
+            {
+                selectedVideoEvent = DataManagerSqlLite.GetVideoEventbyId(selectedEvent.EventId).FirstOrDefault();
+            }
+            
             if (selectedVideoEvent != null)
             {
-                selectedVideoEventId = selectedVideoEvent.videoevent_id;
+                selectedVideoEventId = selectedEvent.EventId;
                 lblSelectedVideoeventId.Content = $"[Selected VideoEvent Id - {selectedVideoEventId}]";
+                CommentsHelper.ShowComments(selectedVideoEventId, commentsBlock);
+                CommentsHelper.ShowNotes(selectedVideoEventId, notesBlock);
             }
             else
             {
                 selectedVideoEventId = -1;
                 lblSelectedVideoeventId.Content = $"";
+                CommentsHelper.ShowComments(selectedVideoEventId, commentsBlock);
+                CommentsHelper.ShowNotesById(selectedEvent.EventId, notesBlock);
             }
-            NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
+
+            //NotesUserConrol.HandleVideoEventSelectionChanged(selectedVideoEventId);
         }
 
         //private bool IfNeedToReProcess(TrackbarMouseMoveEvent e)
@@ -941,7 +955,7 @@ namespace VideoCreator.XAML
         private async Task HandleFormLogic(FormOrCloneEvent calloutEvent, EnumTrack track, string imagePath, bool isFormEvent)
         {
             await FormHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath, isFormEvent);
-            TimelineUserConrol.InitializeTimeline();
+            TimelineUserConrol.Refresh();
             LoaderHelper.HideLoader(this, loader);
         }
 
