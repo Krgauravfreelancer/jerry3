@@ -284,10 +284,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Timeline.UserControls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\Timeline.UserControls.dll</HintPath>
-    </Reference>
     <Reference Include="TimePicker_UserControl">
       <HintPath>Libraries\TimePicker_UserControl.dll</HintPath>
     </Reference>
@@ -655,6 +651,10 @@
     <ProjectReference Include="UserControls\SQLite_UserControl_v2\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\Timeline.UserControl\Timeline.UserControls.csproj">
+      <Project>{75bd2760-c9a6-46f6-85e0-aaac0760b829}</Project>
+      <Name>Timeline.UserControls</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
       <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{75BD2760-C9A6-46F6-85E0-AAAC0760B829}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <RootNamespace>Timeline.UserControls</RootNamespace>
+    <AssemblyName>Timeline.UserControls</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Timeline.UserControls.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="TimePicker_UserControl">
+      <HintPath>..\..\Libraries\TimePicker_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\Datatables\NotesDatatable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Models\TimelineNote.cs" />
+    <Compile Include="Models\TimelineVideoEvent.cs" />
+    <Compile Include="Models\TimelineEventArgs.cs" />
+    <Compile Include="Config\TimelineDefaultConfig.cs" />
+    <Compile Include="Controls\EventBlock.xaml.cs">
+      <DependentUpon>EventBlock.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EventBlockTooltipControl.xaml.cs">
+      <DependentUpon>EventBlockTooltipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EventHoverEventArgs.cs" />
+    <Compile Include="Converters\BooleanToStrokeThicknessConverter.cs" />
+    <Compile Include="Converters\MultiplyConverter.cs" />
+    <Compile Include="Models\Datatables\DesignDatatable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Models\TimelineApp.cs" />
+    <Compile Include="Models\TimelineDesign.cs" />
+    <Compile Include="Models\TimelineLayoutModel.cs" />
+    <Compile Include="Models\TimelineMedia.cs" />
+    <Compile Include="Models\TimelineScreen.cs" />
+    <Compile Include="Models\TimelineSettings.cs" />
+    <Compile Include="Models\Datatables\VideoEventDatatable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Exceptions\UnauthorizedAppActionException.cs" />
+    <Compile Include="Exceptions\UnknownAppAccessException.cs" />
+    <Compile Include="Exceptions\UnknownMediaTypeException.cs" />
+    <Compile Include="Base\NotifyPropertyChanged.cs" />
+    <Compile Include="Config\AppControlType.cs" />
+    <Compile Include="Config\MediaType.cs" />
+    <Compile Include="Controls\TimelineGridControl.cs" />
+    <Compile Include="Controls\ITimelineGridControl.cs" />
+    <Compile Include="Controls\TimelineGridControl.xaml.cs">
+      <DependentUpon>TimelineGridControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimepickerControl.xaml.cs">
+      <DependentUpon>TimepickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackbarLineControl.xaml.cs">
+      <DependentUpon>TrackbarLineControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TrackControl.xaml.cs">
+      <DependentUpon>TrackControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\ScreenVisibilityConverter.cs" />
+    <Compile Include="Converters\EventStartTimeConverter.cs" />
+    <Compile Include="Converters\OneWayConverter.cs" />
+    <Compile Include="Converters\TrackerLineConverter.cs" />
+    <Compile Include="Models\EventStartTimeModel.cs" />
+    <Compile Include="Models\TimelineAppAccess.cs" />
+    <Compile Include="Models\Timeline.cs" />
+    <Compile Include="Models\TimelineSelectionModel.cs" />
+    <Compile Include="Models\TimelineEvent.cs" />
+    <Compile Include="TimelineExtensions.cs" />
+    <Compile Include="Models\EventFormViewModel.cs" />
+    <Compile Include="Models\TimelineDatabaseModel.cs" />
+    <Compile Include="Models\TimelineViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\EventBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\EventBlockTooltipControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TimelineGridControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TimepickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TrackbarLineControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TrackControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Converters\ValueConverters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\MainResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

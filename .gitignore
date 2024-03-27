@@ -394,3 +394,6 @@
 /src/DebugVideoCreator/UserControls/DesignImagerUserControl/packages
 /src/DebugVideoCreator/UserControls/DesignImagerUserControl/wrapper/bin
 /src/DebugVideoCreator/UserControls/DesignImagerUserControl/wrapper/obj
+/src/DebugVideoCreator/UserControls/Timeline.UserControl/.vs
+/src/DebugVideoCreator/UserControls/Timeline.UserControl/bin
+/src/DebugVideoCreator/UserControls/Timeline.UserControl/obj

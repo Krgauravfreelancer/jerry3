@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignViewer", "UserControl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager", "UserControls\DesignImager\DesignImager.csproj", "{CC6E035C-150E-43D6-AADD-A1F6FE558E96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Timeline.UserControls", "UserControls\Timeline.UserControl\Timeline.UserControls.csproj", "{75BD2760-C9A6-46F6-85E0-AAAC0760B829}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +146,18 @@ Global
 		{CC6E035C-150E-43D6-AADD-A1F6FE558E96}.Release|ARM64.Build.0 = Release|Any CPU
 		{CC6E035C-150E-43D6-AADD-A1F6FE558E96}.Release|x64.ActiveCfg = Release|Any CPU
 		{CC6E035C-150E-43D6-AADD-A1F6FE558E96}.Release|x64.Build.0 = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Debug|x64.Build.0 = Debug|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|ARM64.Build.0 = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|x64.ActiveCfg = Release|Any CPU
+		{75BD2760-C9A6-46F6-85E0-AAAC0760B829}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

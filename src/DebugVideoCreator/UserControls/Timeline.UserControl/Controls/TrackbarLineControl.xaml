@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="Timeline.UserControls.Controls.TrackbarLineControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Timeline.UserControls.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="150" d:DesignWidth="20">
+    <Grid>
+        <StackPanel Orientation="Vertical" d:Height="120" d:Width="10" Cursor="Hand">
+            <Line x:Name="TrackbarLine" X1="0" d:Y1="50" X2="0" Y2="0" Stroke="Black" Margin="0,0,0,0" StrokeThickness="2" Fill="Black"></Line>
+            <Path Data="M 0,1 l 1,1 h -2 Z"   Stroke="Black" Margin="0,2,0,0" StrokeThickness="2" Fill="Black"></Path>
+            <Rectangle Fill="Black" Width="7" Height="8" Margin="-5,0,0,0"> </Rectangle>
+        </StackPanel>
+    </Grid>
+</UserControl>
