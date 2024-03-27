@@ -331,6 +331,7 @@ namespace Sqllite_Library.Data
                 'videoevent_end' TEXT(12) NOT NULL DEFAULT '00:00:00.000',
                 'videoevent_duration' TEXT(12) NOT NULL DEFAULT 'NULL',
                 'videoevent_origduration' TEXT(12) DEFAULT NULL,
+                'videoevent_planning' INTEGER DEFAULT NULL,
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
@@ -744,6 +745,10 @@ namespace Sqllite_Library.Data
             if (string.IsNullOrEmpty(modifyDate))
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+            int? planningId = null;
+            if(dr.Table.Columns.Contains("videoevent_planning"))
+                planningId = Convert.ToInt32(dr["videoevent_planning"]);
+
             var start = Convert.ToString(dr["videoevent_start"]);
             //if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
             //    start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_projdet"]));
@@ -757,14 +762,15 @@ namespace Sqllite_Library.Data
             var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
             values.Add($"({dr["fk_videoevent_projdet"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', '{end}', '{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
+                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', {planningId}" +
+                $"'{end}', '{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
 
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO cbv_videoevent 
                     (fk_videoevent_projdet, fk_videoevent_media, videoevent_track, 
-                        videoevent_start, videoevent_duration, videoevent_origduration, videoevent_end, videoevent_createdate, videoevent_modifydate, 
-                        videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
+                        videoevent_start, videoevent_duration, videoevent_origduration, videoevent_planning, 
+                        videoevent_end, videoevent_createdate, videoevent_modifydate, videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -2294,6 +2300,7 @@ namespace Sqllite_Library.Data
                             videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
                             videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
                             videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_planning = Convert.ToInt32(sqlReader["videoevent_planning"]),
                             videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
                             videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
                             videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),
@@ -2376,6 +2383,7 @@ namespace Sqllite_Library.Data
                             videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
                             videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
                             videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_planning = Convert.ToInt32(sqlReader["videoevent_planning"]),
                             videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
                             videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
                             videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),
