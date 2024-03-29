@@ -76,7 +76,7 @@ namespace VideoCreator.Helpers
                 var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 loader.setTextBlockMessage($"Processing 0/{data.Count} ...");
                 //Add Title
-                await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                //await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                 int cntr = 1;
                 foreach (var item in data)
                 {
@@ -133,7 +133,7 @@ namespace VideoCreator.Helpers
             DataTable dtNotes = null;
             if(!string.IsNullOrEmpty(item.planning_notesline))
                 dtNotes = GetNotesDatatable(item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList(), out notes_duration);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
             return result;
         }
 
@@ -149,7 +149,7 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000");
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000", planningServerId: 0);
             return result;
         }
 
@@ -168,7 +168,7 @@ namespace VideoCreator.Helpers
                 designImagerUserControl.SaveToDataTable(finalBlob);
 
                 var dtNotes = GetNotesDatatable(item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList(), out string notes_duration);
-                var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration);
+                var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
                 return result;
             }
             return null;
@@ -187,6 +187,7 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("videoevent_start", typeof(string));
             dataTable.Columns.Add("videoevent_duration", typeof(string));
             dataTable.Columns.Add("videoevent_origduration", typeof(string));
+            dataTable.Columns.Add("videoevent_planning", typeof(Int64));
             dataTable.Columns.Add("videoevent_createdate", typeof(string));
             dataTable.Columns.Add("videoevent_modifydate", typeof(string));
             dataTable.Columns.Add("media", typeof(byte[])); // Media Column
@@ -208,6 +209,7 @@ namespace VideoCreator.Helpers
             row["videoevent_start"] = EventStartTime;
             row["videoevent_duration"] = notes_duration;
             row["videoevent_origduration"] = notes_duration;
+            row["videoevent_planning"] = item.planning_serverid;
             row["videoevent_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             row["videoevent_isdeleted"] = false;
@@ -263,7 +265,7 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
             return result;
         }
 
@@ -513,13 +515,13 @@ namespace VideoCreator.Helpers
             return -1;
         }
 
-        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, string duration)
+        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, string duration, Int64 planningServerId)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             VideoEventResponseModel addedData;
 
             EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, duration);
-            addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, duration);
+            addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, duration, planningServerId);
 
             if (addedData == null)
             {
@@ -528,7 +530,7 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration);
+                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration, planningServerId);
                 else if (confirmation == MessageBoxResult.No)
                     return FailureFlowForPlanning(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent);
                 else
@@ -542,7 +544,7 @@ namespace VideoCreator.Helpers
             }
         }
 
-        private static async Task<VideoEventResponseModel> PostVideoEventToServer(DataTable dtDesign, DataTable dtNotes, byte[] blob, SelectedProjectEvent selectedProjectEvent, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", string duration = "00:00:10.000")
+        private static async Task<VideoEventResponseModel> PostVideoEventToServer(DataTable dtDesign, DataTable dtNotes, byte[] blob, SelectedProjectEvent selectedProjectEvent, EnumTrack track, AuthAPIViewModel authApiViewModel, string startTime = "00:00:00.000", string duration = "00:00:10.000", Int64 videoevent_planning = 0)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
@@ -550,6 +552,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_start = startTime;
             objToSync.videoevent_duration = duration;
             objToSync.videoevent_origduration = duration;
+            objToSync.videoevent_planning = (int)videoevent_planning;
             objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(startTime, duration); // TBD
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             objToSync.design.AddRange(DesignEventHandlerHelper.GetDesignModelList(dtDesign));

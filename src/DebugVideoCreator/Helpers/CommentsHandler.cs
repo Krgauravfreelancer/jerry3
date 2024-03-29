@@ -1,5 +1,6 @@
 ﻿using Sqllite_Library.Business;
 using System;
+using System.Linq;
 using System.Windows.Controls;
 
 namespace VideoCreator.Helpers
@@ -13,7 +14,9 @@ namespace VideoCreator.Helpers
                 commentsBlock.Text = "No VideoEvent Selected";
                 return;
             }
-            commentsBlock.Text = "Suggestion Notes coming soon";
+            var planningServerId = DataManagerSqlLite.GetVideoEventbyId(videoeventId).FirstOrDefault()?.videoevent_planning;
+            var planningData = DataManagerSqlLite.GetPlanningById(0, planningServerId: (Int64)planningServerId);
+            commentsBlock.Text = string.IsNullOrEmpty(planningData?.planning_suggestnotesline) ? "No Suggestions" : planningData?.planning_suggestnotesline;
         }
 
         public static void ShowNotes(int videoeventId, TextBlock notesBlock)

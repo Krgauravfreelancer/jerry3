@@ -28,6 +28,7 @@ namespace VideoCreator.Helpers
                 objToSync.videoevent_end = DataManagerSqlLite.CalcNextEnd(startTime, videoEvent.videoevent_duration);
                 objToSync.videoevent_duration = videoEvent.videoevent_duration;
                 objToSync.videoevent_origduration = videoEvent.videoevent_origduration;
+                objToSync.videoevent_planning = videoEvent.videoevent_planning;
                 objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 objToSync.design.AddRange(GetDesignModelList(dtDesign));
                 objToSync.notes.AddRange(GetNotesModelList(dtNotes));

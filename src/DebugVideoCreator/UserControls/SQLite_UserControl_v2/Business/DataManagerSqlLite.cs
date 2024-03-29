@@ -330,6 +330,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetPlanning(projectId, dependentFlag);
         }
 
+        public static CBVPlanning GetPlanningById(int planningid = 0, Int64 planningServerId = 0)
+        {
+            return SqlLiteData.GetPlanningById(planningid, planningServerId);
+        }
+
         public static List<CBVProjectForJoin> GetDownloadedProjectList()
         {
             return SqlLiteData.GetDownloadedProjectList();

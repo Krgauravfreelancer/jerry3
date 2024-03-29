@@ -352,6 +352,10 @@ namespace VideoCreator.Auth
                 var requestbodyContent_LOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
                 requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
                 multipart.Add(requestbodyContent_LOCDATE);
+                // Video Event Planning
+                var requestbodyContent_PLANNING = new StringContent(videoEventModel.videoevent_planning.ToString());
+                requestbodyContent_PLANNING.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_planning\"");
+                multipart.Add(requestbodyContent_PLANNING);
 
 
 
@@ -621,6 +625,10 @@ namespace VideoCreator.Auth
             //var requestbodyContent_LOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
             //requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
             //multipart.Add(requestbodyContent_LOCDATE);
+            // Video Event Planning
+            var requestbodyContent_PLANNING = new StringContent(videoEventModel.videoevent_planning.ToString());
+            requestbodyContent_PLANNING.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_planning\"");
+            multipart.Add(requestbodyContent_PLANNING);
 
             // notes
             if (videoEventModel.notes?.Count > 0)

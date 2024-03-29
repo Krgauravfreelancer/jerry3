@@ -331,7 +331,7 @@ namespace Sqllite_Library.Data
                 'videoevent_end' TEXT(12) NOT NULL DEFAULT '00:00:00.000',
                 'videoevent_duration' TEXT(12) NOT NULL DEFAULT 'NULL',
                 'videoevent_origduration' TEXT(12) DEFAULT NULL,
-                'videoevent_planning' INTEGER DEFAULT NULL,
+                'videoevent_planning' INTEGER DEFAULT 0,
                 'videoevent_createdate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'videoevent_isdeleted' INTEGER(1) NOT NULL  DEFAULT 0,
@@ -745,7 +745,7 @@ namespace Sqllite_Library.Data
             if (string.IsNullOrEmpty(modifyDate))
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-            int? planningId = null;
+            int planningId = 0;
             if(dr.Table.Columns.Contains("videoevent_planning"))
                 planningId = Convert.ToInt32(dr["videoevent_planning"]);
 
@@ -762,15 +762,15 @@ namespace Sqllite_Library.Data
             var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
             values.Add($"({dr["fk_videoevent_projdet"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
-                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', {planningId}" +
-                $"'{end}', '{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
+                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', '{end}', {planningId}, " +
+                $"'{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
 
             var valuesString = string.Join(",", values.ToArray());
             string sqlQueryString =
                 $@"INSERT INTO cbv_videoevent 
                     (fk_videoevent_projdet, fk_videoevent_media, videoevent_track, 
-                        videoevent_start, videoevent_duration, videoevent_origduration, videoevent_planning, 
-                        videoevent_end, videoevent_createdate, videoevent_modifydate, videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
+                        videoevent_start, videoevent_duration, videoevent_origduration, videoevent_end, videoevent_planning, 
+                        videoevent_createdate, videoevent_modifydate, videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
                 VALUES 
                     {valuesString}";
 
@@ -1908,6 +1908,66 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+
+        public static CBVPlanning GetPlanningById(int planningid = 0, Int64 planningServerId = 0)
+        {
+            var obj = new CBVPlanning();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT * FROM cbv_planning where planning_id = {planningid}";
+            if(planningid == 0 && planningServerId > 0)
+                sqlQueryString = $@"SELECT * FROM cbv_planning where planning_serverid = {planningServerId}";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var planningId = Convert.ToInt32(sqlReader["planning_id"]);
+                        obj = new CBVPlanning
+                        {
+                            planning_id = planningId,
+                            fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
+                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
+                            planning_customname = Convert.ToString(sqlReader["planning_customname"]),
+                            planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
+                            planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
+                            planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
+                            planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
+                            planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
+                            planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
+                            planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
+                            planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
+                            planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
+                            planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                        };
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            return obj;
+        }
+
         public static List<CBVPlanningDesc> GetPlanningDescriptions(int planning_id)
         {
             var data = new List<CBVPlanningDesc>();
@@ -2095,6 +2155,7 @@ namespace Sqllite_Library.Data
                             videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
                             videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
                             videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_planning = Convert.ToInt32(sqlReader["videoevent_planning"]),
                             videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
                             videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
                             videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),

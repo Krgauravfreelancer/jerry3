@@ -14,7 +14,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public string videoevent_duration { get; set; }
         public string videoevent_origduration { get; set; }
         public string videoevent_modifylocdate { get; set; }
-
+        public int videoevent_planning { get; set; }
 
         public bool videoevent_isdeleted { get; set; }
         public bool videoevent_issynced { get; set; }
@@ -78,7 +78,7 @@ namespace ServerApiCall_UserControl.DTO.VideoEvent
         public string videoevent_duration { get; set; }
         public string videoevent_origduration { get; set; }
         public string videoevent_modifylocdate { get; set; }
-
+        public int videoevent_planning { get; set; }
 
         public bool videoevent_isdeleted { get; set; }
         public bool videoevent_issynced { get; set; }
