@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VideoCreator.XAML"
-             xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl" 
              xmlns:loader="clr-namespace:VideoCreator.Loader"
             
             mc:Ignorable="d">
+    <!--xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl"-->
 
     <Grid Background="Transparent">
         <Grid.ColumnDefinitions>
