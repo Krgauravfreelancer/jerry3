@@ -142,10 +142,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="ManageMedia_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libraries\ManageMedia_UserControl.dll</HintPath>
-    </Reference>
     <Reference Include="MediaGenApi_UserControl">
       <HintPath>Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
@@ -635,6 +631,10 @@
     <ProjectReference Include="UserControls\DesignViewer\DesignViewer.csproj">
       <Project>{81e1ac70-ce77-49e9-8261-8c094c4ac1c3}</Project>
       <Name>DesignViewer</Name>
+    </ProjectReference>
+    <ProjectReference Include="UserControls\ManageMedia_UserControl\ManageMedia_UserControl.csproj">
+      <Project>{2dfc6ebc-cf5f-4372-87fe-70d45c3fe06f}</Project>
+      <Name>ManageMedia_UserControl</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\ServerApiCall_UserControl\ServerApiCall_UserControl.csproj">
       <Project>{67adc641-ec67-44cf-a9ad-2444a90be6d4}</Project>
