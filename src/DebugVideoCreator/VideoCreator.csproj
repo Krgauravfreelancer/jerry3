@@ -383,6 +383,9 @@
     <Compile Include="XAML\Preview\Preview.xaml.cs">
       <DependentUpon>Preview.xaml</DependentUpon>
     </Compile>
+    <Compile Include="XAML\Timeline\Timeline_UserControl2.xaml.cs">
+      <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
       <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
@@ -445,6 +448,10 @@
     <Page Include="XAML\Preview\Preview.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="XAML\Timeline\Timeline_UserControl2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
