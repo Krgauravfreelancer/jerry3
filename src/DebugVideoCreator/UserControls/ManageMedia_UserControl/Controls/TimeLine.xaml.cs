@@ -165,7 +165,7 @@ namespace ManageMedia_UserControl.Controls
 
         }
 
-        internal void SetViewport(TimeSpan ViewportStart, TimeSpan ViewportDuration, TimeSpan mainCursorTime)
+        public void SetViewport(TimeSpan ViewportStart, TimeSpan ViewportDuration, TimeSpan mainCursorTime)
         {
             if (ViewportStart + ViewportDuration < _TotalDuration)
             {
@@ -199,7 +199,7 @@ namespace ManageMedia_UserControl.Controls
             return (_ViewportStart, _ViewportDuration, MainCursorTime);
         }
 
-        internal void LoadMedia(List<Media> PlayList)
+        public void LoadMedia(List<Media> PlayList)
         {
             _Playlist = PlayList;
             TimeLineDrawEngine.SetPlaylist(PlayList, _TimeLineMode);

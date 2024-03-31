@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:timeline="clr-namespace:Timeline.UserControls.Controls;assembly=Timeline.UserControls"
-        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl" xmlns:loader="clr-namespace:VideoCreator.Loader"
+        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl" 
+             xmlns:mmtimepicker="clr-namespace:ManageMedia_UserControl.Controls;assembly=ManageMedia_UserControl" 
+             xmlns:loader="clr-namespace:VideoCreator.Loader"
              mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
@@ -113,9 +115,11 @@
                     <Label Content="Use Right click to add Audio/Video Event" Margin="5,0,0,0" VerticalAlignment="Top" ></Label>
 
                     <StackPanel Margin="5,30,5,0" VerticalAlignment="Top">
-                        <GroupBox Header="Timeline User Control" Padding="10">
+                        <!--<GroupBox Header="Timeline User Control" Padding="10">
                             <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
-
+                        </GroupBox>-->
+                        <GroupBox Header="Timeline User Control2" Padding="2">
+                            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderThickness="2" Height="270" Padding="5" ></mmtimepicker:TimeLine>
                         </GroupBox>
                         <!--<GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
                             <ListView Height="NaN"  x:Name="listView_trackbarEvents">
