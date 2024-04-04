@@ -39,9 +39,8 @@ namespace VideoCreator.XAML
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
-
-
         public event EventHandler<MMModel.TrackbarMouseMoveEvent> TrackbarMouse_Moved;
+        public event EventHandler<int> ContextMenu_DeleteEventOnTimelines_Clicked;
 
         public event EventHandler ContextMenu_Run_Clicked;
 
@@ -49,11 +48,8 @@ namespace VideoCreator.XAML
 
         public event EventHandler<TimelineSelectedEvent> VideoEventSelectionChanged;
         public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
-        public event EventHandler<int> ContextMenu_DeleteEventOnTimelines_Clicked;
         public event EventHandler ContextMenu_UndeleteDeletedEvent_Clicked;
 
-        ///  Use the interface ITimelineGridControl to view all available TimelineUserControl methods and description.
-        ITimelineGridControl _timelineGridControl;
         private bool ReadOnly;
         //int i;
         public Timeline_UserControl2()
@@ -67,35 +63,6 @@ namespace VideoCreator.XAML
             authApiViewModel = _authApiViewModel;
             ReadOnly = readonlyMode;
             MMTimelineHelper.Init(selectedProjectEvent, TimelineGridCtrl2);
-            //InitializeTimeline();
-            //ResetContextMenu();
-            //TimelineGridCtrl2.SetProjectInfo(selectedProjectEvent.projectId);
-        }
-
-        //TimelineGridCtrl2_EventSelectionChanged
-
-
-
-
-        private void ResetContextMenu()
-        {
-            if (ReadOnly)
-            {
-                var contextMenu = this.Resources["TimelineMenu"] as ContextMenu;
-                for (int i = 0; i < contextMenu.Items.Count; i++)
-                {
-                    MenuItem item = contextMenu.Items[i] as MenuItem;
-                    if (item != null)
-                    {
-                        if (item?.Name != null && item?.Name == "MenuItem_Run")
-                        {
-                            item.IsEnabled = true; //.Visibility = Visibility.Hidden
-                        }
-                        else
-                            item.IsEnabled = false;
-                    }
-                }
-            }
         }
 
 
@@ -106,131 +73,11 @@ namespace VideoCreator.XAML
         }
 
 
-        #region == TimelineUserControl : Load from DB functions ==
-
-        public void LoadVideoEventsFromDb(int projDetId)
-        {
-            //List<CBVVideoEvent> cbvVideoEvents = DataManagerSqlLite.GetVideoEvents(projDetId, dependentDataFlag: false, designFlag: true);
-
-            //// Create list below to store values from database to Timeline
-            //List<TimelineNote> noteList = new List<TimelineNote>();
-            //List<TimelineVideoEvent> videoEventList = new List<TimelineVideoEvent>();
-
-            //foreach (var videoEvent in cbvVideoEvents)
-            //{
-            //    videoEventList.Add(new TimelineVideoEvent
-            //    {
-            //        videoevent_id = videoEvent.videoevent_id,
-            //        fk_videoevent_projdet = videoEvent.fk_videoevent_projdet,
-            //        fk_videoevent_media = videoEvent.fk_videoevent_media,
-            //        videoevent_track = videoEvent.videoevent_track,
-            //        videoevent_start = videoEvent.videoevent_start,
-            //        videoevent_duration = videoEvent.videoevent_duration,
-            //        videoevent_origduration = videoEvent.videoevent_origduration,
-            //        videoevent_createdate = videoEvent.videoevent_createdate,
-            //        videoevent_modifydate = videoEvent.videoevent_modifydate,
-            //        videoevent_isdeleted = videoEvent.videoevent_isdeleted,
-            //        videoevent_issynced = videoEvent.videoevent_issynced,
-            //        videoevent_serverid = videoEvent.videoevent_serverid,
-            //        videoevent_syncerror = videoEvent.videoevent_syncerror,
-            //        videoevent_end = videoEvent.videoevent_end,
-            //        fk_design_screen = videoEvent.fk_design_screen,
-            //        fk_design_background = videoEvent.fk_design_background,
-            //    });
-
-
-            //    // Retrieve the corresponding notes from cbv_notes table for the videoevent
-            //    noteList.AddRange(LoadNotesFromDb(videoEvent.videoevent_id, videoEvent.videoevent_start));
-            //}
-
-            //_timelineGridControl.SetVideoEvents(videoEventList);
-            //_timelineGridControl.SetNotes(noteList);
-
-        }
-
-        public List<TimelineNote> LoadNotesFromDb(int videoEventId, string starttime)
-        {
-            List<TimelineNote> timelineNotes = new List<TimelineNote>();
-            List<CBVNotes> notes = DataManagerSqlLite.GetNotes(videoEventId);
-
-            foreach (var note in notes)
-            {
-                timelineNotes.Add(new TimelineNote
-                {
-                    notes_id = note.notes_id,
-                    fk_notes_videoevent = note.fk_notes_videoevent,
-                    notes_line = note.notes_line,
-                    notes_wordcount = note.notes_wordcount,
-                    notes_index = note.notes_index,
-                    notes_start = (TimeSpan.Parse(note.notes_start) + TimeSpan.Parse(starttime)).ToString(@"hh\:mm\:ss\.fff"),
-                    notes_duration = note.notes_duration,
-                    notes_createdate = note.notes_createdate,
-                    notes_modifydate = note.notes_modifydate,
-                    notes_isdeleted = note.notes_isdeleted,
-                    notes_issynced = note.notes_issynced,
-                    notes_serverid = note.notes_serverid,
-                    notes_syncerror = note.notes_syncerror,
-                });
-            }
-
-            return timelineNotes;
-        }
-
-        #endregion
-
         #region == TimelineUserControl : Helper functions ==
 
-        private void InitializeTimeline()
+        private void TimelineGridCtrl2_Delete_Event(object sender, int DeletedId)
         {
-
-            ///// 1. use the interface ITimelineGridControl to access the TimelineUserControl exposed methods and definitions
-            //_timelineGridControl = TimelineGridCtrl2;
-
-            ///// 2. this will set the default menu option status
-            //ResetMenuItems(false, null);
-
-            ///// 3. load the database for app, design, media, screen and videoEvent in proper order
-            //LoadAppFromDb();
-            //LoadDesignFromDb();
-            //LoadMediaFromDb();
-            //LoadScreenFromDb();
-
-
-            ///// use this event handler to check if the timeline data has been changed and to disable some menu options if no data loaded
-            //TimelineGridCtrl2.TimelineSelectionChanged -= TimelineSelectionChanged;
-            //TimelineGridCtrl2.TimelineSelectionChanged += TimelineSelectionChanged;
-            ////TimelineGridCtrl2.TimelineSelectionChanged += (sender, e) =>
-            ////{
-            ////    HasData = _timelineGridControl.HasData();
-            ////    ResetMenuItems(HasData, _timelineGridControl.GetSelectedEvent());
-            ////};
-
-            ///// use this event handler when the trackbar was moved by mouse action
-            //TimelineGridCtrl2.TrackbarMouseMoved -= TrackbarMouseMoved;
-            //TimelineGridCtrl2.TrackbarMouseMoved += TrackbarMouseMoved;
-            ////TimelineGridCtrl2.TrackbarMouseMoved += (sender, e) =>
-            ////{
-            ////    var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            ////    TrackbarTimepicker.Set(trackBarPosition.ToString());
-            ////    var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-            ////    listView_trackbarEvents.ItemsSource = trackbarEvents;
-            ////};
-
-            ///// Use this event handler when a video event is deleted
-            //TimelineGridCtrl2.TimelineVideoEventDeleted -= TimelineVideoEventDeleted;
-            //TimelineGridCtrl2.TimelineVideoEventDeleted += TimelineVideoEventDeleted;
-            ////TimelineGridCtrl2.TimelineVideoEventDeleted += (sender, e) =>
-            ////{
-            ////    if (e.TimelineEvent.TrackNumber == TrackNumber.Notes)
-            ////    {
-            ////        DataManagerSqlLite.DeleteNotesById(e.TimelineEvent.Note.notes_id);
-            ////    }
-            ////    else
-            ////    {
-            ////        DataManagerSqlLite.DeleteVideoEventsById(e.TimelineEvent.VideoEvent.videoevent_id, cascadeDelete: true);
-            ////    }
-
-            ////};
+            ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, DeletedId);
         }
 
 
@@ -254,28 +101,6 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void TimelineVideoEventDeleted(object sender, TimelineEventArgs e)
-        {
-            //TBD
-            //if (e.TimelineEvent.TrackNumber == TrackNumber.Notes)
-            //{
-            //    DataManagerSqlLite.DeleteNotesById(e.TimelineEvent.Note.notes_id);
-            //}
-            //else
-            //{
-            //    DataManagerSqlLite.DeleteVideoEventsById(e.TimelineEvent.VideoEvent.videoevent_id, cascadeDelete: true);
-            //}
-            ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, e.TimelineEvent.VideoEvent.videoevent_id);
-            //DataManagerSqlLite.DeleteVideoEventsById(e.TimelineVideoEvent.videoevent_id, cascadeDelete: true);
-        }
-
-        private void Button_ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            // This event handler will be called when the context menu is opening
-            //HasData = _timelineGridControl.HasData();
-            //ResetMenuItems(false, _timelineGridControl.GetSelectedEvent());
-        }
-
         private MenuItem GetMenuItemByResourceName(string resourceKey, string menuItemName)
         {
             var contextMenu = this.Resources[resourceKey] as ContextMenu;
@@ -284,142 +109,15 @@ namespace VideoCreator.XAML
             return contextMenuItem;
         }
 
-        private void MoveTrackbar(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //var timeSpanInput = TimeSpan.Parse(TrackbarTimepicker.Get());
-                //_timelineGridControl.MoveTrackbarToTimeSpan(timeSpanInput, true);
-            }
-            catch
-            {
-                // ignore errors
-            }
-        }
-
-        private void ResetMenuItems(bool hasData, TimelineEvent selectedEvent)
-        {
-            string contextMenuKey = "TimelineMenu";
-            if (hasData)
-            {
-                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                MenuItem_SaveAllTimelines.IsEnabled = true;
-
-                var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
-                MenuItem_DeleteEvent.IsEnabled = (selectedEvent != null);
-
-                var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
-                MenuItem_CloneItems.IsEnabled = (selectedEvent != null);
-
-                var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
-                MenuItem_CloneItemsAtEnd.IsEnabled = (selectedEvent != null);
-
-                var MenuItem_AddImageEventUsingCBLibraryInMiddle = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibraryInMiddle");
-                MenuItem_AddImageEventUsingCBLibraryInMiddle.IsEnabled = (selectedEvent != null);
-            }
-            else
-            {
-                var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-                MenuItem_SaveAllTimelines.IsEnabled = false;
-
-                var MenuItem_DeleteEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_DeleteEvent");
-                MenuItem_DeleteEvent.IsEnabled = false;
-
-                var MenuItem_CloneItems = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItems");
-                MenuItem_CloneItems.IsEnabled = false;
-
-                var MenuItem_CloneItemsAtEnd = GetMenuItemByResourceName(contextMenuKey, "MenuItem_CloneItemsAtEnd");
-                MenuItem_CloneItemsAtEnd.IsEnabled = false;
-
-                var MenuItem_AddImageEventUsingCBLibraryInMiddle = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibraryInMiddle");
-                MenuItem_AddImageEventUsingCBLibraryInMiddle.IsEnabled = false;
-            }
-        }
-
-        //private void RefreshOrLoadComboBoxes(EnumEntity entity = EnumEntity.ALL)
-        //{
-        //    if (entity == EnumEntity.ALL || entity == EnumEntity.PROJECT)
-        //    {
-        //        var projectList = DataManagerSqlLite.GetDownloadedProjectList();
-
-        //        RefreshComboBoxes<CBVProjectForJoin>(ProjectCmbBox, projectList, nameof(CBVProjectForJoin.project_videotitle));
-
-        //        if (ProjectCmbBox.Items.Count > 0)
-        //        {
-        //            ProjectCmbBox.SelectedIndex = 0;
-        //        }
-        //    }
-        //}
-
-        //private void RefreshComboBoxes<T>(ComboBox combo, List<T> source, string columnNameToShow)
-        //{
-        //    combo.SelectedItem = null;
-        //    combo.DisplayMemberPath = columnNameToShow;
-        //    combo.Items.Clear();
-
-        //    foreach (var item in source)
-        //    {
-        //        combo.Items.Add(item);
-        //    }
-        //}
-
-        //private void ProjectCmbBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (ProjectCmbBox.SelectedItem != null)
-        //    {
-        //        int selectedProjectId = ((CBVProjectForJoin)ProjectCmbBox.SelectedItem).project_id;
-
-        //        if (ProjectCmbBox.SelectedIndex != -1)
-        //        {
-        //            // Update the project details whenever the selected project changes
-        //            var cbvProject = DataManagerSqlLite.GetProjectById(projectId: selectedProjectId, projdetFlag: true);
-        //            RefreshComboBoxes<CBVProjdet>(ProjDetCmbBox, cbvProject.projdet_data, nameof(CBVProjdet.projdet_version));
-
-        //            if (ProjDetCmbBox.Items.Count > 0)
-        //            {
-        //                ProjDetCmbBox.SelectedIndex = 0;
-
-        //                // Trigger the SelectionChanged event
-        //                ProjDetComboBox_SelectionChanged(ProjDetCmbBox, null);
-        //            }
-
-        //        }
-
-
-        //    }
-        //}
-
-        //private void RefreshProjDetComboBox()
-        //{
-
-        //}
-
-        //private void ProjDetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (ProjDetCmbBox.SelectedItem != null)
-        //    {
-        //        int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
-
-        //        if (ProjectCmbBox.SelectedIndex != -1)
-        //        {
-        //            if (_timelineGridControl != null)
-        //                LoadVideoEventsFromDb(projDetId);
-        //        }
-        //    }
-        //}
-
         #endregion
 
         #region == TimelineUserControl : Context-menu Options ==
 
         private void AddAudioEvent_Click(object sender, RoutedEventArgs e)
         {
-            // This method is not yet implemented
             //_timelineGridControl.AddNewEventToTimeline(MediaType.audio);
             throw new NotImplementedException();
         }
-
-        
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
@@ -431,23 +129,12 @@ namespace VideoCreator.XAML
             Refresh();
         }
 
-        private void ClearTimelines(object sender, RoutedEventArgs e)
-        {
-            _timelineGridControl.ClearTimeline();
-            //listView_trackbarEvents.ItemsSource = null;
-        }
-
         private void UndeleteDeletedEvent(object sender, RoutedEventArgs e)
         {
             ContextMenu_UndeleteDeletedEvent_Clicked.Invoke(sender, e);
             DisableUndoDeleteAndReset();
         }
 
-
-        private void DeleteSelectedEvent(object sender, RoutedEventArgs e)
-        {
-            _timelineGridControl.DeleteSelectedEvent();
-        }
 
         private void GetSelectedEvent(object sender, RoutedEventArgs e)
         {
@@ -506,10 +193,10 @@ namespace VideoCreator.XAML
             //    //}
             //}
 
-            var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
+            //var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
             //ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
 
-            _timelineGridControl.ClearTimeline();
+            //_timelineGridControl.ClearTimeline();
 
             //LoadTimelineDataFromDb_Click(null, null);
             //MessageBox.Show("Save Successful!");
@@ -534,7 +221,7 @@ namespace VideoCreator.XAML
             else
             {
                 await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
-                InitializeTimeline();
+                Refresh();
             }
             LoaderHelper.HideLoader(this, loader);
 
@@ -698,6 +385,7 @@ namespace VideoCreator.XAML
             //};
             //ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
         }
+
 
 
 

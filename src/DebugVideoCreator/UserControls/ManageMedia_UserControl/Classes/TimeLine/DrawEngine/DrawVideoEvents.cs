@@ -80,69 +80,41 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                     }
                     else
                     {
-                        Border rectangle = new Border();
-                        Image Icon = new Image();
-                        Icon.Margin = new Thickness(2);
-                        Icon.HorizontalAlignment = HorizontalAlignment.Left;
-                        Icon.Opacity = 0.5;
-
                         int red = (int)((double)item.Color.R / 1.5);
                         int green = (int)((double)item.Color.G / 1.5);
                         int blue = (int)((double)item.Color.B / 1.5);
 
                         int Brightness = red + green + blue;
+                        var trackCalloutItem = new TrackCalloutItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsManageMedia);
 
                         if (item.TrackId == 3)
                         {
-                            //Callout 1
-                            rectangle.Margin = new Thickness(StartPosition, CallOut1, 0, 0);
-
-                            if (Brightness > 250)
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
-                            }
-                            else
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
-                            }
+                            trackCalloutItem.Margin = new Thickness(StartPosition, CallOut1, 0, 0);//Callout 1
                         }
                         else if (item.TrackId == 4)
                         {
-                            //Callout 2
-                            rectangle.Margin = new Thickness(StartPosition, CallOut2, 0, 0);
-                            if (Brightness > 250)
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
-                            }
-                            else
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
-                            }
+                            trackCalloutItem.Margin = new Thickness(StartPosition, CallOut2, 0, 0); //Callout 2
                         }
                         else if (item.TrackId == 1)
                         {
-                            //Audio
-                            rectangle.Margin = new Thickness(StartPosition, Audio, 0, 0);
-                            if (Brightness > 250)
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small-Dark.png"));
-                            }
-                            else
-                            {
-                                Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small.png"));
-                            }
+                            trackCalloutItem.Margin = new Thickness(StartPosition, Audio, 0, 0);//Audio
+
                         }
-
-                        rectangle.Width = Width;
-                        rectangle.Height = TrackHeight;
-                        rectangle.BorderBrush = Brushes.White;
-                        rectangle.BorderThickness = new Thickness(2);
-
-                        rectangle.Child = Icon;
-
+                        
+                        trackCalloutItem.Width = Width;
+                        trackCalloutItem.Height = TrackHeight;
+                        trackCalloutItem.BorderBrush = Brushes.White;
+                        trackCalloutItem.BorderThickness = new Thickness(2);
                         Color FillColor = Color.FromArgb(200, (byte)red, (byte)green, (byte)blue);
-                        rectangle.Background = new SolidColorBrush(FillColor);
-                        timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, rectangle, false);
+
+                        trackCalloutItem.Background = new SolidColorBrush(FillColor);
+                        trackCalloutItem.MediaSelectedEvent += (object s, Media m) =>
+                        {
+                            trackCalloutItem.BorderBrush = Brushes.Red;
+                            m.IsSelected = true;
+                        };
+
+                        timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackCalloutItem, true);
                     }
                 }
 

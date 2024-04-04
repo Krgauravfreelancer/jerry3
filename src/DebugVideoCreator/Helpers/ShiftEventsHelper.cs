@@ -28,7 +28,7 @@ namespace VideoCreator.Helpers
 
         #endregion
 
-        public static bool CheckIfUndeleteCanbeDone(int undoVideoEventId, Timeline_UserControl TimelineUserConrol)
+        public static bool CheckIfUndeleteCanbeDone(int undoVideoEventId, Timeline_UserControl2 TimelineUserConrol)
         {
             if (undoVideoEventId == -1)
             {

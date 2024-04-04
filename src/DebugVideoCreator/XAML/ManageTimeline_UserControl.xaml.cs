@@ -81,12 +81,15 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_AddImageEventFromCBLibrary_Clicked;
             TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
-            
+
+            TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
+            TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
+
+
             //TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked += TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked;
             //TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             //TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
-            //TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
-            //TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
+
             //TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
             //NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId, ReadOnly);
@@ -592,29 +595,29 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_UndeleteDeletedEvent_Clicked(object sender, EventArgs e)
         {
-            //var canUndelete = ShiftEventsHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
-            //if (canUndelete)
-            //{
-            //    LoaderHelper.ShowLoader(this, loader, $"Undeleting Event & shifting other events");
+            var canUndelete = ShiftEventsHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
+            if (canUndelete)
+            {
+                LoaderHelper.ShowLoader(this, loader, $"Undeleting Event & shifting other events");
 
-            //    //Logic Here
-            //    var videoevents = DataManagerSqlLite.GetVideoEventbyId(undoVideoEventId, false, false);
-            //    var videoevent = videoevents.FirstOrDefault();
-
-
-            //    if (videoevent?.videoevent_track == 2)
-            //        await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
-            //    else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
-            //        await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
+                //Logic Here
+                var videoevents = DataManagerSqlLite.GetVideoEventbyId(undoVideoEventId, false, false);
+                var videoevent = videoevents.FirstOrDefault();
 
 
-            //    undoVideoEventId = -1; // Very Important to set this for undo delete
-            //    TimelineUserConrol.DisableUndoDeleteAndReset();
-            //    LoaderHelper.HideLoader(this, loader);
+                if (videoevent?.videoevent_track == 2)
+                    await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: true, selectedProjectEvent, authApiViewModel);
+                else if (videoevent?.videoevent_track == 3 || videoevent?.videoevent_track == 4)
+                    await ShiftEventsHelper.UndeleteAndShiftEvent(undoVideoEventId, videoevent: videoevent, isShift: false, selectedProjectEvent, authApiViewModel);
 
-            //    Refresh();
 
-            //}
+                undoVideoEventId = -1; // Very Important to set this for undo delete
+                TimelineUserConrol.DisableUndoDeleteAndReset();
+                LoaderHelper.HideLoader(this, loader);
+
+                Refresh();
+
+            }
 
         }
 

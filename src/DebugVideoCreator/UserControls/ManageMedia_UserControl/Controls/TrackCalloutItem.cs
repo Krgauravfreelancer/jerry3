@@ -29,9 +29,9 @@ namespace ManageMedia_UserControl.Controls
         Border OverTimeBorder;
         bool _IsManageMedia;
 
-        internal TrackVideoEventItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsReadOnly, bool IsManageMedia)
+        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia)
         {
-            this.Unloaded += TrackVideoEventItem_Unloaded;
+            this.Unloaded += TrackCalloutItem_Unloaded;
             Media = media;
             Color = color;
             timeLine = timeline;
@@ -41,39 +41,68 @@ namespace ManageMedia_UserControl.Controls
                 height = 2;
             }
 
-            if (_IsManageMedia && IsReadOnly == false)
+            SetupContextMenu(timeline);
+            Canvas canvas = new Canvas() { ClipToBounds = true, SnapsToDevicePixels = true };
+
+            Image Icon = new Image() { Height = 17, SnapsToDevicePixels = true };
+            RenderOptions.SetBitmapScalingMode(Icon, BitmapScalingMode.HighQuality);
+
+            Icon.Margin = new Thickness(2);
+            Icon.HorizontalAlignment = HorizontalAlignment.Left;
+            Icon.Opacity = 0.5;
+
+            int red = (int)((double)media.Color.R / 1.5);
+            int green = (int)((double)media.Color.G / 1.5);
+            int blue = (int)((double)media.Color.B / 1.5);
+            int Brightness = red + green + blue;
+
+            if (media.TrackId == 3)
             {
-                myContextMenu = new ContextMenu();
-
-                DeleteEventBtn = new MenuItem()
+                //Callout 1
+                if (Brightness > 250)
                 {
-                    Header = "Delete Event",
-                };
-                DeleteEventBtn.Click += timeline.DeleteEventBtn_Click;
-
-                FocusEventBtn = new MenuItem()
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
+                }
+                else
                 {
-                    Header = "Enter Selected Mode",
-                };
-                FocusEventBtn.Click += timeline.FocusEventBtn_Click;
-
-                SetDurationBtn = new MenuItem()
-                {
-                    Header = "Set Duration",
-                };
-                SetDurationBtn.Click += timeline.SetDurationBtn_Click;
-
-                myContextMenu.Items.Add(SetDurationBtn);
-                myContextMenu.Items.Add(DeleteEventBtn);
-                myContextMenu.Items.Add(FocusEventBtn);
-
-                HighlightedColor = ScaleColorByValue(Color, 0.2);
-
-                myContextMenu.Closed += MyContextMenu_Closed;
-
-                this.ContextMenu = myContextMenu;
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
+                }
             }
-            else if( !_IsManageMedia)
+            else if (media.TrackId == 4)
+            {
+                //Callout 2
+                if (Brightness > 250)
+                {
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
+                }
+                else
+                {
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
+                }
+            }
+            else if (media.TrackId == 1)
+            {
+                //Audio
+                if (Brightness > 250)
+                {
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small-Dark.png"));
+                }
+                else
+                {
+                    Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small.png"));
+                }
+            }
+            canvas.Children.Add(Icon);
+            this.Child = canvas;
+            this.MouseEnter += TrackCalloutItem_MouseEnter;
+            this.MouseLeave += TrackCalloutItem_MouseLeave;
+            this.MouseLeftButtonDown += TrackCalloutItem_MouseLeftButtonDown;
+
+        }
+
+        private void SetupContextMenu(TimeLine timeline)
+        {
+            if (!_IsManageMedia)
             {
                 myContextMenu = new ContextMenu();
 
@@ -113,114 +142,9 @@ namespace ManageMedia_UserControl.Controls
 
                 this.ContextMenu = myContextMenu;
             }
-
-            Canvas canvas = new Canvas() { ClipToBounds = true, SnapsToDevicePixels = true };
-            OverTimeBorder = new Border() { Background = Brushes.White, Opacity = 0.3, Height = height - 2 };
-
-
-            Image Icon = new Image() { Height = 17,  SnapsToDevicePixels = true };
-            RenderOptions.SetBitmapScalingMode(Icon, BitmapScalingMode.HighQuality);
-            Icon.Margin = new Thickness(2);
-            Icon.HorizontalAlignment = HorizontalAlignment.Left;
-            Icon.Opacity = 0.5;
-
-            if (media.ImageType != null && media.ImageType != "")
-            {
-                int Brightness = Color.R + Color.G + Color.B;
-                if (Brightness > 250)
-                {
-                    TextBlock textBlock = new TextBlock() { SnapsToDevicePixels = true };
-                    textBlock.Text = FirstCharToUpper(media.ImageType);
-                    textBlock.Opacity = 0.7;
-                    textBlock.Foreground = Brushes.Black;
-                    textBlock.Margin = new Thickness(25, 2, 2, 2);
-                    canvas.Children.Add(textBlock);
-
-
-                   
-                }
-                else
-                {
-                    TextBlock textBlock = new TextBlock() {SnapsToDevicePixels = true };
-                    textBlock.Text = FirstCharToUpper(media.ImageType);
-                    textBlock.Opacity = 0.8;
-                    textBlock.Foreground = Brushes.White;
-                    textBlock.Margin = new Thickness(25, 2, 2, 2);
-                    canvas.Children.Add(textBlock);
-                    Icon.Opacity = 0.8;
-
-                   
-                }
-            }
-
-            {
-                int Brightness = Color.R + Color.G + Color.B;
-                if (Brightness > 250)
-                {
-
-                    switch (ImageType)
-                    {
-                        case MediaType.Image:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Image-Small-Dark.png"));
-
-                            break;
-                        case MediaType.Video:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Video-Small-Dark.png"));
-
-                            break;
-                        case MediaType.Audio:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small-Dark.png"));
-
-                            break;
-                        case MediaType.Form:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
-
-                            break;
-                    }
-                }
-                else
-                {
-                    switch (ImageType)
-                    {
-                        case MediaType.Image:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Image-Small.png"));
-
-                            break;
-                        case MediaType.Video:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Video-Small.png"));
-
-                            break;
-                        case MediaType.Audio:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small.png"));
-
-                            break;
-                        case MediaType.Form:
-                            Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
-
-                            break;
-                    }
-                }
-            }
-            
-
-
-
-            canvas.Children.Add(Icon);
-            canvas.Children.Add(OverTimeBorder);
-
-            this.Child = canvas;
-
-            if (IsReadOnly == false)
-            {
-                this.MouseEnter += TrackVideoEventItem_MouseEnter;
-                this.MouseLeave += TrackVideoEventItem_MouseLeave;
-                this.MouseLeftButtonDown += TrackVideoEventItem_MouseLeftButtonDown;
-            }
-
-            CalculateOriginalTime(width);
         }
 
-        private void TrackVideoEventItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void TrackCalloutItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Console.WriteLine($"Clicked On", Media);
             MediaSelectedEvent(sender, Media);
@@ -248,21 +172,15 @@ namespace ManageMedia_UserControl.Controls
             }
         }
 
-        private void TrackVideoEventItem_Unloaded(object sender, RoutedEventArgs e)
+        private void TrackCalloutItem_Unloaded(object sender, RoutedEventArgs e)
         {
-            this.MouseEnter -= TrackVideoEventItem_MouseEnter;
-            this.MouseLeave -= TrackVideoEventItem_MouseLeave;
+            this.MouseEnter -= TrackCalloutItem_MouseEnter;
+            this.MouseLeave -= TrackCalloutItem_MouseLeave;
 
             
             if (myContextMenu != null)
             {
-                if (_IsManageMedia)
-                {
-                    myContextMenu.Closed -= MyContextMenu_Closed;
-                    DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
-                    FocusEventBtn.Click -= timeLine.FocusEventBtn_Click;
-                }
-                else
+                if (!_IsManageMedia)
                 {
                     myContextMenu.Closed -= MyContextMenu_Closed;
                     DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
@@ -313,7 +231,7 @@ namespace ManageMedia_UserControl.Controls
             return Color.FromArgb(Color.A, (byte)Red, (byte)Green, (byte)Blue);
         }
 
-        private void TrackVideoEventItem_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        private void TrackCalloutItem_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             if (!_IsManageMedia || this.ContextMenu?.IsOpen == false)
             {
@@ -321,7 +239,7 @@ namespace ManageMedia_UserControl.Controls
             }
         }
 
-        private void TrackVideoEventItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        private void TrackCalloutItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             AnimateIn();
         }

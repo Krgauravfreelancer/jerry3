@@ -51,6 +51,9 @@ namespace ManageMedia_UserControl.Controls
         public TrackbarMouseMoveEvent trackbarMouseMoveEventPayload;
         public List<Media> SelectedEvents = new List<Media>();
         internal TimeSpan MainCursorTime { get; private set; } = TimeSpan.Zero;
+
+
+        public event EventHandler<int> Delete_Event;
         public event EventHandler<MouseDownEvent> MouseDown_Event;
         Point trackbarPosition = new Point(0, 0);
 
@@ -1400,10 +1403,20 @@ namespace ManageMedia_UserControl.Controls
         private Media GetMedia(object sender)
         {
             MenuItem MenuItem = sender as MenuItem;
+           
             if (MenuItem != null)
             {
-                var trackVideoEventItem = (TrackVideoEventItem)((ContextMenu)MenuItem.Parent).PlacementTarget;
-                return trackVideoEventItem.Media;
+                var menu = ((ContextMenu)MenuItem.Parent).PlacementTarget;
+                var videoItem = menu as TrackVideoEventItem;
+                if(videoItem != null)
+                {
+                    return videoItem.Media;
+                }
+                var calloutItem = menu as TrackCalloutItem;
+                if (calloutItem != null)
+                {
+                    return calloutItem.Media;
+                }
             }
             return null;
         }
@@ -1411,6 +1424,7 @@ namespace ManageMedia_UserControl.Controls
         public void DeleteEventForTimeline(object sender, RoutedEventArgs e)
         {
             var media = GetMedia(sender);
+            Delete_Event(sender, media?.VideoEventID ?? -1);
         }
 
         public void CloneEventAtTrackbar(object sender, RoutedEventArgs e)

@@ -135,9 +135,6 @@ namespace ManageMedia_UserControl.Controls
                     textBlock.Foreground = Brushes.Black;
                     textBlock.Margin = new Thickness(25, 2, 2, 2);
                     canvas.Children.Add(textBlock);
-
-
-                   
                 }
                 else
                 {
@@ -148,8 +145,6 @@ namespace ManageMedia_UserControl.Controls
                     textBlock.Margin = new Thickness(25, 2, 2, 2);
                     canvas.Children.Add(textBlock);
                     Icon.Opacity = 0.8;
-
-                   
                 }
             }
 
