@@ -15,7 +15,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {
     internal class DrawMissingVideoEvents
     {
-        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<(Media BeforeMedia, Media AfterMedia, TimeSpan Start, TimeSpan Duration)> MissingTimeSpans, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result)
+        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<(Media BeforeMedia, Media AfterMedia, TimeSpan Start, TimeSpan Duration)> MissingTimeSpans, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, bool IsManageMedia = true)
         {
             for (int i = 0; i < TrackMediaElements.Count; i++)
             {

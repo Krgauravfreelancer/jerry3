@@ -143,7 +143,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             }
         }
 
-        internal void DrawTimeLine(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, TimeSpan TotalDuration, TimeSpan MainCursorTime, Controls.TimeLine timeline, bool IsReadOnly)
+        internal void DrawTimeLine(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, TimeSpan TotalDuration, TimeSpan MainCursorTime, Controls.TimeLine timeline, bool IsReadOnly, bool IsManageMedia)
         {
             if (MainCanvas.ActualHeight > 10 && MainCanvas.ActualWidth > 10)
             {
@@ -166,12 +166,12 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                     DrawTimeTrack.Draw(MainCanvas, ViewPortStart, timeline, DrawProperties, Result);
 
                     //Draw Track Items
-                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result);
+                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, IsManageMedia);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 
                     //Draw Missing Spaces
                     List<(Media BeforeMedia, Media AfterMedia, TimeSpan Start, TimeSpan Duration)>  MissingTimeSpans = TrackItemProcessor.FindMissingVideoEventTimeSpans(_Playlist);
-                    DrawMissingVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, MissingTimeSpans, _TrackMissingMediaElements, timeline, DrawProperties, IsReadOnly, Result);
+                    DrawMissingVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, MissingTimeSpans, _TrackMissingMediaElements, timeline, DrawProperties, IsReadOnly, Result, IsManageMedia);
 
                     //Draw Cursor
                     DrawMainCursor.Draw(MainCanvas, MainCursorTime, ViewPortStart, ViewPortDuration, MainCursor, DrawProperties);
@@ -236,7 +236,11 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         internal void AddTrackMediaElement_ToCanvas(Canvas MainCanvas, UIElement element, bool IsHitTestVisible)
         {
             element.IsHitTestVisible = IsHitTestVisible;
+            if(_TrackMediaElements.Contains(element))
+                _TrackMediaElements.Remove(element);
             _TrackMediaElements.Add(element);
+            if(MainCanvas.Children.Contains(element))
+                MainCanvas.Children?.Remove(element);    
             MainCanvas.Children.Add(element);
         }
 

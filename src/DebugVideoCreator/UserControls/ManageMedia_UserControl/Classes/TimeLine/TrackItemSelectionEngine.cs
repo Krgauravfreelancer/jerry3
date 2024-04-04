@@ -39,10 +39,10 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             }
         }
 
-        internal void MouseDown(Canvas MainCanvas)
+        public Point MouseDown(Canvas MainCanvas)
         {
-            if (MainCanvas.IsMouseDirectlyOver)
-            {
+            //if (MainCanvas.IsMouseDirectlyOver)
+            //{
                 _SelectionStartPoint = Mouse.GetPosition(MainCanvas);
                 _MouseCaptured = true;
                 MainCanvas.CaptureMouse();
@@ -53,7 +53,22 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                     StrokeThickness = 1,
                     Fill = new SolidColorBrush(Color.FromArgb(100, 30, 160, 255)),
                 };
-            }
+            //}
+            return _SelectionStartPoint;
+        }
+
+        internal void SetTrackbar(Point trackbarPosition, Canvas MainCanvas)
+        {
+            _SelectionStartPoint = trackbarPosition;
+            _MouseCaptured = true;
+            //MainCanvas.CaptureMouse();
+            _SelectionRectangle = new Rectangle()
+            {
+                Stroke = Brushes.DodgerBlue,
+                StrokeThickness = 1,
+                Fill = new SolidColorBrush(Color.FromArgb(100, 30, 160, 255)),
+            };
+
         }
 
         internal (TimeSpan SelectionStart, TimeSpan SelectionEnd, bool WasMouseCaptured) MouseUp(Canvas MainCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration)
@@ -125,5 +140,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 }
             }
         }
+
+        
     }
 }

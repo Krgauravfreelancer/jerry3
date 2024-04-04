@@ -324,6 +324,7 @@
     </ApplicationDefinition>
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Helpers\MMTimelineHelper.cs" />
     <Compile Include="Helpers\CommentsHandler.cs" />
     <Compile Include="Helpers\PlanningHandlerHelper.cs" />
     <Compile Include="Helpers\ShiftEventsHelper.cs" />

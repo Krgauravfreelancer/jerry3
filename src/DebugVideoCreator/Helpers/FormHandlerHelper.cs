@@ -26,7 +26,7 @@ namespace VideoCreator.Helpers
         public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
         {
             var outputFolder = PathHelper.GetTempPath("form");
-            var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.videoevent_id, true, false);
+            var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.VideoEventID, true, false);
             var videoEvent = videoEvents.Where(x => x.fk_videoevent_media == 2).FirstOrDefault();
             if (videoEvent != null)
             {

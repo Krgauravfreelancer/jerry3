@@ -79,6 +79,8 @@
     </Compile>
     <Compile Include="Controls\ThumbNail.cs" />
     <Compile Include="Controls\MissingVideoEventItem.cs" />
+    <Compile Include="Controls\TrackCalloutItem.cs" />
+    <Compile Include="Models\MouseDownEvent.cs" />
     <Compile Include="TimeLineHelpers.cs" />
     <Page Include="Controls\NoteItemControl.xaml">
       <SubType>Designer</SubType>

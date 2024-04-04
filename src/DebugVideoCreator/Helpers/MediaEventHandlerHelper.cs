@@ -22,7 +22,7 @@ namespace VideoCreator.Helpers
             objToSync.videoevent_start = Convert.ToString(row["videoevent_start"]);
             objToSync.videoevent_duration = Convert.ToString(row["videoevent_duration"]);
             objToSync.videoevent_origduration = Convert.ToString(row["videoevent_origduration"]);
-            if(row["videoevent_planning"] != DBNull.Value)
+            if(row.Table.Columns["videoevent_planning"] != null && row["videoevent_planning"] != DBNull.Value)
                 objToSync.videoevent_planning = Convert.ToInt32(row["videoevent_planning"]);
             else
                 objToSync.videoevent_planning = 0;

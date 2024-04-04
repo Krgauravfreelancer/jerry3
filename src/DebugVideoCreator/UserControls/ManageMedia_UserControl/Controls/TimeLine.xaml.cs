@@ -45,17 +45,28 @@ namespace ManageMedia_UserControl.Controls
         TrackItemSelectionEngine TrackItemSelectionEngine = new TrackItemSelectionEngine();
 
         bool _IsReadOnly = false;
+        bool _IsManageMedia = true;
 
+        public SelectedEvent selectedEventPayload = null;
+        public TrackbarMouseMoveEvent trackbarMouseMoveEventPayload;
+        public List<Media> SelectedEvents = new List<Media>();
         internal TimeSpan MainCursorTime { get; private set; } = TimeSpan.Zero;
+        public event EventHandler<MouseDownEvent> MouseDown_Event;
+        Point trackbarPosition = new Point(0, 0);
 
         public TimeLine()
         {
             InitializeComponent();
         }
 
-        internal void SetReadOnly(bool IsReadOnly)
+        public void SetReadOnly(bool IsReadOnly)
         {
             _IsReadOnly = IsReadOnly;
+        }
+
+        public void SetManageMedia(bool IsManageMedia)
+        {
+            _IsManageMedia = IsManageMedia;
         }
 
         internal void SetTimeLineMode(TimeLineMode Mode)
@@ -214,7 +225,7 @@ namespace ManageMedia_UserControl.Controls
             {
                 foreach (var element in item.RecordedTextList)
                 {
-                    NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsReadOnly);
+                    NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
                     noteItemControl.SetTimeLine(this);
                     CreateNoteEvents(noteItemControl);
                 }
@@ -334,14 +345,24 @@ namespace ManageMedia_UserControl.Controls
 
             if (DesignerProperties.GetIsInDesignMode(this) == false)
             {
-                if (_IsReadOnly == false)
+                if (_IsManageMedia)
+                {
+                    if (_IsReadOnly == false)
+                    {
+                        this.KeyDown += Window_KeyDown;
+                        this.Focusable = true;
+                        Keyboard.Focus(this);
+                    }
+                    else
+                    {
+                        MainCanvas.ContextMenu = null;
+                    }
+                }
+                else
                 {
                     this.KeyDown += Window_KeyDown;
                     this.Focusable = true;
                     Keyboard.Focus(this);
-                }
-                else
-                {
                     MainCanvas.ContextMenu = null;
                 }
             }
@@ -389,7 +410,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void UpdateTimeScale()
         {
-            TimeLineDrawEngine.DrawTimeLine(MainCanvas, LegendCanvas, _ViewportStart, _ViewportDuration, _TotalDuration, MainCursorTime, this, _IsReadOnly);
+            TimeLineDrawEngine.DrawTimeLine(MainCanvas, LegendCanvas, _ViewportStart, _ViewportDuration, _TotalDuration, MainCursorTime, this, _IsReadOnly, _IsManageMedia);
         }
 
         internal void SetMainCursorTime(TimeSpan time)
@@ -742,7 +763,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void AddNewNoteItem(TextItem textItem, TimeSpan TimeSpanAtPoint, Media EventFound, bool PositionAtHalf)
         {
-            NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteAtTimeSpan(textItem, TimeSpanAtPoint, EventFound, PositionAtHalf, this, _IsReadOnly);
+            NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteAtTimeSpan(textItem, TimeSpanAtPoint, EventFound, PositionAtHalf, this, _IsManageMedia ? _IsReadOnly : true);
 
             // check if it was dropped on an empty spot
             bool WasDroppedOnNote = false;
@@ -937,7 +958,7 @@ namespace ManageMedia_UserControl.Controls
                 {
                     foreach (var element in item.RecordedTextList)
                     {
-                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsReadOnly);
+                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
                         noteItemControl.SetTimeLine(this);
                         CreateNoteEvents(noteItemControl);
                     }
@@ -1128,7 +1149,83 @@ namespace ManageMedia_UserControl.Controls
 
         private void MainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            TrackItemSelectionEngine.MouseDown(MainCanvas);
+            if (_IsManageMedia)
+                TrackItemSelectionEngine.MouseDown(MainCanvas);
+            else
+                MainCanvas_MouseDown_New(sender, e);
+        }
+
+        private void MainCanvas_MouseDown_New(object sender, MouseButtonEventArgs e)
+        {
+            trackbarMouseMoveEventPayload = null;
+            selectedEventPayload = null;
+            SelectedEvents.Clear();
+
+            OpenedContextMenuAt = Mouse.GetPosition(MainCanvas);
+            TimeSpan TimeSpanAtPoint = GetTimeSpanByLocation(OpenedContextMenuAt.X);
+            for (int i = 0; i < _Playlist.Count; i++)
+            {
+                Media media = _Playlist[i];
+                if (TimeSpanAtPoint > media.StartTime && (TimeSpanAtPoint < media.StartTime + media.Duration))
+                {
+                    SelectedEvents.Add(media);
+                }
+            }
+
+
+            if (!MainCanvas.IsMouseDirectlyOver)
+            {
+                var EventFound = SelectedEvents?.Find(x => x.TrackId == 2);
+                if (EventFound != null)
+                {
+                    selectedEventPayload = new SelectedEvent
+                    {
+                        EventId = EventFound.VideoEventID,
+                        TrackId = EventFound.TrackId
+                    };
+
+                }
+            }
+            trackbarMouseMoveEventPayload = new TrackbarMouseMoveEvent
+            {
+                videoeventIds = SelectedEvents?.OrderBy(x => x.TrackId).Select(x => x.VideoEventID).ToList(),
+                timeAtTheMoment = TimeSpanAtPoint.ToString(@"hh\:mm\:ss\.fff"),
+                isAnyVideo = SelectedEvents.Select(x => x.TrackId == 2) != null
+            };
+
+            var payload = new MouseDownEvent
+            {
+                selectedEvent = selectedEventPayload,
+                trackbarMouseMoveEvent = trackbarMouseMoveEventPayload
+            };
+            trackbarPosition = TrackItemSelectionEngine.MouseDown(MainCanvas);
+            MouseDown_Event.Invoke(sender, payload);
+        }
+
+        public string GetTrackbarTime()
+        {
+            return trackbarMouseMoveEventPayload?.timeAtTheMoment;
+        }
+
+        public List<Media> GetTrackbarMediaEvents()
+        {
+            TimeSpan TimeSpanAtPoint = TimeSpan.Parse(GetTrackbarTime());
+            var trackbarEvents = new List<Media>();
+            for (int i = 0; i < _Playlist.Count; i++)
+            {
+                Media media = _Playlist[i];
+                if (TimeSpanAtPoint > media.StartTime && (TimeSpanAtPoint < media.StartTime + media.Duration) && media.TrackId == 2)
+                {
+                    trackbarEvents.Add(media);
+                }
+            }
+            return trackbarEvents;
+        }
+
+        public void SetTrackbar()
+        {
+            //TrackItemSelectionEngine.SetTrackbar(trackbarPosition, MainCanvas);
+            SetMainCursor();
         }
 
         private void MainCanvas_MouseUp(object sender, MouseButtonEventArgs e)
@@ -1173,7 +1270,10 @@ namespace ManageMedia_UserControl.Controls
         {
             TimeLineDrawEngine.SetPointerCursor(MainCanvas, _ViewportStart, _ViewportDuration);
 
-            TrackItemSelectionEngine.MouseMoved(MainCanvas);
+            if (_IsManageMedia)
+            {
+                TrackItemSelectionEngine.MouseMoved(MainCanvas);
+            }
         }
 
         private void MainCanvas_MouseLeave(object sender, MouseEventArgs e)
@@ -1228,7 +1328,7 @@ namespace ManageMedia_UserControl.Controls
                 {
                     foreach (var element in item.RecordedTextList)
                     {
-                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsReadOnly);
+                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
                         noteItemControl.SetTimeLine(this);
                         CreateNoteEvents(noteItemControl);
                     }
@@ -1296,6 +1396,38 @@ namespace ManageMedia_UserControl.Controls
                 PlayListUpdated(this, playListArgs);
             }
         }
+
+        private Media GetMedia(object sender)
+        {
+            MenuItem MenuItem = sender as MenuItem;
+            if (MenuItem != null)
+            {
+                var trackVideoEventItem = (TrackVideoEventItem)((ContextMenu)MenuItem.Parent).PlacementTarget;
+                return trackVideoEventItem.Media;
+            }
+            return null;
+        }
+
+        public void DeleteEventForTimeline(object sender, RoutedEventArgs e)
+        {
+            var media = GetMedia(sender);
+        }
+
+        public void CloneEventAtTrackbar(object sender, RoutedEventArgs e)
+        {
+            var media = GetMedia(sender);
+        }
+
+        public void CloneEventAtTimelineEnd(object sender, RoutedEventArgs e)
+        {
+            var media = GetMedia(sender);
+        }
+
+        public void AddImageUsingLibraryAfterSelectedEvent(object sender, RoutedEventArgs e)
+        {
+            var media = GetMedia(sender);
+        }
+
 
         internal void DeleteEventBtn_Click(object sender, RoutedEventArgs e)
         {

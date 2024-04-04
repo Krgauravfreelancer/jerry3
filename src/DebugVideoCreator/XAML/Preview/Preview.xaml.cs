@@ -37,7 +37,7 @@ namespace VideoCreator.XAML
             cmbResolution.Items.Add("Resolution | 1/6 | 320:180");
             cmbResolution.Items.Add("Resolution | 1/8 | 215:125");
             cmbResolution.Items.Add("Resolution | 1/10 | 192:108");
-            cmbResolution.SelectedIndex = 4;
+            cmbResolution.SelectedIndex = 1;
         }
 
         private void CleanUp()
@@ -61,7 +61,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        public async void Process(TrackbarMouseMoveEvent mouseMovedEvent)
+        public async void Process(ManageMedia_UserControl.Models.TrackbarMouseMoveEvent mouseMovedEvent)
         {
             isProcessing = true;
             LoaderHelper.ShowLoader(this, loader, "Processing Preview ...", false);

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VideoCreator.XAML"
              xmlns:loader="clr-namespace:VideoCreator.Loader"
-            
+            MinHeight="500"
             mc:Ignorable="d">
     <!--xmlns:notesuc="clr-namespace:Notes_UserControl;assembly=Notes_UserControl"-->
 
@@ -38,9 +38,9 @@
                 <ColumnDefinition Width="4*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="4*"></RowDefinition>
+                <RowDefinition Height="8*"></RowDefinition>
                 <!--<RowDefinition Height="6*"></RowDefinition>-->
-                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition Height="330"></RowDefinition>
                 <RowDefinition Height="50"></RowDefinition>
             </Grid.RowDefinitions>
             <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" />

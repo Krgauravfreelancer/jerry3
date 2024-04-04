@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace ManageMedia_UserControl.Controls
 {
-    internal class TrackVideoEventItem : Border
+    internal class TrackCalloutItem : Border
     {
         internal Media Media { get; set; }
         Color HighlightedColor = Colors.Gray;

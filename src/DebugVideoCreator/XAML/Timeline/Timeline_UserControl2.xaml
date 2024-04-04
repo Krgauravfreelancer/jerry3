@@ -15,7 +15,17 @@
                     <Image Source="../../Icons/populate.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <Separator></Separator>
+            <MenuItem Header="Add Planning Events" x:Name="MenuItem_AddPlanningEvents"  Click="AddPlanningEvents_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/planning.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/save.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>
             <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False">
                 <MenuItem.Icon>
                     <Image Source="../../Icons/audio.png" ></Image>
@@ -56,108 +66,58 @@
                     <Image Source="../../Icons/run.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <Separator></Separator>
-            <MenuItem Header="Delete Selected Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" >
+            <Separator />
+            <!--<MenuItem Header="Delete Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" >
                 <MenuItem.Icon>
                     <Image Source="../../Icons/delete.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
+            <MenuItem Header="Clone Event at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/clone.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Clone Event at End of Timeline" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/clone.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Add Image using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click" >
+                <MenuItem.Icon>
+                    <Image Source="../../Icons/shift.png" ></Image>
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator/>-->
             <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" >
                 <MenuItem.Icon>
                     <Image Source="../../Icons/undo.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/save.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Clone this Event to Timeline at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/clone.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Clone this Event to Timeline at End" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/clone.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <Separator />
-            <MenuItem Header="Add Planning Events" x:Name="MenuItem_AddPlanningEvents"  Click="AddPlanningEvents_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/planning.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <Separator />
-            <MenuItem Header="Add Image Event using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/shift.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
+
         </ContextMenu>
     </UserControl.Resources>
-    <ScrollViewer Margin="5,5,10,5">
-        <Grid>
-            <DockPanel  DockPanel.Dock="Top">
-                <!--<Border Background="#FFE6E6E6" DockPanel.Dock="Top">
-                <Grid>
-                    <StackPanel Margin="25,0,25,10" HorizontalAlignment="Left" Orientation="Horizontal">
-                        <StackPanel>
-                            <Label Content="Select Project"/>
-                            <ComboBox Name="ProjectCmbBox" MinWidth="220" SelectionChanged="ProjectCmbBox_SelectionChanged"/>
-
-                        </StackPanel>
-                    </StackPanel>
-
-                </Grid>
-            </Border>-->
-                <Grid  Background="Transparent" DockPanel.Dock="Top" ContextMenu="{StaticResource TimelineMenu}" ContextMenuOpening="Button_ContextMenuOpening">
-                    <Label Content="Use Right click to add Audio/Video Event" Margin="5,0,0,0" VerticalAlignment="Top" ></Label>
-
-                    <StackPanel Margin="5,30,5,0" VerticalAlignment="Top">
-                        <!--<GroupBox Header="Timeline User Control" Padding="10">
-                            <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
-                        </GroupBox>-->
-                        <GroupBox Header="Timeline User Control2" Padding="2">
-                            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderThickness="2" Height="270" Padding="5" ></mmtimepicker:TimeLine>
-                        </GroupBox>
-                        <!--<GroupBox Header="Video Events under Trackbar" Margin="0,10,0,0" Padding="10">
-                            <ListView Height="NaN"  x:Name="listView_trackbarEvents">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="EventMediaName" DisplayMemberBinding="{Binding EventMediaName}"/>
-                                        <GridViewColumn Header="Start" DisplayMemberBinding="{Binding videoevent_start}"/>
-                                        <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding videoevent_duration}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </GroupBox>
-
-                        <GroupBox Header="Timeline User Control Wrapper Methods" Margin="0,10,0,0" Padding="10">
-                            <Grid>
-                                <DockPanel HorizontalAlignment="Left">
-                                    <Button Width="130" Height="30" Content="Move Trackbar to Time" Click="MoveTrackbar"></Button>
-                                    <timepicker:TimePicker_UserControl x:Name="TrackbarTimepicker" VerticalAlignment="Top" HorizontalAlignment="Left" />
-
-                                    <Button Margin="15,0,0,0" Content="Get Selected Event" Click="GetSelectedEvent"></Button>
-                                    <Label x:Name="lblSelectedEvent"  ></Label>
-
-                                </DockPanel>
-
-                            </Grid>
-
-                        </GroupBox>-->
+    
 
 
+        <Grid Background="White" Margin="5,5,10,5"  ContextMenu="{StaticResource TimelineMenu}" ContextMenuOpening="Button_ContextMenuOpening">
+
+            <StackPanel Margin="5,5,5,0" Height="300" Orientation="Vertical" VerticalAlignment="Top">
+                <!--<GroupBox Header="Timeline User Control" Padding="10">
+                        <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
+                    </GroupBox>-->
+                <!--<GroupBox Padding="2">-->
+                <Label Content="Use Right click to add Audio/Video Event" Margin="5,0,0,0" ></Label>
+
+                <mmtimepicker:TimeLine BorderBrush="Gray" BorderThickness="1" x:Name="TimelineGridCtrl2" MouseDown_Event="TimelineGridCtrl2_MouseDown_Event" Height="270" Padding="5" ></mmtimepicker:TimeLine>
+                <!--</GroupBox>-->
 
 
-                    </StackPanel>
-                    <loader:LoadingAnimation  x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
-
-                </Grid>
-            </DockPanel>
-
+            </StackPanel>
+            <loader:LoadingAnimation  x:Name="loader" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Hidden"/>
 
         </Grid>
-    </ScrollViewer>
+
+
+
+    
 </UserControl>

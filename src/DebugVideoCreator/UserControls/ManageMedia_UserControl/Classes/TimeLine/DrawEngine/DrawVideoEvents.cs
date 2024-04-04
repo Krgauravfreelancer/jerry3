@@ -15,7 +15,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {
     internal class DrawVideoEvents
     {
-        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result)
+        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, bool IsManageMedia = true)
         {
             for (int i = 0; i < TrackMediaElements.Count; i++)
             {
@@ -45,8 +45,6 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                 TrackHeight = 1;
             }
 
-
-
             for (int i = 0; i < Playlist.Count; i++)
             {
                 Media item = Playlist[i];
@@ -64,21 +62,25 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         int green = (int)((double)item.Color.G / 1.5);
                         int blue = (int)((double)item.Color.B / 1.5);
 
-                        TrackVideoEventItem trackVideoEventItem = new TrackVideoEventItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsReadOnly);
+                        var trackVideoEventItem = new TrackVideoEventItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsReadOnly, IsManageMedia);
                         //VideoEvent
                         trackVideoEventItem.Margin = new Thickness(StartPosition, VideoEvent, 0, 0);
 
                         trackVideoEventItem.Width = Width;
                         trackVideoEventItem.Height = TrackHeight;
                         trackVideoEventItem.BorderBrush = Brushes.White;
-                        trackVideoEventItem.BorderThickness = new Thickness(1);
+                        trackVideoEventItem.BorderThickness = new Thickness(2);
                         trackVideoEventItem.Background = new SolidColorBrush(trackVideoEventItem.Color);
+                        trackVideoEventItem.MediaSelectedEvent += (object s, Media m) =>
+                        {
+                            trackVideoEventItem.BorderBrush = Brushes.Red;
+                            m.IsSelected = true;
+                        };
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackVideoEventItem, true);
                     }
                     else
                     {
                         Border rectangle = new Border();
-
                         Image Icon = new Image();
                         Icon.Margin = new Thickness(2);
                         Icon.HorizontalAlignment = HorizontalAlignment.Left;
@@ -134,7 +136,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         rectangle.Width = Width;
                         rectangle.Height = TrackHeight;
                         rectangle.BorderBrush = Brushes.White;
-                        rectangle.BorderThickness = new Thickness(1);
+                        rectangle.BorderThickness = new Thickness(2);
 
                         rectangle.Child = Icon;
 

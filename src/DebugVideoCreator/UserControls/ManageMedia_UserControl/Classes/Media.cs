@@ -24,6 +24,8 @@ namespace ManageMedia_UserControl.Classes
         public MediaType mediaType { get; set; }
         public List<TextItem> RecordedTextList { get; set; }
         public Color Color { get; set; }
+
+        public bool IsSelected { get; set; }
     }
 
     public enum MediaType

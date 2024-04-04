@@ -36,7 +36,7 @@ namespace VideoCreator.XAML
         SelectedProjectEvent selectedProjectEvent;
 
 
-        private TrackbarMouseMoveEvent mouseEventToProcess;
+        private ManageMedia_UserControl.Models.TrackbarMouseMoveEvent mouseEventToProcess;
         private CBVVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
         private int undoVideoEventId = -1;
@@ -49,7 +49,7 @@ namespace VideoCreator.XAML
             ReadOnly = _readonlyFlag;
             var subjectText = "Project Id - " + selectedProjectEvent.projectId;
             lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}" : subjectText;
-            InitializeChildren();
+            InitializeChildren(); 
             new Action(async () =>
             {
                 await SyncServerEventsHelper.ConfirmAndSyncServerDataToLocalDB(this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
@@ -72,19 +72,18 @@ namespace VideoCreator.XAML
 
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent, authApiViewModel, ReadOnly);
-            TimelineUserConrol.Visibility = Visibility.Visible;
-            //TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
-
-            //TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_AddImageEventFromCBLibrary_Clicked;
+            TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
+            TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
+            TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
+            TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
+            TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
+            TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
+            TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibrary_Clicked += TimelineUserConrol_AddImageEventFromCBLibrary_Clicked;
+            TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
+            TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
+            
             //TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked += TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked;
-            //TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
-            //TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
-            //TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
-            //TimelineUserConrol.ContextMenu_AddFormEvent_Clicked += TimelineUserConrol_ContextMenu_AddFormEvent_Clicked;
-            //TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
             //TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
-            //TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
-            //TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
             //TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
             //TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
             //TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
@@ -116,7 +115,7 @@ namespace VideoCreator.XAML
 
         private void Refresh()
         {
-            //TimelineUserConrol.Refresh();
+            TimelineUserConrol.Refresh();
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             //NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
         }
@@ -862,11 +861,11 @@ namespace VideoCreator.XAML
         //}
 
 
-        private void TimelineUserConrol_TrackbarMouse_Moved(object sender, TrackbarMouseMoveEvent e)
+        private void TimelineUserConrol_TrackbarMouse_Moved(object sender, ManageMedia_UserControl.Models.TrackbarMouseMoveEvent _mouseEventToProcess)
         {
             //if (IfNeedToReProcess(e))
             {
-                mouseEventToProcess = e;
+                mouseEventToProcess = _mouseEventToProcess;
                 PreviewUserControl.Process(mouseEventToProcess);
             }
         }
@@ -882,7 +881,7 @@ namespace VideoCreator.XAML
 
             var message = string.Empty;
 
-            var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.videoevent_id, true, false);
+            var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.VideoEventID, true, false);
             var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
             var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment);
@@ -1000,27 +999,27 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked(object sender, FormOrCloneEvent payload)
         {
-            var mediaLibraryUserControl = new MediaLibrary_UserControl((int)EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment, payload.timelineVideoEvent);
+            //var mediaLibraryUserControl = new MediaLibrary_UserControl((int)EnumTrack.IMAGEORVIDEO, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment, payload.timelineVideoEvent);
 
-            mediaLibraryUserControl.BtnUseAndSaveClickedEvent += (DataTable dt) => { };
-            mediaLibraryUserControl.BtnUseAndSaveClickedEventInMiddle += MediaLibraryUserControl_BtnUseAndSaveClickedEventInMiddle;
-            var window = new Window
-            {
-                Title = "Media Library",
-                Content = mediaLibraryUserControl,
-                WindowState = WindowState.Normal,
-                ResizeMode = ResizeMode.CanResize,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen
-            };
-            LoaderHelper.ShowLoader(window, loader, "Processing...");
-            var result = window.ShowDialog();
-            if (result.HasValue && mediaLibraryUserControl.isEventAdded)
-            {
-                Refresh();
-                mediaLibraryUserControl.Dispose();
-            }
-            else
-                LoaderHelper.HideLoader(this, loader);
+            //mediaLibraryUserControl.BtnUseAndSaveClickedEvent += (DataTable dt) => { };
+            //mediaLibraryUserControl.BtnUseAndSaveClickedEventInMiddle += MediaLibraryUserControl_BtnUseAndSaveClickedEventInMiddle;
+            //var window = new Window
+            //{
+            //    Title = "Media Library",
+            //    Content = mediaLibraryUserControl,
+            //    WindowState = WindowState.Normal,
+            //    ResizeMode = ResizeMode.CanResize,
+            //    WindowStartupLocation = WindowStartupLocation.CenterScreen
+            //};
+            //LoaderHelper.ShowLoader(window, loader, "Processing...");
+            //var result = window.ShowDialog();
+            //if (result.HasValue && mediaLibraryUserControl.isEventAdded)
+            //{
+            //    Refresh();
+            //    mediaLibraryUserControl.Dispose();
+            //}
+            //else
+            //    LoaderHelper.HideLoader(this, loader);
         }
 
         private async void MediaLibraryUserControl_BtnUseAndSaveClickedEventInMiddle(MediaEventInMiddle mediaEventInMiddle)
