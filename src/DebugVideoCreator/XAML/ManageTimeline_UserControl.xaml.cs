@@ -84,10 +84,10 @@ namespace VideoCreator.XAML
 
             TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
+            TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
 
 
             //TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked += TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked;
-            //TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
             //TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
             //TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
@@ -887,7 +887,7 @@ namespace VideoCreator.XAML
             var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.VideoEventID, true, false);
             var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
-            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment);
+            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, videoEventList[0].videoevent_end);
 
             if (videoEventResponse != null)
             {

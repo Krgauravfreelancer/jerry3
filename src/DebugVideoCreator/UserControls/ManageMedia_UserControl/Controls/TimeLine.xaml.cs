@@ -54,8 +54,11 @@ namespace ManageMedia_UserControl.Controls
 
 
         public event EventHandler<int> Delete_Event;
+        public event EventHandler<Media> Clone_Event;
+        public event EventHandler<Media> CloneAtEnd_Event;
+        
         public event EventHandler<MouseDownEvent> MouseDown_Event;
-        Point trackbarPosition = new Point(0, 0);
+        public Point TrackBarPosition = new Point(0, 0);
 
         public TimeLine()
         {
@@ -1201,7 +1204,7 @@ namespace ManageMedia_UserControl.Controls
                 selectedEvent = selectedEventPayload,
                 trackbarMouseMoveEvent = trackbarMouseMoveEventPayload
             };
-            trackbarPosition = TrackItemSelectionEngine.MouseDown(MainCanvas);
+            TrackBarPosition = TrackItemSelectionEngine.MouseDown(MainCanvas);
             MouseDown_Event.Invoke(sender, payload);
         }
 
@@ -1227,7 +1230,7 @@ namespace ManageMedia_UserControl.Controls
 
         public void SetTrackbar()
         {
-            //TrackItemSelectionEngine.SetTrackbar(trackbarPosition, MainCanvas);
+            //TrackItemSelectionEngine.SetTrackbar(TrackBarPosition, MainCanvas);
             SetMainCursor();
         }
 
@@ -1430,11 +1433,13 @@ namespace ManageMedia_UserControl.Controls
         public void CloneEventAtTrackbar(object sender, RoutedEventArgs e)
         {
             var media = GetMedia(sender);
+            Clone_Event(sender, media);
         }
 
         public void CloneEventAtTimelineEnd(object sender, RoutedEventArgs e)
         {
             var media = GetMedia(sender);
+            CloneAtEnd_Event(sender, media);
         }
 
         public void AddImageUsingLibraryAfterSelectedEvent(object sender, RoutedEventArgs e)

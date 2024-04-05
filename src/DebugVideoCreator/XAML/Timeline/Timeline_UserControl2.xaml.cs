@@ -1,4 +1,5 @@
 ﻿using FullScreenPlayer_UserControl.Controls;
+using ManageMedia_UserControl.Models;
 using ScreenRecorder_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
@@ -80,6 +81,35 @@ namespace VideoCreator.XAML
             ContextMenu_DeleteEventOnTimelines_Clicked.Invoke(sender, DeletedId);
         }
 
+        private void TimelineGridCtrl2_Clone_Event(object sender, MMClass.Media selectedEvent)
+        {
+            var trackbarTime = TimelineGridCtrl2.GetTrackbarTime();
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+        }
+
+        private void TimelineGridCtrl2_CloneAtEnd_Event(object sender, MMClass.Media selectedEvent)
+        {
+            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
+
+            //if (selectedEvent == null)
+            //{
+            //    MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    return;
+            //}
+            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
+            var payload = new FormOrCloneEvent
+            {
+                timelineVideoEvent = selectedEvent,
+                timeAtTheMoment = trackbarTime
+            };
+            ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
+        }
+
 
         private void TimelineGridCtrl2_MouseDown_Event(object sender, MMModel.MouseDownEvent payload)
         {
@@ -151,6 +181,7 @@ namespace VideoCreator.XAML
 
         private void SaveTimeline(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("Coming Soon !!", "Work In Progress");
             // Update changes to the database for existing events
             //var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
             //foreach (var modifiedEvent in modifiedEvents)
@@ -368,23 +399,7 @@ namespace VideoCreator.XAML
 
         }
 
-        private void CloneEventAtEnd_Click(object sender, RoutedEventArgs e)
-        {
-            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            //if (selectedEvent == null)
-            //{
-            //    MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    return;
-            //}
-            //var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
-            //var payload = new FormOrCloneEvent
-            //{
-            //    timelineVideoEvent = selectedEvent.VideoEvent,
-            //    timeAtTheMoment = trackbarTime
-            //};
-            //ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
-        }
+        
 
 
 

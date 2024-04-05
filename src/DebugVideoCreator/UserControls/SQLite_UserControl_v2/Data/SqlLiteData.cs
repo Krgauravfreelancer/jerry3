@@ -746,7 +746,7 @@ namespace Sqllite_Library.Data
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             int planningId = 0;
-            if(dr.Table.Columns.Contains("videoevent_planning"))
+            if(dr.Table.Columns.Contains("videoevent_planning") && dr["videoevent_planning"] != DBNull.Value)
                 planningId = Convert.ToInt32(dr["videoevent_planning"]);
 
             var start = Convert.ToString(dr["videoevent_start"]);
