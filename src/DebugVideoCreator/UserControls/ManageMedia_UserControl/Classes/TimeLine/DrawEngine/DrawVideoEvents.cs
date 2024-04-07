@@ -15,7 +15,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {
     internal class DrawVideoEvents
     {
-        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, bool IsManageMedia = true)
+        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, List<TrackVideoEventItem> TrackVideoEventItems, List<TrackCalloutItem> TrackCalloutItem, bool IsManageMedia = true)
         {
             for (int i = 0; i < TrackMediaElements.Count; i++)
             {
@@ -67,16 +67,19 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         trackVideoEventItem.Margin = new Thickness(StartPosition, VideoEvent, 0, 0);
 
                         trackVideoEventItem.Width = Width;
-                        trackVideoEventItem.Height = TrackHeight;
+                        trackVideoEventItem.Height = TrackHeight - 2;
                         trackVideoEventItem.BorderBrush = Brushes.White;
-                        trackVideoEventItem.BorderThickness = new Thickness(2);
+                        trackVideoEventItem.BorderThickness = new Thickness(2, 1, 2, 1);
                         trackVideoEventItem.Background = new SolidColorBrush(trackVideoEventItem.Color);
                         trackVideoEventItem.MediaSelectedEvent += (object s, Media m) =>
                         {
+                            TrackVideoEventItems?.ForEach(x => x.BorderBrush = Brushes.White);
+                            TrackCalloutItem?.ForEach(x => x.BorderBrush = Brushes.White);
                             trackVideoEventItem.BorderBrush = Brushes.Red;
                             m.IsSelected = true;
                         };
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackVideoEventItem, true);
+                        TrackVideoEventItems.Add(trackVideoEventItem);
                     }
                     else
                     {
@@ -100,21 +103,24 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                             trackCalloutItem.Margin = new Thickness(StartPosition, Audio, 0, 0);//Audio
 
                         }
-                        
+
                         trackCalloutItem.Width = Width;
-                        trackCalloutItem.Height = TrackHeight;
+                        trackCalloutItem.Height = TrackHeight - 2;
                         trackCalloutItem.BorderBrush = Brushes.White;
-                        trackCalloutItem.BorderThickness = new Thickness(2);
+                        trackCalloutItem.BorderThickness = new Thickness(2, 1, 2, 1);
                         Color FillColor = Color.FromArgb(200, (byte)red, (byte)green, (byte)blue);
 
                         trackCalloutItem.Background = new SolidColorBrush(FillColor);
                         trackCalloutItem.MediaSelectedEvent += (object s, Media m) =>
                         {
+                            TrackVideoEventItems?.ForEach(x => x.BorderBrush = Brushes.White);
+                            TrackCalloutItem?.ForEach(x => x.BorderBrush = Brushes.White);
                             trackCalloutItem.BorderBrush = Brushes.Red;
                             m.IsSelected = true;
                         };
 
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackCalloutItem, true);
+                        TrackCalloutItem.Add(trackCalloutItem);
                     }
                 }
 

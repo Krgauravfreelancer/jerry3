@@ -42,7 +42,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         DrawTimeTrack DrawTimeTrack = new DrawTimeTrack();
         DrawVideoEvents DrawVideoEvents = new DrawVideoEvents();
         DrawMissingVideoEvents DrawMissingVideoEvents = new DrawMissingVideoEvents();
-
+        List<TrackVideoEventItem> TrackVideoEventItems = new List<TrackVideoEventItem>();
+        List<TrackCalloutItem> TrackCalloutItem = new List<TrackCalloutItem>();
         internal void SetPlaylist(List<Media> Playlist, TimeLineMode Mode)
         {
             _Playlist = Playlist;
@@ -145,6 +146,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
 
         internal void DrawTimeLine(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, TimeSpan TotalDuration, TimeSpan MainCursorTime, Controls.TimeLine timeline, bool IsReadOnly, bool IsManageMedia)
         {
+            TrackVideoEventItems.Clear();
+            TrackCalloutItem.Clear();
             if (MainCanvas.ActualHeight > 10 && MainCanvas.ActualWidth > 10)
             {
                 DrawLegend.Draw(LegendCanvas, DrawProperties);
@@ -166,7 +169,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                     DrawTimeTrack.Draw(MainCanvas, ViewPortStart, timeline, DrawProperties, Result);
 
                     //Draw Track Items
-                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, IsManageMedia);
+                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItem, IsManageMedia);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 
                     //Draw Missing Spaces
