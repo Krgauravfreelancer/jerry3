@@ -201,16 +201,16 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 if (!drag) return;
                 
                 Console.WriteLine($"Inside Mouse move");
+                var item = TrackVideoEventItems.Find(x => x.IsSelected);
+                var item2 = TrackCalloutItems.Find(x => x.IsSelected);
+
                 // get the position of the mouse relative to the Canvas
                 var mousePos = e.GetPosition(MainCanvas);
 
                 // center the trackbarLine on the mouse
                 double mouseX = mousePos.X;
-                if (mouseX >= 0)
+                if (mouseX >= 0 && (item != null || item2 != null))
                 {
-                    //trackCalloutItem.Margin = new Thickness(mouseX, toppos, rightpos, bottompos);
-                    var item = TrackVideoEventItems.Find(x => x.IsSelected);
-                    var item2 = TrackCalloutItems.Find(x => x.IsSelected);
                     var leftPos = item != null ? Canvas.GetLeft(item) : Canvas.GetLeft(item2);
                     if (isFirstClick == false)
                     {

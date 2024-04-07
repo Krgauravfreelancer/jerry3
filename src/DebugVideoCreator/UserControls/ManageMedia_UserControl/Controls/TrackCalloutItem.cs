@@ -10,6 +10,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
+using System.Windows.Input;
+using System.Diagnostics;
+using System.Net;
 
 namespace ManageMedia_UserControl.Controls
 {
@@ -29,7 +32,7 @@ namespace ManageMedia_UserControl.Controls
         Border OverTimeBorder;
         bool _IsManageMedia;
         public bool IsSelected;
-        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia)
+        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas)
         {
             this.Unloaded += TrackCalloutItem_Unloaded;
             Media = media;
@@ -93,12 +96,105 @@ namespace ManageMedia_UserControl.Controls
                 }
             }
             canvas.Children.Add(Icon);
+            var border = GetBorder(height, width, color, MainCanvas);
+            canvas.Children.Add (border);
             this.Child = canvas;
             this.MouseEnter += TrackCalloutItem_MouseEnter;
             this.MouseLeave += TrackCalloutItem_MouseLeave;
             this.MouseLeftButtonDown += TrackCalloutItem_MouseLeftButtonDown;
 
         }
+
+        private Border GetBorder(double TrackHeight, double width, Color FillColor, Canvas MainCanvas)
+        {
+            var rightBorderItem = new Border();
+
+            rightBorderItem.Width = 5;
+            rightBorderItem.Height = TrackHeight - 2;
+            rightBorderItem.BorderBrush = new SolidColorBrush(FillColor);
+            rightBorderItem.BorderThickness = new Thickness(2, 0, 2, 0);
+            rightBorderItem.HorizontalAlignment = HorizontalAlignment.Right;
+            rightBorderItem.Background = new SolidColorBrush(FillColor);
+            //rightBorderItem.IsHitTestVisible = false;
+            if (width > 8)
+            {
+                rightBorderItem.Margin = new Thickness(width - 8, 0, 0, 0);
+            }
+            rightBorderItem.MouseEnter += RightBorderItem_MouseEnter;
+            AddEventHandlers(rightBorderItem, MainCanvas);
+
+            return rightBorderItem;
+        }
+
+        private void RightBorderItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+            var border = sender as Border;
+            border.Cursor = Cursors.SizeWE;
+        }
+        bool drag = false;
+        double previousDiff = 0.0;
+        bool isFirstClick = false;
+        Point BorderPosition;
+        private void AddEventHandlers(Border rightBorderItem, Canvas MainCanvas)
+        {
+            rightBorderItem.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) =>
+            {
+                e.Handled = true;
+                BorderPosition = e.GetPosition(MainCanvas);
+                rightBorderItem.CaptureMouse();
+                drag = true;
+                isFirstClick = true;
+            };
+
+            rightBorderItem.PreviewMouseMove += (object s, MouseEventArgs e) =>
+            {
+                e.Handled = true;
+                if (!drag) return;
+                var border = s as Border;
+                Console.WriteLine($"Inside Extension");
+
+                // get the position of the mouse relative to the Canvas
+                var mousePos = e.GetPosition(MainCanvas);
+
+                // center the trackbarLine on the mouse
+                double mouseX = mousePos.X;
+                if (mouseX >= 0)
+                {
+                    if (isFirstClick == false)
+                    {
+                        var diffNew = mouseX - BorderPosition.X;
+                        Console.WriteLine($"Inside Extension isFirstClick -> {mouseX}, {BorderPosition.X}, {diffNew}, {this.Width}, {isFirstClick}");
+                        if (diffNew != previousDiff)
+                        {
+                            if (this.Width + diffNew - previousDiff > 0)
+                            {
+                                this.Width = this.Width + diffNew - previousDiff;
+                                rightBorderItem.Margin = new Thickness(this.Width - 8, 0, 0, 0);
+                            }
+                            previousDiff = diffNew;
+                        }
+                    }
+                    else
+                    {
+                        isFirstClick = false;
+                    }
+                  
+
+
+                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
+                }
+                
+            };
+
+            rightBorderItem.PreviewMouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+            {
+                e.Handled = true;
+                drag = false;
+                rightBorderItem.ReleaseMouseCapture();
+            };
+        }
+
 
         private void SetupContextMenu(TimeLine timeline)
         {
