@@ -28,6 +28,7 @@ namespace ManageMedia_UserControl.Controls
 
         Border OverTimeBorder;
         bool _IsManageMedia;
+        public bool IsSelected;
 
         internal TrackVideoEventItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsReadOnly, bool IsManageMedia)
         {

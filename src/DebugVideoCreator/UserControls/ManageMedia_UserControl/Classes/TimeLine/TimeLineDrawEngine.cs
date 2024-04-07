@@ -43,7 +43,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         DrawVideoEvents DrawVideoEvents = new DrawVideoEvents();
         DrawMissingVideoEvents DrawMissingVideoEvents = new DrawMissingVideoEvents();
         List<TrackVideoEventItem> TrackVideoEventItems = new List<TrackVideoEventItem>();
-        List<TrackCalloutItem> TrackCalloutItem = new List<TrackCalloutItem>();
+        List<TrackCalloutItem> TrackCalloutItems = new List<TrackCalloutItem>();
+        bool alreadyAdded = false;
         internal void SetPlaylist(List<Media> Playlist, TimeLineMode Mode)
         {
             _Playlist = Playlist;
@@ -147,7 +148,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         internal void DrawTimeLine(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, TimeSpan TotalDuration, TimeSpan MainCursorTime, Controls.TimeLine timeline, bool IsReadOnly, bool IsManageMedia)
         {
             TrackVideoEventItems.Clear();
-            TrackCalloutItem.Clear();
+            TrackCalloutItems.Clear();
             if (MainCanvas.ActualHeight > 10 && MainCanvas.ActualWidth > 10)
             {
                 DrawLegend.Draw(LegendCanvas, DrawProperties);
@@ -169,7 +170,9 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                     DrawTimeTrack.Draw(MainCanvas, ViewPortStart, timeline, DrawProperties, Result);
 
                     //Draw Track Items
-                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItem, IsManageMedia);
+                    DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItems, IsManageMedia);
+                    if(!alreadyAdded && !IsManageMedia)
+                        AddEventHandlers(MainCanvas);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 
                     //Draw Missing Spaces
@@ -181,7 +184,61 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 }
             }
         }
+        bool drag = false, isFirstClick = true;
+        double diff = 0;
+        private void AddEventHandlers(Canvas MainCanvas)
+        {
+            MainCanvas.MouseLeftButtonDown += (object s, MouseButtonEventArgs e) =>
+            {
+                MainCanvas.CaptureMouse();
+                isFirstClick = true;
+                drag = true;
+                diff = 0;
+            };
 
+            MainCanvas.MouseMove += (object s, MouseEventArgs e) =>
+            {
+                if (!drag) return;
+                
+                Console.WriteLine($"Inside Mouse move");
+                // get the position of the mouse relative to the Canvas
+                var mousePos = e.GetPosition(MainCanvas);
+
+                // center the trackbarLine on the mouse
+                double mouseX = mousePos.X;
+                if (mouseX >= 0)
+                {
+                    //trackCalloutItem.Margin = new Thickness(mouseX, toppos, rightpos, bottompos);
+                    var item = TrackVideoEventItems.Find(x => x.IsSelected);
+                    var item2 = TrackCalloutItems.Find(x => x.IsSelected);
+                    var leftPos = item != null ? Canvas.GetLeft(item) : Canvas.GetLeft(item2);
+                    if (isFirstClick == false)
+                    {
+                        if (item != null)
+                            Canvas.SetLeft(item, (mouseX - diff));
+
+                        if (item2 != null)
+                            Canvas.SetLeft(item2, (mouseX - diff));
+                    }
+                    else
+                    {
+                        isFirstClick = false;
+                        diff = mouseX - leftPos;
+                    }
+                    Console.WriteLine($"{mouseX}, {leftPos}, {diff}, {isFirstClick}");
+
+
+                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
+                }
+            };
+
+            MainCanvas.MouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
+            {
+                drag = false;
+                MainCanvas.ReleaseMouseCapture();
+            };
+            alreadyAdded = true;
+        }
 
 
         private (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) CalculateSectionWidth(Canvas MainCanvas, TimeSpan ViewportStart, TimeSpan ViewportDuration)

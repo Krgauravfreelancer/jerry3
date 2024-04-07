@@ -10,12 +10,14 @@ using System.Windows.Shapes;
 using System.Windows;
 using NAudio.Mixer;
 using System.Windows.Media.Imaging;
+using System.Windows.Input;
+using System.Security.Policy;
 
 namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {
     internal class DrawVideoEvents
     {
-        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, List<TrackVideoEventItem> TrackVideoEventItems, List<TrackCalloutItem> TrackCalloutItem, bool IsManageMedia = true)
+        internal void Draw(Canvas MainCanvas, Canvas LegendCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, List<Media> Playlist, List<UIElement> TrackMediaElements, Controls.TimeLine timeline, DrawProperties DrawProperties, bool IsReadOnly, (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) Result, List<TrackVideoEventItem> TrackVideoEventItems, List<TrackCalloutItem> TrackCalloutItems, bool IsManageMedia = true)
         {
             for (int i = 0; i < TrackMediaElements.Count; i++)
             {
@@ -44,6 +46,9 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
             {
                 TrackHeight = 1;
             }
+            
+            
+
 
             for (int i = 0; i < Playlist.Count; i++)
             {
@@ -73,10 +78,16 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         trackVideoEventItem.Background = new SolidColorBrush(trackVideoEventItem.Color);
                         trackVideoEventItem.MediaSelectedEvent += (object s, Media m) =>
                         {
-                            TrackVideoEventItems?.ForEach(x => x.BorderBrush = Brushes.White);
-                            TrackCalloutItem?.ForEach(x => x.BorderBrush = Brushes.White);
+                            TrackVideoEventItems?.ForEach(x => {
+                                x.BorderBrush = Brushes.White;
+                                x.IsSelected = false;
+                                });
+                            TrackCalloutItems?.ForEach(x => {
+                                x.BorderBrush = Brushes.White;
+                                x.IsSelected = false;
+                            });
                             trackVideoEventItem.BorderBrush = Brushes.Red;
-                            m.IsSelected = true;
+                            trackVideoEventItem.IsSelected = true;
                         };
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackVideoEventItem, true);
                         TrackVideoEventItems.Add(trackVideoEventItem);
@@ -90,19 +101,20 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         int Brightness = red + green + blue;
                         var trackCalloutItem = new TrackCalloutItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsManageMedia);
 
-                        if (item.TrackId == 3)
-                        {
-                            trackCalloutItem.Margin = new Thickness(StartPosition, CallOut1, 0, 0);//Callout 1
-                        }
-                        else if (item.TrackId == 4)
-                        {
-                            trackCalloutItem.Margin = new Thickness(StartPosition, CallOut2, 0, 0); //Callout 2
-                        }
-                        else if (item.TrackId == 1)
-                        {
-                            trackCalloutItem.Margin = new Thickness(StartPosition, Audio, 0, 0);//Audio
+                        //if (item.TrackId == 3)
+                        //{
+                        //    trackCalloutItem.Margin = new Thickness(StartPosition, CallOut1, 0, 0);//Callout 1
+                            
+                        //}
+                        //else if (item.TrackId == 4)
+                        //{
+                        //    trackCalloutItem.Margin = new Thickness(StartPosition, CallOut2, 0, 0); //Callout 2
+                        //}
+                        //else if (item.TrackId == 1)
+                        //{
+                        //    trackCalloutItem.Margin = new Thickness(StartPosition, Audio, 0, 0);//Audio
 
-                        }
+                        //}
 
                         trackCalloutItem.Width = Width;
                         trackCalloutItem.Height = TrackHeight - 2;
@@ -113,20 +125,48 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         trackCalloutItem.Background = new SolidColorBrush(FillColor);
                         trackCalloutItem.MediaSelectedEvent += (object s, Media m) =>
                         {
-                            TrackVideoEventItems?.ForEach(x => x.BorderBrush = Brushes.White);
-                            TrackCalloutItem?.ForEach(x => x.BorderBrush = Brushes.White);
+                            TrackVideoEventItems?.ForEach(x => {
+                                x.BorderBrush = Brushes.White;
+                                x.IsSelected = false;
+                            });
+                            TrackCalloutItems?.ForEach(x => {
+                                x.BorderBrush = Brushes.White;
+                                x.IsSelected = false;
+                            });
                             trackCalloutItem.BorderBrush = Brushes.Red;
-                            m.IsSelected = true;
+                            trackCalloutItem.IsSelected = true;
                         };
 
+                       
+
+                       
+
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackCalloutItem, true);
-                        TrackCalloutItem.Add(trackCalloutItem);
+
+                        Canvas.SetLeft(trackCalloutItem, StartPosition);
+
+                        if (item.TrackId == 3)
+                        {
+                            Canvas.SetTop(trackCalloutItem, CallOut1);
+                        }
+                        else if (item.TrackId == 4)
+                        {
+                            Canvas.SetTop(trackCalloutItem, CallOut2);
+                        }
+                        else if (item.TrackId == 1)
+                        {
+                            Canvas.SetTop(trackCalloutItem, Audio);
+                        }
+                        
+                        TrackCalloutItems.Add(trackCalloutItem);
                     }
                 }
 
 
             }
         }
+        
+        
 
         internal enum EventType
         {
