@@ -99,15 +99,17 @@
     
 
 
-        <Grid Background="White" Margin="5,5,10,5"  ContextMenu="{StaticResource TimelineMenu}">
+        <Grid Background="White" Margin="5,1,10,1"  ContextMenu="{StaticResource TimelineMenu}">
 
             <StackPanel Margin="5,5,5,0" Height="300" Orientation="Vertical" VerticalAlignment="Top">
                 <!--<GroupBox Header="Timeline User Control" Padding="10">
                         <timeline:TimelineGridControl x:Name="TimelineGridCtrl2"  ></timeline:TimelineGridControl>
                     </GroupBox>-->
                 <!--<GroupBox Padding="2">-->
-                <Label Content="Use Right click to add Audio/Video Event" Margin="5,0,0,0" ></Label>
-
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <Button Content="Save Timeline" IsEnabled="False" Padding="20, 0, 20, 0" VerticalAlignment="Top" />
+                <Label Content="Use Right click to add Audio/Video Event" Margin="5,-5,0,0" VerticalAlignment="Top" />
+            </StackPanel>
             <mmtimepicker:TimeLine BorderBrush="Gray" BorderThickness="1" x:Name="TimelineGridCtrl2" MouseDown_Event="TimelineGridCtrl2_MouseDown_Event" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
                 <!--</GroupBox>-->
 
