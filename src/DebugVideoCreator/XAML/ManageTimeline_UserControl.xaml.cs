@@ -1,4 +1,5 @@
-﻿using ServerApiCall_UserControl.DTO.VideoEvent;
+﻿using ManageMedia_UserControl.Classes;
+using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
@@ -86,7 +87,7 @@ namespace VideoCreator.XAML
 
 
             //TimelineUserConrol.ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked += TimelineUserConrol_AddImageEventUsingCBLibraryInMiddle_Clicked;
-            //TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
+            TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
 
             //TimelineUserConrol.LoadVideoEventsFromDb(selectedProjectEvent.projdetId);
 
@@ -792,33 +793,47 @@ namespace VideoCreator.XAML
         #region == ContextMenu > OtherEvents ==
 
 
-        private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<TimelineVideoEvent> modifiedEvents)
+        private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<CBVVideoEvent> modifiedEvents)
         {
-            //LoaderHelper.ShowLoader(this, loader, "Processing ...");
-            //foreach (var modifiedEvent in modifiedEvents)
-            //{
-            //    var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
-            //    if (response != null)
-            //    {
-            //        var videoEventDt = new VideoEventDatatable();
-            //        videoEventDt.Columns.Add("videoevent_origduration", typeof(string)); // temp TBD
-            //        DataRow dataRow = videoEventDt.NewRow();
-            //        dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
-            //        dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
-            //        dataRow["videoevent_track"] = response.videoevent_track;
-            //        dataRow["videoevent_start"] = response.videoevent_start;
-            //        dataRow["videoevent_duration"] = response.videoevent_duration;
-            //        dataRow["videoevent_origduration"] = response.videoevent_origduration;
-            //        dataRow["videoevent_end"] = response.videoevent_end;
-            //        dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
-            //        dataRow["videoevent_issynced"] = response.videoevent_issynced;
-            //        dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
-            //        videoEventDt.Rows.Add(dataRow);
-            //        DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
-            //    }
-            //}
-            //TimelineUserConrol.Refresh();
-            //LoaderHelper.HideLoader(this, loader);
+            LoaderHelper.ShowLoader(this, loader, "Processing ...");
+            foreach (var modifiedEvent in modifiedEvents)
+            {
+                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
+                if (response != null)
+                {
+
+                    var videoEventDt = new DataTable();
+                    videoEventDt.Columns.Add("videoevent_id", typeof(int));
+                    videoEventDt.Columns.Add("fk_videoevent_media", typeof(int));
+                    videoEventDt.Columns.Add("videoevent_track", typeof(int));
+                    videoEventDt.Columns.Add("videoevent_start", typeof(string));
+
+                    videoEventDt.Columns.Add("videoevent_duration", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_origduration", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_end", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_isdeleted", typeof(bool));
+                    videoEventDt.Columns.Add("videoevent_issynced", typeof(bool));
+                    videoEventDt.Columns.Add("videoevent_syncerror", typeof(string));
+
+                    videoEventDt.Columns.Add("videoevent_modifyDate", typeof(string));
+
+                    DataRow dataRow = videoEventDt.NewRow();
+                    dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
+                    dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
+                    dataRow["videoevent_track"] = response.videoevent_track;
+                    dataRow["videoevent_start"] = response.videoevent_start;
+                    dataRow["videoevent_duration"] = response.videoevent_duration;
+                    dataRow["videoevent_origduration"] = response.videoevent_origduration;
+                    dataRow["videoevent_end"] = response.videoevent_end;
+                    dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
+                    dataRow["videoevent_issynced"] = response.videoevent_issynced;
+                    dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
+                    videoEventDt.Rows.Add(dataRow);
+                    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
+                }
+            }
+            TimelineUserConrol.Refresh();
+            LoaderHelper.HideLoader(this, loader);
         }
 
         private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineSelectedEvent selectedEvent)

@@ -16,9 +16,9 @@ using System.Net;
 
 namespace ManageMedia_UserControl.Controls
 {
-    internal class TrackCalloutItem : Border
+    public class TrackCalloutItem : Border
     {
-        internal Media Media { get; set; }
+        internal Media MediaCallout { get; set; }
         Color HighlightedColor = Colors.Gray;
         internal Color Color = Colors.Gray;
         internal event EventHandler<Media> MediaSelectedEvent;
@@ -32,7 +32,7 @@ namespace ManageMedia_UserControl.Controls
         internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas)
         {
             this.Unloaded += TrackCalloutItem_Unloaded;
-            Media = media;
+            MediaCallout = media;
             Color = color;
             timeLine = timeline;
             _IsManageMedia = IsManageMedia;
@@ -138,18 +138,17 @@ namespace ManageMedia_UserControl.Controls
             rightBorderItem.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) =>
             {
                 e.Handled = true;
-                BorderPosition = e.GetPosition(MainCanvas);
                 rightBorderItem.CaptureMouse();
+                BorderPosition = e.GetPosition(MainCanvas);
                 drag = true;
                 isFirstClick = true;
+                previousDiff = 0.0;
             };
 
             rightBorderItem.PreviewMouseMove += (object s, MouseEventArgs e) =>
             {
                 e.Handled = true;
                 if (!drag) return;
-                var border = s as Border;
-                Console.WriteLine($"Inside Extension");
 
                 // get the position of the mouse relative to the Canvas
                 var mousePos = e.GetPosition(MainCanvas);
@@ -161,7 +160,7 @@ namespace ManageMedia_UserControl.Controls
                     if (isFirstClick == false)
                     {
                         var diffNew = mouseX - BorderPosition.X;
-                        Console.WriteLine($"Inside Extension isFirstClick -> {mouseX}, {BorderPosition.X}, {diffNew}, {this.Width}, {isFirstClick}");
+                        //Console.WriteLine($"diffNew-{diffNew},mouseX-{mouseX},BorderPosition.X-{BorderPosition.X},this.Width-{this.Width}");
                         if (diffNew != previousDiff)
                         {
                             if (this.Width + diffNew - previousDiff > 0)
@@ -170,6 +169,8 @@ namespace ManageMedia_UserControl.Controls
                                 rightBorderItem.Margin = new Thickness(this.Width - 8, 0, 0, 0);
                             }
                             previousDiff = diffNew;
+                            MediaCallout.Duration = timeLine.GetTimeSpanByLocation(mouseX) - MediaCallout.StartTime;
+                            timeLine.CalloutSizeChanged_Event(MediaCallout);
                         }
                     }
                     else
@@ -177,9 +178,6 @@ namespace ManageMedia_UserControl.Controls
                         isFirstClick = false;
                     }
                   
-
-
-                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
                 }
                 
             };
@@ -239,8 +237,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void TrackCalloutItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Console.WriteLine($"Clicked On", Media);
-            MediaSelectedEvent(sender, Media);
+            MediaSelectedEvent(sender, MediaCallout);
         }
 
         private string FirstCharToUpper(string input)
@@ -257,9 +254,9 @@ namespace ManageMedia_UserControl.Controls
 
         internal void CalculateOriginalTime(double width)
         {
-            if (Media.OriginalDuration != TimeSpan.Zero)
+            if (MediaCallout.OriginalDuration != TimeSpan.Zero)
             {
-                double timeFraction = Media.OriginalDuration.TotalSeconds / Media.Duration.TotalSeconds;
+                double timeFraction = MediaCallout.OriginalDuration.TotalSeconds / MediaCallout.Duration.TotalSeconds;
                 OverTimeBorder.Width = width - (width * timeFraction);
                 OverTimeBorder.Margin = new Thickness(width - OverTimeBorder.Width, 0, 0, 0);
             }
@@ -288,7 +285,7 @@ namespace ManageMedia_UserControl.Controls
                 OverTimeBorder = null;
             }
 
-            Media = null;
+            MediaCallout = null;
             timeLine = null;
         }
 

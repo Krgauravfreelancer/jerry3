@@ -45,7 +45,7 @@ namespace VideoCreator.XAML
         public event EventHandler<FormOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
         public event EventHandler<TimelineSelectedEvent> VideoEventSelectionChanged;
-        public event EventHandler<List<TimelineVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
+        public event EventHandler<List<CBVVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
         public event EventHandler ContextMenu_UndeleteDeletedEvent_Clicked;
 
         private bool ReadOnly;
@@ -68,6 +68,7 @@ namespace VideoCreator.XAML
         {
             MMTimelineHelper.Init(selectedProjectEvent, TimelineGridCtrl2);
             TimelineGridCtrl2.SetTrackbar();
+            TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia = new List<MMClass.Media>();
         }
 
 
@@ -179,55 +180,24 @@ namespace VideoCreator.XAML
         private void SaveTimeline(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Coming Soon !!", "Work In Progress");
-            // Update changes to the database for existing events
-            //var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
-            //foreach (var modifiedEvent in modifiedEvents)
-            //{
-            //    // save modified notes to database
-            //    //if (modifiedEvent.TrackNumber == TrackNumber.Notes)
-            //    //{
-            //    //    var modifiedNotesDt = new NotesDatatable();
-
-            //    //    var timelineNote = new TimelineNote
-            //    //    {
-            //    //        notes_id = modifiedEvent.Note.notes_id,
-            //    //        fk_notes_videoevent = modifiedEvent.Note.fk_notes_videoevent,
-            //    //        notes_line = modifiedEvent.Note.notes_line,
-            //    //        notes_wordcount = modifiedEvent.Note.notes_wordcount,
-            //    //        notes_index = modifiedEvent.Note.notes_index,
-            //    //        notes_start = modifiedEvent.StartTimeStr,
-            //    //        notes_duration = modifiedEvent.EventDuration,
-            //    //        notes_createdate = modifiedEvent.Note.notes_createdate,
-            //    //        notes_modifydate = modifiedEvent.Note.notes_modifydate,
-            //    //        notes_isdeleted = modifiedEvent.Note.notes_isdeleted,
-            //    //        notes_issynced = modifiedEvent.Note.notes_issynced,
-            //    //        notes_serverid = modifiedEvent.Note.notes_serverid,
-            //    //        notes_syncerror = modifiedEvent.Note.notes_syncerror,
-            //    //    };
-
-            //    //    modifiedNotesDt.AddNoteRow(timelineNote);
-            //    //    DataManagerSqlLite.UpdateRowsToNotes(modifiedNotesDt);
-            //    //}
-
-            //    //// save modified videoevents to database
-            //    //if (modifiedEvent.TrackNumber != TrackNumber.Notes)
-            //    //{
-            //    //    modifiedEvent.VideoEvent.videoevent_end = DataManagerSqlLite.CalcNextEnd(modifiedEvent.EventStart, modifiedEvent.EventDuration);
-
-            //    //    var videoEventDt = new VideoEventDatatable();
-            //    //    videoEventDt.AddVideoEventRow(modifiedEvent);
-
-            //    //    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
-            //    //}
-            //}
-
-            //var modifiedEvents = _timelineGridControl.GetModifiedTimelineEvents();
-            //ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
-
-            //_timelineGridControl.ClearTimeline();
-
-            //LoadTimelineDataFromDb_Click(null, null);
-            //MessageBox.Show("Save Successful!");
+           
+            if (TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia?.Count > 0)
+            {
+                var modifiedEvents = new List<CBVVideoEvent>();
+                foreach(var item in TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia)
+                {
+                    var videoevent = DataManagerSqlLite.GetVideoEventbyId(item.VideoEventID, false, false).FirstOrDefault();
+                    videoevent.videoevent_start = item.StartTime.ToString(@"hh\:mm\:ss\.fff");
+                    videoevent.videoevent_duration = item.Duration.ToString(@"hh\:mm\:ss\.fff");
+                    videoevent.videoevent_end = DataManagerSqlLite.CalcNextEnd(videoevent.videoevent_start, videoevent.videoevent_duration);
+                    modifiedEvents.Add(videoevent);
+                }
+                ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
+            }
+            else
+            {
+                MessageBox.Show("Nothing to Show here !!!", "Information");
+            }
         }
 
         #endregion
@@ -396,13 +366,12 @@ namespace VideoCreator.XAML
 
         }
 
-        
+
+
 
 
 
 
         #endregion
-
-        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
 using ManageMedia_UserControl.Controls;
+using ManageMedia_UserControl.Models;
 using ScreenRecorder_UserControl.Models;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,11 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         DrawMissingVideoEvents DrawMissingVideoEvents = new DrawMissingVideoEvents();
         List<TrackVideoEventItem> TrackVideoEventItems = new List<TrackVideoEventItem>();
         List<TrackCalloutItem> TrackCalloutItems = new List<TrackCalloutItem>();
+        List<TrackVideoEventItem> ModifiedVideoEventItems = new List<TrackVideoEventItem>();
+        List<TrackCalloutItem> ModifiedCalloutItems = new List<TrackCalloutItem>();
+
+        public event Action<LocationChangedEventModel> LocationChangedEvent;
+
         bool alreadyAdded = false;
         internal void SetPlaylist(List<Media> Playlist, TimeLineMode Mode)
         {
@@ -172,7 +178,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                     //Draw Track Items
                     DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItems, IsManageMedia);
                     if(!alreadyAdded && !IsManageMedia)
-                        AddEventHandlers(MainCanvas);
+                        AddEventHandlers(MainCanvas, timeline);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 
                     //Draw Missing Spaces
@@ -186,7 +192,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         }
         bool drag = false, isFirstClick = true;
         double diff = 0;
-        private void AddEventHandlers(Canvas MainCanvas)
+        private void AddEventHandlers(Canvas MainCanvas, Controls.TimeLine timeline)
         {
             MainCanvas.MouseLeftButtonDown += (object s, MouseButtonEventArgs e) =>
             {
@@ -200,35 +206,47 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             {
                 if (!drag) return;
                 
-                Console.WriteLine($"Inside Mouse move");
-                var item = TrackVideoEventItems.Find(x => x.IsSelected);
-                var item2 = TrackCalloutItems.Find(x => x.IsSelected);
+               
+                var videoEvent = TrackVideoEventItems.Find(x => x.IsSelected);
+                var calloutEvent = TrackCalloutItems.Find(x => x.IsSelected);
 
                 // get the position of the mouse relative to the Canvas
                 var mousePos = e.GetPosition(MainCanvas);
 
                 // center the trackbarLine on the mouse
                 double mouseX = mousePos.X;
-                if (mouseX >= 0 && (item != null || item2 != null))
+                if (mouseX >= 0 && (videoEvent != null || calloutEvent != null))
                 {
-                    var leftPos = item != null ? Canvas.GetLeft(item) : Canvas.GetLeft(item2);
+                    var leftPos = videoEvent != null ? Canvas.GetLeft(videoEvent) : Canvas.GetLeft(calloutEvent);
                     if (isFirstClick == false)
                     {
-                        if (item != null)
-                            Canvas.SetLeft(item, (mouseX - diff));
+                        if (videoEvent != null)
+                        {
+                            Canvas.SetLeft(videoEvent, (mouseX - diff));
+                            videoEvent.Media.StartTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                            var isExistsAlready = ModifiedVideoEventItems.Find(x => x.Media.VideoEventID == videoEvent.Media.VideoEventID);
+                            if (isExistsAlready != null)
+                                ModifiedVideoEventItems.Remove(isExistsAlready);
+                            ModifiedVideoEventItems.Add(videoEvent);
+                        }
+                        if (calloutEvent != null && calloutEvent.MediaCallout != null)
+                        {
+                            Canvas.SetLeft(calloutEvent,(mouseX - diff));
+                            calloutEvent.MediaCallout.StartTime = timeline.GetTimeSpanByLocation(mouseX - diff);
 
-                        if (item2 != null)
-                            Canvas.SetLeft(item2, (mouseX - diff));
+                            
+                            var isExistsAlready = ModifiedCalloutItems.Find(x => x.MediaCallout.VideoEventID == calloutEvent.MediaCallout.VideoEventID);
+                            if (isExistsAlready != null)
+                                ModifiedCalloutItems.Remove(isExistsAlready);
+
+                            ModifiedCalloutItems.Add(calloutEvent);
+                        }
                     }
                     else
                     {
                         isFirstClick = false;
                         diff = mouseX - leftPos;
                     }
-                    Console.WriteLine($"{mouseX}, {leftPos}, {diff}, {isFirstClick}");
-
-
-                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
                 }
             };
 
@@ -236,6 +254,12 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             {
                 drag = false;
                 MainCanvas.ReleaseMouseCapture();
+                var payload = new LocationChangedEventModel
+                {
+                    CallOutItems = ModifiedCalloutItems,
+                    VideoEventItems = ModifiedVideoEventItems,
+                };
+                timeline.LocationChanged_Event(payload);
             };
             alreadyAdded = true;
         }

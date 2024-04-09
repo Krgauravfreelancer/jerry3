@@ -56,8 +56,14 @@ namespace ManageMedia_UserControl.Controls
         public event EventHandler<int> Delete_Event;
         public event EventHandler<Media> Clone_Event;
         public event EventHandler<Media> CloneAtEnd_Event;
-        
+
         public event EventHandler<MouseDownEvent> MouseDown_Event;
+
+
+        public event EventHandler<LocationChangedEventModel> LocationChangedEvent;
+
+        public List<Media> CalloutLocationOrSizeChangedMedia = new List<Media>();
+
         public Point TrackBarPosition = new Point(0, 0);
 
         public TimeLine()
@@ -1406,19 +1412,19 @@ namespace ManageMedia_UserControl.Controls
         private Media GetMedia(object sender)
         {
             MenuItem MenuItem = sender as MenuItem;
-           
+
             if (MenuItem != null)
             {
                 var menu = ((ContextMenu)MenuItem.Parent).PlacementTarget;
                 var videoItem = menu as TrackVideoEventItem;
-                if(videoItem != null)
+                if (videoItem != null)
                 {
                     return videoItem.Media;
                 }
                 var calloutItem = menu as TrackCalloutItem;
                 if (calloutItem != null)
                 {
-                    return calloutItem.Media;
+                    return calloutItem.MediaCallout;
                 }
             }
             return null;
@@ -1469,6 +1475,33 @@ namespace ManageMedia_UserControl.Controls
                 PlayListUpdatedEvent(new PlayListUpdatedArgs(_Playlist));
             }
         }
+
+
+        public void LocationChanged_Event(LocationChangedEventModel LCModel)
+        {
+            foreach (var item in LCModel.CallOutItems)
+            {
+                Console.WriteLine($"Media Location Changed with ID - {item.MediaCallout.VideoEventID} and new starttime {item.MediaCallout.StartTime.ToString(@"hh\:mm\:ss\.fff")}");
+                var isAlreadyExist = CalloutLocationOrSizeChangedMedia.Find(x => x.VideoEventID == item.MediaCallout?.VideoEventID);
+                if (isAlreadyExist != null)
+                    CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
+                CalloutLocationOrSizeChangedMedia.Add(item.MediaCallout);
+            }
+
+            foreach (var item in LCModel.VideoEventItems)
+            {
+                Console.WriteLine($"Media Location Changed with ID - {item.Media.VideoEventID} and new starttime {item.Media.StartTime.ToString(@"hh\:mm\:ss\.fff")}");
+            }
+        }
+
+        public void CalloutSizeChanged_Event(Media calloutMedia)
+        {
+            var isAlreadyExist = CalloutLocationOrSizeChangedMedia.Find(x => x.VideoEventID == calloutMedia?.VideoEventID);
+            if (isAlreadyExist != null)
+                CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
+            CalloutLocationOrSizeChangedMedia.Add(calloutMedia);
+        }
+
 
         public event EventHandler<SelectedVideoEventArgs> SelectedVideo;
         internal void FocusEventBtn_Click(object sender, RoutedEventArgs e)
