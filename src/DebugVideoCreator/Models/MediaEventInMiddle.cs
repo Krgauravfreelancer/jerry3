@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using Timeline.UserControls.Models;
 
 namespace VideoCreator.Models
 {

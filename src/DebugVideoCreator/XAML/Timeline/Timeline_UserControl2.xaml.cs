@@ -13,9 +13,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Timeline.UserControls.Controls;
-using Timeline.UserControls.Models;
-using Timeline.UserControls.Models.Datatables;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 using VideoCreator.Models;
@@ -124,7 +121,7 @@ namespace VideoCreator.XAML
             {
                 var payload = new TimelineSelectedEvent
                 {
-                    Track = (TrackNumber)selectedEvent.TrackId,
+                    Track = (EnumTrack)selectedEvent.TrackId,
                     EventId = selectedEvent.TrackId != -1 ? selectedEvent.EventId : -1
                 };
                 VideoEventSelectionChanged.Invoke(sender, payload);

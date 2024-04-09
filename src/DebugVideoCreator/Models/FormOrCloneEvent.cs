@@ -1,6 +1,5 @@
 ﻿using Sqllite_Library.Models;
 using System.Collections.Generic;
-using Timeline.UserControls.Models;
 using MMClass = ManageMedia_UserControl.Classes;
 
 namespace VideoCreator.Models
@@ -22,6 +21,6 @@ namespace VideoCreator.Models
     public class TimelineSelectedEvent
     {
         public int EventId;
-        public TrackNumber Track;
+        public EnumTrack Track;
     }
 }

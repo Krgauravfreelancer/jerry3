@@ -49,7 +49,7 @@ namespace VideoCreator.Helpers
 
             // Step1: Lets clear the local DB
             DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
-            int i = 1;
+            //int i = 1;
             foreach (var videoEvent in serverVideoEventData?.Data)
             {
                 var localVideoEventId = SaveVideoEvent(videoEvent, selectedProjectEvent);

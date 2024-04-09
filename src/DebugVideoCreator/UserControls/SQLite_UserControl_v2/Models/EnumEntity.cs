@@ -29,7 +29,8 @@
     {
         AUDIO = 1,
         IMAGEORVIDEO = 2,
-        CALLOUT1,
-        CALLOUT2
+        CALLOUT1 = 3,
+        CALLOUT2 = 4,
+        NOTES = 5
     }
 }

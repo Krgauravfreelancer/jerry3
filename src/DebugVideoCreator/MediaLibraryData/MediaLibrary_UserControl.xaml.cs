@@ -9,7 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Timeline.UserControls.Models;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 using VideoCreator.Models;

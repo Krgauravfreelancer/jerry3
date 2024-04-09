@@ -24,9 +24,6 @@ namespace ManageMedia_UserControl.Controls
         internal event EventHandler<Media> MediaSelectedEvent;
         ContextMenu myContextMenu;
         MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, AddImageUsingLibraryAfterSelectedEventBtn;
-        MenuItem FocusEventBtn;
-        MenuItem SetDurationBtn;
-
         TimeLine timeLine;
 
         Border OverTimeBorder;

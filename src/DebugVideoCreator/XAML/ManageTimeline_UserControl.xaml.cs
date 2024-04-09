@@ -7,8 +7,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Timeline.UserControls.Models;
-using Timeline.UserControls.Models.Datatables;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
 using VideoCreator.MediaLibraryData;
@@ -796,36 +794,36 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<TimelineVideoEvent> modifiedEvents)
         {
-            LoaderHelper.ShowLoader(this, loader, "Processing ...");
-            foreach (var modifiedEvent in modifiedEvents)
-            {
-                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
-                if (response != null)
-                {
-                    var videoEventDt = new VideoEventDatatable();
-                    videoEventDt.Columns.Add("videoevent_origduration", typeof(string)); // temp TBD
-                    DataRow dataRow = videoEventDt.NewRow();
-                    dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
-                    dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
-                    dataRow["videoevent_track"] = response.videoevent_track;
-                    dataRow["videoevent_start"] = response.videoevent_start;
-                    dataRow["videoevent_duration"] = response.videoevent_duration;
-                    dataRow["videoevent_origduration"] = response.videoevent_origduration;
-                    dataRow["videoevent_end"] = response.videoevent_end;
-                    dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
-                    dataRow["videoevent_issynced"] = response.videoevent_issynced;
-                    dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
-                    videoEventDt.Rows.Add(dataRow);
-                    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
-                }
-            }
-            TimelineUserConrol.Refresh();
-            LoaderHelper.HideLoader(this, loader);
+            //LoaderHelper.ShowLoader(this, loader, "Processing ...");
+            //foreach (var modifiedEvent in modifiedEvents)
+            //{
+            //    var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
+            //    if (response != null)
+            //    {
+            //        var videoEventDt = new VideoEventDatatable();
+            //        videoEventDt.Columns.Add("videoevent_origduration", typeof(string)); // temp TBD
+            //        DataRow dataRow = videoEventDt.NewRow();
+            //        dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
+            //        dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
+            //        dataRow["videoevent_track"] = response.videoevent_track;
+            //        dataRow["videoevent_start"] = response.videoevent_start;
+            //        dataRow["videoevent_duration"] = response.videoevent_duration;
+            //        dataRow["videoevent_origduration"] = response.videoevent_origduration;
+            //        dataRow["videoevent_end"] = response.videoevent_end;
+            //        dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
+            //        dataRow["videoevent_issynced"] = response.videoevent_issynced;
+            //        dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
+            //        videoEventDt.Rows.Add(dataRow);
+            //        DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
+            //    }
+            //}
+            //TimelineUserConrol.Refresh();
+            //LoaderHelper.HideLoader(this, loader);
         }
 
         private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineSelectedEvent selectedEvent)
         {
-            if(selectedEvent.Track == TrackNumber.Notes)
+            if(selectedEvent.Track == EnumTrack.NOTES)
             {
                 selectedVideoEvent = null;
             }

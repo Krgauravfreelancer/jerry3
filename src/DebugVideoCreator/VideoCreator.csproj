@@ -353,6 +353,7 @@
     <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
       <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\TimelineVideoEvent.cs" />
     <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
       <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
@@ -386,9 +387,6 @@
     </Compile>
     <Compile Include="XAML\Timeline\Timeline_UserControl2.xaml.cs">
       <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Timeline\Timeline_UserControl.xaml.cs">
-      <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
     </Compile>
     <Page Include="Loader\Block.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -451,10 +449,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="XAML\Timeline\Timeline_UserControl2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\Timeline\Timeline_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -651,10 +645,6 @@
     <ProjectReference Include="UserControls\SQLite_UserControl_v2\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
-    </ProjectReference>
-    <ProjectReference Include="UserControls\Timeline.UserControl\Timeline.UserControls.csproj">
-      <Project>{75bd2760-c9a6-46f6-85e0-aaac0760b829}</Project>
-      <Name>Timeline.UserControls</Name>
     </ProjectReference>
     <ProjectReference Include="UserControls\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
       <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>

@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using Timeline.UserControls.Models;
 using VideoCreator.Auth;
+using VideoCreator.Models;
 
 namespace VideoCreator.Helpers
 {
