@@ -150,17 +150,14 @@ namespace ManageMedia_UserControl.Controls
                 e.Handled = true;
                 if (!drag) return;
 
-                // get the position of the mouse relative to the Canvas
                 var mousePos = e.GetPosition(MainCanvas);
 
-                // center the trackbarLine on the mouse
                 double mouseX = mousePos.X;
                 if (mouseX >= 0)
                 {
                     if (isFirstClick == false)
                     {
                         var diffNew = mouseX - BorderPosition.X;
-                        //Console.WriteLine($"diffNew-{diffNew},mouseX-{mouseX},BorderPosition.X-{BorderPosition.X},this.Width-{this.Width}");
                         if (diffNew != previousDiff)
                         {
                             if (this.Width + diffNew - previousDiff > 0)

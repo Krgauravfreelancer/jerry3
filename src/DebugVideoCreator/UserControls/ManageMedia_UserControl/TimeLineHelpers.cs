@@ -17,6 +17,7 @@ namespace ManageMedia_UserControl
 
         internal static TimeSpan GetTimeSpanByLocation(Canvas MainCanvas, TimeSpan ViewPortStart, TimeSpan ViewPortDuration, double location)
         {
+            if (Double.IsNaN(location)) {  return TimeSpan.Zero; }
             double TotalWidth = MainCanvas.ActualWidth;
             return ViewPortStart + TimeSpan.FromSeconds(ViewPortDuration.TotalSeconds * (location / TotalWidth));
         }

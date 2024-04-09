@@ -92,13 +92,6 @@ namespace VideoCreator.XAML
 
         private void TimelineGridCtrl2_CloneAtEnd_Event(object sender, MMClass.Media selectedEvent)
         {
-            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            //if (selectedEvent == null)
-            //{
-            //    MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    return;
-            //}
             var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
             var payload = new FormOrCloneEvent
             {
@@ -164,23 +157,8 @@ namespace VideoCreator.XAML
         }
 
 
-        private void GetSelectedEvent(object sender, RoutedEventArgs e)
-        {
-            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            //if (selectedEvent == null)
-            //    lblSelectedEvent.Content = "No selected event";
-
-            //else if (selectedEvent.TrackNumber == TrackNumber.Notes)
-            //    lblSelectedEvent.Content = $"Id: {selectedEvent.Note.notes_id} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.EventDuration_Double} s";
-            //else
-            //    lblSelectedEvent.Content = $"Id: {selectedEvent.VideoEvent.videoevent_id} , Track: {selectedEvent.TrackNumber} , Start: {selectedEvent.StartTimeStr} , Dur: {selectedEvent.EventDuration_Double} s";
-        }
-
         private void SaveTimeline(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Coming Soon !!", "Work In Progress");
-           
             if (TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia?.Count > 0)
             {
                 var modifiedEvents = new List<CBVVideoEvent>();
@@ -196,7 +174,7 @@ namespace VideoCreator.XAML
             }
             else
             {
-                MessageBox.Show("Nothing to Show here !!!", "Information");
+                MessageBox.Show("Nothing to save here !!!", "Information");
             }
         }
 
@@ -275,19 +253,6 @@ namespace VideoCreator.XAML
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-            //int projDetId = ((CBVProjdet)ProjDetCmbBox.SelectedItem).projdet_id;
-
-            //ScreenRecorderWindow2 screenRecorderWindow = new ScreenRecorderWindow2(this, trackId: 4, projDetId);
-            //screenRecorderWindow.Owner = this;
-            //screenRecorderWindow.Title = "Add Callout2";
-
-            //screenRecorderWindow.BtnSaveClickedEvent += () =>
-            //{
-            //    LoadVideoEventsFromDb(projDetId);
-            //};
-
-            //screenRecorderWindow.Show();
-            //Hide();
             var payload = CalloutPreprocessing();
             ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
         }
@@ -336,42 +301,6 @@ namespace VideoCreator.XAML
         {
             ContextMenu_Run_Clicked.Invoke(sender, e);
         }
-
-        private void CloneEvent_Click(object sender, RoutedEventArgs e)
-        {
-            //var selectedEvent = _timelineGridControl.GetSelectedEvent();
-
-            //if (selectedEvent == null)
-            //{
-            //    MessageBox.Show("No event selected to clone, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    return;
-            //}
-            //var trackbarEvents = _timelineGridControl.GetTrackbarVideoEvents();
-
-            //var isSameEventPresent = trackbarEvents?.Find(x => x.VideoEvent.videoevent_track == selectedEvent.VideoEvent.videoevent_track);
-
-            //if (isSameEventPresent != null)
-            //{
-            //    MessageBox.Show("The trackbar position indicates there is another event(s) present already, so cant continue", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    return;
-            //}
-            //var trackBarPosition = TimelineGridCtrl2.TrackbarPosition;
-            //var trackbarTime = trackBarPosition.ToString(@"hh\:mm\:ss\.fff");
-            //var payload = new FormOrCloneEvent
-            //{
-            //    timelineVideoEvent = selectedEvent.VideoEvent,
-            //    timeAtTheMoment = trackbarTime
-            //};
-            //ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
-
-        }
-
-
-
-
-
-
-
         #endregion
     }
 }

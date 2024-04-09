@@ -1481,17 +1481,16 @@ namespace ManageMedia_UserControl.Controls
         {
             foreach (var item in LCModel.CallOutItems)
             {
-                Console.WriteLine($"Media Location Changed with ID - {item.MediaCallout.VideoEventID} and new starttime {item.MediaCallout.StartTime.ToString(@"hh\:mm\:ss\.fff")}");
-                var isAlreadyExist = CalloutLocationOrSizeChangedMedia.Find(x => x.VideoEventID == item.MediaCallout?.VideoEventID);
+                var isAlreadyExist = CalloutLocationOrSizeChangedMedia.Find(x => x.VideoEventID == item?.MediaCallout?.VideoEventID);
                 if (isAlreadyExist != null)
                     CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
                 CalloutLocationOrSizeChangedMedia.Add(item.MediaCallout);
             }
 
-            foreach (var item in LCModel.VideoEventItems)
-            {
-                Console.WriteLine($"Media Location Changed with ID - {item.Media.VideoEventID} and new starttime {item.Media.StartTime.ToString(@"hh\:mm\:ss\.fff")}");
-            }
+            //foreach (var item in LCModel.VideoEventItems)
+            //{
+            //    Console.WriteLine($"Media Location Changed with ID - {item.Media.VideoEventID} and new starttime {item.Media.StartTime.ToString(@"hh\:mm\:ss\.fff")}");
+            //}
         }
 
         public void CalloutSizeChanged_Event(Media calloutMedia)
