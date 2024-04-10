@@ -218,7 +218,6 @@ namespace ManageMedia_UserControl.Controls
 
         private void TrackVideoEventItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Console.WriteLine($"Clicked On", Media);
             MediaSelectedEvent(sender, Media);
         }
 

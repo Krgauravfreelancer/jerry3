@@ -145,7 +145,6 @@ namespace ManageMedia_UserControl.Controls
                 isFirstClick = true;
                 previousDiff = 0.0;
                 NextElement = null;
-                Console.WriteLine($"Items Count - {TrackCalloutItems.Count}");
             };
 
             rightBorderItem.PreviewMouseMove += (object s, MouseEventArgs e) =>
@@ -166,7 +165,6 @@ namespace ManageMedia_UserControl.Controls
                         if (diffNew != previousDiff)
                         {
                             var canMove = CanMoveAhead(MediaCallout, timeLine, mouseX);
-                            Console.WriteLine($"mouseX - {mouseX}, canMove - {canMove}");
                             if (canMove)
                             {
                                 if (this.Width + diffNew - previousDiff > 0)
@@ -212,7 +210,6 @@ namespace ManageMedia_UserControl.Controls
             if (NextElement != null)
             {
                 var newEndTime = timeline.GetTimeSpanByLocation(mouseX);
-                Console.WriteLine($"newEndTime - {newEndTime}");
                 if (newEndTime <= NextElement.MediaCallout.StartTime)
                     canMove = true;
                 else if (newEndTime > NextElement.MediaCallout.StartTime)
