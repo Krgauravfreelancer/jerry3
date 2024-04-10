@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Net;
+using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
+using System.Windows.Documents;
 
 namespace ManageMedia_UserControl.Controls
 {
@@ -25,16 +27,18 @@ namespace ManageMedia_UserControl.Controls
         ContextMenu myContextMenu;
         MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, AddImageUsingLibraryAfterSelectedEventBtn;
         TimeLine timeLine;
-
+        List<TrackCalloutItem> TrackCalloutItems;
         Border OverTimeBorder;
         bool _IsManageMedia;
+        TrackCalloutItem NextElement;
         public bool IsSelected;
-        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas)
+        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas, List<TrackCalloutItem> _TrackCalloutItems)
         {
             this.Unloaded += TrackCalloutItem_Unloaded;
             MediaCallout = media;
             Color = color;
             timeLine = timeline;
+            TrackCalloutItems = _TrackCalloutItems;
             _IsManageMedia = IsManageMedia;
             if (height < 2)
             { 
@@ -117,24 +121,21 @@ namespace ManageMedia_UserControl.Controls
             {
                 rightBorderItem.Margin = new Thickness(width - 8, 0, 0, 0);
             }
-            rightBorderItem.MouseEnter += RightBorderItem_MouseEnter;
+            
             AddEventHandlers(rightBorderItem, MainCanvas);
 
             return rightBorderItem;
         }
 
-        private void RightBorderItem_MouseEnter(object sender, MouseEventArgs e)
-        {
-            e.Handled = true;
-            var border = sender as Border;
-            border.Cursor = Cursors.SizeWE;
-        }
         bool drag = false;
         double previousDiff = 0.0;
         bool isFirstClick = false;
         Point BorderPosition;
+        
         private void AddEventHandlers(Border rightBorderItem, Canvas MainCanvas)
         {
+            rightBorderItem.MouseEnter += RightBorderItem_MouseEnter;
+
             rightBorderItem.PreviewMouseLeftButtonDown += (object s, MouseButtonEventArgs e) =>
             {
                 e.Handled = true;
@@ -143,6 +144,8 @@ namespace ManageMedia_UserControl.Controls
                 drag = true;
                 isFirstClick = true;
                 previousDiff = 0.0;
+                NextElement = null;
+                Console.WriteLine($"Items Count - {TrackCalloutItems.Count}");
             };
 
             rightBorderItem.PreviewMouseMove += (object s, MouseEventArgs e) =>
@@ -158,16 +161,25 @@ namespace ManageMedia_UserControl.Controls
                     if (isFirstClick == false)
                     {
                         var diffNew = mouseX - BorderPosition.X;
+                        
+                        
                         if (diffNew != previousDiff)
                         {
-                            if (this.Width + diffNew - previousDiff > 0)
+                            var canMove = CanMoveAhead(MediaCallout, timeLine, mouseX);
+                            Console.WriteLine($"mouseX - {mouseX}, canMove - {canMove}");
+                            if (canMove)
                             {
-                                this.Width = this.Width + diffNew - previousDiff;
-                                rightBorderItem.Margin = new Thickness(this.Width - 8, 0, 0, 0);
+                                if (this.Width + diffNew - previousDiff > 0)
+                                {
+                                    this.Width = this.Width + diffNew - previousDiff;
+                                    rightBorderItem.Margin = new Thickness(this.Width - 8, 0, 0, 0);
+                                }
+                                previousDiff = diffNew;
+                                MediaCallout.Duration = timeLine.GetTimeSpanByLocation(mouseX) - MediaCallout.StartTime;
+                                timeLine.CalloutSizeChanged_Event(MediaCallout);
                             }
-                            previousDiff = diffNew;
-                            MediaCallout.Duration = timeLine.GetTimeSpanByLocation(mouseX) - MediaCallout.StartTime;
-                            timeLine.CalloutSizeChanged_Event(MediaCallout);
+
+                            
                         }
                     }
                     else
@@ -184,8 +196,40 @@ namespace ManageMedia_UserControl.Controls
                 e.Handled = true;
                 drag = false;
                 rightBorderItem.ReleaseMouseCapture();
+                NextElement = null;
             };
         }
+
+        private bool CanMoveAhead(Media calloutEvent, Controls.TimeLine timeline, double mouseX)
+        {
+            var canMove = false;
+            if (NextElement == null)
+                NextElement = TrackCalloutItems
+                                        .FindAll(x => x.MediaCallout.TrackId == MediaCallout.TrackId)?
+                                        .OrderBy(x => x.MediaCallout.StartTime)?
+                                        .Where(x => x.MediaCallout.StartTime > MediaCallout.StartTime)?
+                                        .FirstOrDefault();
+            if (NextElement != null)
+            {
+                var newEndTime = timeline.GetTimeSpanByLocation(mouseX);
+                Console.WriteLine($"newEndTime - {newEndTime}");
+                if (newEndTime <= NextElement.MediaCallout.StartTime)
+                    canMove = true;
+                else if (newEndTime > NextElement.MediaCallout.StartTime)
+                    canMove = false;
+            }
+            else
+                canMove = true;
+            return canMove;
+        }
+
+        private void RightBorderItem_MouseEnter(object sender, MouseEventArgs e)
+        {
+            e.Handled = true;
+            var border = sender as Border;
+            border.Cursor = Cursors.SizeWE;
+        }
+
 
 
         private void SetupContextMenu(TimeLine timeline)

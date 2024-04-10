@@ -1498,10 +1498,13 @@ namespace ManageMedia_UserControl.Controls
 
         public void CalloutSizeChanged_Event(Media calloutMedia)
         {
-            var isAlreadyExist = CalloutLocationOrSizeChangedMedia.Find(x => x.VideoEventID == calloutMedia?.VideoEventID);
-            if (isAlreadyExist != null)
-                CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
-            CalloutLocationOrSizeChangedMedia.Add(calloutMedia);
+            if (calloutMedia != null)
+            {
+                var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.Find(x => x?.VideoEventID == calloutMedia?.VideoEventID);
+                if (isAlreadyExist != null)
+                    CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
+                CalloutLocationOrSizeChangedMedia.Add(calloutMedia);
+            }
         }
 
 

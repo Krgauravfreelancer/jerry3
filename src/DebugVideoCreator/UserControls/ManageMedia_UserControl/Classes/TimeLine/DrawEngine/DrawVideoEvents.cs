@@ -99,7 +99,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         int blue = (int)((double)item.Color.B / 1.5);
 
                         int Brightness = red + green + blue;
-                        var trackCalloutItem = new TrackCalloutItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsManageMedia, MainCanvas);
+                        var trackCalloutItem = new TrackCalloutItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsManageMedia, MainCanvas, TrackCalloutItems);
 
                         trackCalloutItem.Width = Width;
                         trackCalloutItem.Height = TrackHeight - 2;
@@ -125,28 +125,20 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                        
 
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackCalloutItem, true);
-                        //var rightBorderItem = GetBorder(TrackHeight, FillColor);
-                        //trackCalloutItem.Child = rightBorderItem;
                         trackCalloutItem.HorizontalAlignment = HorizontalAlignment.Right;
-
                         Canvas.SetLeft(trackCalloutItem, StartPosition);
-                        //Canvas.SetLeft(rightBorderItem, StartPosition + Width);
-
+                        
                         if (item.TrackId == 3)
                         {
                             Canvas.SetTop(trackCalloutItem, CallOut1);
-                            //Canvas.SetTop(rightBorderItem, CallOut1);
-
                         }
                         else if (item.TrackId == 4)
                         {
                             Canvas.SetTop(trackCalloutItem, CallOut2);
-                            //Canvas.SetTop(rightBorderItem, CallOut1);
                         }
                         else if (item.TrackId == 1)
                         {
                             Canvas.SetTop(trackCalloutItem, Audio);
-                            //Canvas.SetTop(rightBorderItem, CallOut1);
                         }
                         
                         TrackCalloutItems.Add(trackCalloutItem);
