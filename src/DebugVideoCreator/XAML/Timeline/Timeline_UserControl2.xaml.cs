@@ -164,11 +164,14 @@ namespace VideoCreator.XAML
                 var modifiedEvents = new List<CBVVideoEvent>();
                 foreach(var item in TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia)
                 {
-                    var videoevent = DataManagerSqlLite.GetVideoEventbyId(item.VideoEventID, false, false).FirstOrDefault();
-                    videoevent.videoevent_start = item.StartTime.ToString(@"hh\:mm\:ss\.fff");
-                    videoevent.videoevent_duration = item.Duration.ToString(@"hh\:mm\:ss\.fff");
-                    videoevent.videoevent_end = DataManagerSqlLite.CalcNextEnd(videoevent.videoevent_start, videoevent.videoevent_duration);
-                    modifiedEvents.Add(videoevent);
+                    if (item != null)
+                    {
+                        var videoevent = DataManagerSqlLite.GetVideoEventbyId(item.VideoEventID, false, false).FirstOrDefault();
+                        videoevent.videoevent_start = item.StartTime.ToString(@"hh\:mm\:ss\.fff");
+                        videoevent.videoevent_duration = item.Duration.ToString(@"hh\:mm\:ss\.fff");
+                        videoevent.videoevent_end = DataManagerSqlLite.CalcNextEnd(videoevent.videoevent_start, videoevent.videoevent_duration);
+                        modifiedEvents.Add(videoevent);
+                    }
                 }
                 ContextMenu_SaveAllTimelines_Clicked.Invoke(sender, modifiedEvents);
             }

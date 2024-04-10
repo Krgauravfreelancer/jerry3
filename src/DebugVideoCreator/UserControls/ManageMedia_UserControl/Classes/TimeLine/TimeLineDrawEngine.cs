@@ -5,13 +5,17 @@ using ScreenRecorder_UserControl.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace ManageMedia_UserControl.Classes.TimeLine
@@ -47,8 +51,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         List<TrackCalloutItem> TrackCalloutItems = new List<TrackCalloutItem>();
         List<TrackVideoEventItem> ModifiedVideoEventItems = new List<TrackVideoEventItem>();
         List<TrackCalloutItem> ModifiedCalloutItems = new List<TrackCalloutItem>();
-
-        public event Action<LocationChangedEventModel> LocationChangedEvent;
+        TrackCalloutItem NextElement = null;
+        TrackCalloutItem PrevElement = null;
 
         bool alreadyAdded = false;
         internal void SetPlaylist(List<Media> Playlist, TimeLineMode Mode)
@@ -177,12 +181,12 @@ namespace ManageMedia_UserControl.Classes.TimeLine
 
                     //Draw Track Items
                     DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItems, IsManageMedia);
-                    if(!alreadyAdded && !IsManageMedia)
+                    if (!alreadyAdded && !IsManageMedia)
                         AddEventHandlers(MainCanvas, timeline);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 
                     //Draw Missing Spaces
-                    List<(Media BeforeMedia, Media AfterMedia, TimeSpan Start, TimeSpan Duration)>  MissingTimeSpans = TrackItemProcessor.FindMissingVideoEventTimeSpans(_Playlist);
+                    List<(Media BeforeMedia, Media AfterMedia, TimeSpan Start, TimeSpan Duration)> MissingTimeSpans = TrackItemProcessor.FindMissingVideoEventTimeSpans(_Playlist);
                     DrawMissingVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, MissingTimeSpans, _TrackMissingMediaElements, timeline, DrawProperties, IsReadOnly, Result, IsManageMedia);
 
                     //Draw Cursor
@@ -200,13 +204,15 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 isFirstClick = true;
                 drag = true;
                 diff = 0;
+                PrevElement = null;
+                NextElement = null;
             };
 
             MainCanvas.MouseMove += (object s, MouseEventArgs e) =>
             {
                 if (!drag) return;
-                
-               
+
+
                 var videoEvent = TrackVideoEventItems.Find(x => x.IsSelected);
                 var calloutEvent = TrackCalloutItems.Find(x => x.IsSelected);
 
@@ -217,6 +223,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 double mouseX = mousePos.X;
                 if (mouseX >= 0 && (videoEvent != null || calloutEvent != null))
                 {
+
                     var leftPos = videoEvent != null ? Canvas.GetLeft(videoEvent) : Canvas.GetLeft(calloutEvent);
                     if (isFirstClick == false)
                     {
@@ -224,22 +231,58 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                         {
                             Canvas.SetLeft(videoEvent, (mouseX - diff));
                             videoEvent.Media.StartTime = timeline.GetTimeSpanByLocation(mouseX - diff);
-                            var isExistsAlready = ModifiedVideoEventItems.Find(x => x.Media.VideoEventID == videoEvent.Media.VideoEventID);
+                            var isExistsAlready = ModifiedVideoEventItems.Find(x => x.Media?.VideoEventID == videoEvent.Media?.VideoEventID);
                             if (isExistsAlready != null)
                                 ModifiedVideoEventItems.Remove(isExistsAlready);
                             ModifiedVideoEventItems.Add(videoEvent);
                         }
                         if (calloutEvent != null && calloutEvent.MediaCallout != null)
                         {
-                            Canvas.SetLeft(calloutEvent,(mouseX - diff));
-                            calloutEvent.MediaCallout.StartTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                            var canMoveAhead = CanMoveAhead(calloutEvent, timeline, mouseX);
+                            var canMoveBack = CanMoveBack(calloutEvent, timeline, mouseX);
+                            Console.WriteLine($"canMoveAhead - {canMoveAhead} | canMoveBack - {canMoveBack} | mouseX - {mouseX} | diff - {diff}");
+                            var canMove = canMoveAhead || canMoveBack;
 
-                            
-                            var isExistsAlready = ModifiedCalloutItems.Find(x => x.MediaCallout.VideoEventID == calloutEvent.MediaCallout.VideoEventID);
-                            if (isExistsAlready != null)
-                                ModifiedCalloutItems.Remove(isExistsAlready);
+                            if (canMove && (mouseX - diff) > 0)
+                            {
+                                if(NextElement == null && PrevElement == null)
+                                {
+                                    // Min 0, MAX = End of timeline
+                                    var currentTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                                    {
+                                        Move(calloutEvent, mouseX, currentTime);
+                                    }
+                                }
+                                else if (NextElement == null && PrevElement != null)
+                                {
+                                    // MAX = End of timeline, MIN is previous end
+                                    var currentTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                                    if(currentTime >= PrevElement.MediaCallout.StartTime + PrevElement.MediaCallout.Duration)
+                                    {
+                                        Move(calloutEvent, mouseX, currentTime);
+                                    }
 
-                            ModifiedCalloutItems.Add(calloutEvent);
+                                }
+                                else if (NextElement != null && PrevElement == null)
+                                {
+                                    // MIN = 0, // MAX = Start of Next
+                                    var currentTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                                    if (currentTime + calloutEvent.MediaCallout.Duration <= NextElement.MediaCallout.StartTime)
+                                    {
+                                        Move(calloutEvent, mouseX, currentTime);
+                                    }
+                                }
+                                else
+                                {
+                                    // MIN is previous end, Start of Next
+                                    var currentTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                                    if ((currentTime >= PrevElement.MediaCallout.StartTime + PrevElement.MediaCallout.Duration) &&
+                                    (currentTime + calloutEvent.MediaCallout.Duration <= NextElement.MediaCallout.StartTime))
+                                    {
+                                        Move(calloutEvent, mouseX, currentTime);
+                                    }
+                                }
+                            }
                         }
                     }
                     else
@@ -254,6 +297,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             {
                 drag = false;
                 MainCanvas.ReleaseMouseCapture();
+                NextElement = null;
+                PrevElement = null;
                 var payload = new LocationChangedEventModel
                 {
                     CallOutItems = ModifiedCalloutItems,
@@ -264,6 +309,66 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             alreadyAdded = true;
         }
 
+        private bool CanMoveAhead(TrackCalloutItem calloutEvent, Controls.TimeLine timeline, double mouseX)
+        {
+            var canMove = false;
+            if (NextElement == null)
+                NextElement = TrackCalloutItems
+                                        .FindAll(x => x.MediaCallout.TrackId == calloutEvent.MediaCallout.TrackId)?
+                                        .OrderBy(x => x.MediaCallout.StartTime)?
+                                        .Where(x => x.MediaCallout.StartTime > calloutEvent.MediaCallout.StartTime)?
+                                        .FirstOrDefault();
+            if (NextElement != null)
+            {
+                var newEndTime = timeline.GetTimeSpanByLocation(mouseX - diff) + calloutEvent.MediaCallout.Duration;
+                if (newEndTime <= NextElement.MediaCallout.StartTime)
+                    canMove = true;
+                else if (newEndTime > NextElement.MediaCallout.StartTime)
+                    canMove = false;
+            }
+            else
+                canMove = true;
+            return canMove;
+        }
+
+        private bool CanMoveBack(TrackCalloutItem calloutEvent, Controls.TimeLine timeline, double mouseX)
+        {
+            var canMove = false;
+            if (PrevElement == null)
+            {
+                PrevElement = TrackCalloutItems
+                                        .FindAll(x => x.MediaCallout.TrackId == calloutEvent.MediaCallout.TrackId)?
+                                        .OrderBy(x => x.MediaCallout.StartTime)?
+                                        .Where(x => x.MediaCallout.StartTime < calloutEvent.MediaCallout.StartTime)?
+                                        .LastOrDefault();
+            }
+            TimeSpan previousEndTime = new TimeSpan(0,0,0);
+            var newStartTime = new TimeSpan(0, 0, 0);
+            if (PrevElement != null && (mouseX - diff) >= 0)
+            {
+                newStartTime = timeline.GetTimeSpanByLocation(mouseX - diff);
+                previousEndTime = PrevElement.MediaCallout.StartTime + PrevElement.MediaCallout.Duration;
+            }
+
+            if (newStartTime < previousEndTime)
+                canMove = false;
+            else if (newStartTime >= previousEndTime)
+                canMove = false;
+
+            return canMove;
+        }
+
+
+        private void Move(TrackCalloutItem calloutEvent, double mouseX, TimeSpan currentTime)
+        {
+            Canvas.SetLeft(calloutEvent, (mouseX - diff));
+            calloutEvent.MediaCallout.StartTime = currentTime;
+            var isExistsAlready = ModifiedCalloutItems.Find(x => x.MediaCallout?.VideoEventID == calloutEvent.MediaCallout?.VideoEventID);
+            if (isExistsAlready != null)
+                ModifiedCalloutItems.Remove(isExistsAlready);
+
+            ModifiedCalloutItems.Add(calloutEvent);
+        }
 
         private (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) CalculateSectionWidth(Canvas MainCanvas, TimeSpan ViewportStart, TimeSpan ViewportDuration)
         {
@@ -320,11 +425,11 @@ namespace ManageMedia_UserControl.Classes.TimeLine
         internal void AddTrackMediaElement_ToCanvas(Canvas MainCanvas, UIElement element, bool IsHitTestVisible)
         {
             element.IsHitTestVisible = IsHitTestVisible;
-            if(_TrackMediaElements.Contains(element))
+            if (_TrackMediaElements.Contains(element))
                 _TrackMediaElements.Remove(element);
             _TrackMediaElements.Add(element);
-            if(MainCanvas.Children.Contains(element))
-                MainCanvas.Children?.Remove(element);    
+            if (MainCanvas.Children.Contains(element))
+                MainCanvas.Children?.Remove(element);
             MainCanvas.Children.Add(element);
         }
 
@@ -404,7 +509,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
 
         internal void ClearNoteItemControls()
         {
-            for(int i = 0; i < _NoteItemControls.Count; i++)
+            for (int i = 0; i < _NoteItemControls.Count; i++)
             {
                 NoteItemControl noteItemControl = _NoteItemControls[i];
                 noteItemControl.ClearResources();
