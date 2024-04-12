@@ -45,7 +45,7 @@ namespace ManageMedia_UserControl.Controls
         TrackItemSelectionEngine TrackItemSelectionEngine = new TrackItemSelectionEngine();
 
         bool _IsReadOnly = false;
-        bool _IsManageMedia = true;
+        bool IsManageMedia = true;
 
         public SelectedEvent selectedEventPayload = null;
         public TrackbarMouseMoveEvent trackbarMouseMoveEventPayload;
@@ -65,6 +65,8 @@ namespace ManageMedia_UserControl.Controls
         public List<Media> CalloutLocationOrSizeChangedMedia = new List<Media>();
 
         public Point TrackBarPosition = new Point(0, 0);
+        TrackbarLineControl TrackbarLine2 = new TrackbarLineControl();
+        bool _isTrackbarLineDragInProg = false;
 
         public TimeLine()
         {
@@ -76,9 +78,9 @@ namespace ManageMedia_UserControl.Controls
             _IsReadOnly = IsReadOnly;
         }
 
-        public void SetManageMedia(bool IsManageMedia)
+        public void SetManageMedia(bool _IsManageMedia)
         {
-            _IsManageMedia = IsManageMedia;
+            IsManageMedia = _IsManageMedia;
         }
 
         internal void SetTimeLineMode(TimeLineMode Mode)
@@ -237,7 +239,7 @@ namespace ManageMedia_UserControl.Controls
             {
                 foreach (var element in item.RecordedTextList)
                 {
-                    NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
+                    NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, IsManageMedia ? _IsReadOnly : true);
                     noteItemControl.SetTimeLine(this);
                     CreateNoteEvents(noteItemControl);
                 }
@@ -253,6 +255,81 @@ namespace ManageMedia_UserControl.Controls
 
             SetTotalTime(_TotalDuration);
         }
+
+        public void ShowTrackbar(double height = 230.0)
+        {
+            if (!IsManageMedia)
+            {
+                TrackbarLine2.SetHeight(height);
+                Panel.SetZIndex(TrackbarLine2, 5);
+                if (!MainCanvas.Children.Contains(TrackbarLine2))
+                    MainCanvas.Children.Add(TrackbarLine2);
+                Canvas.SetBottom(TrackbarLine2, 0);
+                Canvas.SetLeft(TrackbarLine2, 0);
+
+
+                SetTrackbarMouseEvents();
+            }
+        }
+
+
+        private void SetTrackbarMouseEvents()
+        {
+            TrackbarLine2.MouseLeftButtonDown += (sender, e) =>
+            {
+                e.Handled = true;
+                _isTrackbarLineDragInProg = true;
+                TrackbarLine2.CaptureMouse();
+            };
+
+            TrackbarLine2.MouseLeftButtonUp += (sender, e) =>
+            {
+                e.Handled = true;
+                _isTrackbarLineDragInProg = false;
+                TrackbarLine2.ReleaseMouseCapture();
+            };
+
+            TrackbarLine2.MouseMove += (sender, e) =>
+            {
+                e.Handled = true;
+                if (!_isTrackbarLineDragInProg) return;
+
+                // get the position of the mouse relative to the Canvas
+                var mousePos = e.GetPosition(MainCanvas);
+                // center the trackbarLine on the mouse
+                double mouseX = mousePos.X;
+                Console.WriteLine($"Moving Trackbar | mouseX - {mouseX}");
+
+                if (mouseX >= 0)
+                {
+                    Canvas.SetLeft(TrackbarLine2, mouseX);
+                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
+                }
+            };
+
+            //Canvas.SetTop(TrackbarLine2, 0);
+            //Canvas.SetZIndex(TrackbarLine2, 3);
+
+            //if user left-clicks on content panel - trackbar should move to the location of mouse
+            //Column2Header.MouseLeftButtonDown += (sender, e) =>
+            //{
+            //    if (_isTrackbarLineDragInProg) return;
+
+            //    // get the position of the mouse relative to the Canvas
+            //    var mousePos = e.GetPosition(Column2BaseLayer);
+
+            //    // center the trackbarLine on the mouse
+            //    int mouseX = (int)mousePos.X;
+
+            //    if (mouseX >= 0 && mouseX <= (_timelineLayoutModel.MinWidth * _timelineSettings.ScaleFactor))
+            //    {
+            //        Canvas.SetLeft(TrackbarLine2, mouseX);
+            //        OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
+            //    }
+            //};
+        }
+
+
 
         private void NoteItemControl_RecalculateClicked(object sender, EventArgs e)
         {
@@ -357,7 +434,7 @@ namespace ManageMedia_UserControl.Controls
 
             if (DesignerProperties.GetIsInDesignMode(this) == false)
             {
-                if (_IsManageMedia)
+                if (IsManageMedia)
                 {
                     if (_IsReadOnly == false)
                     {
@@ -422,7 +499,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void UpdateTimeScale()
         {
-            TimeLineDrawEngine.DrawTimeLine(MainCanvas, LegendCanvas, _ViewportStart, _ViewportDuration, _TotalDuration, MainCursorTime, this, _IsReadOnly, _IsManageMedia);
+            TimeLineDrawEngine.DrawTimeLine(MainCanvas, LegendCanvas, _ViewportStart, _ViewportDuration, _TotalDuration, MainCursorTime, this, _IsReadOnly, IsManageMedia);
         }
 
         internal void SetMainCursorTime(TimeSpan time)
@@ -775,7 +852,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void AddNewNoteItem(TextItem textItem, TimeSpan TimeSpanAtPoint, Media EventFound, bool PositionAtHalf)
         {
-            NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteAtTimeSpan(textItem, TimeSpanAtPoint, EventFound, PositionAtHalf, this, _IsManageMedia ? _IsReadOnly : true);
+            NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteAtTimeSpan(textItem, TimeSpanAtPoint, EventFound, PositionAtHalf, this, IsManageMedia ? _IsReadOnly : true);
 
             // check if it was dropped on an empty spot
             bool WasDroppedOnNote = false;
@@ -970,7 +1047,7 @@ namespace ManageMedia_UserControl.Controls
                 {
                     foreach (var element in item.RecordedTextList)
                     {
-                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
+                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, IsManageMedia ? _IsReadOnly : true);
                         noteItemControl.SetTimeLine(this);
                         CreateNoteEvents(noteItemControl);
                     }
@@ -1161,10 +1238,10 @@ namespace ManageMedia_UserControl.Controls
 
         private void MainCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (_IsManageMedia)
+            if (IsManageMedia)
                 TrackItemSelectionEngine.MouseDown(MainCanvas);
-            else
-                MainCanvas_MouseDown_New(sender, e);
+            //else
+            //    MainCanvas_MouseDown_New(sender, e);
         }
 
         private void MainCanvas_MouseDown_New(object sender, MouseButtonEventArgs e)
@@ -1236,7 +1313,7 @@ namespace ManageMedia_UserControl.Controls
 
         public void SetTrackbar()
         {
-            //TrackItemSelectionEngine.SetTrackbar(TrackBarPosition, MainCanvas);
+            TrackItemSelectionEngine.SetTrackbar(TrackBarPosition, MainCanvas);
             SetMainCursor();
         }
 
@@ -1280,10 +1357,11 @@ namespace ManageMedia_UserControl.Controls
 
         private void MainCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            TimeLineDrawEngine.SetPointerCursor(MainCanvas, _ViewportStart, _ViewportDuration);
+            //TimeLineDrawEngine.SetPointerCursor(MainCanvas, _ViewportStart, _ViewportDuration);
 
-            if (_IsManageMedia)
+            if (IsManageMedia)
             {
+                TimeLineDrawEngine.SetPointerCursor(MainCanvas, _ViewportStart, _ViewportDuration);
                 TrackItemSelectionEngine.MouseMoved(MainCanvas);
             }
         }
@@ -1340,7 +1418,7 @@ namespace ManageMedia_UserControl.Controls
                 {
                     foreach (var element in item.RecordedTextList)
                     {
-                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, _IsManageMedia ? _IsReadOnly : true);
+                        NoteItemControl noteItemControl = TrackItemProcessor.CreateNoteControl(item, element, this, IsManageMedia ? _IsReadOnly : true);
                         noteItemControl.SetTimeLine(this);
                         CreateNoteEvents(noteItemControl);
                     }

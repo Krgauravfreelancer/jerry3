@@ -64,15 +64,13 @@ namespace VideoCreator.Helpers
                 });
             }
 
-            //LoadPlayer();
-            //TimelineGridCtrl2.SetReadOnly(true);
             TimelineGridCtrl2.SetManageMedia(false);
             TimelineGridCtrl2.LoadMedia(SortedList);
-            //TimelineGridCtrl2.SetViewport(Viewport.ViewportStart, Viewport.ViewportDuration, Viewport.MainCursorTime);
             if (Viewport.ViewportStart != TimeSpan.Zero || Viewport.ViewportDuration != TimeSpan.Zero)
             {
                 TimelineGridCtrl2.SetViewport(Viewport.ViewportStart, Viewport.ViewportDuration, Viewport.MainCursorTime);
             }
+            TimelineGridCtrl2.ShowTrackbar();
         }
 
         public static void Init(SelectedProjectEvent selectedProjectEvent, MMControl.TimeLine TimelineGridCtrl2)

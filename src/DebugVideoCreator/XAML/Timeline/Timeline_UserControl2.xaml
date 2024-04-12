@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:timepicker="clr-namespace:TimePicker_UserControl;assembly=TimePicker_UserControl" 
-             xmlns:mmtimepicker="clr-namespace:ManageMedia_UserControl.Controls;assembly=ManageMedia_UserControl" 
-             xmlns:loader="clr-namespace:VideoCreator.Loader"
-             mc:Ignorable="d">
+        xmlns:mmtimepicker="clr-namespace:ManageMedia_UserControl.Controls;assembly=ManageMedia_UserControl" 
+        xmlns:loader="clr-namespace:VideoCreator.Loader"
+        mc:Ignorable="d">
     <UserControl.Resources>
         <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
             <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" >
@@ -108,7 +107,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                 <Label Content="Use Right click to add Audio/Video Event" Margin="5,-5,0,0" VerticalAlignment="Top" />
             </StackPanel>
-            <mmtimepicker:TimeLine BorderBrush="Gray" BorderThickness="1" x:Name="TimelineGridCtrl2" MouseDown_Event="TimelineGridCtrl2_MouseDown_Event" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
+            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" MouseDown_Event="TimelineGridCtrl2_MouseDown_Event" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
                 <!--</GroupBox>-->
 
 

@@ -52,7 +52,7 @@ namespace VideoCreator.XAML
             new Action(async () =>
             {
                 await SyncServerEventsHelper.ConfirmAndSyncServerDataToLocalDB(this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
-                Refresh();
+                //Refresh();
             })();
 
             BackgroundProcessHelper.SetBackgroundProcess(selectedProjectEvent, authApiViewModel, btnUploadNotSyncedData);
@@ -832,7 +832,7 @@ namespace VideoCreator.XAML
                     DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
                 }
             }
-            TimelineUserConrol.Refresh();
+            Refresh();
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -973,7 +973,7 @@ namespace VideoCreator.XAML
         private async Task HandleFormLogic(FormOrCloneEvent calloutEvent, EnumTrack track, string imagePath, bool isFormEvent)
         {
             await FormHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath, isFormEvent);
-            TimelineUserConrol.Refresh();
+            Refresh();
             LoaderHelper.HideLoader(this, loader);
         }
 

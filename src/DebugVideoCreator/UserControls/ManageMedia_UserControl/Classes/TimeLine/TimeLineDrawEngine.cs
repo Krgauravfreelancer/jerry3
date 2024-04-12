@@ -194,6 +194,9 @@ namespace ManageMedia_UserControl.Classes.TimeLine
                 }
             }
         }
+
+        #region == Added by KG for move element ==
+
         bool drag = false, isFirstClick = true;
         double diff = 0;
         private void AddEventHandlers(Canvas MainCanvas, Controls.TimeLine timeline)
@@ -369,6 +372,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine
 
             ModifiedCalloutItems.Add(calloutEvent);
         }
+
+        #endregion
 
         private (TimeSpan SectionTime, int TimeStampCount, double SectionWidth, TimeSpan OffsetTime, double OffsetPixels) CalculateSectionWidth(Canvas MainCanvas, TimeSpan ViewportStart, TimeSpan ViewportDuration)
         {
