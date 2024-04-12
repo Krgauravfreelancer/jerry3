@@ -85,8 +85,8 @@ namespace VideoCreator.XAML
             var payload = new FormOrCloneEvent
             {
                 timelineVideoEvent = selectedEvent,
-                timeAtTheMoment = trackbarTime
-            };
+                timeAtTheMoment = trackbarTime.ToString(@"hh\:mm\:ss\.fff")
+        };
             ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
         }
 
@@ -262,7 +262,7 @@ namespace VideoCreator.XAML
 
         private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
         {
-            var trackbarTime = TimelineGridCtrl2.GetTrackbarTime();
+            var trackbarTime = TimelineGridCtrl2.GetTrackbarTime().ToString(@"hh\:mm\:ss\.fff");
             MMClass.Media selectedEvent = TimelineGridCtrl2.GetTrackbarMediaEvents().FirstOrDefault();
 
             if ((trackbarTime == "00:00:00" || trackbarTime == "00:00:00.000") && selectedEvent == null)

@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,7 +50,7 @@ namespace ManageMedia_UserControl.Controls
 
         public SelectedEvent selectedEventPayload = null;
         public TrackbarMouseMoveEvent trackbarMouseMoveEventPayload;
-        public List<Media> SelectedEvents = new List<Media>();
+        public List<Media> OverlappedEvents = new List<Media>();
         internal TimeSpan MainCursorTime { get; private set; } = TimeSpan.Zero;
 
 
@@ -287,6 +288,7 @@ namespace ManageMedia_UserControl.Controls
                 e.Handled = true;
                 _isTrackbarLineDragInProg = false;
                 TrackbarLine2.ReleaseMouseCapture();
+                OnTrackbarMouseMoved(TrackBarPosition.X);
             };
 
             TrackbarLine2.MouseMove += (sender, e) =>
@@ -298,35 +300,14 @@ namespace ManageMedia_UserControl.Controls
                 var mousePos = e.GetPosition(MainCanvas);
                 // center the trackbarLine on the mouse
                 double mouseX = mousePos.X;
-                Console.WriteLine($"Moving Trackbar | mouseX - {mouseX}");
 
                 if (mouseX >= 0)
                 {
+                    TrackBarPosition = mousePos;
                     Canvas.SetLeft(TrackbarLine2, mouseX);
-                    //OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
+                   
                 }
             };
-
-            //Canvas.SetTop(TrackbarLine2, 0);
-            //Canvas.SetZIndex(TrackbarLine2, 3);
-
-            //if user left-clicks on content panel - trackbar should move to the location of mouse
-            //Column2Header.MouseLeftButtonDown += (sender, e) =>
-            //{
-            //    if (_isTrackbarLineDragInProg) return;
-
-            //    // get the position of the mouse relative to the Canvas
-            //    var mousePos = e.GetPosition(Column2BaseLayer);
-
-            //    // center the trackbarLine on the mouse
-            //    int mouseX = (int)mousePos.X;
-
-            //    if (mouseX >= 0 && mouseX <= (_timelineLayoutModel.MinWidth * _timelineSettings.ScaleFactor))
-            //    {
-            //        Canvas.SetLeft(TrackbarLine2, mouseX);
-            //        OnTrackbarMouseMoved(EventArgs.Empty, mouseX);
-            //    }
-            //};
         }
 
 
@@ -1244,42 +1225,37 @@ namespace ManageMedia_UserControl.Controls
             //    MainCanvas_MouseDown_New(sender, e);
         }
 
-        private void MainCanvas_MouseDown_New(object sender, MouseButtonEventArgs e)
+        private void OnTrackbarMouseMoved(double positionX)
         {
             trackbarMouseMoveEventPayload = null;
             selectedEventPayload = null;
-            SelectedEvents.Clear();
+            OverlappedEvents.Clear();
 
-            OpenedContextMenuAt = Mouse.GetPosition(MainCanvas);
-            TimeSpan TimeSpanAtPoint = GetTimeSpanByLocation(OpenedContextMenuAt.X);
+            TimeSpan TimeSpanAtPoint = GetTimeSpanByLocation(positionX);
             for (int i = 0; i < _Playlist.Count; i++)
             {
                 Media media = _Playlist[i];
                 if (TimeSpanAtPoint > media.StartTime && (TimeSpanAtPoint < media.StartTime + media.Duration))
                 {
-                    SelectedEvents.Add(media);
+                    OverlappedEvents.Add(media);
                 }
             }
-
-
-            if (!MainCanvas.IsMouseDirectlyOver)
+           
+            var EventFound = OverlappedEvents?.Find(x => x.TrackId == 2);
+            if (EventFound != null)
             {
-                var EventFound = SelectedEvents?.Find(x => x.TrackId == 2);
-                if (EventFound != null)
+                selectedEventPayload = new SelectedEvent
                 {
-                    selectedEventPayload = new SelectedEvent
-                    {
-                        EventId = EventFound.VideoEventID,
-                        TrackId = EventFound.TrackId
-                    };
-
-                }
+                    EventId = EventFound.VideoEventID,
+                    TrackId = EventFound.TrackId
+                };
             }
+           
             trackbarMouseMoveEventPayload = new TrackbarMouseMoveEvent
             {
-                videoeventIds = SelectedEvents?.OrderBy(x => x.TrackId).Select(x => x.VideoEventID).ToList(),
+                videoeventIds = OverlappedEvents?.OrderBy(x => x.TrackId).Select(x => x.VideoEventID).ToList(),
                 timeAtTheMoment = TimeSpanAtPoint.ToString(@"hh\:mm\:ss\.fff"),
-                isAnyVideo = SelectedEvents.Select(x => x.TrackId == 2) != null
+                isAnyVideo = OverlappedEvents.Select(x => x.TrackId == 2) != null
             };
 
             var payload = new MouseDownEvent
@@ -1287,18 +1263,17 @@ namespace ManageMedia_UserControl.Controls
                 selectedEvent = selectedEventPayload,
                 trackbarMouseMoveEvent = trackbarMouseMoveEventPayload
             };
-            TrackBarPosition = TrackItemSelectionEngine.MouseDown(MainCanvas);
-            MouseDown_Event.Invoke(sender, payload);
+            MouseDown_Event.Invoke(new EventArgs(), payload);
         }
 
-        public string GetTrackbarTime()
+        public TimeSpan GetTrackbarTime()
         {
-            return trackbarMouseMoveEventPayload?.timeAtTheMoment;
+            return GetTimeSpanByLocation(TrackBarPosition.X);
         }
 
         public List<Media> GetTrackbarMediaEvents()
         {
-            TimeSpan TimeSpanAtPoint = TimeSpan.Parse(GetTrackbarTime());
+            TimeSpan TimeSpanAtPoint = GetTrackbarTime();
             var trackbarEvents = new List<Media>();
             for (int i = 0; i < _Playlist.Count; i++)
             {
@@ -1313,8 +1288,7 @@ namespace ManageMedia_UserControl.Controls
 
         public void SetTrackbar()
         {
-            TrackItemSelectionEngine.SetTrackbar(TrackBarPosition, MainCanvas);
-            SetMainCursor();
+            Canvas.SetLeft(TrackbarLine2, TrackBarPosition.X);
         }
 
         private void MainCanvas_MouseUp(object sender, MouseButtonEventArgs e)

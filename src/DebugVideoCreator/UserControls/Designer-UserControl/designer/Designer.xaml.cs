@@ -17,9 +17,14 @@ namespace DesignerNp.controls
     /// </summary>
     public partial class Designer : UserControl
     {
+        private double width;
+        private double height;
+        
         /// <summary>
         /// PropertyWindow propertyWindow
         /// </summary>
+        /// 
+
         public PropertyWindow propertyWindow { get; set; }
 
         /// <summary>
@@ -46,6 +51,16 @@ namespace DesignerNp.controls
             textBox = null;
 
             dataTable = null;
+
+            if (scrollbar != null)
+            {
+                //Console.WriteLine($"I am here - {System.Windows.Window.ActualWidth.ToString()}, {System.Windows.Window.ActualHeightProperty}");
+                //scrollbar.Width = System.Windows.Window.ActualWidthProperty - 280;
+                //scrollbar.Height = System.Windows.Window.ActualWidthProperty - 90;
+
+                //scrollbar.Width = 1640;
+                //scrollbar.Height = 990;
+            }
             this.SizeChanged += UserControl_SizeChanged;
         }
 
@@ -609,13 +624,29 @@ namespace DesignerNp.controls
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //var usedWidth = 1920 - 1640;
-            //var usedHeight = 1080 - 950;
+            var usedWidth = 40;
+            var usedHeight = 100;
+
+            if (width != e.NewSize.Width)
+            {
+                var NewWidth = e.NewSize.Width - usedWidth;
+                grid.Width = NewWidth > 0 ? NewWidth : 0;
+                width = e.NewSize.Width;
+                Console.WriteLine($"1.sender - {sender}, Changed Size - {e?.NewSize}, Adjusted Size - {grid.Width},{grid.Height}");
+
+            }
+
+            if (Height != e.NewSize.Height)
+            {
+                var NewHeight = e.NewSize.Height - usedHeight;
+                grid.Height = NewHeight > 0 ? NewHeight : 0;
+                height = e.NewSize.Height;
+                Console.WriteLine($"2.sender - {sender}, Changed Size - {e?.NewSize.Width},{e?.NewSize.Height}, Adjusted Size - {grid.Width},{grid.Height}");
+
+            }
+            this.SizeChanged -= UserControl_SizeChanged;
             //var NewWidth = e.NewSize.Width - usedWidth;
-            //var NewHeight = e.NewSize.Height - usedHeight;
-            //Console.WriteLine($"sender - {sender}, Changed Size - {e?.NewSize}, Adjusted Size - {NewWidth},{NewHeight}");
-            //scrollbar.Height = NewHeight > 0 ? NewHeight : 0;
-            //scrollbar.Width = NewWidth > 0 ? NewWidth : 0;
+
         }
     }
 }
