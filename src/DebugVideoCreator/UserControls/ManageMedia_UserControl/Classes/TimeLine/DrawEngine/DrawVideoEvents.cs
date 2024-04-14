@@ -46,8 +46,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
             {
                 TrackHeight = 1;
             }
-            
-            
+
+
 
 
             for (int i = 0; i < Playlist.Count; i++)
@@ -69,7 +69,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 
                         var trackVideoEventItem = new TrackVideoEventItem(item, Color.FromArgb(200, (byte)red, (byte)green, (byte)blue), item.mediaType, timeline, Width, TrackHeight, IsReadOnly, IsManageMedia);
                         //VideoEvent
-                        trackVideoEventItem.Margin = new Thickness(StartPosition, VideoEvent, 0, 0);
+                        trackVideoEventItem.Margin = new Thickness(StartPosition, VideoEvent + 1, 0, 0);
 
                         trackVideoEventItem.Width = Width;
                         trackVideoEventItem.Height = TrackHeight - 2;
@@ -78,16 +78,10 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         trackVideoEventItem.Background = new SolidColorBrush(trackVideoEventItem.Color);
                         trackVideoEventItem.MediaSelectedEvent += (object s, Media m) =>
                         {
-                            TrackVideoEventItems?.ForEach(x => {
-                                x.BorderBrush = Brushes.White;
-                                x.IsSelected = false;
-                                });
-                            TrackCalloutItems?.ForEach(x => {
-                                x.BorderBrush = Brushes.White;
-                                x.IsSelected = false;
-                            });
+                            UnselectAllEvents(TrackVideoEventItems, TrackCalloutItems);
                             trackVideoEventItem.BorderBrush = Brushes.Red;
                             trackVideoEventItem.IsSelected = true;
+                            timeline.SelectedEvent(trackVideoEventItem.Media);
                         };
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackVideoEventItem, true);
                         TrackVideoEventItems.Add(trackVideoEventItem);
@@ -111,23 +105,17 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         trackCalloutItem.Background = new SolidColorBrush(FillColor);
                         trackCalloutItem.MediaSelectedEvent += (object s, Media m) =>
                         {
-                            TrackVideoEventItems?.ForEach(x => {
-                                x.BorderBrush = Brushes.White;
-                                x.IsSelected = false;
-                            });
-                            TrackCalloutItems?.ForEach(x => {
-                                x.BorderBrush = Brushes.White;
-                                x.IsSelected = false;
-                            });
+                            UnselectAllEvents(TrackVideoEventItems, TrackCalloutItems);
                             trackCalloutItem.BorderBrush = Brushes.Red;
                             trackCalloutItem.IsSelected = true;
+                            timeline.SelectedEvent(trackCalloutItem.MediaCallout);
                         };
-                       
+
 
                         timeline.TimeLineDrawEngine.AddTrackMediaElement_ToCanvas(MainCanvas, trackCalloutItem, true);
                         trackCalloutItem.HorizontalAlignment = HorizontalAlignment.Right;
                         Canvas.SetLeft(trackCalloutItem, StartPosition);
-                        
+
                         if (item.TrackId == 3)
                         {
                             Canvas.SetTop(trackCalloutItem, CallOut1);
@@ -140,7 +128,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                         {
                             Canvas.SetTop(trackCalloutItem, Audio);
                         }
-                        
+
                         TrackCalloutItems.Add(trackCalloutItem);
                     }
                 }
@@ -149,9 +137,20 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
             }
         }
 
-        
+        private  void UnselectAllEvents(List<TrackVideoEventItem> TrackVideoEventItems, List<TrackCalloutItem> TrackCalloutItems)
+        {
+            TrackVideoEventItems?.ForEach(x =>
+            {
+                x.BorderBrush = Brushes.White;
+                x.IsSelected = false;
+            });
+            TrackCalloutItems?.ForEach(x =>
+            {
+                x.BorderBrush = Brushes.White;
+                x.IsSelected = false;
+            });
+        }
 
-        
         internal enum EventType
         {
 

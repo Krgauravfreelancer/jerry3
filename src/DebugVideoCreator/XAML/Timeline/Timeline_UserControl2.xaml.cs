@@ -37,14 +37,14 @@ namespace VideoCreator.XAML
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout2_Clicked;
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
-        public event EventHandler<MMModel.TrackbarMouseMoveEvent> TrackbarMouse_Moved;
+        public event EventHandler<MMModel.TrackbarMouseMoveEventModel> TrackbarMouseMoveEvent;
         public event EventHandler<int> ContextMenu_DeleteEventOnTimelines_Clicked;
 
         public event EventHandler ContextMenu_Run_Clicked;
 
         public event EventHandler<FormOrCloneEvent> ContextMenu_CloneEvent_Clicked;
 
-        public event EventHandler<TimelineSelectedEvent> VideoEventSelectionChanged;
+        public event EventHandler<TimelineSelectedEvent> VideoEventSelectionChangedEvent;
         public event EventHandler<List<CBVVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
         public event EventHandler ContextMenu_UndeleteDeletedEvent_Clicked;
 
@@ -102,23 +102,22 @@ namespace VideoCreator.XAML
         }
 
 
-        private void TimelineGridCtrl2_MouseDown_Event(object sender, MMModel.MouseDownEvent payload)
+        private void TimelineGridCtrl2_TrackbarMouseMoveEvent(object sender, MMModel.TrackbarMouseMoveEventModel payload)
         {
-            EventSelectionChanged(sender, payload.selectedEvent);
-            TrackbarMouse_Moved.Invoke(sender, payload.trackbarMouseMoveEvent);
+            TrackbarMouseMoveEvent.Invoke(sender, payload);
         }
 
 
-        private void EventSelectionChanged(object sender, MMModel.SelectedEvent selectedEvent)
+        private void EventSelectionChangedEvent(object sender, MMClass.Media selectedEvent)
         {
             if (selectedEvent != null)
             {
                 var payload = new TimelineSelectedEvent
                 {
                     Track = (EnumTrack)selectedEvent.TrackId,
-                    EventId = selectedEvent.TrackId != -1 ? selectedEvent.EventId : -1
+                    EventId = selectedEvent.TrackId != -1 ? selectedEvent.VideoEventID : -1
                 };
-                VideoEventSelectionChanged.Invoke(sender, payload);
+                VideoEventSelectionChangedEvent.Invoke(sender, payload);
             }
         }
 

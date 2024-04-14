@@ -48,8 +48,6 @@ namespace ManageMedia_UserControl.Controls
         bool _IsReadOnly = false;
         bool IsManageMedia = true;
 
-        public SelectedEvent selectedEventPayload = null;
-        public TrackbarMouseMoveEvent trackbarMouseMoveEventPayload;
         public List<Media> OverlappedEvents = new List<Media>();
         internal TimeSpan MainCursorTime { get; private set; } = TimeSpan.Zero;
 
@@ -58,7 +56,8 @@ namespace ManageMedia_UserControl.Controls
         public event EventHandler<Media> Clone_Event;
         public event EventHandler<Media> CloneAtEnd_Event;
 
-        public event EventHandler<MouseDownEvent> MouseDown_Event;
+        public event EventHandler<TrackbarMouseMoveEventModel> TrackbarMouseMoveEvent;
+        public event EventHandler<Media> EventSelectionChangedEvent;
 
 
         public event EventHandler<LocationChangedEventModel> LocationChangedEvent;
@@ -1221,16 +1220,17 @@ namespace ManageMedia_UserControl.Controls
         {
             if (IsManageMedia)
                 TrackItemSelectionEngine.MouseDown(MainCanvas);
-            //else
-            //    MainCanvas_MouseDown_New(sender, e);
+        }
+
+
+        public void SelectedEvent(Media videoEvent)
+        {
+            EventSelectionChangedEvent.Invoke(new EventArgs(), videoEvent);
         }
 
         private void OnTrackbarMouseMoved(double positionX)
         {
-            trackbarMouseMoveEventPayload = null;
-            selectedEventPayload = null;
             OverlappedEvents.Clear();
-
             TimeSpan TimeSpanAtPoint = GetTimeSpanByLocation(positionX);
             for (int i = 0; i < _Playlist.Count; i++)
             {
@@ -1241,29 +1241,15 @@ namespace ManageMedia_UserControl.Controls
                 }
             }
            
-            var EventFound = OverlappedEvents?.Find(x => x.TrackId == 2);
-            if (EventFound != null)
-            {
-                selectedEventPayload = new SelectedEvent
-                {
-                    EventId = EventFound.VideoEventID,
-                    TrackId = EventFound.TrackId
-                };
-            }
-           
-            trackbarMouseMoveEventPayload = new TrackbarMouseMoveEvent
+            var trackbarMouseMoveEventPayload = new TrackbarMouseMoveEventModel
             {
                 videoeventIds = OverlappedEvents?.OrderBy(x => x.TrackId).Select(x => x.VideoEventID).ToList(),
                 timeAtTheMoment = TimeSpanAtPoint.ToString(@"hh\:mm\:ss\.fff"),
                 isAnyVideo = OverlappedEvents.Select(x => x.TrackId == 2) != null
             };
 
-            var payload = new MouseDownEvent
-            {
-                selectedEvent = selectedEventPayload,
-                trackbarMouseMoveEvent = trackbarMouseMoveEventPayload
-            };
-            MouseDown_Event.Invoke(new EventArgs(), payload);
+
+            TrackbarMouseMoveEvent.Invoke(new EventArgs(), trackbarMouseMoveEventPayload);
         }
 
         public TimeSpan GetTrackbarTime()

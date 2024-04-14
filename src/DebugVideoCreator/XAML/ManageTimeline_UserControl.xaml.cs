@@ -35,7 +35,7 @@ namespace VideoCreator.XAML
         SelectedProjectEvent selectedProjectEvent;
 
 
-        private ManageMedia_UserControl.Models.TrackbarMouseMoveEvent mouseEventToProcess;
+        private ManageMedia_UserControl.Models.TrackbarMouseMoveEventModel mouseEventToProcess;
         private CBVVideoEvent selectedVideoEvent;
         private int selectedVideoEventId = -1;
         private int undoVideoEventId = -1;
@@ -71,8 +71,8 @@ namespace VideoCreator.XAML
 
             //Timeline
             TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent, authApiViewModel, ReadOnly);
-            TimelineUserConrol.TrackbarMouse_Moved += TimelineUserConrol_TrackbarMouse_Moved;
-            TimelineUserConrol.VideoEventSelectionChanged += TimelineUserConrol_VideoEventSelectionChanged;
+            TimelineUserConrol.TrackbarMouseMoveEvent += TimelineUserConrol_TrackbarMouseMoveEvent;
+            TimelineUserConrol.VideoEventSelectionChangedEvent += TimelineUserConrol_VideoEventSelectionChangedEvent;
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;
             TimelineUserConrol.ContextMenu_AddCallout2_Clicked += TimelineUserConrol_ContextMenu_AddCallout2_Clicked;
             TimelineUserConrol.ContextMenu_AddVideoEvent_Clicked += TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked;
@@ -836,7 +836,7 @@ namespace VideoCreator.XAML
             LoaderHelper.HideLoader(this, loader);
         }
 
-        private void TimelineUserConrol_VideoEventSelectionChanged(object sender, TimelineSelectedEvent selectedEvent)
+        private void TimelineUserConrol_VideoEventSelectionChangedEvent(object sender, TimelineSelectedEvent selectedEvent)
         {
             if(selectedEvent.Track == EnumTrack.NOTES)
             {
@@ -877,7 +877,7 @@ namespace VideoCreator.XAML
         //}
 
 
-        private void TimelineUserConrol_TrackbarMouse_Moved(object sender, ManageMedia_UserControl.Models.TrackbarMouseMoveEvent _mouseEventToProcess)
+        private void TimelineUserConrol_TrackbarMouseMoveEvent(object sender, ManageMedia_UserControl.Models.TrackbarMouseMoveEventModel _mouseEventToProcess)
         {
             //if (IfNeedToReProcess(e))
             {

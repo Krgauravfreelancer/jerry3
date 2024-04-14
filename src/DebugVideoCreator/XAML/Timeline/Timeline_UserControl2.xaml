@@ -65,27 +65,6 @@
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <!--<MenuItem Header="Delete Event" x:Name="MenuItem_DeleteEvent" Click="DeleteSelectedEvent" IsEnabled="False" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/delete.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Clone Event at trackbar location" x:Name="MenuItem_CloneItems"  Click="CloneEvent_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/clone.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Clone Event at End of Timeline" x:Name="MenuItem_CloneItemsAtEnd" Click="CloneEventAtEnd_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/clone.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Add Image using Library After Selected Event" x:Name="MenuItem_AddImageEventUsingCBLibraryInMiddle"  Click="AddImageEventUsingCBLibraryInMiddle_Click" >
-                <MenuItem.Icon>
-                    <Image Source="../../Icons/shift.png" ></Image>
-                </MenuItem.Icon>
-            </MenuItem>
-            <Separator/>-->
             <MenuItem Header="Undo Delete" x:Name="MenuItem_UndoDelete" Click="UndeleteDeletedEvent" IsEnabled="False" >
                 <MenuItem.Icon>
                     <Image Source="../../Icons/undo.png" ></Image>
@@ -107,7 +86,7 @@
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                 <Label Content="Use Right click to add Audio/Video Event" Margin="5,-5,0,0" VerticalAlignment="Top" />
             </StackPanel>
-            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" MouseDown_Event="TimelineGridCtrl2_MouseDown_Event" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
+            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" EventSelectionChangedEvent="EventSelectionChangedEvent"  TrackbarMouseMoveEvent="TimelineGridCtrl2_TrackbarMouseMoveEvent" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
                 <!--</GroupBox>-->
 
 

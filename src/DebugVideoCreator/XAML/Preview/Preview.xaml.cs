@@ -61,7 +61,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        public async void Process(ManageMedia_UserControl.Models.TrackbarMouseMoveEvent mouseMovedEvent)
+        public async void Process(ManageMedia_UserControl.Models.TrackbarMouseMoveEventModel mouseMovedEvent)
         {
             isProcessing = true;
             LoaderHelper.ShowLoader(this, loader, "Processing Preview ...", false);

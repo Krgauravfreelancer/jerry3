@@ -27,97 +27,27 @@ namespace ManageMedia_UserControl.Controls
         TimeLine timeLine;
 
         Border OverTimeBorder;
-        bool _IsManageMedia;
+        bool IsManageMedia;
         public bool IsSelected;
+        bool IsReadOnly;
 
-        internal TrackVideoEventItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsReadOnly, bool IsManageMedia)
+        internal TrackVideoEventItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool _IsReadOnly, bool _IsManageMedia)
         {
             this.Unloaded += TrackVideoEventItem_Unloaded;
             Media = media;
             Color = color;
             timeLine = timeline;
-            _IsManageMedia = IsManageMedia;
+            IsManageMedia = _IsManageMedia;
+            IsReadOnly = _IsReadOnly;
             if (height < 2)
             { 
                 height = 2;
             }
 
-            if (_IsManageMedia && IsReadOnly == false)
-            {
-                myContextMenu = new ContextMenu();
-
-                DeleteEventBtn = new MenuItem()
-                {
-                    Header = "Delete Event",
-                };
-                DeleteEventBtn.Click += timeline.DeleteEventBtn_Click;
-
-                FocusEventBtn = new MenuItem()
-                {
-                    Header = "Enter Selected Mode",
-                };
-                FocusEventBtn.Click += timeline.FocusEventBtn_Click;
-
-                SetDurationBtn = new MenuItem()
-                {
-                    Header = "Set Duration",
-                };
-                SetDurationBtn.Click += timeline.SetDurationBtn_Click;
-
-                myContextMenu.Items.Add(SetDurationBtn);
-                myContextMenu.Items.Add(DeleteEventBtn);
-                myContextMenu.Items.Add(FocusEventBtn);
-
-                HighlightedColor = ScaleColorByValue(Color, 0.2);
-
-                myContextMenu.Closed += MyContextMenu_Closed;
-
-                this.ContextMenu = myContextMenu;
-            }
-            else if( !_IsManageMedia)
-            {
-                myContextMenu = new ContextMenu();
-
-                DeleteEventBtn = new MenuItem()
-                {
-                    Header = "Delete Event",
-                };
-                DeleteEventBtn.Click += timeline.DeleteEventForTimeline;
-
-                CloneEventAtTrackbarLocationBtn = new MenuItem()
-                {
-                    Header = "Clone Event at trackbar location",
-                };
-                CloneEventAtTrackbarLocationBtn.Click += timeline.CloneEventAtTrackbar;
-
-                CloneEventAtTimelineEndBtn = new MenuItem()
-                {
-                    Header = "Clone Event at End of Timeline",
-                };
-                CloneEventAtTimelineEndBtn.Click += timeline.CloneEventAtTimelineEnd;
-
-                AddImageUsingLibraryAfterSelectedEventBtn = new MenuItem()
-                {
-                    Header = "Add Image using Library After Selected Event",
-                };
-                AddImageUsingLibraryAfterSelectedEventBtn.Click += timeline.AddImageUsingLibraryAfterSelectedEvent;
-
-
-                myContextMenu.Items.Add(DeleteEventBtn);
-                myContextMenu.Items.Add(CloneEventAtTrackbarLocationBtn);
-                myContextMenu.Items.Add(CloneEventAtTimelineEndBtn);
-                myContextMenu.Items.Add(AddImageUsingLibraryAfterSelectedEventBtn);
-
-                HighlightedColor = ScaleColorByValue(Color, 0.2);
-
-                myContextMenu.Closed += MyContextMenu_Closed;
-
-                this.ContextMenu = myContextMenu;
-            }
+            SetupContextMenuEvent(timeline);
 
             Canvas canvas = new Canvas() { ClipToBounds = true, SnapsToDevicePixels = true };
             OverTimeBorder = new Border() { Background = Brushes.White, Opacity = 0.3, Height = height - 2 };
-
 
             Image Icon = new Image() { Height = 17,  SnapsToDevicePixels = true };
             RenderOptions.SetBitmapScalingMode(Icon, BitmapScalingMode.HighQuality);
@@ -197,24 +127,95 @@ namespace ManageMedia_UserControl.Controls
                     }
                 }
             }
-            
-
-
 
             canvas.Children.Add(Icon);
             canvas.Children.Add(OverTimeBorder);
-
             this.Child = canvas;
-
             if (IsReadOnly == false)
             {
                 this.MouseEnter += TrackVideoEventItem_MouseEnter;
                 this.MouseLeave += TrackVideoEventItem_MouseLeave;
                 this.MouseLeftButtonDown += TrackVideoEventItem_MouseLeftButtonDown;
             }
-
             CalculateOriginalTime(width);
         }
+
+        private void SetupContextMenuEvent(Controls.TimeLine timeline)
+        {
+            if (IsManageMedia && IsReadOnly == false)
+            {
+                myContextMenu = new ContextMenu();
+
+                DeleteEventBtn = new MenuItem()
+                {
+                    Header = "Delete Event",
+                };
+                DeleteEventBtn.Click += timeline.DeleteEventBtn_Click;
+
+                FocusEventBtn = new MenuItem()
+                {
+                    Header = "Enter Selected Mode",
+                };
+                FocusEventBtn.Click += timeline.FocusEventBtn_Click;
+
+                SetDurationBtn = new MenuItem()
+                {
+                    Header = "Set Duration",
+                };
+                SetDurationBtn.Click += timeline.SetDurationBtn_Click;
+
+                myContextMenu.Items.Add(SetDurationBtn);
+                myContextMenu.Items.Add(DeleteEventBtn);
+                myContextMenu.Items.Add(FocusEventBtn);
+
+                HighlightedColor = ScaleColorByValue(Color, 0.2);
+
+                myContextMenu.Closed += MyContextMenu_Closed;
+
+                this.ContextMenu = myContextMenu;
+            }
+            else if (!IsManageMedia)
+            {
+                myContextMenu = new ContextMenu();
+
+                DeleteEventBtn = new MenuItem()
+                {
+                    Header = "Delete Event",
+                };
+                DeleteEventBtn.Click += timeline.DeleteEventForTimeline;
+
+                CloneEventAtTrackbarLocationBtn = new MenuItem()
+                {
+                    Header = "Clone Event at trackbar location",
+                };
+                CloneEventAtTrackbarLocationBtn.Click += timeline.CloneEventAtTrackbar;
+
+                CloneEventAtTimelineEndBtn = new MenuItem()
+                {
+                    Header = "Clone Event at End of Timeline",
+                };
+                CloneEventAtTimelineEndBtn.Click += timeline.CloneEventAtTimelineEnd;
+
+                AddImageUsingLibraryAfterSelectedEventBtn = new MenuItem()
+                {
+                    Header = "Add Image using Library After Selected Event",
+                };
+                AddImageUsingLibraryAfterSelectedEventBtn.Click += timeline.AddImageUsingLibraryAfterSelectedEvent;
+
+
+                myContextMenu.Items.Add(DeleteEventBtn);
+                myContextMenu.Items.Add(CloneEventAtTrackbarLocationBtn);
+                myContextMenu.Items.Add(CloneEventAtTimelineEndBtn);
+                myContextMenu.Items.Add(AddImageUsingLibraryAfterSelectedEventBtn);
+
+                HighlightedColor = ScaleColorByValue(Color, 0.2);
+
+                myContextMenu.Closed += MyContextMenu_Closed;
+
+                this.ContextMenu = myContextMenu;
+            }
+        }
+
 
         private void TrackVideoEventItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -251,7 +252,7 @@ namespace ManageMedia_UserControl.Controls
             
             if (myContextMenu != null)
             {
-                if (_IsManageMedia)
+                if (IsManageMedia)
                 {
                     myContextMenu.Closed -= MyContextMenu_Closed;
                     DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
@@ -268,9 +269,7 @@ namespace ManageMedia_UserControl.Controls
             }
 
             if (OverTimeBorder != null)
-            {
                 OverTimeBorder = null;
-            }
 
             Media = null;
             timeLine = null;
@@ -310,10 +309,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void TrackVideoEventItem_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (!_IsManageMedia || this.ContextMenu?.IsOpen == false)
-            {
-                AnimateOut();
-            }
+            AnimateOut();
         }
 
         private void TrackVideoEventItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)

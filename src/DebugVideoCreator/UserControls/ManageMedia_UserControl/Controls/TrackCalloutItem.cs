@@ -97,7 +97,10 @@ namespace ManageMedia_UserControl.Controls
                 }
             }
             canvas.Children.Add(Icon);
-            var border = GetBorder(height, width, color, MainCanvas);
+            var border = GetBorder(height, width, color, MainCanvas, IsManageMedia);
+            var tt = new ToolTip();
+            tt.Content = $"ID - {MediaCallout.VideoEventID}";
+            border.ToolTip = tt;
             canvas.Children.Add (border);
             this.Child = canvas;
             this.MouseEnter += TrackCalloutItem_MouseEnter;
@@ -106,7 +109,7 @@ namespace ManageMedia_UserControl.Controls
 
         }
 
-        private Border GetBorder(double TrackHeight, double width, Color FillColor, Canvas MainCanvas)
+        private Border GetBorder(double TrackHeight, double width, Color FillColor, Canvas MainCanvas, bool IsManageMedia)
         {
             var rightBorderItem = new Border();
 
@@ -121,8 +124,8 @@ namespace ManageMedia_UserControl.Controls
             {
                 rightBorderItem.Margin = new Thickness(width - 8, 0, 0, 0);
             }
-            
-            AddEventHandlers(rightBorderItem, MainCanvas);
+            if(!IsManageMedia)
+                AddEventHandlers(rightBorderItem, MainCanvas);
 
             return rightBorderItem;
         }
@@ -176,17 +179,13 @@ namespace ManageMedia_UserControl.Controls
                                 MediaCallout.Duration = timeLine.GetTimeSpanByLocation(mouseX) - MediaCallout.StartTime;
                                 timeLine.CalloutSizeChanged_Event(MediaCallout);
                             }
-
-                            
                         }
                     }
                     else
                     {
                         isFirstClick = false;
                     }
-                  
                 }
-                
             };
 
             rightBorderItem.PreviewMouseLeftButtonUp += (object sender, MouseButtonEventArgs e) =>
@@ -226,8 +225,6 @@ namespace ManageMedia_UserControl.Controls
             var border = sender as Border;
             border.Cursor = Cursors.SizeWE;
         }
-
-
 
         private void SetupContextMenu(TimeLine timeline)
         {
@@ -361,10 +358,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void TrackCalloutItem_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (!_IsManageMedia || this.ContextMenu?.IsOpen == false)
-            {
-                AnimateOut();
-            }
+            AnimateOut();
         }
 
         private void TrackCalloutItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
