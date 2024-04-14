@@ -1,0 +1,38 @@
+﻿<Window x:Class="ManageMedia_Wrapper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ManageMedia_Wrapper" xmlns:managemedia_usercontrol="clr-namespace:ManageMedia_UserControl;assembly=ManageMedia_UserControl"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="180" Width="400" Loaded="Window_Loaded">
+
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition MaxWidth="0"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel>
+            <Border Background="#FFE6E6E6" DockPanel.Dock="Top">
+                <Grid>
+                    <StackPanel Margin="25,0,25,10" HorizontalAlignment="Left" Orientation="Horizontal">
+                        <StackPanel>
+                            <Label Content="Select Project"/>
+                            <ComboBox Name="ProjectCmbBox" MinWidth="220" SelectionChanged="ProjectCmbBox_SelectionChanged"/>
+
+                        </StackPanel>
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+            <Border Background="DarkGray" Padding="20">
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="LaunchGeneratedBtn" Content="Launch Manage Media" Margin="5" VerticalAlignment="Center" Padding="10,5" Click="LaunchGeneratedBtn_Click"/>
+                </StackPanel>
+            </Border>
+
+        </DockPanel>
+    </Grid>
+</Window>
