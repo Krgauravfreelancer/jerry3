@@ -419,28 +419,54 @@ namespace VideoCreator.Helpers
             #region Video Events
 
             //List<CBVMedia> MediaHead = DataManagerSqlLite.GetMedia();
-            List<CBVVideoEvent> VideoEventData = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true, true);
+            var VideoEventData = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true, true);
+            var plannings = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId, false);
 
 
             List<ManageMedia> mediaList = new List<ManageMedia>();
             foreach (var item in VideoEventData)
             {
-                List<CBVDesign> Designs = item.design_data;
-                //obj.fk_design_background, obj.fk_design_screen
 
-                List<CBVScreen> Screens = DataManagerSqlLite.GetScreens();
 
-                Media media = new Media();
+                var Screens = DataManagerSqlLite.GetScreens();
+                
+                var media = new Media();
+                //Color background = Colors.DarkRed;
 
-                Color background = Colors.DarkRed;
-                if (Designs.Count > 0 && Screens.Count >= 7)
+
+                string screenColor = "#FFFFFF";
+                if (item.videoevent_planning > 0)
                 {
-                    background = (Color)ColorConverter.ConvertFromString(Screens[Designs[0].fk_design_screen - 1].screen_hexcolor);
-                    media.ImageType = Screens[Designs[0].fk_design_screen - 1].screen_name;
+                    var screenId = plannings.Where(x => x.planning_serverid == item.videoevent_planning).FirstOrDefault()?.fk_planning_screen;
+                    var screen = Screens.Where(x => x.screen_id == screenId).FirstOrDefault();
+                    screenColor = screen?.screen_hexcolor;
+                    media.screenType = (EnumScreen)screen?.screen_id;
                 }
-                else if (Screens.Count >= 7)
+                else if (item.fk_design_screen > 0)
                 {
-                    background = (Color)ColorConverter.ConvertFromString(Screens[4].screen_hexcolor);
+                    var screen = Screens.Where(x => x.screen_id == item.fk_design_screen).FirstOrDefault();
+                    screenColor = screen?.screen_hexcolor;
+                    media.screenType = (EnumScreen)screen?.screen_id;
+                }
+                else if (item.fk_videoevent_media == (int)EnumMedia.IMAGE)
+                {
+                    screenColor = "#FF6347"; //Tomato Color
+                    media.screenType = EnumScreen.Image;
+                }
+                else if (item.fk_videoevent_media == (int)EnumMedia.VIDEO)
+                {
+                    screenColor = "#D8BFD8"; //Thistle Color 
+                    media.screenType = EnumScreen.Video;
+                }
+                else if (item.fk_videoevent_media == (int)EnumMedia.AUDIO)
+                {
+                    screenColor = "#FFFF00"; // Yellow
+                    media.screenType = EnumScreen.Custom;
+                }
+                else if (item.fk_videoevent_media == (int)EnumMedia.FORM)
+                {
+                    screenColor = Screens.Where(x => x.screen_name == "custom")?.FirstOrDefault()?.screen_hexcolor;
+                    media.screenType = EnumScreen.Custom;
                 }
 
                 if (item.videosegment_data != null && item.videosegment_data.Count > 0)
@@ -455,22 +481,13 @@ namespace VideoCreator.Helpers
                 else if (item.fk_videoevent_media == 2)
                 {
                     media.mediaType = EnumMedia.VIDEO;
-
-                    if (Screens.Count >= 7)
-                    {
-                        background = (Color)ColorConverter.ConvertFromString(Screens[4].screen_hexcolor);
-                    }
                 }
                 else if (item.fk_videoevent_media == 3)
                 {
                     media.mediaType = EnumMedia.AUDIO;
                 }
-                else if (item.fk_videoevent_media == 4)
-                {
-                    media.mediaType = EnumMedia.FORM;
-                }
 
-                media.Color = background;
+                media.Color = (Color)ColorConverter.ConvertFromString(screenColor); ;
 
                 media.VideoEventID = item.videoevent_id;
                 media.ProjectId = selectedProjectEvent.projectId;
