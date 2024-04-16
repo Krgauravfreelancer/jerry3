@@ -187,7 +187,7 @@ namespace ManageMedia_UserControl.Controls
 
             TimeLineScrollBar.ValueChanged += TimeLineScrollBar_ValueChanged;
             CalculateTimeLineScrollBar();
-            UpdateTimeScale();
+            DrawTimeLine();
             TrackItemProcessor.RecalculateNoteLimits(TimeLineDrawEngine.GetNoteItemControls());
 
         }
@@ -411,7 +411,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            UpdateTimeScale();
+            DrawTimeLine();
 
             SetTotalTime(_TotalDuration);
             TimeLineScrollBar.Value = 0;
@@ -481,7 +481,7 @@ namespace ManageMedia_UserControl.Controls
             NotesEditedEvent();
         }
 
-        private void UpdateTimeScale()
+        private void DrawTimeLine()
         {
             TimeLineDrawEngine.DrawTimeLine(MainCanvas, LegendCanvas, _ViewportStart, _ViewportDuration, _TotalDuration, MainCursorTime, this, _IsReadOnly, IsManageMedia);
         }
@@ -510,7 +510,7 @@ namespace ManageMedia_UserControl.Controls
         {
             if (this.IsLoaded == true)
             {
-                UpdateTimeScale();
+                DrawTimeLine();
             }
         }
 
@@ -535,7 +535,7 @@ namespace ManageMedia_UserControl.Controls
         {
             _ViewportStart = TimeSpan.FromSeconds(TimeLineScrollBar.Value);
             if(!IsManageMedia) SetTrackbarByTime();
-            UpdateTimeScale();
+            DrawTimeLine();
         }
 
         internal void AddNewVideoEventByPoint(ImageSource imageItem, Point location, bool PositionAtHalf)
@@ -1604,7 +1604,7 @@ namespace ManageMedia_UserControl.Controls
                     missingVideoEventItem.Item.AfterMedia.Duration = missingVideoEventItem.Item.AfterMedia.Duration + missingVideoEventItem.Item.Duration;
 
                     CalculateTimeLineScrollBar();
-                    UpdateTimeScale();
+                    DrawTimeLine();
                     ReProcessNotes();
 
                     //Must be After Add And Shift
@@ -1634,7 +1634,7 @@ namespace ManageMedia_UserControl.Controls
 
 
                     CalculateTimeLineScrollBar();
-                    UpdateTimeScale();
+                    DrawTimeLine();
                     ReProcessNotes();
 
                     //Must be After Add And Shift

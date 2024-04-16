@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {
@@ -40,6 +41,8 @@ namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
                     control.Margin = new Thickness(StartPosition, HeaderHeight, 0, 0);
                     control.Width = Width;
                     control.Height = NoteTrackHeight;
+                    control.BorderBrush = Brushes.Transparent;
+                    control.BorderThickness = new Thickness(1, 0, 1, 0);
 
                     timeline.TimeLineDrawEngine.AddTextControlElement_ToCanvas(MainCanvas, control);
                 }
