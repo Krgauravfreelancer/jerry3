@@ -7,6 +7,7 @@ using NAudio.CoreAudioApi;
 using NAudio.Gui;
 using Newtonsoft.Json.Linq;
 using ScreenRecorder_UserControl.Models;
+using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -65,6 +66,7 @@ namespace ManageMedia_UserControl.Controls
         public List<Media> CalloutLocationOrSizeChangedMedia = new List<Media>();
 
         public Point TrackBarPosition = new Point(0, 0);
+        public TimeSpan TrackBarTimespan = new TimeSpan(0, 0, 0);
         TrackbarLineControl TrackbarLine2 = new TrackbarLineControl();
         bool _isTrackbarLineDragInProg = false;
 
@@ -303,6 +305,7 @@ namespace ManageMedia_UserControl.Controls
                 if (mouseX >= 0)
                 {
                     TrackBarPosition = mousePos;
+                    TrackBarTimespan = GetTimeSpanByLocation(mousePos.X);
                     Canvas.SetLeft(TrackbarLine2, mouseX);
                    
                 }
@@ -403,6 +406,7 @@ namespace ManageMedia_UserControl.Controls
             //This should not be touched
             TimeLineScrollBar.ViewportSize = (TimeLineScrollBar.Maximum - TimeLineScrollBar.Minimum) * value / (1 - value);
             TimeLineScrollBar.ValueChanged += TimeLineScrollBar_ValueChanged;
+            if(!IsManageMedia) SetTrackbarByTime();
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -530,6 +534,7 @@ namespace ManageMedia_UserControl.Controls
         private void TimeLineScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _ViewportStart = TimeSpan.FromSeconds(TimeLineScrollBar.Value);
+            if(!IsManageMedia) SetTrackbarByTime();
             UpdateTimeScale();
         }
 
@@ -564,7 +569,7 @@ namespace ManageMedia_UserControl.Controls
                     {
                         StartTime = NewMediaStartTime,
                         Duration = NewMediaDuration,
-                        mediaType = MediaType.Image,
+                        mediaType = EnumMedia.IMAGE,
                         ProjectId = _Playlist[0].ProjectId,
                         TrackId = 2,
                         Color = (Color)ColorConverter.ConvertFromString("Tomato"),
@@ -613,7 +618,7 @@ namespace ManageMedia_UserControl.Controls
                     {
                         StartTime = NewMediaStartTime,
                         Duration = NewMediaDuration,
-                        mediaType = MediaType.Image,
+                        mediaType = EnumMedia.IMAGE,
                         ProjectId = _Playlist[0].ProjectId,
                         TrackId = 2,
                         Color = (Color)ColorConverter.ConvertFromString("Tomato"),
@@ -646,7 +651,7 @@ namespace ManageMedia_UserControl.Controls
                 {
                     StartTime = WasDroppedAt,
                     Duration = TimeSpan.FromSeconds(5),
-                    mediaType = MediaType.Image,
+                    mediaType = EnumMedia.IMAGE,
                     ProjectId = _Playlist[0].ProjectId,
                     TrackId = 2,
                     Color = (Color)ColorConverter.ConvertFromString("Tomato"),
@@ -760,7 +765,7 @@ namespace ManageMedia_UserControl.Controls
 
             if (UpdateOriginalTime == true)
             {
-                if (media.mediaType != MediaType.Video)
+                if (media.mediaType != EnumMedia.VIDEO)
                 {
                     media.OriginalDuration = NewDuration;
                 }
@@ -1274,6 +1279,12 @@ namespace ManageMedia_UserControl.Controls
 
         public void SetTrackbar()
         {
+            Canvas.SetLeft(TrackbarLine2, TrackBarPosition.X);
+        }
+
+        public void SetTrackbarByTime()
+        {
+            TrackBarPosition.X = GetLocationByTimeSpan(TrackBarTimespan);
             Canvas.SetLeft(TrackbarLine2, TrackBarPosition.X);
         }
 

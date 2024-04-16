@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
+using Sqllite_Library.Models;
 
 namespace ManageMedia_UserControl.Controls
 {
@@ -31,7 +32,7 @@ namespace ManageMedia_UserControl.Controls
         public bool IsSelected;
         bool IsReadOnly;
 
-        internal TrackVideoEventItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool _IsReadOnly, bool _IsManageMedia)
+        internal TrackVideoEventItem(Media media, Color color, EnumMedia MediaType, TimeLine timeline, double width, double height, bool _IsReadOnly, bool _IsManageMedia)
         {
             this.Unloaded += TrackVideoEventItem_Unloaded;
             Media = media;
@@ -55,13 +56,13 @@ namespace ManageMedia_UserControl.Controls
             Icon.HorizontalAlignment = HorizontalAlignment.Left;
             Icon.Opacity = 0.5;
 
-            if (media.ImageType != null && media.ImageType != "")
+            if (media.screenType.ToString() != "")
             {
                 int Brightness = Color.R + Color.G + Color.B;
                 if (Brightness > 250)
                 {
                     TextBlock textBlock = new TextBlock() { SnapsToDevicePixels = true };
-                    textBlock.Text = FirstCharToUpper(media.ImageType);
+                    textBlock.Text = FirstCharToUpper(media.screenType.ToString());
                     textBlock.Opacity = 0.7;
                     textBlock.Foreground = Brushes.Black;
                     textBlock.Margin = new Thickness(25, 2, 2, 2);
@@ -70,7 +71,7 @@ namespace ManageMedia_UserControl.Controls
                 else
                 {
                     TextBlock textBlock = new TextBlock() {SnapsToDevicePixels = true };
-                    textBlock.Text = FirstCharToUpper(media.ImageType);
+                    textBlock.Text = FirstCharToUpper(media.screenType.ToString());
                     textBlock.Opacity = 0.8;
                     textBlock.Foreground = Brushes.White;
                     textBlock.Margin = new Thickness(25, 2, 2, 2);
@@ -84,21 +85,21 @@ namespace ManageMedia_UserControl.Controls
                 if (Brightness > 250)
                 {
 
-                    switch (ImageType)
+                    switch (MediaType)
                     {
-                        case MediaType.Image:
+                        case EnumMedia.IMAGE:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Image-Small-Dark.png"));
 
                             break;
-                        case MediaType.Video:
+                        case EnumMedia.VIDEO:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Video-Small-Dark.png"));
 
                             break;
-                        case MediaType.Audio:
+                        case EnumMedia.AUDIO:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small-Dark.png"));
 
                             break;
-                        case MediaType.Form:
+                        case EnumMedia.FORM:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small-Dark.png"));
 
                             break;
@@ -106,21 +107,21 @@ namespace ManageMedia_UserControl.Controls
                 }
                 else
                 {
-                    switch (ImageType)
+                    switch (MediaType)
                     {
-                        case MediaType.Image:
+                        case EnumMedia.IMAGE:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Image-Small.png"));
 
                             break;
-                        case MediaType.Video:
+                        case EnumMedia.VIDEO:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Video-Small.png"));
 
                             break;
-                        case MediaType.Audio:
+                        case EnumMedia.AUDIO:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Audio-Small.png"));
 
                             break;
-                        case MediaType.Form:
+                        case EnumMedia.FORM:
                             Icon.Source = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Form-Small.png"));
 
                             break;

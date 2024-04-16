@@ -45,11 +45,11 @@ namespace VideoCreator.Helpers
         public static async Task SyncServerDataToLocalDB(ParentDataList<AllVideoEventResponseModel> serverVideoEventData, ManageTimeline_UserControl uc, Button btnDownloadServerData, SelectedProjectEvent selectedProjectEvent, LoadingAnimation loader, AuthAPIViewModel authApiViewModel)
         {
             if (serverVideoEventData == null) serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
-            //LoaderHelper.ShowLoader(uc, loader);
+            LoaderHelper.ShowLoader(uc, loader);
 
             // Step1: Lets clear the local DB
             DataManagerSqlLite.DeleteAllVideoEventsByProjdetId(selectedProjectEvent.projdetId, true);
-            //int i = 1;
+            int i = 1;
             foreach (var videoEvent in serverVideoEventData?.Data)
             {
                 var localVideoEventId = SaveVideoEvent(videoEvent, selectedProjectEvent);
@@ -60,13 +60,13 @@ namespace VideoCreator.Helpers
                 if (videoEvent?.videosegment != null)
                     await SaveVideoSegment(localVideoEventId, videoEvent?.videosegment, authApiViewModel);
 
-                //LoaderHelper.ShowLoader(uc, loader, $"Processed {i++}/{serverVideoEventData?.Data?.Count} events..");
+                LoaderHelper.ShowLoader(uc, loader, $"Processed {i++}/{serverVideoEventData?.Data?.Count} events..");
             }
             //InitializeChildren();
             //Refresh();
             btnDownloadServerData.Content = $@"Download Server Data";
             btnDownloadServerData.IsEnabled = false;
-            //LoaderHelper.HideLoader(uc, loader);
+            LoaderHelper.HideLoader(uc, loader);
             MessageBox.Show($"Sync successfull !!!", "Success", MessageBoxButton.OK, MessageBoxImage.Exclamation);
         }
 

@@ -1,5 +1,6 @@
 ﻿using ManageMedia_UserControl.Classes;
 using ScreenRecorder_UserControl.Models;
+using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace ManageMedia_UserControl.Controls
                 NameTxt.Text = "";
             }
 
-            if (_Media.mediaType == MediaType.Video)
+            if (_Media.mediaType == EnumMedia.VIDEO)
             {
                 OverideDefaultBox.IsChecked = false;
                 OverideDefaultBox.IsEnabled = false;

@@ -125,25 +125,6 @@ namespace VideoCreator.Helpers
             DataManagerSqlLite.UpsertRowsToBackground(dataTable);
         }
 
-        public static void SyncPlanningHead(List<PlanningHeadModel> data)
-        {
-            InitializeDatabase();
-            var datatable = new DataTable();
-            datatable.Columns.Add("planninghead_id", typeof(int));
-            datatable.Columns.Add("planninghead_name", typeof(string));
-            datatable.Columns.Add("planninghead_sort", typeof(int));
-            datatable.Columns.Add("screen_hexcolor", typeof(string));
-            foreach (var item in data)
-            {
-                var row = datatable.NewRow();
-                row["planninghead_id"] = -1;
-                row["planninghead_name"] = item.planninghead_name;
-                row["planninghead_sort"] = item.planninghead_sort;
-                datatable.Rows.Add(row);
-            }
-            DataManagerSqlLite.UpsertRowsToPlanningHead(datatable);
-        }
-
         public static int UpsertProject(ProjectWithId projectModel, string version)
         {
             InitializeDatabase();
@@ -199,7 +180,7 @@ namespace VideoCreator.Helpers
             //project
             dataTable.Columns.Add("planning_id", typeof(int));
             dataTable.Columns.Add("fk_planning_project", typeof(int));
-            dataTable.Columns.Add("fk_planning_head", typeof(int));
+            dataTable.Columns.Add("fk_planning_screen", typeof(int));
             dataTable.Columns.Add("planning_customname", typeof(string));
             dataTable.Columns.Add("planning_notesline", typeof(string));
             dataTable.Columns.Add("planning_medialibid", typeof(string));
@@ -215,14 +196,20 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("planning_media", typeof(DataTable));
 
 
+
+
             foreach (var planning in plannings)
             {
+                string notes = "";
+                if (planning.planning_notesline?.Count > 0)
+                    notes = string.Join($"{Environment.NewLine}$$$NEWNOTES$$${Environment.NewLine}", planning.planning_notesline);
+
                 var row = dataTable.NewRow();
                 row["planning_id"] = -1;
                 row["fk_planning_project"] = localProjectId;
-                row["fk_planning_head"] = planning.fk_planning_head;
+                row["fk_planning_screen"] = planning.fk_planning_screen;
                 row["planning_customname"] = planning.planning_customname?.Replace("'", "''");
-                row["planning_notesline"] = planning.planning_notesline?.Replace("'", "''");
+                row["planning_notesline"] = notes?.Replace("'", "''");
                 row["planning_medialibid"] = planning.planning_medialibid?.Replace("'", "''");
                 row["planning_sort"] = planning.planning_sort;
                 row["planning_suggestnotesline"] = planning.planning_suggestnotesline?.Replace("'", "''");
@@ -233,7 +220,7 @@ namespace VideoCreator.Helpers
                 row["planning_syncerror"] = "";
                 row["planning_isedited"] = false;
                 //Dependent Tables
-                if (planning.planningdesc?.Count > 0)
+                if (planning.planningdesc != null)
                     row["planning_desc"] = GetPlanningDescriptionDataTable(planning.planningdesc);
                 if (!string.IsNullOrEmpty(planning.planning_media_thumb) && !string.IsNullOrEmpty(planning.planning_media_full))
                     row["planning_media"] = await GetPlanningMediaDataTable(planning, authApiViewModel);
@@ -245,20 +232,20 @@ namespace VideoCreator.Helpers
             return insertedIds;
         }
 
-        public static DataTable GetPlanningDescriptionDataTable(List<PlanningDesc> descritions)
+        public static DataTable GetPlanningDescriptionDataTable(PlanningDesc description)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("planningdesc_id", typeof(int));
             dataTable.Columns.Add("planningdesc_line", typeof(string));
             dataTable.Columns.Add("planningdesc_bullet", typeof(DataTable));
-            foreach (var desc in descritions)
-            {
-                var row = dataTable.NewRow();
-                row["planningdesc_id"] = -1;
-                row["planningdesc_line"] = desc.planningdesc_line?.Replace("'", "''");
-                row["planningdesc_bullet"] = GetPlanningBulletDataTable(desc.bullet);
-                dataTable.Rows.Add(row);
-            }
+            
+            var row = dataTable.NewRow();
+            row["planningdesc_id"] = -1;
+            row["planningdesc_line"] = description.planningdesc_line?.Replace("'", "''");
+            if(description.bullet?.Count > 0)
+                row["planningdesc_bullet"] = GetPlanningBulletDataTable(description.bullet);
+            dataTable.Rows.Add(row);
+            
             return dataTable;
         }
 

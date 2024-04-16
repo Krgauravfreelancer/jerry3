@@ -85,7 +85,6 @@ namespace Sqllite_Library.Data
             CreateProjectTable(sqlCon);
             CreateProjectDetTable(sqlCon);
 
-            CreatePlanningHeadTable(sqlCon);
             CreatePlanningTable(sqlCon);
             CreatePlanningMediaTable(sqlCon);
             CreatePlanningDescTable(sqlCon);
@@ -218,23 +217,12 @@ namespace Sqllite_Library.Data
             CreateTableHelper(sqlQueryString, sqlCon);
         }
 
-        private static void CreatePlanningHeadTable(SQLiteConnection sqlCon)
-        {
-            string sqlQueryString = @"CREATE TABLE 'cbv_planninghead' (
-                        'planninghead_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
-                        'planninghead_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
-                        'planninghead_sort' TEXT NOT NULL  DEFAULT '1',
-                        UNIQUE (planninghead_name)
-                        );";
-            CreateTableHelper(sqlQueryString, sqlCon);
-        }
-
         private static void CreatePlanningTable(SQLiteConnection sqlCon)
         {
             string sqlQueryString = @"CREATE TABLE 'cbv_planning' (
                             'planning_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                             'fk_planning_project' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_project' ('project_id'),
-                            'fk_planning_head' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planninghead' ('planninghead_id'),
+                            'fk_planning_screen' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_screen' ('screen_id'),
                             'planning_customname' TEXT(50) DEFAULT NULL,
                             'planning_notesline' TEXT DEFAULT NULL,
                             'planning_medialibid' TEXT(12) DEFAULT NULL,
@@ -246,7 +234,7 @@ namespace Sqllite_Library.Data
                             'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                             'planning_syncerror' TEXT(50) NOT NULL  DEFAULT NULL,
                             'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0
-                            ,UNIQUE (fk_planning_project, fk_planning_head, planning_customname)
+                            ,UNIQUE (fk_planning_project, fk_planning_screen, planning_customname)
                         );";
             CreateTableHelper(sqlQueryString, sqlCon);
         }
@@ -1796,53 +1784,6 @@ namespace Sqllite_Library.Data
 
         #region == Planning GET ==
 
-        public static List<CBVPlanningHead> GetPlanningHead()
-        {
-            var data = new List<CBVPlanningHead>();
-
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-
-            string sqlQueryString = $@"SELECT * FROM cbv_planninghead";
-
-            SQLiteConnection sqlCon = null;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
-                {
-                    while (sqlReader.Read())
-                    {
-                        var obj = new CBVPlanningHead
-                        {
-                            planninghead_id = Convert.ToInt32(sqlReader["planninghead_id"]),
-                            planninghead_name = Convert.ToString(sqlReader["planninghead_name"]),
-                            planninghead_sort = Convert.ToInt32(sqlReader["planninghead_sort"]),
-                        };
-                        data.Add(obj);
-                    }
-                }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
-            }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-
-            return data;
-        }
-
         public static List<CBVPlanning> GetPlanning(int projectId, bool dependentData = true)
         {
             var data = new List<CBVPlanning>();
@@ -1872,7 +1813,7 @@ namespace Sqllite_Library.Data
                         {
                             planning_id = planningId,
                             fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
-                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
+                            fk_planning_screen = Convert.ToInt32(sqlReader["fk_planning_screen"]),
                             planning_customname = Convert.ToString(sqlReader["planning_customname"]),
                             planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
@@ -1939,7 +1880,7 @@ namespace Sqllite_Library.Data
                         {
                             planning_id = planningId,
                             fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
-                            fk_planning_head = Convert.ToInt32(sqlReader["fk_planning_head"]),
+                            fk_planning_screen = Convert.ToInt32(sqlReader["fk_planning_screen"]),
                             planning_customname = Convert.ToString(sqlReader["planning_customname"]),
                             planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
                             planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
@@ -3703,26 +3644,6 @@ namespace Sqllite_Library.Data
             }
         }
 
-        public static void UpsertRowsToPlanningHead(DataTable dataTable)
-        {
-            foreach (DataRow dr in dataTable.Rows)
-            {
-                var planninghead_id = Convert.ToInt32(dr["planninghead_id"]);
-                var planninghead_name = Convert.ToString(dr["planninghead_name"]);
-                var planninghead_sort = Convert.ToInt32(dr["planninghead_sort"]);
-                var whereClause = $" NOT EXISTS(SELECT 1 FROM cbv_planninghead WHERE planninghead_name = '{planninghead_name}' and planninghead_sort = {planninghead_sort} );";
-
-
-                var upsertQueryString = $@" INSERT INTO cbv_planninghead (planninghead_name, planninghead_sort)
-                                                   Select '{planninghead_name}', {planninghead_sort}
-                                                WHERE {whereClause};";
-                var upsertFlag = InsertRecordsInTable("cbv_planninghead", upsertQueryString);
-
-                Console.WriteLine($@"cbv_planninghead table upsert status for id - {planninghead_id}, name -{planninghead_id} & sort - {planninghead_sort} |  result - {upsertFlag}");
-            }
-        }
-
-
         public static int UpsertRowsToProject(DataTable dataTable)
         {
             var values = new List<string>();
@@ -3822,13 +3743,13 @@ namespace Sqllite_Library.Data
                 var syncErrorString = Convert.ToString(dr["planning_syncerror"]);
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
-                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_head"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
+                values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_screen"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
                     $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isedited})");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_planning 
-                    (fk_planning_project, fk_planning_head, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
+                    (fk_planning_project, fk_planning_screen, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
                         planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isedited) 
                 VALUES 
                     {valuesString}";

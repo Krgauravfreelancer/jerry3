@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ScreenRecorder_UserControl.Models;
+using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,19 +22,11 @@ namespace ManageMedia_UserControl.Classes
         public TimeSpan StartTime { get; set; }
         public TimeSpan Duration { get; set; }
         public TimeSpan OriginalDuration { get; set; }
-        public MediaType mediaType { get; set; }
+        public EnumMedia mediaType { get; set; }
+        public EnumScreen screenType { get; set; }
         public List<TextItem> RecordedTextList { get; set; }
         public Color Color { get; set; }
 
         public bool IsSelected { get; set; }
     }
-
-    public enum MediaType
-    {
-        Image = 1,
-        Video = 2,
-        Audio = 3,
-        Form = 4
-    }
-
 }

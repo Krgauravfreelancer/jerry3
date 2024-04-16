@@ -7,7 +7,7 @@ namespace Sqllite_Library.Models.Planning
     {
         public int planning_id { get; set; }
         public int fk_planning_project { get; set; }
-        public int fk_planning_head { get; set; }
+        public int fk_planning_screen { get; set; }
         public string planning_customname { get; set; }
         public string planning_notesline { get; set; }
         public int planning_medialibid { get; set; }

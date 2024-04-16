@@ -188,5 +188,11 @@
   <ItemGroup>
     <Resource Include="Icons\Save-icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SQLite_UserControl_v2\SQLite_Library.csproj">
+      <Project>{4562DAB3-B29E-43E3-94D5-C377101A5D61}</Project>
+      <Name>SQLite_Library</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

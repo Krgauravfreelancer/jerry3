@@ -268,15 +268,6 @@ namespace VideoCreator.Auth
             return null;
         }
 
-        public async Task<List<PlanningHeadModel>> GetAllPlanningHead()
-        {
-            var url = $"api/connect/planning-head";
-            var result = await _apiClientHelper.Get<ParentData<List<PlanningHeadModel>>>(url);
-            if (result != null)
-                return result?.Data;
-            return null;
-        }
-
         public async Task<string> DownloadBackground(int backgroundId, string extension)
         {
             string result = Path.GetTempPath();

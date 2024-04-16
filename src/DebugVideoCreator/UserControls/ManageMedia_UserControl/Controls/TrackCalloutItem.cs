@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Net;
 using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
 using System.Windows.Documents;
+using Sqllite_Library.Models;
 
 namespace ManageMedia_UserControl.Controls
 {
@@ -32,7 +33,7 @@ namespace ManageMedia_UserControl.Controls
         bool _IsManageMedia;
         TrackCalloutItem NextElement;
         public bool IsSelected;
-        internal TrackCalloutItem(Media media, Color color, MediaType ImageType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas, List<TrackCalloutItem> _TrackCalloutItems)
+        internal TrackCalloutItem(Media media, Color color, EnumMedia MediaType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas, List<TrackCalloutItem> _TrackCalloutItems)
         {
             this.Unloaded += TrackCalloutItem_Unloaded;
             MediaCallout = media;

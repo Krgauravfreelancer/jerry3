@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
+using Sqllite_Library.Models;
 
 namespace ManageMedia_UserControl.Classes.TimeLine
 {
@@ -261,7 +262,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             for (int i = 0; i < Playlist.Count; i++)
             {
                 Media media = Playlist[i];
-                if (TimeSpanAtPoint > media.StartTime && TimeSpanAtPoint < media.StartTime + media.Duration && (media.mediaType == MediaType.Image || media.mediaType == MediaType.Video) && media.TrackId == 2)
+                if (TimeSpanAtPoint > media.StartTime && TimeSpanAtPoint < media.StartTime + media.Duration && (media.mediaType == EnumMedia.IMAGE || media.mediaType == EnumMedia.VIDEO) && media.TrackId == 2)
                 {
                     EventFound = media;
                     break;
@@ -278,7 +279,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
             for (int i = 0; i < Playlist.Count; i++)
             {
                 Media media = Playlist[i];
-                if (TimeSpanAtPoint > media.StartTime && TimeSpanAtPoint < media.StartTime + media.Duration && (media.mediaType == MediaType.Image || media.mediaType == MediaType.Video) && media.TrackId == 2)
+                if (TimeSpanAtPoint > media.StartTime && TimeSpanAtPoint < media.StartTime + media.Duration && (media.mediaType == EnumMedia.IMAGE || media.mediaType == EnumMedia.VIDEO) && media.TrackId == 2)
                 {
                     EventFound = media;
                     break;

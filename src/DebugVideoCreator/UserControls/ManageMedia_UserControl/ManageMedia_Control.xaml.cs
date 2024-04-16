@@ -4,6 +4,7 @@ using ManageMedia_UserControl.Classes;
 using ManageMedia_UserControl.Controls;
 using ManageMedia_UserControl.Models;
 using ScreenRecorder_UserControl.Models;
+using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -215,11 +216,11 @@ namespace ManageMedia_UserControl
 
                     if (item.TrackId == 2)
                     {
-                        if (item.mediaType == Classes.MediaType.Image)
+                        if (item.mediaType == EnumMedia.IMAGE)
                         {
                             itemExtended.MediaIcon = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Image-Small-Dark.png"));
                         }
-                        else if (item.mediaType == Classes.MediaType.Video)
+                        else if (item.mediaType == EnumMedia.VIDEO)
                         {
                             itemExtended.MediaIcon = new BitmapImage(new Uri("pack://application:,,,/ManageMedia_UserControl;component/Icons/video-events/Video-Small-Dark.png"));
                         }
@@ -278,10 +279,10 @@ namespace ManageMedia_UserControl
 
             switch (media.mediaType)
             {
-                case Classes.MediaType.Image:
+                case EnumMedia.IMAGE:
                     mediaType = FullScreenPlayer_UserControl.Models.MediaType.Image;
                     break;
-                case Classes.MediaType.Video:
+                case EnumMedia.VIDEO:
                     mediaType = FullScreenPlayer_UserControl.Models.MediaType.Video;
                     break;
                 default:
@@ -310,10 +311,10 @@ namespace ManageMedia_UserControl
 
             switch (media.mediaType)
             {
-                case Classes.MediaType.Image:
+                case EnumMedia.IMAGE:
                     mediaType = FullScreenPlayer_UserControl.Models.MediaType.Image;
                     break;
-                case Classes.MediaType.Video:
+                case EnumMedia.VIDEO:
                     mediaType = FullScreenPlayer_UserControl.Models.MediaType.Video;
                     break;
                 default:

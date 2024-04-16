@@ -320,11 +320,6 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetApp();
         }
 
-        public static List<CBVPlanningHead> GetPlanningHead()
-        {
-            return SqlLiteData.GetPlanningHead();
-        }
-
         public static List<CBVPlanning> GetPlanning(int projectId, bool dependentFlag = true)
         {
             return SqlLiteData.GetPlanning(projectId, dependentFlag);
@@ -610,11 +605,6 @@ namespace Sqllite_Library.Business
         public static void UpsertRowsToBackground(DataTable dataTable)
         {
             SqlLiteData.UpsertRowsToBackground(dataTable);
-        }
-
-        public static void UpsertRowsToPlanningHead(DataTable dataTable)
-        {
-            SqlLiteData.UpsertRowsToPlanningHead(dataTable);
         }
 
         public static int IsProjectAvailable(int projectServerId)

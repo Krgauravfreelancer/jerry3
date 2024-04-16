@@ -120,7 +120,6 @@
     <Compile Include="Models\Planning\CBVPlanningBullet.cs" />
     <Compile Include="Models\Planning\CBVPlanningDesc.cs" />
     <Compile Include="Models\Planning\CBVPlanning.cs" />
-    <Compile Include="Models\Planning\CBVPlanningHead.cs" />
     <Compile Include="Models\CBVShiftVideoEvent.cs" />
     <Compile Include="Models\SqlConnectionModel.cs" />
     <Compile Include="Models\CBVLocAudio.cs" />

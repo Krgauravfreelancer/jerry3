@@ -76,7 +76,6 @@
     <Compile Include="DTO\Auth\LoginResponseModel.cs" />
     <Compile Include="DTO\Auth\LogoutResponseModel.cs" />
     <Compile Include="DTO\Planning\PlanningModel.cs" />
-    <Compile Include="DTO\Planning\PlanningHeadModel.cs" />
     <Compile Include="DTO\Projects\ProjectDetail.cs" />
     <Compile Include="DTO\Projects\ProjectWithId.cs" />
     <Compile Include="DTO\VideoEvent\ShiftVideoEventModel.cs" />

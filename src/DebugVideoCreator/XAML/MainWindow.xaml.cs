@@ -61,7 +61,6 @@ namespace VideoCreator.XAML
             await SyncCompany();
             await SyncBackground();
             await SyncScreens();
-            await SyncPlanningHead();
             await InitialiseAndRefreshScreen(true);
 
             LoaderHelper.HideLoader(this, loader);
@@ -338,13 +337,6 @@ namespace VideoCreator.XAML
             var data = await authApiViewModel.GetAllScreens();
             if (data == null) return;
             SyncDbHelper.SyncScreen(data);
-        }
-
-        private async Task SyncPlanningHead()
-        {
-            var data = await authApiViewModel.GetAllPlanningHead();
-            if (data == null) return;
-            SyncDbHelper.SyncPlanningHead(data);
         }
 
         private async Task SyncCompany()

@@ -71,7 +71,7 @@ namespace VideoCreator.Helpers
             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
             var designElements = designerUserControl.PlanningSetup();
 
-            if (planningEvent.Type == EnumPlanningHead.All)
+            if (planningEvent.Type == EnumScreen.All)
             {
                 var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
                 loader.setTextBlockMessage($"Processing 0/{data.Count} ...");
@@ -80,33 +80,33 @@ namespace VideoCreator.Helpers
                 int cntr = 1;
                 foreach (var item in data)
                 {
-                    loader.setTextBlockMessage($"Processing {(EnumPlanningHead)Enum.ToObject(typeof(EnumPlanningHead), item.fk_planning_head)} {cntr++}/{data.Count} ...");
-                    switch (item.fk_planning_head)
+                    loader.setTextBlockMessage($"Processing {(EnumScreen)Enum.ToObject(typeof(EnumScreen), item.fk_planning_screen)} {cntr++}/{data.Count} ...");
+                    switch (item.fk_planning_screen)
                     {
-                        case (int)EnumPlanningHead.Text:
-                        case (int)EnumPlanningHead.Introduction:
+                        case (int)EnumScreen.Text:
+                        case (int)EnumScreen.Introduction:
                             // code block
-                            await AddIntroductionOrTextSlide((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                            await AddIntroductionOrTextSlide((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
-                        case (int)EnumPlanningHead.Requirements:
-                        case (int)EnumPlanningHead.Objectives:
-                        case (int)EnumPlanningHead.Conclusion:
-                        case (int)EnumPlanningHead.NextUp:
-                        case (int)EnumPlanningHead.Bullet:
-                            await AddPlanningElementWithDesign(item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, (EnumPlanningHead)item.fk_planning_head);
+                        case (int)EnumScreen.Requirements:
+                        case (int)EnumScreen.Objectives:
+                        case (int)EnumScreen.Conclusion:
+                        case (int)EnumScreen.NextUp:
+                        case (int)EnumScreen.Bullet:
+                            await AddPlanningElementWithDesign(item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen);
                             break;
-                        case (int)EnumPlanningHead.Video:
-                            await AddPlaceholder((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                        case (int)EnumScreen.Video:
+                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
-                        case (int)EnumPlanningHead.Custom:
-                            await AddPlaceholder((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                        case (int)EnumScreen.Custom:
+                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
-                        case (int)EnumPlanningHead.Image:
+                        case (int)EnumScreen.Image:
                             // code block
                             if (item?.planning_media?.Count > 0)
-                                await AddPlanningImage(item, selectedProjectEvent, authApiViewModel, (EnumPlanningHead)item.fk_planning_head);
+                                await AddPlanningImage(item, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen);
                             else
-                                await AddPlaceholder((EnumPlanningHead)item.fk_planning_head, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                                await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
                             break;
                         default:
                             // code block
@@ -117,11 +117,11 @@ namespace VideoCreator.Helpers
         }
 
 
-        private static async Task<bool?> AddPlaceholder(EnumPlanningHead planningHead, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddPlaceholder(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
-            var text = Enum.GetName(planningHead.GetType(), planningHead) + " Placeholder";
+            var text = Enum.GetName(screen.GetType(), screen) + " Placeholder";
             designerUserControl.ClearDatatable();
-            FillBackgroundRowForPlanning(designElements, designerUserControl, planningHead);
+            FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
             DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
@@ -142,7 +142,7 @@ namespace VideoCreator.Helpers
             var title = DataManagerSqlLite.GetProjectById(selectedProjectEvent.projectId, false)?.project_videotitle;
 
             designerUserControl.ClearDatatable();
-            FillBackgroundRowForPlanning(designElements, designerUserControl, EnumPlanningHead.Title);
+            FillBackgroundRowForPlanning(designElements, designerUserControl, EnumScreen.Title);
             DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(title).Replace("'", "''");
 
@@ -153,13 +153,13 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private static async Task<bool?> AddIntroductionOrTextSlide(EnumPlanningHead planningHead, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddIntroductionOrTextSlide(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             if (item?.planning_desc?.Count > 0)
             {
                 var text = item?.planning_desc[0]?.planningdesc_line;
                 designerUserControl.ClearDatatable();
-                FillBackgroundRowForPlanning(designElements, designerUserControl, planningHead);
+                FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
                 DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
                 rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
@@ -174,7 +174,7 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumPlanningHead planningType)
+        private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen)
         {
             var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
@@ -216,7 +216,7 @@ namespace VideoCreator.Helpers
             row["videoevent_issynced"] = false;
             row["videoevent_serverid"] = -1;
             row["videoevent_syncerror"] = string.Empty;
-            row["fk_videoevent_screen"] = GetScreenTypeId(planningType);
+            row["fk_videoevent_screen"] = (int)screen;
             row["videoevent_notes"] = notedataTable;
             var byteArrayIn = item?.planning_media[0]?.planningmedia_mediafull;
             row["media"] = byteArrayIn;
@@ -230,15 +230,14 @@ namespace VideoCreator.Helpers
 
         }
 
-        private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumPlanningHead planningType)
+        private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen)
         {
             if (item == null || item.planning_desc?.Count == 0 || item.planning_desc[0].planningdesc_bullets?.Count == 0) { return false; }
 
             var heading = item?.planning_desc[0]?.planningdesc_line ?? "No heading Found";
 
             designerUserControl.ClearDatatable();
-            FillBackgroundRowForPlanning(designElements, designerUserControl, planningType);
-            var screen = GetScreenTypeId(planningType);
+            FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
 
             DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
             // Design Elements - Heading
@@ -271,16 +270,14 @@ namespace VideoCreator.Helpers
 
 
 
-        private static void FillBackgroundRowForPlanning(DataTable designElements, Designer_UserControl designerUserControl, EnumPlanningHead planningType)
+        private static void FillBackgroundRowForPlanning(DataTable designElements, Designer_UserControl designerUserControl, EnumScreen screen)
         {
-            var screen = GetScreenTypeId(planningType);
-            // background Image
             foreach (DataRow row in designElements.Rows)
             {
                 var rowDesign = designerUserControl.GetNewRow();
                 rowDesign["design_id"] = row["id"];
                 rowDesign["fk_design_videoevent"] = -1;
-                rowDesign["fk_design_screen"] = screen;
+                rowDesign["fk_design_screen"] = (int)screen;
                 rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
@@ -329,28 +326,6 @@ namespace VideoCreator.Helpers
 
             return notedataTable;
         }
-
-
-        private static int GetScreenTypeId(EnumPlanningHead planningType)
-        {
-            var screen = (int)EnumScreen.Custom;
-            if (planningType == EnumPlanningHead.Title)
-                screen = (int)EnumScreen.Title;
-            else if (planningType == EnumPlanningHead.Requirements)
-                screen = (int)EnumScreen.Requirements;
-            else if (planningType == EnumPlanningHead.Objectives)
-                screen = (int)EnumScreen.Objectives;
-            else if (planningType == EnumPlanningHead.NextUp)
-                screen = (int)EnumScreen.Next;
-            else if (planningType == EnumPlanningHead.Introduction || planningType == EnumPlanningHead.Text)
-                screen = (int)EnumScreen.Intro;
-            else if (planningType == EnumPlanningHead.Custom || planningType == EnumPlanningHead.Image || planningType == EnumPlanningHead.Video)
-                screen = (int)EnumScreen.Custom;
-            else if (planningType == EnumPlanningHead.Conclusion)
-                screen = (int)EnumScreen.Conclusion;
-            return screen;
-        }
-
 
         private static string GetTitleElement(string Text)
         {

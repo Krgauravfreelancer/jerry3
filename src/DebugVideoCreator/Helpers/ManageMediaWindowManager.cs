@@ -13,7 +13,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using VideoCreator.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
-using ManageMediaType = ManageMedia_UserControl.Classes.MediaType;
 using SCModels = ScreenRecorder_UserControl.Models;
 
 namespace VideoCreator.Helpers
@@ -205,12 +204,12 @@ namespace VideoCreator.Helpers
 
                 var mediaId = 0;
 
-                if (media.mediaType == MediaType.Image)
+                if (media.mediaType == EnumMedia.IMAGE)
                 {
                     mediaId = 1;
                 }
 
-                if (media.mediaType == MediaType.Video)
+                if (media.mediaType == EnumMedia.VIDEO)
                 {
                     mediaId = 2;
                 }
@@ -259,7 +258,7 @@ namespace VideoCreator.Helpers
                     row["videoevent_serverid"] = ItemToAdjust.videoevent_serverid;
                     row["videoevent_start"] = media.StartTime.ToString(@"hh\:mm\:ss\.fff");
                     row["videoevent_duration"] = media.Duration.ToString(@"hh\:mm\:ss\.fff");
-                    if (media.mediaType != MediaType.Video)
+                    if (media.mediaType != EnumMedia.VIDEO)
                     {
                         row["videoevent_origduration"] = media.OriginalDuration.ToString(@"hh\:mm\:ss\.fff");
                     }
@@ -360,17 +359,17 @@ namespace VideoCreator.Helpers
         {
             #region Planned Text
 
-            List<CBVPlanningHead> PlanningHead = DataManagerSqlLite.GetPlanningHead();
+            List<CBVScreen> screens = DataManagerSqlLite.GetScreens();
             List<CBVPlanning> PlanningData = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId);
-            if (PlanningHead?.Count > 0 && PlanningData?.Count > 0)
+            if (screens?.Count > 0 && PlanningData?.Count > 0)
             {
                 List<PlannedTextGroup> PlannedTextGroups = new List<PlannedTextGroup>();
-                for (int i = 0; i < PlanningHead.Count; i++)
+                for (int i = 0; i < screens.Count; i++)
                 {
                     PlannedTextGroup PlannedGroup = new PlannedTextGroup()
                     {
-                        GroupID = PlanningHead[i].planninghead_id,
-                        GroupName = PlanningHead[i].planninghead_name,
+                        GroupID = screens[i].screen_id,
+                        GroupName = screens[i].screen_name,
                         PlannedTexts = new List<PlannedText>()
                     };
                     PlannedTextGroups.Add(PlannedGroup);
@@ -382,7 +381,7 @@ namespace VideoCreator.Helpers
                     for (int x = 0; x < PlannedTextGroups.Count; x++)
                     {
                         PlannedTextGroup CurrentGroup = PlannedTextGroups[x];
-                        if (CurrentPlanning.fk_planning_head == CurrentGroup.GroupID)
+                        if (CurrentPlanning.fk_planning_screen == CurrentGroup.GroupID)
                         {
                             CurrentGroup.PlannedTexts.Add(
                             new PlannedText()
@@ -451,11 +450,11 @@ namespace VideoCreator.Helpers
 
                 if (item.fk_videoevent_media == 1 || item.fk_videoevent_media == 4)
                 {
-                    media.mediaType = ManageMediaType.Image;
+                    media.mediaType = EnumMedia.IMAGE;
                 }
                 else if (item.fk_videoevent_media == 2)
                 {
-                    media.mediaType = ManageMediaType.Video;
+                    media.mediaType = EnumMedia.VIDEO;
 
                     if (Screens.Count >= 7)
                     {
@@ -464,11 +463,11 @@ namespace VideoCreator.Helpers
                 }
                 else if (item.fk_videoevent_media == 3)
                 {
-                    media.mediaType = ManageMediaType.Audio;
+                    media.mediaType = EnumMedia.AUDIO;
                 }
                 else if (item.fk_videoevent_media == 4)
                 {
-                    media.mediaType = ManageMediaType.Form;
+                    media.mediaType = EnumMedia.FORM;
                 }
 
                 media.Color = background;

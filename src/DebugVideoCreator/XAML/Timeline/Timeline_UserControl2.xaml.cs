@@ -189,7 +189,7 @@ namespace VideoCreator.XAML
             var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
             var payload = new PlanningEvent
             {
-                Type = EnumPlanningHead.All,
+                Type = EnumScreen.All,
                 TimeAtTheMoment = trackbarTime
             };
 
