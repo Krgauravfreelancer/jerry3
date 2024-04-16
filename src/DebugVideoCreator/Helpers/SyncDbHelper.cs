@@ -202,7 +202,7 @@ namespace VideoCreator.Helpers
             {
                 string notes = "";
                 if (planning.planning_notesline?.Count > 0)
-                    notes = string.Join($"{Environment.NewLine}$$$NEWNOTES$$${Environment.NewLine}", planning.planning_notesline);
+                    notes = string.Join($"$$$NEWNOTES$$$", planning.planning_notesline);
 
                 var row = dataTable.NewRow();
                 row["planning_id"] = -1;

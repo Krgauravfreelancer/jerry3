@@ -1,4 +1,5 @@
 ﻿using LocalVoiceGen_UserControl.Helpers;
+using ScreenRecorder_UserControl.Windows.Controls;
 using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
 using Sqllite_Library.Helpers;
@@ -31,7 +32,7 @@ namespace VideoCreator.Helpers
         private static int RetryIntervalInSeconds = 300;
         private static string EventStartTime = "00:00:00.000";
         private static string EventEndTime = "00:00:00.000";
-        private static string NotesStartTime = "00:00:00.000";
+        
         //private static string NoteEndTime = "00:00:00.000";
         private static int notesIndex = 1;
         private static string CreateOrReturnEmptyDirectory()
@@ -132,7 +133,7 @@ namespace VideoCreator.Helpers
             string notes_duration = "00:00:10.000";
             DataTable dtNotes = null;
             if(!string.IsNullOrEmpty(item.planning_notesline))
-                dtNotes = GetNotesDatatable(item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList(), out notes_duration);
+                dtNotes = GetNotesDatatable(item.planning_notesline, out notes_duration);
             var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
             return result;
         }
@@ -167,7 +168,7 @@ namespace VideoCreator.Helpers
                 var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
                 designImagerUserControl.SaveToDataTable(finalBlob);
 
-                var dtNotes = GetNotesDatatable(item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList(), out string notes_duration);
+                var dtNotes = GetNotesDatatable(item.planning_notesline, out string notes_duration);
                 var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
                 return result;
             }
@@ -176,7 +177,7 @@ namespace VideoCreator.Helpers
 
         private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen)
         {
-            var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+            var notesText = item.planning_notesline;
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
             EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, string.IsNullOrEmpty(notes_duration) ? "00:00:10.000" : notes_duration);
             var dataTable = new DataTable();
@@ -258,7 +259,7 @@ namespace VideoCreator.Helpers
                 j++;
             }
             rowTitle["design_xml"] += Environment.NewLine + bullets;
-            var notesText = item.planning_notesline.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).ToList();
+            var notesText = item.planning_notesline;
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
@@ -287,43 +288,49 @@ namespace VideoCreator.Helpers
         }
 
 
-        private static DataTable GetNotesDatatable(List<string> data, out string notes_duration)
+        private static DataTable GetNotesDatatable(string data, out string notes_duration)
         {
             // Lets add notes
             var notedataTable = GetNotesRawTable();
-            var notes = string.Join(Environment.NewLine, data);
-
-            if (string.IsNullOrEmpty(notes))
+            if (string.IsNullOrEmpty(data))
             {
                 notes_duration = "00:00:10.000";
                 return null;
             }
 
-
-            if (notes?.Length > 0)
+            var notes = data.Split(new string[] { "$$$NEWNOTES$$$"}, StringSplitOptions.None).ToList();
+            TimeSpan measuredTimespan = new TimeSpan(0, 0, 0);
+            
+            foreach (var noteItem in notes)
             {
-                TimeSpan measuredTimespan = TextMeasurement.Measure(notes);
-                notes_duration = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
+                if (string.IsNullOrEmpty(noteItem))
+                    continue;
+                var NotesStartTime = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
+
+                var notesTimespan = new TimeSpan(0, 0, 0, 10);
+                if (noteItem?.Length > 0)
+                    notesTimespan = TextMeasurement.Measure(noteItem);
+                
+                measuredTimespan += notesTimespan;
+                notes_duration = notesTimespan.ToString(@"hh\:mm\:ss\.fff");
+
+                var noteRow = notedataTable.NewRow();
+                noteRow["notes_id"] = -1;
+                noteRow["fk_notes_videoevent"] = -1;
+                noteRow["notes_line"] = noteItem?.Replace("'", "''");
+                noteRow["notes_wordcount"] = noteItem?.Split(' ').Length ?? 0;
+                noteRow["notes_index"] = notesIndex++;
+                noteRow["notes_start"] = NotesStartTime;
+                noteRow["notes_duration"] = notes_duration;
+                noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                noteRow["notes_isdeleted"] = false;
+                noteRow["notes_issynced"] = true;
+                noteRow["notes_serverid"] = -1;
+                noteRow["notes_syncerror"] = string.Empty;
+                notedataTable.Rows.Add(noteRow);
             }
-            else
-                notes_duration = "00:00:10.000";
-
-            var noteRow = notedataTable.NewRow();
-            noteRow["notes_id"] = -1;
-            noteRow["fk_notes_videoevent"] = -1;
-            noteRow["notes_line"] = notes?.Replace("'", "''");
-            noteRow["notes_wordcount"] = notes?.Split(' ').Length ?? 0;
-            noteRow["notes_index"] = notesIndex++;
-            noteRow["notes_start"] = NotesStartTime;
-            noteRow["notes_duration"] = notes_duration;
-            noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            noteRow["notes_isdeleted"] = false;
-            noteRow["notes_issynced"] = true;
-            noteRow["notes_serverid"] = -1;
-            noteRow["notes_syncerror"] = string.Empty;
-            notedataTable.Rows.Add(noteRow);
-
+            notes_duration = measuredTimespan.ToString(@"hh\:mm\:ss\.fff");
             return notedataTable;
         }
 
