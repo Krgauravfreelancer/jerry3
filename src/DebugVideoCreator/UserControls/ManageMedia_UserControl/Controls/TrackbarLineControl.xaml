@@ -7,9 +7,9 @@
              mc:Ignorable="d" >
     <Grid>
         <StackPanel Orientation="Vertical" Cursor="Hand">
-            <Line x:Name="TrackbarLine" X1="3" d:Y1="50" X2="3" Y2="0" Stroke="Red" Margin="2,0,0,0" StrokeThickness="2" Fill="Black"></Line>
-            <Path Data="M 3,0 l 3,4 h 0 -5.5 Z"   Stroke="Red" Margin="2,2,0,0" StrokeThickness="2" Fill="Red"></Path>
-            <Rectangle Fill="Red" Width="12" Height="8" Margin="-1,0,0,0"> </Rectangle>
+            <Line x:Name="TrackbarLine" X1="3" d:Y1="50" X2="3" Y2="0" Stroke="Red" Margin="-2,0,0,0" StrokeThickness="2" Fill="Black"></Line>
+            <Path Data="M 10,2 l 5.5,4 h 0 -5.5 Z"   Stroke="Red" StrokeThickness="2" Fill="Red" Height="9" Stretch="Fill"/>
+            <Rectangle Fill="Red" Width="10" Height="8" Margin="0,0,0,0"> </Rectangle>
         </StackPanel>
     </Grid>
 </UserControl>
