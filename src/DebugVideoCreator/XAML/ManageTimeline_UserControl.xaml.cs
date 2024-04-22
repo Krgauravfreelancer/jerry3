@@ -5,6 +5,7 @@ using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -585,13 +586,29 @@ namespace VideoCreator.XAML
 
         private async void TimelineUserConrol_EditFormEvent(object sender, int editVideoeventLocalId)
         {
-            var videoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false);
-            if (videoEvent != null)
+            var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false).FirstOrDefault();
+            if (editVideoEvent != null)
             {
-                LoaderHelper.ShowLoader(this, loader, "Edit Window is opened ..");
-                await FormHandlerHelper.EditCallOut(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
-                Refresh();
-                LoaderHelper.HideLoader(this, loader);
+                if (editVideoEvent.videoevent_track == (int)EnumTrack.CALLOUT1 || editVideoEvent.videoevent_track == (int)EnumTrack.CALLOUT2)
+                {
+                    LoaderHelper.ShowLoader(this, loader, "Edit Callout Window is opened ..");
+                    await FormHandlerHelper.EditCallOut(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
+                    Refresh();
+                    LoaderHelper.HideLoader(this, loader);
+                }
+                else if(editVideoEvent.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
+                {
+                    if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.VIDEO || editVideoEvent.fk_videoevent_media == (int)EnumMedia.IMAGE)
+                        MessageBox.Show("Coming soon !!", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
+                    {
+                        LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
+                        await FormHandlerHelper.EditFormEvent(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
+                        Refresh();
+                        LoaderHelper.HideLoader(this, loader);
+                    }
+                   
+                }
             }
         }
 

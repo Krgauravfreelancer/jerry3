@@ -62,8 +62,6 @@ namespace VideoCreator.Helpers
             var events = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true, false);
             var timeAtTheMoment = TimeSpan.Parse(editVideoEvent.videoevent_start);
             var evnt = events.Where(x => TimeSpan.Parse(x.videoevent_start) <= timeAtTheMoment && TimeSpan.Parse(x.videoevent_end) > timeAtTheMoment && x.videoevent_track == (int)EnumTrack.IMAGEORVIDEO);
-
-
             var videoItem = evnt.Where(x => x.fk_videoevent_media == (int)EnumMedia.VIDEO).FirstOrDefault();
             if (videoItem != null)
             {
@@ -232,6 +230,49 @@ namespace VideoCreator.Helpers
             }
             else
                 designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, editVideoEventId, true, false);
+
+            var designUCWindow = new Window
+            {
+                Title = $"Edit Event eith id - {editVideoEvent.videoevent_id}",
+                Content = designerUserControl,
+                WindowState = WindowState.Maximized,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
+            };
+            LoaderHelper.ShowLoader(uc, loader, "Another window is opened ..");
+            var result = designUCWindow.ShowDialog();
+            if (result.HasValue && designerUserControl.dataTableObject.Rows.Count > 0)
+            {
+                if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    if (designerUserControl.dataTableObject.Rows.Count > 0)
+                    {
+                        var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableObject, uc, loader);
+                        if (designImagerUserControl != null)
+                        {
+                            var designData = DataManagerSqlLite.GetDesign(editVideoEventId).FirstOrDefault();
+                            await EditToServerAndLocalDB(designImagerUserControl, designerUserControl, selectedProjectEvent, designData, authApiViewModel, editVideoEvent);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static async Task<bool?> EditFormEvent(int editVideoEventId, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader)
+        {
+            Designer_UserControl designerUserControl;
+            var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoEventId).FirstOrDefault();
+            string imagePath = "";
+
+            if (string.IsNullOrEmpty(imagePath))
+            {
+                var data = DataManagerSqlLite.GetBackground();
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data), editVideoEventId, false, true);
+            }
+            else
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, editVideoEventId, true, true);
 
             var designUCWindow = new Window
             {

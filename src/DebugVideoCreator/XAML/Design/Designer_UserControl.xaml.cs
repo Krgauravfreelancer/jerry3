@@ -63,11 +63,15 @@ namespace VideoCreator.XAML
             if (editVideoEventLocalId > -1)
             {
                 var designData = DataManagerSqlLite.GetDesign(editVideoEventLocalId).FirstOrDefault();
+                
+                
+                
                 var bgImageXAML = GetBackgroundImageElement();
                 designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
                 designer.LoadDesignForEdit(designData);
-
-                //designViewer.LoadDesignForEdit(designData);
+                
+                designViewer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+                designViewer.LoadDesignForEdit(designData);
                 cbShowBackground.IsEnabled = false;
                 BtnInitialiseDesigner.Visibility = Visibility.Hidden;
                 designer.Visibility = Visibility.Visible;

@@ -203,11 +203,10 @@ namespace DesignerNp.controls
         {
             if (null != design)
             {
-
                 var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 foreach (var item in objects)
                 {
-                    if (item.StartsWith("<image"))
+                    if (item.StartsWith("<Image"))
                         continue;
                     AddElement(item);
                 }
