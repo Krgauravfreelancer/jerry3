@@ -48,7 +48,7 @@ namespace VideoCreator.XAML
             ReadOnly = _readonlyFlag;
             var subjectText = "Project Id - " + selectedProjectEvent.projectId;
             lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}" : subjectText;
-            InitializeChildren(); 
+            InitializeChildren();
             new Action(async () =>
             {
                 await SyncServerEventsHelper.ConfirmAndSyncServerDataToLocalDB(this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
@@ -65,7 +65,7 @@ namespace VideoCreator.XAML
         {
             popup = new PopupWindow();
 
-            
+
 
             //ResetAudioMenuOptions();
 
@@ -81,6 +81,7 @@ namespace VideoCreator.XAML
             TimelineUserConrol.ContextMenu_ManageMedia_Clicked += TimelineUserConrol_ContextMenu_ManageMedia_Clicked;
             TimelineUserConrol.ContextMenu_Run_Clicked += TimelineUserConrol_ContextMenu_Run_Clicked;
 
+            TimelineUserConrol.ContextMenu_EditFormEvent_Clicked += TimelineUserConrol_EditFormEvent;
             TimelineUserConrol.ContextMenu_DeleteEventOnTimelines_Clicked += TimelineUserConrol_DeleteEventOnTimelines;
             TimelineUserConrol.ContextMenu_UndeleteDeletedEvent_Clicked += TimelineUserConrol_UndeleteDeletedEvent_Clicked;
             TimelineUserConrol.ContextMenu_CloneEvent_Clicked += TimelineUserConrol_ContextMenu_CloneEvent_Clicked;
@@ -582,6 +583,19 @@ namespace VideoCreator.XAML
         }
 
 
+        private async void TimelineUserConrol_EditFormEvent(object sender, int editVideoeventLocalId)
+        {
+            var videoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false);
+            if (videoEvent != null)
+            {
+                LoaderHelper.ShowLoader(this, loader, "Edit Window is opened ..");
+                await FormHandlerHelper.EditCallOut(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
+                Refresh();
+                LoaderHelper.HideLoader(this, loader);
+            }
+        }
+
+
         private async void TimelineUserConrol_DeleteEventOnTimelines(object sender, int videoeventLocalId)
         {
             LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
@@ -838,7 +852,7 @@ namespace VideoCreator.XAML
 
         private void TimelineUserConrol_VideoEventSelectionChangedEvent(object sender, TimelineSelectedEvent selectedEvent)
         {
-            if(selectedEvent.Track == EnumTrack.NOTES)
+            if (selectedEvent.Track == EnumTrack.NOTES)
             {
                 selectedVideoEvent = null;
             }
@@ -846,7 +860,7 @@ namespace VideoCreator.XAML
             {
                 selectedVideoEvent = DataManagerSqlLite.GetVideoEventbyId(selectedEvent.EventId).FirstOrDefault();
             }
-            
+
             if (selectedVideoEvent != null)
             {
                 selectedVideoEventId = selectedEvent.EventId;
@@ -982,7 +996,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
-                var convertedImage = await FormHandlerHelper.Preprocess(calloutEvent);
+                var convertedImage = await FormHandlerHelper.PreprocessAndGetBackgroundImage(calloutEvent);
                 await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT1, convertedImage, false);
             }
             else
@@ -994,7 +1008,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
             if (calloutEvent.timelineVideoEvent != null && calloutEvent.timeAtTheMoment != "00:00:00.000")
             {
-                var convertedImage = await FormHandlerHelper.Preprocess(calloutEvent);
+                var convertedImage = await FormHandlerHelper.PreprocessAndGetBackgroundImage(calloutEvent);
                 await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT2, convertedImage, false);
             }
             else

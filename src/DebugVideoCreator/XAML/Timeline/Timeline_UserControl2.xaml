@@ -86,7 +86,13 @@
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
                 <Label Content="Use Right click to add Audio/Video Event" Margin="5,-5,0,0" VerticalAlignment="Top" />
             </StackPanel>
-            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" EventSelectionChangedEvent="EventSelectionChangedEvent"  TrackbarMouseMoveEvent="TimelineGridCtrl2_TrackbarMouseMoveEvent" Delete_Event="TimelineGridCtrl2_Delete_Event" Clone_Event="TimelineGridCtrl2_Clone_Event" CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
+            <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" 
+                                   EventSelectionChangedEvent="EventSelectionChangedEvent"  
+                                   TrackbarMouseMoveEvent="TimelineGridCtrl2_TrackbarMouseMoveEvent" 
+                                   Edit_Event="TimelineGridCtrl2_EditFormEvent" 
+                                   Delete_Event="TimelineGridCtrl2_Delete_Event" 
+                                   Clone_Event="TimelineGridCtrl2_Clone_Event" 
+                                   CloneAtEnd_Event="TimelineGridCtrl2_CloneAtEnd_Event"  Height="270" Padding="5" ></mmtimepicker:TimeLine>
                 <!--</GroupBox>-->
 
 

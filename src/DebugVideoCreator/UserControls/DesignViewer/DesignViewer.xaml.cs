@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using Sqllite_Library.Models;
+using System;
+using System.Data;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +26,24 @@ namespace DesignViewerNp.controls
             foreach (DataRow dataRow in dataTable.Rows)
             {
                 AddElement((string)dataRow["xaml"]);
+            }
+        }
+
+        public void LoadDesignForEdit(CBVDesign design)
+        {
+            if (container.Children.Count > 0)
+                container.Children.Clear();
+
+            if (null != design)
+            {
+
+                var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                foreach (var item in objects)
+                {
+                    if (item.StartsWith("<image"))
+                        continue;
+                    AddElement(item);
+                }
             }
         }
 

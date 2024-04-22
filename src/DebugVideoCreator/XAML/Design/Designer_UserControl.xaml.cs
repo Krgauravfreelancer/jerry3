@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using DesignerNp.controls;
+using Newtonsoft.Json;
+using Sqllite_Library.Business;
 using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -15,21 +18,21 @@ namespace VideoCreator.XAML
     /// </summary>
     public partial class Designer_UserControl : System.Windows.Controls.UserControl
     {
-        //private DataTable designElements = null;
-        public DataTable dataTableAdd;
-        public DataTable dataTableUpdate; // Will come later
+        public DataTable dataTableObject;
         public bool UserConsent = false;
         private readonly int selectedProjectId;
         private readonly List<CBVBackground> BackgroundImagesData;
         private bool toggleFlag = false;
         private bool isFormEvent = false;
+        private int editVideoEventLocalId;
         //private CBVBackground selectedBGItem;
         private string imagePath;
-        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, bool _isImagePathGiven = false, bool _isFormEvent = false)
+        public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, int _editVideoEventLocalId = -1, bool _isImagePathGiven = false, bool _isFormEvent = false)
         {
             InitializeComponent();
             selectedProjectId = _selectedProjectId;
             isFormEvent = _isFormEvent;
+            editVideoEventLocalId = _editVideoEventLocalId;
             if (_isImagePathGiven)
                 imagePath = _backgroundDatastring;
             else
@@ -40,8 +43,10 @@ namespace VideoCreator.XAML
 
         private void InitialSetup()
         {
-            dataTableAdd = createDesignDbDataTable();
-            dataTableUpdate = createDesignDbDataTable();
+            if(editVideoEventLocalId <= 0)
+                dataTableObject = createDesignDbDataTable();
+            else
+                dataTableObject = createDesignDbDataTable();
 
             shapeBar.Visibility = Visibility.Hidden;
             propertyWindow.Visibility = Visibility.Hidden;
@@ -55,7 +60,19 @@ namespace VideoCreator.XAML
             designViewer.Visibility = Visibility.Visible;
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);
+            if (editVideoEventLocalId > -1)
+            {
+                var designData = DataManagerSqlLite.GetDesign(editVideoEventLocalId).FirstOrDefault();
+                var bgImageXAML = GetBackgroundImageElement();
+                designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+                designer.LoadDesignForEdit(designData);
 
+                //designViewer.LoadDesignForEdit(designData);
+                cbShowBackground.IsEnabled = false;
+                BtnInitialiseDesigner.Visibility = Visibility.Hidden;
+                designer.Visibility = Visibility.Visible;
+                designViewer.Visibility = Visibility.Hidden;
+            }
             //cbShowBackground.IsEnabled = !isFormEvent;
         }
 
@@ -215,33 +232,21 @@ namespace VideoCreator.XAML
             // For now only Add is supported.
             foreach (DataRow row in dtElements.Rows)
             {
-                //var rowDesign = (int)row["id"] == -1 ? dataTableAdd.NewRow() : dataTableUpdate.NewRow();
                 var xaml = Convert.ToString(row["xaml"]);
                 if (!isFormEvent && xaml.StartsWith("<Image"))
                 {
                     var imageEndIndex = xaml.IndexOf("/>");
                     xaml = xaml.Substring(imageEndIndex + 2).Trim();
                 }
-
-
-                var rowDesign = dataTableAdd.NewRow();
-
+                var rowDesign = dataTableObject.NewRow();
                 rowDesign["design_id"] = row["id"];
-                rowDesign["fk_design_videoevent"] = -1;
+                rowDesign["fk_design_videoevent"] = editVideoEventLocalId > 0  ? editVideoEventLocalId :  -1;
                 rowDesign["fk_design_screen"] = EnumScreen.Custom;
                 rowDesign["fk_design_background"] = 1;
                 rowDesign["design_createdate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 rowDesign["design_xml"] = xaml;
-                dataTableAdd.Rows.Add(rowDesign);
-                //if (-1 == (int)row["id"])
-                //{
-                //    dataTableAdd.Rows.Add(rowDesign);
-                //}
-                //else
-                //{
-                //    dataTableUpdate.Rows.Add(rowDesign);
-                //}
+                dataTableObject.Rows.Add(rowDesign);
             }
         }
 
@@ -260,17 +265,17 @@ namespace VideoCreator.XAML
 
         public void ClearDatatable()
         {
-            dataTableAdd.Clear();
+            dataTableObject.Clear();
         }
 
         public DataRow GetNewRow()
         {
-            return dataTableAdd.NewRow();
+            return dataTableObject.NewRow();
         }
 
         public void AddNewRowToDatatable(DataRow row)
         {
-            dataTableAdd.Rows.Add(row);
+            dataTableObject.Rows.Add(row);
         }
 
         #endregion

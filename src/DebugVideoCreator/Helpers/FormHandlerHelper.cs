@@ -23,7 +23,7 @@ namespace VideoCreator.Helpers
 
         private static int RetryIntervalInSeconds = 300;
 
-        public static async Task<string> Preprocess(FormOrCloneEvent calloutEvent)
+        public static async Task<string> PreprocessAndGetBackgroundImage(FormOrCloneEvent calloutEvent)
         {
             var outputFolder = PathHelper.GetTempPath("form");
             var videoEvents = DataManagerSqlLite.GetVideoEventbyId(calloutEvent.timelineVideoEvent.VideoEventID, true, false);
@@ -56,16 +56,51 @@ namespace VideoCreator.Helpers
             return null;
         }
 
+        public static async Task<string> PreprocessAndGetBackgroundImageForEdit(CBVVideoEvent editVideoEvent, SelectedProjectEvent selectedProjectEvent)
+        {
+            var outputFolder = PathHelper.GetTempPath("editform");
+            var events = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true, false);
+            var timeAtTheMoment = TimeSpan.Parse(editVideoEvent.videoevent_start);
+            var evnt = events.Where(x => TimeSpan.Parse(x.videoevent_start) <= timeAtTheMoment && TimeSpan.Parse(x.videoevent_end) > timeAtTheMoment && x.videoevent_track == (int)EnumTrack.IMAGEORVIDEO);
+
+
+            var videoItem = evnt.Where(x => x.fk_videoevent_media == (int)EnumMedia.VIDEO).FirstOrDefault();
+            if (videoItem != null)
+            {
+                var VideoFileName = $"{outputFolder}\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
+
+                Stream t = new FileStream(VideoFileName, FileMode.Create);
+                BinaryWriter b = new BinaryWriter(t);
+                b.Write(videoItem.videosegment_data[0].videosegment_media);
+                t.Close();
+
+                var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
+                var convertedImageFile = await video2image.ConvertVideoToImage();
+                return convertedImageFile;
+            }
+            var imageEvent = evnt.Where(x => x.fk_videoevent_media == (int)EnumMedia.IMAGE || x.fk_videoevent_media == (int)EnumMedia.FORM).FirstOrDefault();
+            if (imageEvent != null)
+            {
+                var imagePath = $"{outputFolder}\\image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
+                Stream t = new FileStream(imagePath, FileMode.Create);
+                BinaryWriter b = new BinaryWriter(t);
+                b.Write(imageEvent.videosegment_data[0].videosegment_media);
+                t.Close();
+                return imagePath;
+            }
+            return null;
+        }
+
         public static async Task<bool?> CallOut(FormOrCloneEvent calloutEvent, string title, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, UserControl uc, LoadingAnimation loader, string imagePath = null, bool isFormEvent = false)
         {
             Designer_UserControl designerUserControl;
             if (string.IsNullOrEmpty(imagePath))
             {
                 var data = DataManagerSqlLite.GetBackground();
-                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data), false, isFormEvent);
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data), -1, false, isFormEvent);
             }
             else
-                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true, isFormEvent);
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, -1, true, isFormEvent);
 
             var designUCWindow = new Window
             {
@@ -77,13 +112,13 @@ namespace VideoCreator.Helpers
             };
             LoaderHelper.ShowLoader(uc, loader, "Another window is opened ..");
             var result = designUCWindow.ShowDialog();
-            if (result.HasValue && designerUserControl.dataTableAdd.Rows.Count > 0 || designerUserControl.dataTableUpdate.Rows.Count > 0)
+            if (result.HasValue && designerUserControl.dataTableObject.Rows.Count > 0)
             {
                 if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
-                    if (designerUserControl.dataTableAdd.Rows.Count > 0)
+                    if (designerUserControl.dataTableObject.Rows.Count > 0)
                     {
-                        var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableAdd, uc, loader);
+                        var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableObject, uc, loader);
                         if (designImagerUserControl != null)
                         {
                             return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectEvent, authApiViewModel, track);
@@ -110,11 +145,15 @@ namespace VideoCreator.Helpers
             return null;
         }
 
+
+        #region == Success And Failure API Calls Logic ==
+
+
         private static async Task<bool?> CalloutSaveToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, FormOrCloneEvent calloutEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             string duration = "00:00:10.000";
-            var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableAdd, blob, selectedProjectEvent, track, authApiViewModel, calloutEvent?.timeAtTheMoment, duration);
+            var addedData = await DesignEventHandlerHelper.PostVideoEventToServerForDesign(designerUserControl.dataTableObject, blob, selectedProjectEvent, track, authApiViewModel, calloutEvent?.timeAtTheMoment, duration);
             if (addedData == null)
             {
                 var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! " +
@@ -124,7 +163,7 @@ namespace VideoCreator.Helpers
                 if (confirmation == MessageBoxResult.Yes)
                     return await CalloutSaveToServerAndLocalDB(designImagerUserControl, designerUserControl, calloutEvent, selectedProjectEvent, authApiViewModel, track);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForCallout(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, calloutEvent?.timeAtTheMoment, duration, (int)track, selectedProjectEvent);
+                    return FailureFlowForCallout(designerUserControl.dataTableObject, designImagerUserControl.dtVideoSegment, calloutEvent?.timeAtTheMoment, duration, (int)track, selectedProjectEvent);
                 else
                     return null;
             }
@@ -133,9 +172,6 @@ namespace VideoCreator.Helpers
                 SuccessFlowForCallout(addedData, selectedProjectEvent.projdetId, blob);
                 return true;
             }
-
-
-
         }
 
         private static bool FailureFlowForCallout(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
@@ -159,7 +195,6 @@ namespace VideoCreator.Helpers
             return false;
         }
 
-
         private static void SuccessFlowForCallout(VideoEventResponseModel addedData, int selectedProjectId, byte[] blob)
         {
             var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
@@ -176,6 +211,123 @@ namespace VideoCreator.Helpers
         }
 
 
+        #endregion == Success And Failure API Calls Logic ==
+
+
         #endregion
+
+
+        #region == Edit Callouts ==
+        
+        public static async Task<bool?> EditCallOut(int editVideoEventId, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader)
+        {
+            Designer_UserControl designerUserControl;
+            var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoEventId).FirstOrDefault();
+            var imagePath = await PreprocessAndGetBackgroundImageForEdit(editVideoEvent, selectedProjectEvent);
+
+            if (string.IsNullOrEmpty(imagePath))
+            {
+                var data = DataManagerSqlLite.GetBackground();
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, JsonConvert.SerializeObject(data), editVideoEventId, false, false);
+            }
+            else
+                designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, editVideoEventId, true, false);
+
+            var designUCWindow = new Window
+            {
+                Title = $"Edit Event eith id - {editVideoEvent.videoevent_id}",
+                Content = designerUserControl,
+                WindowState = WindowState.Maximized,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
+            };
+            LoaderHelper.ShowLoader(uc, loader, "Another window is opened ..");
+            var result = designUCWindow.ShowDialog();
+            if (result.HasValue && designerUserControl.dataTableObject.Rows.Count > 0)
+            {
+                if (designerUserControl.UserConsent || MessageBox.Show("Do you want save all designs??", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    if (designerUserControl.dataTableObject.Rows.Count > 0)
+                    {
+                        var designImagerUserControl = CallOut_XML2Image(designerUserControl.dataTableObject, uc, loader);
+                        if (designImagerUserControl != null)
+                        {
+                            var designData = DataManagerSqlLite.GetDesign(editVideoEventId).FirstOrDefault();
+                            await EditToServerAndLocalDB(designImagerUserControl, designerUserControl, selectedProjectEvent, designData, authApiViewModel, editVideoEvent);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        #endregion
+
+
+        private static async Task EditToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, CBVDesign design, AuthAPIViewModel authApiViewModel, CBVVideoEvent videoEvent)
+        {
+            var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
+
+            var isUpdated = await DesignEventHandlerHelper.UpdateDesign(designerUserControl.dataTableObject, blob, selectedProjectEvent, design.design_serverid, authApiViewModel, videoEvent);
+            if (isUpdated == true)
+            {
+                // Update the design and blob table
+                UpdateDesignToDB(designerUserControl.dataTableObject, design);
+                UpdateVideoSegmentnToDB(blob, videoEvent);
+            }
+            else
+            {
+                var confirmation = MessageBox.Show($"Something went wrong, Do you want to retry !! ", "Failure", MessageBoxButton.YesNo, MessageBoxImage.Error);
+                if (confirmation == MessageBoxResult.Yes)
+                    await EditToServerAndLocalDB(designImagerUserControl, designerUserControl, selectedProjectEvent, design, authApiViewModel, videoEvent);
+            }
+        }
+
+        private static void UpdateDesignToDB(DataTable designDataTable, CBVDesign design)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("design_id", typeof(int));
+            dt.Columns.Add("fk_design_screen", typeof(int));
+            dt.Columns.Add("fk_design_background", typeof(int));
+            dt.Columns.Add("fk_design_videoevent", typeof(int));
+            dt.Columns.Add("design_xml", typeof(string));
+            
+            dt.Columns.Add("design_modifydate", typeof(string));
+            dt.Columns.Add("design_isdeleted", typeof(bool));
+            dt.Columns.Add("design_issynced", typeof(bool));
+            dt.Columns.Add("design_serverid", typeof(Int64));
+            dt.Columns.Add("design_syncerror", typeof(string));
+
+            var row = dt.NewRow();
+            row["design_id"] = design.design_id;
+            row["fk_design_screen"] = design.fk_design_screen;
+            row["fk_design_background"] = design.fk_design_background;
+            row["fk_design_videoevent"] = design.fk_design_videoevent;
+            row["design_xml"] = Convert.ToString(designDataTable.Rows[0]["design_xml"]);
+            row["design_isdeleted"] = false;
+            row["design_issynced"] = true;
+            row["design_serverid"] = design.design_serverid;
+            row["design_syncerror"] = "";
+            dt.Rows.Add(row);
+            DataManagerSqlLite.UpdateRowsToDesign(dt);
+        }
+
+        private static void UpdateVideoSegmentnToDB(byte[] blob, CBVVideoEvent videoevent)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("videosegment_id", typeof(int));
+            dt.Columns.Add("videosegment_media", typeof(byte[]));
+            dt.Columns.Add("videosegment_modifydate", typeof(string));
+            
+            var row = dt.NewRow();
+            row["videosegment_id"] = videoevent.videoevent_id;
+            row["videosegment_media"] = blob;
+            dt.Rows.Add(row);
+
+            DataManagerSqlLite.UpdateRowsToVideoSegment(dt);
+        }
+
+
+
     }
 }

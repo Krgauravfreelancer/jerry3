@@ -3249,7 +3249,7 @@ namespace Sqllite_Library.Data
                                             design_xml = '{Convert.ToString(dr["design_xml"])}',
                                             design_issynced = {Convert.ToBoolean(dr["design_issynced"])},
                                             design_serverid = {Convert.ToInt64(dr["design_serverid"])},
-                                            design_syncerror = {Convert.ToString(dr["design_syncerror"])},
+                                            design_syncerror = '{Convert.ToString(dr["design_syncerror"])}',
                                             design_modifydate = '{modifyDate}'
                                         WHERE 
                                             design_id = {design_id}";

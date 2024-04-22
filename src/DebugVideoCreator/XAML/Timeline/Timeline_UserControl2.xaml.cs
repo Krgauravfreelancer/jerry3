@@ -39,6 +39,7 @@ namespace VideoCreator.XAML
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddFormEvent_Clicked;
         public event EventHandler<MMModel.TrackbarMouseMoveEventModel> TrackbarMouseMoveEvent;
         public event EventHandler<int> ContextMenu_DeleteEventOnTimelines_Clicked;
+        public event EventHandler<int> ContextMenu_EditFormEvent_Clicked;
 
         public event EventHandler ContextMenu_Run_Clicked;
 
@@ -73,6 +74,11 @@ namespace VideoCreator.XAML
 
 
         #region == TimelineUserControl : Helper functions ==
+
+        private void TimelineGridCtrl2_EditFormEvent(object sender, int EditVideoEventId)
+        {
+            ContextMenu_EditFormEvent_Clicked.Invoke(sender, EditVideoEventId);
+        }
 
         private void TimelineGridCtrl2_Delete_Event(object sender, int DeletedId)
         {

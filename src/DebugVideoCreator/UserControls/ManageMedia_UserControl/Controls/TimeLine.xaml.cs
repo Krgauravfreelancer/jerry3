@@ -54,6 +54,7 @@ namespace ManageMedia_UserControl.Controls
 
 
         public event EventHandler<int> Delete_Event;
+        public event EventHandler<int> Edit_Event;
         public event EventHandler<Media> Clone_Event;
         public event EventHandler<Media> CloneAtEnd_Event;
 
@@ -1477,6 +1478,12 @@ namespace ManageMedia_UserControl.Controls
                 }
             }
             return null;
+        }
+
+        public void EditEventBtnClicked(object sender, RoutedEventArgs e)
+        {
+            var media = GetMedia(sender);
+            Edit_Event(sender, media?.VideoEventID ?? -1);
         }
 
         public void DeleteEventForTimeline(object sender, RoutedEventArgs e)

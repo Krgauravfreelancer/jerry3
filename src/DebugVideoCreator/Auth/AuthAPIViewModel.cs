@@ -415,6 +415,115 @@ namespace VideoCreator.Auth
             }
         }
 
+
+        public async Task<VideoEventResponseModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, VideoEventModel videoEventModel, Int64 selectedServerVideoEventId)
+        {
+            try
+            {
+                //_apiClientHelper.ErrorMessage = "No Internet !!";
+                //throw new Exception("No Internet !!");
+                var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/videoevent-notes-design-videosegment/{selectedServerVideoEventId}";
+                var multipart = new MultipartFormDataContent();
+                // FK
+                var requestbodyContent_FK = new StringContent(videoEventModel.fk_videoevent_media.ToString());
+                requestbodyContent_FK.Headers.Add("Content-Disposition", "form-data; name=\"fk_videoevent_media\"");
+                multipart.Add(requestbodyContent_FK);
+                // Track
+                var requestbodyContent_track = new StringContent(videoEventModel.videoevent_track.ToString());
+                requestbodyContent_track.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_track\"");
+                multipart.Add(requestbodyContent_track);
+                // Start
+                var requestbodyContent_start = new StringContent(videoEventModel.videoevent_start.ToString());
+                requestbodyContent_start.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_start\"");
+                multipart.Add(requestbodyContent_start);
+                // Duration
+                var requestbodyContent_duration = new StringContent(videoEventModel.videoevent_duration);
+                requestbodyContent_duration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_duration\"");
+                multipart.Add(requestbodyContent_duration);
+                // OrigDuration
+                var requestbodyContent_origduration = new StringContent(videoEventModel.videoevent_origduration);
+                requestbodyContent_origduration.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_origduration\"");
+                multipart.Add(requestbodyContent_origduration);
+                // Start
+                var requestbodyContent_end = new StringContent(videoEventModel.videoevent_end.ToString());
+                requestbodyContent_end.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_end\"");
+                multipart.Add(requestbodyContent_end);
+                // LOC DATE
+                var requestbodyContent_LOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
+                requestbodyContent_LOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_modifylocdate\"");
+                multipart.Add(requestbodyContent_LOCDATE);
+                // Video Event Planning
+                var requestbodyContent_PLANNING = new StringContent(videoEventModel.videoevent_planning.ToString());
+                requestbodyContent_PLANNING.Headers.Add("Content-Disposition", "form-data; name=\"videoevent_planning\"");
+                multipart.Add(requestbodyContent_PLANNING);
+
+
+
+                // notes
+                if (videoEventModel.notes?.Count > 0)
+                {
+                    var requestbodyContent_notes = new StringContent(JsonConvert.SerializeObject(videoEventModel.notes));
+                    requestbodyContent_notes.Headers.Add("Content-Disposition", "form-data; name=\"notes\"");
+                    multipart.Add(requestbodyContent_notes);
+                }
+                // design
+                if (videoEventModel.design?.Count > 0)
+                {
+                    var requestbodyContent_design = new StringContent(JsonConvert.SerializeObject(videoEventModel.design));
+                    requestbodyContent_design.Headers.Add("Content-Disposition", "form-data; name=\"design\"");
+                    multipart.Add(requestbodyContent_design);
+                }
+                string pathWithFilename = string.Empty;
+                StreamContent fileStreamContent = null;
+                FileStream fileReadStream = null;
+                if (videoEventModel.videosegment_media_bytes?.Length > 0)
+                {
+                    //File
+                    var filename = $"_{Guid.NewGuid()}";
+                    if (videoEventModel.fk_videoevent_media == (int)EnumMedia.VIDEO)
+                        filename = "video" + filename + ".mp4";
+                    else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.IMAGE)
+                        filename = "image" + filename + ".png";
+                    else if (videoEventModel.fk_videoevent_media == (int)EnumMedia.FORM)
+                        filename = "design" + filename + ".png";
+
+                    var temp = PathHelper.GetTempPath("videoevent");
+                    pathWithFilename = $"{temp}\\{filename}";
+                    var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                    file.Write(videoEventModel.videosegment_media_bytes, 0, videoEventModel.videosegment_media_bytes.Length);
+                    file.Close();
+
+                    fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                    fileStreamContent = new StreamContent(fileReadStream);
+                    fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                    multipart.Add(fileStreamContent);
+
+                    // LOC DATE
+                    var requestbodyContent_VideoSegmentLOCDATE = new StringContent(videoEventModel.videoevent_modifylocdate);
+                    requestbodyContent_VideoSegmentLOCDATE.Headers.Add("Content-Disposition", "form-data; name=\"videosegment_modifylocdate\"");
+                    multipart.Add(requestbodyContent_VideoSegmentLOCDATE);
+                }
+
+                var result = await _apiClientHelper.UpdateWithMultipart<ParentData<VideoEventResponseModel>>(url, multipart);
+                //if (result?.Status == "success")
+                //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "CreateVideoEvent", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (pathWithFilename?.Length > 0)
+                {
+
+                    fileReadStream?.Close();
+                    fileStreamContent.Dispose();
+                    File.Delete(pathWithFilename);
+                }
+                return result?.Data;
+            }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
+        }
+
         public async Task<VideoEventModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
         {
             try
@@ -547,6 +656,71 @@ namespace VideoCreator.Auth
             }
             return result;
         }
+
+        public async Task<DesignModel> PutDesign(Int64 serverDesignId, Int64 selectedServerVideoEventId, int fk_design_screen, string design_xml)
+        {
+            try
+            {
+                var url = $"api/connect/videoevent/{selectedServerVideoEventId}/design/{serverDesignId}";
+                var parameters = new Dictionary<string, string>
+                {
+                    { "fk_design_screen", fk_design_screen.ToString() },
+                    { "design_xml", design_xml.ToString() }
+                };
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Update<ParentData<DesignModel>>(url, payload);
+                return result?.Data;
+            }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
+        }
+
+        public async Task<ParentData<VideoSegmentPostResponse>> PutVideoSegment(Int64 videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
+        {
+            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-update";
+            var multipart = new MultipartFormDataContent();
+            string pathWithFilename = string.Empty;
+            StreamContent fileStreamContent = null;
+            FileStream fileReadStream = null;
+            if (blob?.Length > 0)
+            {
+                //File
+                var filename = $"{Guid.NewGuid()}";
+                if (MediaType == EnumMedia.VIDEO)
+                    filename = $"video_{filename}.mp4";
+                else if (MediaType == EnumMedia.IMAGE)
+                    filename = $"image_{filename}.png";
+                else if (MediaType == EnumMedia.FORM)
+                    filename = $"design_{filename}.png";
+
+                var temp = PathHelper.GetTempPath("videosegment");
+                pathWithFilename = $"{temp}\\{filename}";
+                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                file.Write(blob, 0, blob.Length);
+                file.Close();
+
+                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                fileStreamContent = new StreamContent(fileReadStream);
+                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                multipart.Add(fileStreamContent);
+            }
+
+            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
+            if (pathWithFilename?.Length > 0)
+            {
+
+                fileReadStream?.Close();
+                fileStreamContent.Dispose();
+                File.Delete(pathWithFilename);
+            }
+            return result;
+        }
+
 
         public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
         {

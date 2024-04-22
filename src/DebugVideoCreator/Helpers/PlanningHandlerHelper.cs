@@ -69,7 +69,7 @@ namespace VideoCreator.Helpers
             LoaderHelper.ShowLoader(uc, loader, "Starting ...");
             EventStartTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId);
 
-            Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, true);
+             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, -1, true, false);
             var designElements = designerUserControl.PlanningSetup();
 
             if (planningEvent.Type == EnumScreen.All)
@@ -123,11 +123,11 @@ namespace VideoCreator.Helpers
             var text = Enum.GetName(screen.GetType(), screen) + " Placeholder";
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
-            DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+            DataRow rowTitle = designerUserControl.dataTableObject.Rows[0];
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
-            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
+            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
 
             string notes_duration = "00:00:10.000";
@@ -144,11 +144,11 @@ namespace VideoCreator.Helpers
 
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, EnumScreen.Title);
-            DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+            DataRow rowTitle = designerUserControl.dataTableObject.Rows[0];
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(title).Replace("'", "''");
 
-            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
+            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
             var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000", planningServerId: 0);
             return result;
@@ -161,11 +161,11 @@ namespace VideoCreator.Helpers
                 var text = item?.planning_desc[0]?.planningdesc_line;
                 designerUserControl.ClearDatatable();
                 FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
-                DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+                DataRow rowTitle = designerUserControl.dataTableObject.Rows[0];
                 rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
-                var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-                var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
+                var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
+                var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
                 designImagerUserControl.SaveToDataTable(finalBlob);
 
                 var dtNotes = GetNotesDatatable(item.planning_notesline, out string notes_duration);
@@ -240,7 +240,7 @@ namespace VideoCreator.Helpers
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, screen);
 
-            DataRow rowTitle = designerUserControl.dataTableAdd.Rows[0];
+            DataRow rowTitle = designerUserControl.dataTableObject.Rows[0];
             // Design Elements - Heading
             rowTitle["design_xml"] += Environment.NewLine + GetHeading($"{heading}").Replace("'", "''");
 
@@ -262,8 +262,8 @@ namespace VideoCreator.Helpers
             var notesText = item.planning_notesline;
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
 
-            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableAdd);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableAdd);
+            var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
+            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
             var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
             return result;
@@ -503,7 +503,7 @@ namespace VideoCreator.Helpers
             VideoEventResponseModel addedData;
 
             EventEndTime = DataManagerSqlLite.CalcNextEnd(EventStartTime, duration);
-            addedData = await PostVideoEventToServer(designerUserControl.dataTableAdd, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, duration, planningServerId);
+            addedData = await PostVideoEventToServer(designerUserControl.dataTableObject, dtNotes, blob, selectedProjectEvent, track, authApiViewModel, EventStartTime, duration, planningServerId);
 
             if (addedData == null)
             {
@@ -514,7 +514,7 @@ namespace VideoCreator.Helpers
                 if (confirmation == MessageBoxResult.Yes)
                     return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration, planningServerId);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForPlanning(designerUserControl.dataTableAdd, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent);
+                    return FailureFlowForPlanning(designerUserControl.dataTableObject, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent);
                 else
                     return null;
             }

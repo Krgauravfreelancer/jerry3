@@ -82,7 +82,6 @@ namespace ServerApiCall_UserControl
                 };
                 using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
-                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var inputResponseStream = await response.Content.ReadAsStreamAsync();
@@ -110,7 +109,6 @@ namespace ServerApiCall_UserControl
                 };
                 using (HttpResponseMessage response = await apiHttpClient.SendAsync(httpRequestMessage))
                 {
-                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var inputResponseStream = await response.Content.ReadAsStreamAsync();

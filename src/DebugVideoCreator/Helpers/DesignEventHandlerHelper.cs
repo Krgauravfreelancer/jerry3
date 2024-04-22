@@ -54,6 +54,36 @@ namespace VideoCreator.Helpers
             return result;
         }
 
+        public static async Task<VideoEventResponseModel> PutVideoEventToServerForDesign(DataTable dtDesign, byte[] blob, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, CBVVideoEvent videoevent)
+        {
+            var objToSync = new VideoEventModel();
+            objToSync.fk_videoevent_media = (int)EnumMedia.FORM;
+            objToSync.videoevent_track = videoevent.videoevent_track;
+            objToSync.videoevent_start = videoevent.videoevent_start;
+            objToSync.videoevent_duration = videoevent.videoevent_duration;
+            objToSync.videoevent_origduration = videoevent.videoevent_origduration;
+            objToSync.videoevent_end = videoevent.videoevent_end;
+            objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            objToSync.design.AddRange(GetDesignModelList(dtDesign));
+            
+            objToSync.videosegment_media_bytes = blob;
+            var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, objToSync, videoevent.videoevent_serverid);
+            return result;
+        }
+
+        public static async Task<bool> UpdateDesign(DataTable dtDesign, byte[] blob, SelectedProjectEvent selectedProjectEvent, Int64 serverDesignId, AuthAPIViewModel authApiViewModel, CBVVideoEvent videoevent)
+        {
+            if (dtDesign?.Rows?.Count == 1)
+            {
+                var design = dtDesign.Rows[0];
+                var updateDesign = await authApiViewModel.PutDesign(serverDesignId, videoevent.videoevent_serverid, Convert.ToInt16(design["fk_design_screen"]), Convert.ToString(design["design_xml"]));
+                var updateBlob = await authApiViewModel.PutVideoSegment(videoevent.videoevent_serverid, EnumMedia.IMAGE, blob);
+                return true;
+            }
+            return false;
+        }
+
+
         #endregion
 
         #region == Video Event ==

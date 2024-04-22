@@ -26,7 +26,7 @@ namespace ManageMedia_UserControl.Controls
         internal Color Color = Colors.Gray;
         internal event EventHandler<Media> MediaSelectedEvent;
         ContextMenu myContextMenu;
-        MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, AddImageUsingLibraryAfterSelectedEventBtn;
+        MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, AddImageUsingLibraryAfterSelectedEventBtn, EditEventBtn;
         TimeLine timeLine;
         List<TrackCalloutItem> TrackCalloutItems;
         Border OverTimeBorder;
@@ -233,6 +233,12 @@ namespace ManageMedia_UserControl.Controls
             {
                 myContextMenu = new ContextMenu();
 
+                EditEventBtn = new MenuItem()
+                {
+                    Header = "Edit event",
+                };
+                EditEventBtn.Click += timeline.EditEventBtnClicked;
+
                 DeleteEventBtn = new MenuItem()
                 {
                     Header = "Delete Event",
@@ -257,7 +263,7 @@ namespace ManageMedia_UserControl.Controls
                 };
                 AddImageUsingLibraryAfterSelectedEventBtn.Click += timeline.AddImageUsingLibraryAfterSelectedEvent;
 
-
+                myContextMenu.Items.Add(EditEventBtn);
                 myContextMenu.Items.Add(DeleteEventBtn);
                 myContextMenu.Items.Add(CloneEventAtTrackbarLocationBtn);
                 myContextMenu.Items.Add(CloneEventAtTimelineEndBtn);
