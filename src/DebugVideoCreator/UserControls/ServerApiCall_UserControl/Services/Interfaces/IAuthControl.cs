@@ -3,7 +3,7 @@ using ServerApiCall_UserControl.DTO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ServerApiCall_UserControl
+namespace ServerApiCall_UserControl.Services.Interfaces
 {
     public interface IAuthControl
     {

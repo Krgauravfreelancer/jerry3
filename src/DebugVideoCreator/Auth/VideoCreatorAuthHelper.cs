@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
 using Newtonsoft.Json;
 using ServerApiCall_UserControl;
+using ServerApiCall_UserControl.Services;
+using ServerApiCall_UserControl.Services.Interfaces;
 using System;
 using System.Configuration;
 using System.IO;
@@ -17,7 +19,7 @@ namespace VideoCreator.Auth
     {
         //private string token;
         public IAuthControl authCtrl; //authentication DLL
-        private IDBTransferControl dbTransferCtrl;
+        private IAPICall dbTransferCtrl;
         public string TokenNumber { get; set; }
         public string ErrorMessage { get; set; }
         const string NO_LOGIN_MESSAGE = "Please login first !!!";
@@ -122,7 +124,7 @@ namespace VideoCreator.Auth
             if (!string.IsNullOrEmpty(loginRes.Token))
             {
                 TokenNumber = loginRes.Token;
-                dbTransferCtrl = new DBTransferControl(authCtrl.GetHttpClient());
+                dbTransferCtrl = new APICall(authCtrl.GetHttpClient());
             }
             else
                 ErrorMessage = "No Token returned";

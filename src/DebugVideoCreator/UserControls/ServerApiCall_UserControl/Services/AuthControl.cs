@@ -3,13 +3,14 @@
 using Microsoft.Win32;
 using ServerApiCall_UserControl.DTO;
 using ServerApiCall_UserControl.Helpers;
+using ServerApiCall_UserControl.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ServerApiCall_UserControl
+namespace ServerApiCall_UserControl.Services
 {
     public class AuthControl : IAuthControl
     {

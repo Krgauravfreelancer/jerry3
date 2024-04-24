@@ -1,15 +1,16 @@
-﻿using System;
+﻿using ServerApiCall_UserControl.Services.Interfaces;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServerApiCall_UserControl
+namespace ServerApiCall_UserControl.Services
 {
-    public class DBTransferControl : IDBTransferControl
+    public class APICall : IAPICall
     {
         private HttpClient apiHttpClient;
-        public DBTransferControl(HttpClient client)
+        public APICall(HttpClient client)
         {
             apiHttpClient = client;
         }

@@ -71,8 +71,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthControl.cs" />
-    <Compile Include="DBTransferControl.cs" />
+    <Compile Include="Services\AuthControl.cs" />
+    <Compile Include="Services\APICall.cs" />
     <Compile Include="DTO\Auth\LoginResponseModel.cs" />
     <Compile Include="DTO\Auth\LogoutResponseModel.cs" />
     <Compile Include="DTO\Planning\PlanningModel.cs" />
@@ -82,8 +82,8 @@
     <Compile Include="Helpers\Auth_ServerAPICall_Helper.cs" />
     <Compile Include="Helpers\EncryptionHelper.cs" />
     <Compile Include="Helpers\UriExtensions.cs" />
-    <Compile Include="IAuthControl.cs" />
-    <Compile Include="IDBTransferControl.cs" />
+    <Compile Include="Services\Interfaces\IAuthControl.cs" />
+    <Compile Include="Services\Interfaces\IAPICall.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DTO\AppPermissionModel.cs" />
     <Compile Include="DTO\App\AppModel.cs" />

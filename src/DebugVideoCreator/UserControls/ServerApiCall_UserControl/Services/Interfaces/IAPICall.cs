@@ -1,9 +1,9 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace ServerApiCall_UserControl
+namespace ServerApiCall_UserControl.Services.Interfaces
 {
-    public interface IDBTransferControl
+    public interface IAPICall
     {
         void SetClient(HttpClient client);
         Task<string> Get(string url);
