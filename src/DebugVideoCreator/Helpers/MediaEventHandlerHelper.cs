@@ -50,7 +50,7 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        public static async Task<VideoEventModel> UpdateVideoEventToServer(CBVVideoEvent videoevent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        public static async Task<VideoEventModel> UpdateVideoEventOnlyToServer(CBVVideoEvent videoevent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
         {
             var objToSync = new VideoEventModel();
             objToSync.fk_videoevent_media = videoevent.fk_videoevent_media;
@@ -61,7 +61,7 @@ namespace VideoCreator.Helpers
             //objToSync.videoevent_origduration = Convert.ToString(videoevent.videoevent_origduration);
             objToSync.videoevent_end = videoevent.videoevent_end;
             objToSync.videoevent_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-            var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, videoevent.videoevent_serverid, objToSync);
+            var result = await authApiViewModel.UpdateVideoEventOnlyToServer(selectedProjectEvent, videoevent.videoevent_serverid, objToSync);
             return result;
         }
 

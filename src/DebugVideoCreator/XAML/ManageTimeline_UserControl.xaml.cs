@@ -829,7 +829,7 @@ namespace VideoCreator.XAML
             LoaderHelper.ShowLoader(this, loader, "Processing ...");
             foreach (var modifiedEvent in modifiedEvents)
             {
-                var response = await MediaEventHandlerHelper.UpdateVideoEventToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
+                var response = await MediaEventHandlerHelper.UpdateVideoEventOnlyToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
                 if (response != null)
                 {
 

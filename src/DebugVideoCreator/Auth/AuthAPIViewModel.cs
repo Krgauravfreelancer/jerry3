@@ -125,13 +125,6 @@ namespace VideoCreator.Auth
             return result?.Data != null ? result.Data : default(ProjectWithId);
         }
 
-        public async Task<List<PlanningModel>> GetPlanningsByProjectId(int projectId)
-        {
-            var url = $"api/connect/project/{projectId}/planning";
-            var result = await _apiClientHelper.Get<ParentData<List<PlanningModel>>>(url);
-            return result?.Data != null ? result.Data : null;
-        }
-
         public async Task<string> SubmitProject(SelectedProjectEvent selectedProjectEvent)
         {
             var url = $"api/connect/project/{selectedProjectEvent.serverProjectId}/project-detail/{selectedProjectEvent.serverProjdetId}/submit";
@@ -141,20 +134,6 @@ namespace VideoCreator.Auth
             return result?.Message;
         }
         
-        //public async Task<ParentData<ProjectAcceptRejectModel>> AcceptOrRejectProject(int project_id, bool accept_flag)
-        //{
-        //    var url = $"api/connect/project/accept-reject";
-        //    var parameters = new Dictionary<string, string>
-        //    {
-        //        { "project_id", project_id.ToString() },
-        //        { "accept_reject", accept_flag ? "1" : "0" }
-        //    };
-        //    var payload = new FormUrlEncodedContent(parameters);
-
-        //    var result = await _apiClientHelper.Create<ParentData<ProjectAcceptRejectModel>>(url, payload);
-        //    return result != null ? result : null;
-        //}
-
         public async Task CreateProject(string project_videotitle, int fk_project_section, int fk_project_projstatus, int project_version, string project_comments)
         {
             var url = $"api/connect/project";
@@ -219,6 +198,45 @@ namespace VideoCreator.Auth
 
         #endregion
 
+        #region  == Planning ==
+
+        public async Task<List<PlanningModel>> GetPlanningsByProjectId(int projectId)
+        {
+            var url = $"api/connect/project/{projectId}/planning";
+            var result = await _apiClientHelper.Get<ParentData<List<PlanningModel>>>(url);
+            return result?.Data != null ? result.Data : null;
+        }
+
+        public async Task<bool> IsPlanningUpdated(int projectId)
+        {
+            var url = $"api/connect/project/{projectId}/last-updates";
+            var result = await _apiClientHelper.Get<LastUpdatedPlannigModelResponse>(url);
+            return result?.planning?.newupdates ?? false;
+        }
+
+        public async Task<bool> UpdatedPlanningLastUpdated(int projectId)
+        {
+            try
+            {
+                var url = $"api/connect/project/{projectId}/last-updates";
+                var parameters = new Dictionary<string, string>
+                {
+                    { "planning", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") }
+                };
+                var payload = new FormUrlEncodedContent(parameters);
+                var result = await _apiClientHelper.Update<object>(url, payload);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return false;
+            }
+        }
+
+        #endregion
+
         #region == Master table data ==
         public async Task<AppModel> GetAllApp()
         {
@@ -267,31 +285,6 @@ namespace VideoCreator.Auth
             //    MessageBox.Show($"No Background Found", "Synchronising Background Data", MessageBoxButton.OK, MessageBoxImage.Error);
             return null;
         }
-
-        public async Task<string> DownloadBackground(int backgroundId, string extension)
-        {
-            string result = Path.GetTempPath();
-            Console.WriteLine(result);
-
-
-            var url = $"api/connect/background/download/{backgroundId}";
-            var filename = $"background_{DateTime.Now:yyyyMMddhhmmss.ffff}.{extension}";
-            var success = await _apiClientHelper.GetFile(url, filename);
-            if (success)
-            {
-                var filepath = $@"{PathHelper.GetTempPath("background")}\\{filename}";
-                return filepath;
-            }
-            return null;
-        }
-
-        public async Task<byte[]> GetSecuredFileByteArray(string url)
-        {
-            if (string.IsNullOrEmpty(url)) return null;
-            var result = await _apiClientHelper.GetSecuredFileByteArray(url);
-            return result;
-        }
-
 
         #endregion
 
@@ -415,8 +408,7 @@ namespace VideoCreator.Auth
             }
         }
 
-
-        public async Task<VideoEventResponseModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, VideoEventModel videoEventModel, Int64 selectedServerVideoEventId)
+        public async Task<VideoEventResponseModel> PutVideoEventForDesign(SelectedProjectEvent selectedProjectEvent, VideoEventModel videoEventModel, Int64 selectedServerVideoEventId)
         {
             try
             {
@@ -524,7 +516,7 @@ namespace VideoCreator.Auth
             }
         }
 
-        public async Task<VideoEventModel> PutVideoEvent(SelectedProjectEvent selectedProjectEvent, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
+        public async Task<VideoEventModel> UpdateVideoEventOnlyToServer(SelectedProjectEvent selectedProjectEvent, Int64 selectedServerVideoEventId, VideoEventModel videoEventModel)
         {
             try
             {
@@ -589,8 +581,6 @@ namespace VideoCreator.Auth
             }
         }
 
-
-
         public async Task<List<ShiftVideoEventModel>> ShiftVideoEvent(SelectedProjectEvent selectedProjectEvent, List<ShiftVideoEventModel> shiftVideoEvents)
         {
             try
@@ -612,154 +602,6 @@ namespace VideoCreator.Auth
                 return null;
             }
         }
-
-
-        public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
-        {
-            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-create";
-            var multipart = new MultipartFormDataContent();
-            string pathWithFilename = string.Empty;
-            StreamContent fileStreamContent = null;
-            FileStream fileReadStream = null;
-            if (blob?.Length > 0)
-            {
-                //File
-                var filename = $"{Guid.NewGuid()}";
-                if (MediaType == EnumMedia.VIDEO)
-                    filename = $"video_{filename}.mp4";
-                else if (MediaType == EnumMedia.IMAGE)
-                    filename = $"image_{filename}.png";
-                else if (MediaType == EnumMedia.FORM)
-                    filename = $"design_{filename}.png";
-
-                var temp = PathHelper.GetTempPath("videosegment");
-                pathWithFilename = $"{temp}\\{filename}";
-                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
-                file.Write(blob, 0, blob.Length);
-                file.Close();
-
-                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
-                fileStreamContent = new StreamContent(fileReadStream);
-                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
-                multipart.Add(fileStreamContent);
-            }
-
-            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
-            //if (result?.Status == "success")
-            //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "PostVideoSegment", MessageBoxButton.OK, MessageBoxImage.Information);
-            if (pathWithFilename?.Length > 0)
-            {
-
-                fileReadStream?.Close();
-                fileStreamContent.Dispose();
-                File.Delete(pathWithFilename);
-            }
-            return result;
-        }
-
-        public async Task<DesignModel> PutDesign(Int64 serverDesignId, Int64 selectedServerVideoEventId, int fk_design_screen, string design_xml)
-        {
-            try
-            {
-                var url = $"api/connect/videoevent/{selectedServerVideoEventId}/design/{serverDesignId}";
-                var parameters = new Dictionary<string, string>
-                {
-                    { "fk_design_screen", fk_design_screen.ToString() },
-                    { "design_xml", design_xml.ToString() }
-                };
-                var payload = new FormUrlEncodedContent(parameters);
-
-                var result = await _apiClientHelper.Update<ParentData<DesignModel>>(url, payload);
-                return result?.Data;
-            }
-            catch (Exception ex)
-            {
-                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
-                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
-                return null;
-            }
-        }
-
-        public async Task<ParentData<VideoSegmentPostResponse>> PutVideoSegment(Int64 videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
-        {
-            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-update";
-            var multipart = new MultipartFormDataContent();
-            string pathWithFilename = string.Empty;
-            StreamContent fileStreamContent = null;
-            FileStream fileReadStream = null;
-            if (blob?.Length > 0)
-            {
-                //File
-                var filename = $"{Guid.NewGuid()}";
-                if (MediaType == EnumMedia.VIDEO)
-                    filename = $"video_{filename}.mp4";
-                else if (MediaType == EnumMedia.IMAGE)
-                    filename = $"image_{filename}.png";
-                else if (MediaType == EnumMedia.FORM)
-                    filename = $"design_{filename}.png";
-
-                var temp = PathHelper.GetTempPath("videosegment");
-                pathWithFilename = $"{temp}\\{filename}";
-                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
-                file.Write(blob, 0, blob.Length);
-                file.Close();
-
-                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
-                fileStreamContent = new StreamContent(fileReadStream);
-                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
-                multipart.Add(fileStreamContent);
-            }
-
-            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
-            if (pathWithFilename?.Length > 0)
-            {
-
-                fileReadStream?.Close();
-                fileStreamContent.Dispose();
-                File.Delete(pathWithFilename);
-            }
-            return result;
-        }
-
-
-        public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
-        {
-            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
-            var parameters = new Dictionary<string, string>
-            {
-                { "notes", JsonConvert.SerializeObject(notes) }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
-
-            var response = await _apiClientHelper.Create<ParentData<NotesResponseModel>>(url, payload);
-            return response?.Data;
-        }
-
-        public async Task<List<NotesResponseModel>> PUTNotes(Int64 selectedServerVideoEventId, List<NotesModelPut> notes)
-        {
-            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
-            var parameters = new Dictionary<string, string>
-            {
-                { "notes", JsonConvert.SerializeObject(notes) }
-            };
-            var payload = new FormUrlEncodedContent(parameters);
-
-            var response = await _apiClientHelper.Update<ParentData<List<NotesResponseModel>>>(url, payload);
-            return response?.Data;
-        }
-
-        public async Task<ParentData<object>> DeleteNotesById(Int64 selectedServerVideoEventId, Int64 notesId)
-        {
-            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes/{notesId}";
-            var parameters = new Dictionary<string, string>();
-
-            var payload = new FormUrlEncodedContent(parameters);
-
-            var response = await _apiClientHelper.Delete<ParentData<object>>(url, payload);
-            return response;
-        }
-
-
 
         public async Task<VideoEventResponseModel> PutVideoEvent(int projectId, VideoEventModel videoEventModel, byte[] blob = null)
         {
@@ -844,5 +686,187 @@ namespace VideoCreator.Auth
         }
 
         #endregion
+
+        #region == Design Only ==
+        public async Task<DesignModel> PutDesign(Int64 serverDesignId, Int64 selectedServerVideoEventId, int fk_design_screen, string design_xml)
+        {
+            try
+            {
+                var url = $"api/connect/videoevent/{selectedServerVideoEventId}/design/{serverDesignId}";
+                var parameters = new Dictionary<string, string>
+                {
+                    { "fk_design_screen", fk_design_screen.ToString() },
+                    { "design_xml", design_xml.ToString() }
+                };
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Update<ParentData<DesignModel>>(url, payload);
+                return result?.Data;
+            }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region == VideoSegment Only ==
+
+        public async Task<ParentData<VideoSegmentPostResponse>> PostVideoSegment(int videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
+        {
+            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-create";
+            var multipart = new MultipartFormDataContent();
+            string pathWithFilename = string.Empty;
+            StreamContent fileStreamContent = null;
+            FileStream fileReadStream = null;
+            if (blob?.Length > 0)
+            {
+                //File
+                var filename = $"{Guid.NewGuid()}";
+                if (MediaType == EnumMedia.VIDEO)
+                    filename = $"video_{filename}.mp4";
+                else if (MediaType == EnumMedia.IMAGE)
+                    filename = $"image_{filename}.png";
+                else if (MediaType == EnumMedia.FORM)
+                    filename = $"design_{filename}.png";
+
+                var temp = PathHelper.GetTempPath("videosegment");
+                pathWithFilename = $"{temp}\\{filename}";
+                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                file.Write(blob, 0, blob.Length);
+                file.Close();
+
+                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                fileStreamContent = new StreamContent(fileReadStream);
+                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                multipart.Add(fileStreamContent);
+            }
+
+            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
+            //if (result?.Status == "success")
+            //    MessageBox.Show($@"{result?.Message} with data - {JsonConvert.SerializeObject(result.Data)}", "PostVideoSegment", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (pathWithFilename?.Length > 0)
+            {
+
+                fileReadStream?.Close();
+                fileStreamContent.Dispose();
+                File.Delete(pathWithFilename);
+            }
+            return result;
+        }
+        
+        public async Task<ParentData<VideoSegmentPostResponse>> PutVideoSegment(Int64 videoevent_serverid, EnumMedia MediaType, byte[] blob = null)
+        {
+            var url = $"api/connect/videoevent/{videoevent_serverid}/videosegment-update";
+            var multipart = new MultipartFormDataContent();
+            string pathWithFilename = string.Empty;
+            StreamContent fileStreamContent = null;
+            FileStream fileReadStream = null;
+            if (blob?.Length > 0)
+            {
+                //File
+                var filename = $"{Guid.NewGuid()}";
+                if (MediaType == EnumMedia.VIDEO)
+                    filename = $"video_{filename}.mp4";
+                else if (MediaType == EnumMedia.IMAGE)
+                    filename = $"image_{filename}.png";
+                else if (MediaType == EnumMedia.FORM)
+                    filename = $"design_{filename}.png";
+
+                var temp = PathHelper.GetTempPath("videosegment");
+                pathWithFilename = $"{temp}\\{filename}";
+                var file = new FileStream(pathWithFilename, FileMode.OpenOrCreate, FileAccess.Write);
+                file.Write(blob, 0, blob.Length);
+                file.Close();
+
+                fileReadStream = new FileStream(pathWithFilename, FileMode.Open);
+                fileStreamContent = new StreamContent(fileReadStream);
+                fileStreamContent.Headers.Add("Content-Disposition", $"form-data; name=\"videosegment_media\"; filename=\"{filename}\"");
+                multipart.Add(fileStreamContent);
+            }
+
+            var result = await _apiClientHelper.CreateWithMultipart<ParentData<VideoSegmentPostResponse>>(url, multipart);
+            if (pathWithFilename?.Length > 0)
+            {
+
+                fileReadStream?.Close();
+                fileStreamContent.Dispose();
+                File.Delete(pathWithFilename);
+            }
+            return result;
+        }
+
+        #endregion
+
+        #region == Notes Only ==
+
+        public async Task<NotesResponseModel> POSTNotes(Int64 selectedServerVideoEventId, List<NotesModelPost> notes)
+        {
+            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
+            var parameters = new Dictionary<string, string>
+            {
+                { "notes", JsonConvert.SerializeObject(notes) }
+            };
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Create<ParentData<NotesResponseModel>>(url, payload);
+            return response?.Data;
+        }
+
+        public async Task<List<NotesResponseModel>> PUTNotes(Int64 selectedServerVideoEventId, List<NotesModelPut> notes)
+        {
+            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
+            var parameters = new Dictionary<string, string>
+            {
+                { "notes", JsonConvert.SerializeObject(notes) }
+            };
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Update<ParentData<List<NotesResponseModel>>>(url, payload);
+            return response?.Data;
+        }
+
+        public async Task<ParentData<object>> DeleteNotesById(Int64 selectedServerVideoEventId, Int64 notesId)
+        {
+            var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes/{notesId}";
+            var parameters = new Dictionary<string, string>();
+
+            var payload = new FormUrlEncodedContent(parameters);
+
+            var response = await _apiClientHelper.Delete<ParentData<object>>(url, payload);
+            return response;
+        }
+
+        #endregion
+
+        public async Task<string> DownloadBackground(int backgroundId, string extension)
+        {
+            string result = Path.GetTempPath();
+            Console.WriteLine(result);
+
+
+            var url = $"api/connect/background/download/{backgroundId}";
+            var filename = $"background_{DateTime.Now:yyyyMMddhhmmss.ffff}.{extension}";
+            var success = await _apiClientHelper.GetFile(url, filename);
+            if (success)
+            {
+                var filepath = $@"{PathHelper.GetTempPath("background")}\\{filename}";
+                return filepath;
+            }
+            return null;
+        }
+
+        public async Task<byte[]> GetSecuredFileByteArray(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return null;
+            var result = await _apiClientHelper.GetSecuredFileByteArray(url);
+            return result;
+        }
+
+
+
     }
 }

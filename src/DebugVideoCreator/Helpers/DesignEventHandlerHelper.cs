@@ -67,7 +67,7 @@ namespace VideoCreator.Helpers
             objToSync.design.AddRange(GetDesignModelList(dtDesign));
             
             objToSync.videosegment_media_bytes = blob;
-            var result = await authApiViewModel.PutVideoEvent(selectedProjectEvent, objToSync, videoevent.videoevent_serverid);
+            var result = await authApiViewModel.PutVideoEventForDesign(selectedProjectEvent, objToSync, videoevent.videoevent_serverid);
             return result;
         }
 

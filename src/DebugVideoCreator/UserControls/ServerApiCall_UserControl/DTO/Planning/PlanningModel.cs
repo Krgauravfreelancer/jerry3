@@ -49,4 +49,22 @@ namespace ServerApiCall_UserControl.DTO.Background
         public string planningmedia_mediafull { get; set; }
     }
 
+
+    public class LastUpdatedPlannigModel
+    {
+        public string lastdownload { get; set; }
+        public bool newupdates { get; set; }
+
+    }
+    public class LastUpdatedPlannigModelResponse
+    {
+        public LastUpdatedPlannigModel planning { get; set; }
+    }
+
+    public class LastUpdatedPlannigPutRequestModel
+    {
+        public string planning { get; set; } //Datetime in UTC
+    }
+
+
 }
