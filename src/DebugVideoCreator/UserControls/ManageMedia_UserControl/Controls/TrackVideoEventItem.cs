@@ -257,21 +257,28 @@ namespace ManageMedia_UserControl.Controls
             this.MouseLeave -= TrackVideoEventItem_MouseLeave;
 
             
-            if (myContextMenu != null)
+            if (myContextMenu != null && timeLine != null)
             {
                 if (IsManageMedia)
                 {
                     myContextMenu.Closed -= MyContextMenu_Closed;
-                    DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
-                    FocusEventBtn.Click -= timeLine.FocusEventBtn_Click;
+                    if (timeLine != null)
+                    {
+                        DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
+                        FocusEventBtn.Click -= timeLine.FocusEventBtn_Click;
+                    }
                 }
                 else
                 {
                     myContextMenu.Closed -= MyContextMenu_Closed;
-                    DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
-                    CloneEventAtTimelineEndBtn.Click -= timeLine.CloneEventAtTimelineEnd;
-                    CloneEventAtTrackbarLocationBtn.Click -= timeLine.CloneEventAtTrackbar;
-                    AddImageUsingLibraryAfterSelectedEventBtn.Click -= timeLine.AddImageUsingLibraryAfterSelectedEvent;
+                    if (timeLine != null)
+                    {
+                        EditEventBtn.Click -= timeLine.EditEventBtnClicked;
+                        DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
+                        CloneEventAtTimelineEndBtn.Click -= timeLine.CloneEventAtTimelineEnd;
+                        CloneEventAtTrackbarLocationBtn.Click -= timeLine.CloneEventAtTrackbar;
+                        AddImageUsingLibraryAfterSelectedEventBtn.Click -= timeLine.AddImageUsingLibraryAfterSelectedEvent;
+                    }
                 }
             }
 
