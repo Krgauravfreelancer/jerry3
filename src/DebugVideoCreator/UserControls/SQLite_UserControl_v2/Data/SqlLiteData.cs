@@ -3468,6 +3468,94 @@ namespace Sqllite_Library.Data
         }
 
 
+        public static void HardDeletePlanningsByProjectId(int projectId)
+        {
+            var deleteQueryString = $@" 
+                                        Delete From cbv_planning 
+                                        WHERE 
+                                            fk_planning_project = {projectId};
+                                        ";
+            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
+            Console.WriteLine($@"cbv_planning table delete status for project Id - {projectId} | result - {deleteFlag}");
+        }
+
+        public static void HardDeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        {
+            var deleteQueryString = $@" 
+                                        Delete From cbv_videoevent 
+                                        WHERE 
+                                            videoevent_id = {videoeventId};
+                                        ";
+
+            if (cascadeDelete == true)
+                deleteQueryString = $@" Delete From  cbv_design
+                                        WHERE 
+                                            fk_design_videoevent = {videoeventId};
+
+                                        Delete From cbv_videosegment
+                                        WHERE 
+                                            videosegment_id = {videoeventId};
+
+                                        Delete From  cbv_locaudio
+                                        WHERE 
+                                        fk_locaudio_notes in (Select notes_id from cbv_notes WHERE fk_notes_videoevent = {videoeventId});
+
+                                        Delete From cbv_notes
+                                        WHERE 
+                                            fk_notes_videoevent = {videoeventId};
+                                        " + deleteQueryString;
+            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
+            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} | result - {deleteFlag}");
+        }
+
+        public static void HardDeleteVideoEventsByServerId(int serverVideoeventId, bool cascadeDelete)
+        {
+            int videoEventId = -1;
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT videoevent_id FROM cbv_videoevent where videoevent_serverId = {serverVideoeventId}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        videoEventId = sqlReader.GetInt32(0);
+                        break;
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                if (null != sqlCon)
+                    sqlCon.Close();
+                throw;
+            }
+
+            if (videoEventId > 0)
+                HardDeleteVideoEventsById(videoEventId, cascadeDelete);
+
+
+            Console.WriteLine($@"cbv_videoevent table delete status for serverid - {serverVideoeventId} completed");
+        }
+
+        
+
         public static void DeleteAllVideoEventsByProjdetId(int projdetId, bool cascadeDelete)
         {
             var deleteQueryString = $@" 

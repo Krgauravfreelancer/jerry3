@@ -643,6 +643,22 @@ namespace Sqllite_Library.Business
 
         #endregion
 
+        public static void HardDeletePlanningsByProjectId(int projectId)
+        {
+            SqlLiteData.HardDeletePlanningsByProjectId(projectId);
+        }
+
+        public static void HardDeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        {
+            SqlLiteData.HardDeleteVideoEventsById(videoeventId, cascadeDelete);
+        }
+
+        public static void HardDeleteVideoEventsByServerId(int serverVideoeventId, bool cascadeDelete)
+        {
+            SqlLiteData.HardDeleteVideoEventsByServerId(serverVideoeventId, cascadeDelete);
+        }
+
+
 
         public static string GetNextStart(int fk_videoevent_media, int projdetId)
         {

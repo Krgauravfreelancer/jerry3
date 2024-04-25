@@ -66,7 +66,8 @@ namespace VideoCreator.Helpers
 
         public static async Task Process(PlanningEvent planningEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, string imagePath = null)
         {
-            LoaderHelper.ShowLoader(uc, loader, "Starting ...");
+            if(uc != null)
+                LoaderHelper.ShowLoader(uc, loader, "Starting ...");
             EventStartTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId);
 
              Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, -1, true, false);

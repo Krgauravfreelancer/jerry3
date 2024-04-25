@@ -685,6 +685,30 @@ namespace VideoCreator.Auth
             return result?.Data;
         }
 
+
+        public async Task<bool> HardDeleteVideoEvent(Int64 serverProjectId, Int64 serverProjDetId, Int64 videoevent_serverId)
+        {
+            try
+            {
+                var url = $"api/connect/project/{serverProjectId}/project-detail/{serverProjDetId}/videoevent/{videoevent_serverId}/hard-delete";
+                var parameters = new Dictionary<string, string>();
+                var payload = new FormUrlEncodedContent(parameters);
+
+                var result = await _apiClientHelper.Delete<object>(url, payload);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.Message}");
+                LogManagerHelper.WriteErroreLog($"Inside exception - {ex.InnerException}");
+                return false;
+            }
+        }
+
+
+
+
+
         #endregion
 
         #region == Design Only ==

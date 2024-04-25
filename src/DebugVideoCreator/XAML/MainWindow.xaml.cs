@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using VideoCreator.Auth;
 using VideoCreator.Helpers;
+using VideoCreator.Models;
 
 namespace VideoCreator.XAML
 {
@@ -391,6 +392,74 @@ namespace VideoCreator.XAML
             return true;
         }
 
+
+        private async Task PlanningUpdatedFlow()
+        {
+            var isPlanningUpdated = await authApiViewModel.IsPlanningUpdated(selectedItem.project_id);
+            if (isPlanningUpdated)
+            {
+                var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
+                if (selectedItemFull != null)
+                {
+                    MessageBox.Show("Planning Data changed after last fetch, so refreshing planning !!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoaderHelper.ShowLoader(this, loader);
+                    //Delete Planning data locally
+                    DataManagerSqlLite.HardDeletePlanningsByProjectId(selectedProjectEvent.projectId);
+
+                    var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
+                    foreach (var item in serverVideoEventData.Data)
+                    {
+                        await authApiViewModel.HardDeleteVideoEvent(selectedProjectEvent.serverProjectId, selectedProjectEvent.serverProjdetId, item.videoevent_id);
+                        DataManagerSqlLite.HardDeleteVideoEventsByServerId(item.videoevent_id, cascadeDelete: true);
+                    }
+                    //Lets download planning and insert it as well
+                    var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
+                    await SyncDbHelper.UpsertPlanning(plannings, selectedItem.project_localId, selectedItemFull, authApiViewModel);
+                    // await InitialiseAndRefreshScreen();
+                    await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
+
+                    LoaderHelper.HideLoader(this, loader);
+                }
+            }
+
+        }
+
+
+        private async Task CreatePlanningAutomatically()
+        {
+            //Check if planning events exists or not
+            var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
+            if (serverVideoEventData?.Data != null)
+            {
+                var isPlanningEventExist = serverVideoEventData?.Data?.Where(x => x.videoevent_planning > 0 && x.videoevent_isdeleted == false).Any();
+                if (isPlanningEventExist.HasValue && isPlanningEventExist.Value == true)
+                {
+                    // Do nothing
+                }
+                else
+                {
+                    // Add Planning Events automatically
+                    MessageBox.Show("Adding planning events", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoaderHelper.ShowLoader(this, loader);
+                    var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
+                    var payload = new PlanningEvent
+                    {
+                        Type = EnumScreen.All,
+                        TimeAtTheMoment = trackbarTime
+                    };
+
+                    var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent();
+                    if (backgroundImagePath == null)
+                        MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+                    else
+                    {
+                        await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, null, loader, backgroundImagePath);
+                    }
+                    LoaderHelper.HideLoader(this, loader);
+                }
+            }
+        }
+
         private async void ManageProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             if (PreValidations() == false)
@@ -404,9 +473,18 @@ namespace VideoCreator.XAML
 
             if (selectedProjectEvent == null)
                 return;
-            string obj = JsonConvert.SerializeObject(selectedProjectEvent);
+
+            //string obj = JsonConvert.SerializeObject(selectedProjectEvent);
             var readonlyFlag = selectedItem.project_downloaded == "YES" && selectedItem.current_version == false;
+            if (!readonlyFlag)
+            {
+                await PlanningUpdatedFlow();
+                await CreatePlanningAutomatically();
+            }
+
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
+
+            
 
             manageTimelineWindow = new Window
             {
@@ -437,6 +515,8 @@ namespace VideoCreator.XAML
                 await SyncDbHelper.UpsertPlanning(plannings, projectLocalId, selectedItemFull, authApiViewModel);
 
                 await InitialiseAndRefreshScreen();
+
+                await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
 
                 LoaderHelper.HideLoader(this, loader);
             }
