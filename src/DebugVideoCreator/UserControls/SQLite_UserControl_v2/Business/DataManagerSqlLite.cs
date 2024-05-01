@@ -5,6 +5,7 @@ using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.Linq;
 
 namespace Sqllite_Library.Business
@@ -13,7 +14,7 @@ namespace Sqllite_Library.Business
     {
 
         #region == Database Methods ==
-        public static string CreateDatabaseIfNotExist(bool encryptFlag, bool canCreateRegistryIfNotExists = false)
+        public static SQLiteConnection GetOpenedConnection(bool encryptFlag, bool canCreateRegistryIfNotExists = false)
         {
             string message;
             if (SqlLiteData.IsDbCreated())
@@ -25,8 +26,8 @@ namespace Sqllite_Library.Business
                 SqlLiteData.CreateDatabaseIfNotExist(encryptFlag, canCreateRegistryIfNotExists);
                 message = $"{RegisteryHelper.GetFileName()} database created successfully!!";
             }
-
-            return message;
+            var sqlCon = SqlLiteData.GetOpenedConnection();
+            return sqlCon;
         }
 
         public static string ClearRegistryAndDeleteDB()
@@ -61,14 +62,14 @@ namespace Sqllite_Library.Business
             var insertedIds = new List<int>();
             foreach (DataRow rowMain in data.Rows)
             {
-                //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)rowMain["fk_videoevent_projdet"]);
-                //if (!projectFlag)
-                //    throw new Exception("projdet_Id foreign key constraint not successful ");
+                var projdetFlag = SqlLiteData.ReferentialKeyPresent("cbv_projdet", "projdet_id", (int)rowMain["fk_videoevent_projdet"]);
+                if (!projdetFlag)
+                    throw new Exception("projdet_Id foreign key constraint not successful ");
 
                 var mediaId = (int)rowMain["fk_videoevent_media"];
-                //var mediaFlag = SqlLiteData.ReferentialKeyPresent("cbv_media", "media_id", mediaId);
-                //if (!mediaFlag)
-                //    throw new Exception("media_Id foreign key constraint not successful ");
+                var mediaFlag = SqlLiteData.ReferentialKeyPresent("cbv_media", "media_id", mediaId);
+                if (!mediaFlag)
+                    throw new Exception("media_Id foreign key constraint not successful ");
 
                 var insertedId = SqlLiteData.InsertRowsToVideoEvent(rowMain);
                 if (insertedId > 0 && populateDependentTablesFlag)
@@ -178,32 +179,181 @@ namespace Sqllite_Library.Business
             return insertedIds;
         }
 
+        public static List<int> InsertRowsToVideoEventForTransaction(DataTable data, SQLiteConnection sqlCon, bool populateDependentTablesFlag = true)
+        {
+            var insertedIds = new List<int>();
+            foreach (DataRow rowMain in data.Rows)
+            {
+                var projdetFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_projdet", "projdet_id", (int)rowMain["fk_videoevent_projdet"]);
+                if (!projdetFlag)
+                    throw new Exception("projdet_Id foreign key constraint not successful ");
+
+                var mediaId = (int)rowMain["fk_videoevent_media"];
+                var mediaFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon,"cbv_media", "media_id", mediaId);
+                if (!mediaFlag)
+                    throw new Exception("media_Id foreign key constraint not successful ");
+
+                var insertedId = SqlLiteData.InsertRowsToVideoEventForTransaction(rowMain, sqlCon);
+                if (insertedId > 0 && populateDependentTablesFlag)
+                {
+                    var createDate = Convert.ToString(rowMain["videoevent_createdate"]);
+                    if (string.IsNullOrEmpty(createDate))
+                        createDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                    var modifyDate = Convert.ToString(rowMain["videoevent_modifydate"]);
+                    if (string.IsNullOrEmpty(modifyDate))
+                        modifyDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                    if (mediaId == 1 || mediaId == 2) // Image or video
+                    {
+                        // Insert into cbv_videosegment
+                        var dtVideoSegment = new DataTable();
+
+                        dtVideoSegment.Columns.Add("videosegment_id", typeof(int));
+                        dtVideoSegment.Columns.Add("videosegment_media", typeof(byte[]));
+                        dtVideoSegment.Columns.Add("videosegment_createdate", typeof(string));
+                        dtVideoSegment.Columns.Add("videosegment_modifydate", typeof(string));
+
+                        dtVideoSegment.Columns.Add("videosegment_isdeleted", typeof(bool));
+                        dtVideoSegment.Columns.Add("videosegment_issynced", typeof(bool));
+                        dtVideoSegment.Columns.Add("videosegment_serverid", typeof(Int64));
+                        dtVideoSegment.Columns.Add("videosegment_syncerror", typeof(string));
+
+                        var rowVideoSegment = dtVideoSegment.NewRow();
+                        rowVideoSegment["videosegment_id"] = insertedId;
+                        rowVideoSegment["videosegment_media"] = rowMain["media"];
+                        rowVideoSegment["videosegment_createdate"] = createDate;
+                        rowVideoSegment["videosegment_modifydate"] = modifyDate;
+                        rowVideoSegment["videosegment_isdeleted"] = false;
+                        rowVideoSegment["videosegment_issynced"] = true;
+                        rowVideoSegment["videosegment_serverid"] = 1;
+                        rowVideoSegment["videosegment_syncerror"] = "";
+
+                        dtVideoSegment.Rows.Add(rowVideoSegment);
+
+                        var insertedVideoSegmentId = InsertRowsToVideoSegmentForTransaction(dtVideoSegment, insertedId, sqlCon);
+                        if (insertedVideoSegmentId <= 0) throw new Exception("Error while inserting videosegment table");
+                    }
+                    else if (mediaId == 3) //Audio
+                    {
+                        /*
+                        // Insert into cbv_audio
+                        var dtAudio = new DataTable();
+
+                        dtAudio.Columns.Add("audio_id", typeof(int));
+                        dtAudio.Columns.Add("fk_audio_videoevent", typeof(int));
+                        dtAudio.Columns.Add("audio_media", typeof(byte[]));
+                        dtAudio.Columns.Add("audio_createdate", typeof(string));
+                        dtAudio.Columns.Add("audio_modifydate", typeof(string));
+
+                        var rowAudio = dtAudio.NewRow();
+                        rowAudio["audio_id"] = -1;
+                        rowAudio["fk_audio_videoevent"] = insertedId;
+                        rowAudio["audio_media"] = rowMain["media"];
+                        rowAudio["audio_createdate"] = createDate;
+                        rowAudio["audio_modifydate"] = modifyDate;
+                        dtAudio.Rows.Add(rowAudio);
+
+                        var insertedAudioId = InsertRowsToAudio(dtAudio);
+                        if (insertedAudioId <= 0) throw new Exception("Error while inserting audio table");
+                        */
+                    }
+                    else if (mediaId == 4)  //Design
+                    {
+                        // Insert into cbv_design
+                        var dtDesign = new DataTable();
+                        dtDesign.Columns.Add("design_id", typeof(int));
+                        dtDesign.Columns.Add("fk_design_videoevent", typeof(int));
+                        dtDesign.Columns.Add("fk_design_screen", typeof(int));
+                        dtDesign.Columns.Add("design_xml", typeof(string));
+                        dtDesign.Columns.Add("design_createdate", typeof(string));
+                        dtDesign.Columns.Add("design_modifydate", typeof(string));
+
+                        dtDesign.Columns.Add("design_isdeleted", typeof(bool));
+                        dtDesign.Columns.Add("design_issynced", typeof(bool));
+                        dtDesign.Columns.Add("design_serverid", typeof(Int64));
+                        dtDesign.Columns.Add("design_syncerror", typeof(string));
+
+                        var rowDesign = dtDesign.NewRow();
+                        rowDesign["design_id"] = -1;
+                        rowDesign["fk_design_videoevent"] = insertedId;
+                        rowDesign["fk_design_screen"] = (int)rowMain["fk_design_screen"];
+                        rowDesign["design_xml"] = rowMain["design_xml"].ToString();
+                        rowDesign["design_createdate"] = createDate;
+                        rowDesign["design_modifydate"] = modifyDate;
+
+                        rowDesign["design_isdeleted"] = false;
+                        rowDesign["design_issynced"] = true;
+                        rowDesign["design_serverid"] = 1;
+                        rowDesign["design_syncerror"] = "";
+
+                        dtDesign.Rows.Add(rowDesign);
+                        var insertedDesignId = InsertRowsToDesignForTransaction(dtDesign, sqlCon);
+                        if (insertedDesignId <= 0) throw new Exception("Error while inserting design table");
+                    }
+                }
+                //else
+                //{
+                //    throw new Exception("Error while inserting VideoEvent table");
+                //}
+                insertedIds.Add(insertedId);
+            }
+            return insertedIds;
+        }
+
         public static int InsertRowsToVideoSegment(DataTable data, int fk_value)
         {
             // For Johan
-            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_serverid", fk_value);
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", fk_value);
             //if (!videoeventFlag)
             //    throw new Exception("videoevent_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToVideoSegment(data);
         }
 
-        public static int InsertRowsToDesign(DataTable data)
+        public static int InsertRowsToVideoSegmentForTransaction(DataTable data, int fk_value, SQLiteConnection sqlCon)
         {
-            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_design_videoevent"]);
+            // For Johan
+            //var videoeventFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_videoevent", "videoevent_id", fk_value);
             //if (!videoeventFlag)
             //    throw new Exception("videoevent_Id foreign key constraint not successful ");
 
-            //var bgFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)data?.Rows[0]["fk_design_background"]);
-            //if (!bgFlag)
-            //    throw new Exception("background_Id foreign key constraint not successful ");
+            return SqlLiteData.InsertRowsToVideoSegmentForTransaction(data, sqlCon);
+        }
 
-            //var screenFlag = SqlLiteData.ReferentialKeyPresent("cbv_screen", "screen_id", (int)data?.Rows[0]["fk_design_screen"]);
-            //if (!screenFlag)
-            //    throw new Exception("screen_Id foreign key constraint not successful ");
+        public static int InsertRowsToDesign(DataTable data)
+        {
+            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_design_videoevent"]);
+            if (!videoeventFlag)
+                throw new Exception("videoevent_Id foreign key constraint not successful ");
 
+            var bgFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)data?.Rows[0]["fk_design_background"]);
+            if (!bgFlag)
+                throw new Exception("background_Id foreign key constraint not successful ");
+
+            var screenFlag = SqlLiteData.ReferentialKeyPresent("cbv_screen", "screen_id", (int)data?.Rows[0]["fk_design_screen"]);
+            if (!screenFlag)
+                throw new Exception("screen_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToDesign(data);
+        }
+
+        public static int InsertRowsToDesignForTransaction(DataTable data, SQLiteConnection sqlCon)
+        {
+            var videoeventFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_design_videoevent"]);
+            if (!videoeventFlag)
+                throw new Exception("videoevent_Id foreign key constraint not successful for cbv_videoevent");
+
+            var bgFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_background", "background_id", (int)data?.Rows[0]["fk_design_background"]);
+            if (!bgFlag)
+                throw new Exception("background_Id foreign key constraint not successful for cbv_background");
+
+            var screenFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_screen", "screen_id", (int)data?.Rows[0]["fk_design_screen"]);
+            if (!screenFlag)
+                throw new Exception("screen_Id foreign key constraint not successful for cbv_screen");
+
+
+            return SqlLiteData.InsertRowsToDesignForTransaction(data, sqlCon);
         }
 
         /*
@@ -222,11 +372,20 @@ namespace Sqllite_Library.Business
 
         public static int InsertRowsToNotes(DataTable data)
         {
-            //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
-            //if (!videoeventFlag)
-            //    throw new Exception("videoevent_Id foreign key constraint not successful ");
+            var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
+            if (!videoeventFlag)
+                throw new Exception("videoevent_Id foreign key constraint not successful ");
 
             return SqlLiteData.InsertRowsToNotes(data);
+        }
+
+        public static int InsertRowsToNotesForTransaction(DataTable data, SQLiteConnection sqlCon)
+        {
+            var videoeventFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
+            if (!videoeventFlag)
+                throw new Exception("videoevent_Id foreign key constraint not successful ");
+
+            return SqlLiteData.InsertRowsToNotesForTransaction(data, sqlCon);
         }
 
         public static List<int> InsertRowsToLocAudio(DataTable data)
@@ -325,6 +484,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetPlanning(projectId, dependentFlag);
         }
 
+        public static List<CBVPlanning> GetPlanningForTransaction(int projectId, SQLiteConnection sqlCon, bool dependentFlag = true)
+        {
+            return SqlLiteData.GetPlanningForTransaction(projectId, sqlCon, dependentFlag);
+        }
+
         public static CBVPlanning GetPlanningById(int planningid = 0, Int64 planningServerId = 0)
         {
             return SqlLiteData.GetPlanningById(planningid, planningServerId);
@@ -338,6 +502,11 @@ namespace Sqllite_Library.Business
         public static CBVProject GetProjectById(int projectId = -1, bool projdetFlag = false)
         {
             return SqlLiteData.GetProjectById(projectId, projdetFlag).FirstOrDefault();
+        }
+
+        public static CBVProject GetProjectByIdForTransaction(SQLiteConnection sqlCon, int projectId = -1, bool projdetFlag = false)
+        {
+            return SqlLiteData.GetProjectByIdForTransaction(projectId, projdetFlag, sqlCon).FirstOrDefault();
         }
 
         public static int GetProjectsCount()
@@ -455,6 +624,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetBackground(company_id);
         }
 
+        public static List<CBVBackground> GetBackgroundForTransaction(SQLiteConnection sqlCon, int company_id = -1)
+        {
+            return SqlLiteData.GetBackgroundForTransaction(company_id, sqlCon);
+        }
+
         public static List<CBVVoiceTimer> GetVoiceTimers()
         {
             return SqlLiteData.GetVoiceTimers();
@@ -556,7 +730,7 @@ namespace Sqllite_Library.Business
         #endregion
 
 
-        #region == DELETE Methods ==
+        #region == Soft Delete Methods ==
 
         public static void DeleteNotesById(int notesId = -1)
         {
@@ -582,60 +756,61 @@ namespace Sqllite_Library.Business
 
 
         #region == Upsert Methods ==
-        public static void UpsertRowsToApp(DataTable dataTable)
+
+        public static void UpsertRowsToAppForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
-            SqlLiteData.UpsertRowsToApp(dataTable);
+            SqlLiteData.UpsertRowsToAppForTransaction(dataTable, sqlCon);
         }
 
-        public static void UpsertRowsToMedia(DataTable dataTable)
+        public static void UpsertRowsToMediaForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
-            SqlLiteData.UpsertRowsToMedia(dataTable);
+            SqlLiteData.UpsertRowsToMediaForTransaction(dataTable, sqlCon);
         }
 
-        public static void UpsertRowsToScreen(DataTable dataTable)
+        public static void UpsertRowsToScreenForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
-            SqlLiteData.UpsertRowsToScreen(dataTable);
+            SqlLiteData.UpsertRowsToScreenForTransaction(dataTable, sqlCon);
         }
 
-        public static void UpsertRowsToCompany(DataTable dataTable)
+        public static void UpsertRowsToCompanyForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
-            SqlLiteData.UpsertRowsToCompany(dataTable);
+            SqlLiteData.UpsertRowsToCompanyForTransaction(dataTable, sqlCon);
         }
 
-        public static void UpsertRowsToBackground(DataTable dataTable)
+        public static void UpsertRowsToBackgroundForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
-            SqlLiteData.UpsertRowsToBackground(dataTable);
+            SqlLiteData.UpsertRowsToBackgroundForTransaction(dataTable, sqlCon);
         }
 
-        public static int IsProjectAvailable(int projectServerId)
+        public static int IsProjectAvailableForTransaction(int projectServerId, SQLiteConnection sqlCon)
         {
-            return SqlLiteData.IsProjectAvailable(projectServerId);
+            return SqlLiteData.IsProjectAvailableForTransaction(projectServerId, sqlCon);
         }
 
-        public static int UpsertRowsToProjectbyId(DataTable data, int projectServerId, bool projdetAvailable)
+        public static int UpsertRowsToProjectbyIdForTransaction(DataTable data, int projectServerId, bool projdetAvailable, SQLiteConnection sqlCon)
         {
-            //foreach (DataRow rowMain in data.Rows)
-            //{
-            //    //var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
-            //    //if (!backgroundFlag)
-            //    //    throw new Exception("background_id foreign key constraint not successful ");
-            //}
+            foreach (DataRow rowMain in data.Rows)
+            {
+                var backgroundFlag = SqlLiteData.ReferentialKeyPresent("cbv_background", "background_id", (int)rowMain["fk_project_background"]);
+                if (!backgroundFlag)
+                    throw new Exception("background_id foreign key constraint not successful ");
+            }
 
-            var projectId = SqlLiteData.IsProjectAvailable(projectServerId);
+            var projectId = IsProjectAvailableForTransaction(projectServerId, sqlCon);
             if (projectId == -1)
-                projectId = SqlLiteData.UpsertRowsToProject(data);
+                projectId = SqlLiteData.UpsertRowsToProjectForTransaction(data, sqlCon);
 
             if (projdetAvailable)
-                SqlLiteData.InsertRowsToProjectDetail(data, projectId);
+                SqlLiteData.InsertRowsToProjectDetail(data, projectId, sqlCon);
             return projectId;
         }
 
-        public static List<int> UpsertRowsToPlanning(DataTable data, int projectId)
+        public static List<int> UpsertRowsToPlanningForTransaction(DataTable data, int projectId, SQLiteConnection sqlCon)
         {
-            var planningId = SqlLiteData.IsProjectPlanningAvailable(projectId);
+            var planningId = SqlLiteData.IsProjectPlanningAvailableForTransaction(projectId, sqlCon);
             if (planningId == -1)
             {
-                var planningIds = SqlLiteData.InsertRowsToPlanning(data);
+                var planningIds = SqlLiteData.InsertRowsToPlanningForTransaction(data, sqlCon);
                 return planningIds;
             }
             return null;
@@ -643,28 +818,38 @@ namespace Sqllite_Library.Business
 
         #endregion
 
-        public static void HardDeletePlanningsByProjectId(int projectId)
+
+        #region == Hard Delete ==
+
+        public static void HardDeletePlanningsByProjectIdForTransaction(int projectId, SQLiteConnection sqlCon)
         {
-            SqlLiteData.HardDeletePlanningsByProjectId(projectId);
+            SqlLiteData.HardDeletePlanningsByProjectIdForTransaction(projectId, sqlCon);
         }
 
-        public static void HardDeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        public static void HardDeleteVideoEventsByIdForTransaction(int videoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
-            SqlLiteData.HardDeleteVideoEventsById(videoeventId, cascadeDelete);
+            SqlLiteData.HardDeleteVideoEventsByIdForTransaction(videoeventId, cascadeDelete, sqlCon);
         }
 
-        public static void HardDeleteVideoEventsByServerId(int serverVideoeventId, bool cascadeDelete)
+        public static void HardDeleteVideoEventsByServerIdForTransaction(int serverVideoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
-            SqlLiteData.HardDeleteVideoEventsByServerId(serverVideoeventId, cascadeDelete);
+            SqlLiteData.HardDeleteVideoEventsByServerIdForTransaction(serverVideoeventId, cascadeDelete, sqlCon);
         }
 
+        #endregion
 
+
+        #region == Helper Function == 
 
         public static string GetNextStart(int fk_videoevent_media, int projdetId)
         {
             return SqlLiteData.GetNextStart(fk_videoevent_media, projdetId);
         }
 
+        public static string GetNextStartForTransaction(int fk_videoevent_media, int projdetId, SQLiteConnection sqlCon)
+        {
+            return SqlLiteData.GetNextStartForTransaction(fk_videoevent_media, projdetId, sqlCon);
+        }
 
         public static string CalcNextEnd(string start, string duration)
         {
@@ -691,5 +876,6 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetTimespanFromSeconds(seconds);
         }
 
+        #endregion
     }
 }

@@ -13,6 +13,7 @@ using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -695,7 +696,7 @@ namespace VideoCreator.Auth
                 var payload = new FormUrlEncodedContent(parameters);
 
                 var result = await _apiClientHelper.Delete<object>(url, payload);
-                return true;
+                return result != null;
             }
             catch (Exception ex)
             {

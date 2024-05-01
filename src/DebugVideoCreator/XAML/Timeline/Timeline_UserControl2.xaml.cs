@@ -92,7 +92,7 @@ namespace VideoCreator.XAML
             {
                 timelineVideoEvent = selectedEvent,
                 timeAtTheMoment = trackbarTime.ToString(@"hh\:mm\:ss\.fff")
-        };
+            };
             ContextMenu_CloneEvent_Clicked.Invoke(sender, payload);
         }
 
@@ -167,7 +167,7 @@ namespace VideoCreator.XAML
             if (TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia?.Count > 0)
             {
                 var modifiedEvents = new List<CBVVideoEvent>();
-                foreach(var item in TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia)
+                foreach (var item in TimelineGridCtrl2?.CalloutLocationOrSizeChangedMedia)
                 {
                     if (item != null)
                     {
@@ -192,21 +192,36 @@ namespace VideoCreator.XAML
         #region == Planning Events ==
         private async void AddPlanningEvents_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
-            var payload = new PlanningEvent
+            var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                Type = EnumScreen.All,
-                TimeAtTheMoment = trackbarTime
-            };
+                try
+                {
 
-            var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent();
-            if (backgroundImagePath == null)
-                MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
-            else
-            {
-                await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, this, loader, backgroundImagePath);
-                Refresh();
+                    var trackbarTime = DataManagerSqlLite.GetNextStartForTransaction((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId, sqlCon);
+                    var payload = new PlanningEvent
+                    {
+                        Type = EnumScreen.All,
+                        TimeAtTheMoment = trackbarTime
+                    };
+
+                    var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent(sqlCon);
+                    if (backgroundImagePath == null)
+                        MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+                    else
+                    {
+                        await PlanningHandlerHelper.ProcessForTransaction(payload, selectedProjectEvent, authApiViewModel, this, loader, sqlCon, backgroundImagePath);
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
+            Refresh();
             LoaderHelper.HideLoader(this, loader);
 
         }

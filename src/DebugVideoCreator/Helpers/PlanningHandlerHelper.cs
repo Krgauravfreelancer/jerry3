@@ -8,6 +8,7 @@ using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,7 +33,7 @@ namespace VideoCreator.Helpers
         private static int RetryIntervalInSeconds = 300;
         private static string EventStartTime = "00:00:00.000";
         private static string EventEndTime = "00:00:00.000";
-        
+
         //private static string NoteEndTime = "00:00:00.000";
         private static int notesIndex = 1;
         private static string CreateOrReturnEmptyDirectory()
@@ -47,10 +48,10 @@ namespace VideoCreator.Helpers
             return directoryName;
         }
 
-        public static string CheckIfBackgroundPresent()
+        public static string CheckIfBackgroundPresent(SQLiteConnection sqlCon)
         {
             var directory = CreateOrReturnEmptyDirectory();
-            var backgrounds = DataManagerSqlLite.GetBackground();
+            var backgrounds = DataManagerSqlLite.GetBackgroundForTransaction(sqlCon);
             if (backgrounds != null && backgrounds.Count > 0)
             {
                 var backgroundBytes = backgrounds.FirstOrDefault().background_media;
@@ -64,18 +65,18 @@ namespace VideoCreator.Helpers
             return null;
         }
 
-        public static async Task Process(PlanningEvent planningEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, string imagePath = null)
+        public static async Task ProcessForTransaction(PlanningEvent planningEvent, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, UserControl uc, LoadingAnimation loader, SQLiteConnection sqlCon, string imagePath = null)
         {
-            if(uc != null)
+            if (uc != null)
                 LoaderHelper.ShowLoader(uc, loader, "Starting ...");
-            EventStartTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId);
+            EventStartTime = DataManagerSqlLite.GetNextStartForTransaction((int)EnumMedia.IMAGE, selectedProjectEvent.projdetId, sqlCon);
 
-             Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, -1, true, false);
+            Designer_UserControl designerUserControl = new Designer_UserControl(selectedProjectEvent.projectId, imagePath, -1, true, false);
             var designElements = designerUserControl.PlanningSetup();
 
             if (planningEvent.Type == EnumScreen.All)
             {
-                var data = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId)?.OrderBy(x => x.planning_sort).ToList();
+                var data = DataManagerSqlLite.GetPlanningForTransaction(selectedProjectEvent.projectId, sqlCon, dependentFlag: true)?.OrderBy(x => x.planning_sort).ToList();
                 loader.setTextBlockMessage($"Processing 0/{data.Count} ...");
                 //Add Title
                 //await AddProjectNameSlide(designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
@@ -88,27 +89,27 @@ namespace VideoCreator.Helpers
                         case (int)EnumScreen.Text:
                         case (int)EnumScreen.Introduction:
                             // code block
-                            await AddIntroductionOrTextSlide((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                            await AddIntroductionOrTextSlide((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, sqlCon);
                             break;
                         case (int)EnumScreen.Requirements:
                         case (int)EnumScreen.Objectives:
                         case (int)EnumScreen.Conclusion:
                         case (int)EnumScreen.NextUp:
                         case (int)EnumScreen.Bullet:
-                            await AddPlanningElementWithDesign(item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen);
+                            await AddPlanningElementWithDesign(item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen, sqlCon);
                             break;
                         case (int)EnumScreen.Video:
-                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, sqlCon);
                             break;
                         case (int)EnumScreen.Custom:
-                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                            await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, sqlCon);
                             break;
                         case (int)EnumScreen.Image:
                             // code block
                             if (item?.planning_media?.Count > 0)
-                                await AddPlanningImage(item, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen);
+                                await AddPlanningImage(item, selectedProjectEvent, authApiViewModel, (EnumScreen)item.fk_planning_screen, sqlCon);
                             else
-                                await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel);
+                                await AddPlaceholder((EnumScreen)item.fk_planning_screen, item, designElements, designerUserControl, selectedProjectEvent, authApiViewModel, sqlCon);
                             break;
                         default:
                             // code block
@@ -119,7 +120,7 @@ namespace VideoCreator.Helpers
         }
 
 
-        private static async Task<bool?> AddPlaceholder(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddPlaceholder(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
             var text = Enum.GetName(screen.GetType(), screen) + " Placeholder";
             designerUserControl.ClearDatatable();
@@ -133,15 +134,15 @@ namespace VideoCreator.Helpers
 
             string notes_duration = "00:00:10.000";
             DataTable dtNotes = null;
-            if(!string.IsNullOrEmpty(item.planning_notesline))
+            if (!string.IsNullOrEmpty(item.planning_notesline))
                 dtNotes = GetNotesDatatable(item.planning_notesline, out notes_duration);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid, sqlCon);
             return result;
         }
 
-        private static async Task<bool?> AddProjectNameSlide(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddProjectNameSlide(DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
-            var title = DataManagerSqlLite.GetProjectById(selectedProjectEvent.projectId, false)?.project_videotitle;
+            var title = DataManagerSqlLite.GetProjectByIdForTransaction(sqlCon, selectedProjectEvent.projectId, false)?.project_videotitle;
 
             designerUserControl.ClearDatatable();
             FillBackgroundRowForPlanning(designElements, designerUserControl, EnumScreen.Title);
@@ -151,11 +152,11 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000", planningServerId: 0);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000", planningServerId: 0, sqlCon);
             return result;
         }
 
-        private static async Task<bool?> AddIntroductionOrTextSlide(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<bool?> AddIntroductionOrTextSlide(EnumScreen screen, CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
             if (item?.planning_desc?.Count > 0)
             {
@@ -170,13 +171,13 @@ namespace VideoCreator.Helpers
                 designImagerUserControl.SaveToDataTable(finalBlob);
 
                 var dtNotes = GetNotesDatatable(item.planning_notesline, out string notes_duration);
-                var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
+                var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid, sqlCon);
                 return result;
             }
             return null;
         }
 
-        private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen)
+        private static async Task<bool?> AddPlanningImage(CBVPlanning item, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen, SQLiteConnection sqlCon)
         {
             var notesText = item.planning_notesline;
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
@@ -225,14 +226,14 @@ namespace VideoCreator.Helpers
             dataTable.Rows.Add(row);
             foreach (DataRow itemRow in dataTable.Rows)
             {
-                var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel);
+                var insertedVideoeventId = await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel, sqlCon);
             }
             EventStartTime = EventEndTime; // Reset it for next time
             return true;
 
         }
 
-        private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen)
+        private static async Task<bool?> AddPlanningElementWithDesign(CBVPlanning item, DataTable designElements, Designer_UserControl designerUserControl, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumScreen screen, SQLiteConnection sqlCon)
         {
             if (item == null || item.planning_desc?.Count == 0 || item.planning_desc[0].planningdesc_bullets?.Count == 0) { return false; }
 
@@ -266,7 +267,7 @@ namespace VideoCreator.Helpers
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
             var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
-            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid);
+            var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid, sqlCon);
             return result;
         }
 
@@ -299,9 +300,9 @@ namespace VideoCreator.Helpers
                 return null;
             }
 
-            var notes = data.Split(new string[] { "$$$NEWNOTES$$$"}, StringSplitOptions.None).ToList();
+            var notes = data.Split(new string[] { "$$$NEWNOTES$$$" }, StringSplitOptions.None).ToList();
             TimeSpan measuredTimespan = new TimeSpan(0, 0, 0);
-            
+
             foreach (var noteItem in notes)
             {
                 if (string.IsNullOrEmpty(noteItem))
@@ -311,7 +312,7 @@ namespace VideoCreator.Helpers
                 var notesTimespan = new TimeSpan(0, 0, 0, 10);
                 if (noteItem?.Length > 0)
                     notesTimespan = TextMeasurement.Measure(noteItem);
-                
+
                 measuredTimespan += notesTimespan;
                 notes_duration = notesTimespan.ToString(@"hh\:mm\:ss\.fff");
 
@@ -438,7 +439,7 @@ namespace VideoCreator.Helpers
             return blob;
         }
 
-        private static async Task<int> ProcessVideoSegmentDataRowByRow(DataRow row, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel)
+        private static async Task<int> ProcessVideoSegmentDataRowByRow(DataRow row, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
             DataTable dtNotes = null;
             if (row != null && row["videoevent_notes"] != DBNull.Value)
@@ -451,54 +452,54 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel);
+                    return await ProcessVideoSegmentDataRowByRow(row, selectedProjectEvent, authApiViewModel, sqlCon);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForSaveImageorVideo(row, selectedProjectEvent);
+                    return FailureFlowForSaveImageorVideo(row, selectedProjectEvent, sqlCon);
                 else
                     return -1;
             }
             else
-                return SuccessFlowForSaveImageorVideo(row, addedData, selectedProjectEvent);
+                return SuccessFlowForSaveImageorVideo(row, addedData, selectedProjectEvent, sqlCon);
         }
 
-        private static int SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData, SelectedProjectEvent selectedProjectEvent)
+        private static int SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData, SelectedProjectEvent selectedProjectEvent, SQLiteConnection sqlCon)
         {
             var insertedVideoSegmentId = -1;
             var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImage(addedData, selectedProjectEvent.projdetId);
-            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEventForTransaction(dt, sqlCon, false);
             if (insertedVideoEventIds?.Count > 0)
             {
                 var localVideoEventId = insertedVideoEventIds[0];
                 var blob = row["media"] as byte[];
                 var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImage(blob, localVideoEventId, addedData.videosegment);
-                insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videoevent.videoevent_id);
+                insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegmentForTransaction(dtVideoSegment, addedData.videoevent.videoevent_id, sqlCon);
                 if (addedData?.notes?.Count > 0)
                 {
                     var dtNotes = CloneEventHandlerHelper.GetNotesDataTableServer(addedData.notes, localVideoEventId);
-                    DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+                    DataManagerSqlLite.InsertRowsToNotesForTransaction(dtNotes, sqlCon);
                 }
             }
             return insertedVideoSegmentId;
         }
 
-        private static int FailureFlowForSaveImageorVideo(DataRow row, SelectedProjectEvent selectedProjectEvent)
+        private static int FailureFlowForSaveImageorVideo(DataRow row, SelectedProjectEvent selectedProjectEvent, SQLiteConnection sqlCon)
         {
             // Save the record locally with server Id = temp and issynced = false
             var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
             var dt = MediaEventHandlerHelper.GetVideoEventDataTableForVideoOrImageLocally(row, localServerVideoEventId, selectedProjectEvent.projdetId);
-            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEventForTransaction(dt, sqlCon, false);
             if (insertedVideoEventIds?.Count > 0)
             {
                 var videoEventId = insertedVideoEventIds[0];
                 var blob = row["media"] as byte[];
                 var localServerVideoSegmentId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
                 var dtVideoSegment = MediaEventHandlerHelper.GetVideoSegmentDataTableForVideoOrImageLocally(blob, videoEventId, localServerVideoSegmentId);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, videoEventId);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegmentForTransaction(dtVideoSegment, videoEventId, sqlCon);
             }
             return -1;
         }
 
-        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, string duration, Int64 planningServerId)
+        private static async Task<bool?> SavePlanningToServerAndLocalDB(DesignImager_UserControl designImagerUserControl, Designer_UserControl designerUserControl, DataTable dtNotes, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, EnumTrack track, string duration, Int64 planningServerId, SQLiteConnection sqlCon)
         {
             var blob = designImagerUserControl.dtVideoSegment.Rows[0]["videosegment_media"] as byte[];
             VideoEventResponseModel addedData;
@@ -513,15 +514,15 @@ namespace VideoCreator.Helpers
                     $"{Environment.NewLine}'No' for retry later at an interval of {RetryIntervalInSeconds / 60} minutes and " +
                     $"{Environment.NewLine}'Cancel' to discard", "Failure", MessageBoxButton.YesNoCancel, MessageBoxImage.Error);
                 if (confirmation == MessageBoxResult.Yes)
-                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration, planningServerId);
+                    return await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: dtNotes, selectedProjectEvent, authApiViewModel, track, duration, planningServerId, sqlCon);
                 else if (confirmation == MessageBoxResult.No)
-                    return FailureFlowForPlanning(designerUserControl.dataTableObject, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent);
+                    return FailureFlowForPlanning(designerUserControl.dataTableObject, designImagerUserControl.dtVideoSegment, EventStartTime, duration, (int)track, selectedProjectEvent, sqlCon);
                 else
                     return null;
             }
             else
             {
-                SuccessFlowForPlanning(addedData, selectedProjectEvent.projdetId, blob);
+                SuccessFlowForPlanning(addedData, selectedProjectEvent.projdetId, blob, sqlCon);
                 EventStartTime = EventEndTime;
                 return true;
             }
@@ -546,44 +547,44 @@ namespace VideoCreator.Helpers
             return result;
         }
 
-        private static void SuccessFlowForPlanning(VideoEventResponseModel addedData, int selectedProjectId, byte[] blob)
+        private static void SuccessFlowForPlanning(VideoEventResponseModel addedData, int selectedProjectId, byte[] blob, SQLiteConnection sqlCon)
         {
             var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
-            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEventForTransaction(dt, sqlCon, false);
             if (insertedVideoEventIds?.Count > 0)
             {
                 var localVideoEventId = insertedVideoEventIds[0];
                 var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCallout(addedData.design, localVideoEventId);
-                DataManagerSqlLite.InsertRowsToDesign(dtDesign);
+                DataManagerSqlLite.InsertRowsToDesignForTransaction(dtDesign, sqlCon);
 
                 // Insert Notes
                 if (addedData.notes?.Count > 0)
                 {
                     var dtNotes = CloneEventHandlerHelper.GetNotesDataTableServer(addedData.notes, localVideoEventId);
-                    var insertedNotesIdLast = DataManagerSqlLite.InsertRowsToNotes(dtNotes);
+                    var insertedNotesIdLast = DataManagerSqlLite.InsertRowsToNotesForTransaction(dtNotes, sqlCon);
                 }
 
 
                 var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForCallout(blob, localVideoEventId, addedData.videosegment);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, addedData.videosegment.videosegment_id);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegmentForTransaction(dtVideoSegment, addedData.videosegment.videosegment_id, sqlCon);
             }
         }
 
-        private static bool FailureFlowForPlanning(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent)
+        private static bool FailureFlowForPlanning(DataTable dtDesignMaster, DataTable dtVideoSegmentMaster, string timeAtTheMoment, string duration, int track, SelectedProjectEvent selectedProjectEvent, SQLiteConnection sqlCon)
         {
             // Save the record locally with server Id = temp and issynced = false
             var blob = dtVideoSegmentMaster.Rows[0]["videosegment_media"] as byte[];
             var localServerVideoEventId = Convert.ToInt64(DateTime.UtcNow.ToString("yyyyMMddHHmmssfff"));
             var dt = DesignEventHandlerHelper.GetVideoEventDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, selectedProjectEvent.projdetId, localServerVideoEventId);
-            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEvent(dt, false);
+            var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEventForTransaction(dt, sqlCon, false);
             if (insertedVideoEventIds?.Count > 0)
             {
                 var localVideoEventId = insertedVideoEventIds[0];
                 var dtDesign = DesignEventHandlerHelper.GetDesignDataTableForCalloutLocally(dtDesignMaster, dtVideoSegmentMaster, timeAtTheMoment, duration, track, localVideoEventId);
-                DataManagerSqlLite.InsertRowsToDesign(dtDesign);
+                DataManagerSqlLite.InsertRowsToDesignForTransaction(dtDesign, sqlCon);
 
                 var dtVideoSegment = DesignEventHandlerHelper.GetVideoSegmentDataTableForCalloutLocally(blob, localVideoEventId);
-                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegment(dtVideoSegment, localVideoEventId);
+                var insertedVideoSegmentId = DataManagerSqlLite.InsertRowsToVideoSegmentForTransaction(dtVideoSegment, localVideoEventId, sqlCon);
                 if (insertedVideoSegmentId > 0)
                     MessageBox.Show($"Record saved locally, background process will try to sync at an interval of {RetryIntervalInSeconds / 60} min.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }

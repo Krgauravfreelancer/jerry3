@@ -28,7 +28,10 @@ namespace VideoCreator.Helpers
                 var message = $@"Server has {serverVideoEventData.Data.Count} events while local DB has {localVideoEventCount} events.{Environment.NewLine}Do you want to download server data to local?";
                 var result = MessageBox.Show(message, "Sync Data", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
+                {
                     await SyncServerDataToLocalDB(serverVideoEventData, uc, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
+                    uc.TimelineUserConrol.Refresh();
+                }
                 else
                 {
                     btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";

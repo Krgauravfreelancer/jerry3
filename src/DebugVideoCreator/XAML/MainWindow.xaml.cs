@@ -7,6 +7,7 @@ using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -57,15 +58,76 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(this, loader);
             await Login();
-            await SyncApp();
-            await SyncMedia();
-            await SyncCompany();
-            await SyncBackground();
-            await SyncScreens();
+            await SyncMasterTables();
             await InitialiseAndRefreshScreen(true);
-
             LoaderHelper.HideLoader(this, loader);
         }
+
+        #region == Sync Section ==
+
+        private async Task SyncMasterTables()
+        {
+            LogManagerHelper.WriteVerboseLog("SyncMasterTables Started");
+            var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
+                    await SyncApp(sqlCon);
+                    await SyncMedia(sqlCon);
+                    await SyncCompany(sqlCon);
+                    await SyncBackground(sqlCon);
+                    await SyncScreens(sqlCon);
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+            }
+            LogManagerHelper.WriteVerboseLog("SyncMasterTables Completed");
+        }
+
+        private async Task SyncApp(SQLiteConnection sqlCon)
+        {
+            var data = await authApiViewModel.GetAllApp();
+            if (data == null) return;
+            SyncDbHelper.SyncAppForTransaction(data, sqlCon);
+        }
+
+        private async Task SyncMedia(SQLiteConnection sqlCon)
+        {
+            var data = await authApiViewModel.GetAllMedia();
+            if (data == null) return;
+            SyncDbHelper.SyncMediaForTransaction(data, sqlCon);
+        }
+
+        private async Task SyncScreens(SQLiteConnection sqlCon)
+        {
+            var data = await authApiViewModel.GetAllScreens();
+            if (data == null) return;
+            SyncDbHelper.SyncScreenForTransaction(data, sqlCon);
+        }
+
+        private async Task SyncCompany(SQLiteConnection sqlCon)
+        {
+            var data = await authApiViewModel.GetAllCompany();
+            if (data == null) return;
+            SyncDbHelper.SyncCompanyForTransaction(data, sqlCon);
+        }
+
+        private async Task SyncBackground(SQLiteConnection sqlCon)
+        {
+            var data = await authApiViewModel.GetAllBackground();
+            if (data == null) return;
+            var result = new List<BackgroundModel>();
+            result.Add(data);
+            SyncDbHelper.SyncBackgroundForTransaction(result, authApiViewModel, sqlCon);
+        }
+
+        #endregion
 
         private string GetHeaderName(string name)
         {
@@ -128,7 +190,6 @@ namespace VideoCreator.XAML
             style.Setters.Add(new Setter(FontWeightProperty, FontWeight.FromOpenTypeWeight(700)));
             return style;
         }
-
 
         private async Task InitialiseAndRefreshScreen(bool isFirstCall = false)
         {
@@ -200,7 +261,7 @@ namespace VideoCreator.XAML
 
         }
 
-        public static void FindCellAndRow(DependencyObject originalSource, out DataGridCell cell, out DataGridRow row)
+        private static void FindCellAndRow(DependencyObject originalSource, out DataGridCell cell, out DataGridRow row)
         {
             cell = originalSource as DataGridCell;
             if (cell == null)
@@ -227,7 +288,8 @@ namespace VideoCreator.XAML
 
             row = originalSource as DataGridRow;
         }
-        public static DependencyObject FindVisualParentAsDataGridSubComponent(DependencyObject originalSource)
+        
+        private static DependencyObject FindVisualParentAsDataGridSubComponent(DependencyObject originalSource)
         {
             // iteratively traverse the visual tree
             while ((originalSource != null) && !(originalSource is DataGridCell)
@@ -270,9 +332,6 @@ namespace VideoCreator.XAML
             var result = JsonConvert.DeserializeObject<List<ProjectListUI>>(JsonConvert.SerializeObject(projects));
             return result;
         }
-
-
-
 
 
         #region == API and Auth Events ==
@@ -319,42 +378,7 @@ namespace VideoCreator.XAML
             }
         }
 
-        private async Task SyncApp()
-        {
-            var data = await authApiViewModel.GetAllApp();
-            if (data == null) return;
-            SyncDbHelper.SyncApp(data);
-        }
 
-        private async Task SyncMedia()
-        {
-            var data = await authApiViewModel.GetAllMedia();
-            if (data == null) return;
-            SyncDbHelper.SyncMedia(data);
-        }
-
-        private async Task SyncScreens()
-        {
-            var data = await authApiViewModel.GetAllScreens();
-            if (data == null) return;
-            SyncDbHelper.SyncScreen(data);
-        }
-
-        private async Task SyncCompany()
-        {
-            var data = await authApiViewModel.GetAllCompany();
-            if (data == null) return;
-            SyncDbHelper.SyncCompany(data);
-        }
-
-        private async Task SyncBackground()
-        {
-            var data = await authApiViewModel.GetAllBackground();
-            if (data == null) return;
-            var result = new List<BackgroundModel>();
-            result.Add(data);
-            SyncDbHelper.SyncBackground(result, authApiViewModel);
-        }
 
         #endregion
 
@@ -392,8 +416,8 @@ namespace VideoCreator.XAML
             return true;
         }
 
-
-        private async Task PlanningUpdatedFlow()
+        
+        private async Task PlanningUpdatedFlow(SQLiteConnection sqlCon)
         {
             var isPlanningUpdated = await authApiViewModel.IsPlanningUpdated(selectedItem.project_id);
             if (isPlanningUpdated)
@@ -401,20 +425,24 @@ namespace VideoCreator.XAML
                 var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
                 if (selectedItemFull != null)
                 {
-                    MessageBox.Show("Planning Data changed after last fetch, so refreshing planning !!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Planning Data changed after last fetch, so refreshing planning. This should not take long!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoaderHelper.ShowLoader(this, loader);
                     //Delete Planning data locally
-                    DataManagerSqlLite.HardDeletePlanningsByProjectId(selectedProjectEvent.projectId);
+                    DataManagerSqlLite.HardDeletePlanningsByProjectIdForTransaction(selectedProjectEvent.projectId, sqlCon);
 
                     var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
+                    int i = 1;
                     foreach (var item in serverVideoEventData.Data)
                     {
-                        await authApiViewModel.HardDeleteVideoEvent(selectedProjectEvent.serverProjectId, selectedProjectEvent.serverProjdetId, item.videoevent_id);
-                        DataManagerSqlLite.HardDeleteVideoEventsByServerId(item.videoevent_id, cascadeDelete: true);
+                        LoaderHelper.ShowLoader(this, loader, $"Removing Exisiting {i++}/{serverVideoEventData.Data?.Count} events");
+                        var success = await authApiViewModel.HardDeleteVideoEvent(selectedProjectEvent.serverProjectId, selectedProjectEvent.serverProjdetId, item.videoevent_id);
+                        DataManagerSqlLite.HardDeleteVideoEventsByServerIdForTransaction(item.videoevent_id, cascadeDelete: true, sqlCon);
+
                     }
                     //Lets download planning and insert it as well
                     var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
-                    await SyncDbHelper.UpsertPlanning(plannings, selectedItem.project_localId, selectedItemFull, authApiViewModel);
+                    LoaderHelper.ShowLoader(this, loader, $"Saving new {plannings?.Count} Records");
+                    await SyncDbHelper.UpsertPlanningForTransaction(plannings, selectedItem.project_localId, selectedItemFull, authApiViewModel, sqlCon);
                     // await InitialiseAndRefreshScreen();
                     await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
 
@@ -424,8 +452,7 @@ namespace VideoCreator.XAML
 
         }
 
-
-        private async Task CreatePlanningAutomatically()
+        private async Task CreatePlanningAutomatically(SQLiteConnection sqlCon)
         {
             //Check if planning events exists or not
             var serverVideoEventData = await authApiViewModel.GetAllVideoEventsbyProjdetId(selectedProjectEvent);
@@ -439,21 +466,21 @@ namespace VideoCreator.XAML
                 else
                 {
                     // Add Planning Events automatically
-                    MessageBox.Show("Adding planning events", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Adding planning events, This should not take long!!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     LoaderHelper.ShowLoader(this, loader);
-                    var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId);
+                    var trackbarTime = DataManagerSqlLite.GetNextStartForTransaction((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId, sqlCon);
                     var payload = new PlanningEvent
                     {
                         Type = EnumScreen.All,
                         TimeAtTheMoment = trackbarTime
                     };
 
-                    var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent();
+                    var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent(sqlCon);
                     if (backgroundImagePath == null)
                         MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
                     else
                     {
-                        await PlanningHandlerHelper.Process(payload, selectedProjectEvent, authApiViewModel, null, loader, backgroundImagePath);
+                        await PlanningHandlerHelper.ProcessForTransaction(payload, selectedProjectEvent, authApiViewModel, null, loader, sqlCon, backgroundImagePath);
                     }
                     LoaderHelper.HideLoader(this, loader);
                 }
@@ -478,13 +505,25 @@ namespace VideoCreator.XAML
             var readonlyFlag = selectedItem.project_downloaded == "YES" && selectedItem.current_version == false;
             if (!readonlyFlag)
             {
-                await PlanningUpdatedFlow();
-                await CreatePlanningAutomatically();
+                var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
+                using (var transaction = sqlCon.BeginTransaction())
+                {
+                    try
+                    {
+                        await PlanningUpdatedFlow(sqlCon);
+                        await CreatePlanningAutomatically(sqlCon);
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    transaction.Commit();
+                    sqlCon?.Close();
+                }
             }
 
             var manageTimeline_UserControl = new ManageTimeline_UserControl(selectedProjectEvent, authApiViewModel, readonlyFlag);
-
-            
 
             manageTimelineWindow = new Window
             {
@@ -504,21 +543,32 @@ namespace VideoCreator.XAML
         private async void DownloadProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
-
             if (selectedItemFull != null)
             {
-                LoaderHelper.ShowLoader(this, loader);
-                var projectLocalId = SyncDbHelper.UpsertProject(selectedItemFull, selectedItem.projdet_version);
+                var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
+                using (var transaction = sqlCon.BeginTransaction())
+                {
+                    try
+                    {
+                        LoaderHelper.ShowLoader(this, loader);
+                        var projectLocalId = SyncDbHelper.UpsertProjectForTransaction(selectedItemFull, selectedItem.projdet_version, sqlCon);
 
-                //Lets download planning and insert it as well
-                var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
-                await SyncDbHelper.UpsertPlanning(plannings, projectLocalId, selectedItemFull, authApiViewModel);
-
-                await InitialiseAndRefreshScreen();
-
-                await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
-
-                LoaderHelper.HideLoader(this, loader);
+                        //Lets download planning and insert it as well
+                        LoaderHelper.ShowLoader(this, loader, "Downloading Planning data");
+                        var plannings = await authApiViewModel.GetPlanningsByProjectId(selectedItem.project_id);
+                        await SyncDbHelper.UpsertPlanningForTransaction(plannings, projectLocalId, selectedItemFull, authApiViewModel, sqlCon);
+                    }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    transaction.Commit();
+                    sqlCon?.Close();
+                    await InitialiseAndRefreshScreen();
+                    await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
+                    LoaderHelper.HideLoader(this, loader);
+                }
             }
             else
                 MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);

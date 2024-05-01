@@ -4,6 +4,7 @@ using Sqllite_Library.Models.Planning;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Infrastructure;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Sqllite_Library.Data
     {
 
         #region == Database Methods ==
+
         public static void CreateDatabaseIfNotExist(bool encryptFlag, bool canCreateRegistryIfNotExists)
         {
             // Open Database connection 
@@ -35,11 +37,42 @@ namespace Sqllite_Library.Data
             var sqlCon = new SQLiteConnection(connectionString);
             //if (encryptFlag) sqlCon.SetPassword("mypassword");
             sqlCon.Open();
-            CreateAllTables(sqlCon);
+
+            //Added so that DB tables are created all or none
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
+                    CreateAllTables(sqlCon);
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+            }
+
+
             //if (encryptFlag) sqlCon.SetPassword("mypassword");
             // else sqlCon.SetPassword(); // We need to decrypt only if the DB is encrypted.
             // Close connection
-            sqlCon?.Close();
+
+        }
+
+        public static SQLiteConnection GetOpenedConnection()
+        {
+            // Open Database connection 
+            var completeFileName = RegisteryHelper.GetFileName();
+            if (completeFileName != null)
+            {
+                string connectionString = string.Format("Data Source={0};Version=3;", completeFileName);
+                var sqlCon = new SQLiteConnection(connectionString);
+                sqlCon.Open();
+                return sqlCon;
+            }
+            return null;
         }
 
         public static bool IsDbCreated()
@@ -62,12 +95,11 @@ namespace Sqllite_Library.Data
 
 
         #region == Create Table Region ==
-        private static void CreateTableHelper(string sqlQueryString, SQLiteConnection sqlCon)
+        private static void ExecuteNonQueryForTransaction(string sqlQueryString, SQLiteConnection sqlCon)
         {
             var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
             sqlQuery.ExecuteNonQuery();
             sqlQuery.Dispose();
-
         }
 
         private static void CreateAllTables(SQLiteConnection sqlCon)
@@ -113,7 +145,7 @@ namespace Sqllite_Library.Data
                 'company_name' TEXT(30) NOT NULL  DEFAULT 'NULL',
                 UNIQUE (company_name)
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateBackgroundTable(SQLiteConnection sqlCon)
@@ -124,7 +156,7 @@ namespace Sqllite_Library.Data
                 'background_media' BLOB NOT NULL  DEFAULT NULL,
                 'background_active' INTEGER(1) NOT NULL  DEFAULT 1
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateVoiceTimerTable(SQLiteConnection sqlCon)
@@ -135,7 +167,7 @@ namespace Sqllite_Library.Data
                 'voicetimer_wordcount' INTEGER NOT NULL  DEFAULT 0,
                 'voicetimer_index' INTEGER NOT NULL  DEFAULT 0  
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateVoiceAverageTable(SQLiteConnection sqlCon)
@@ -144,7 +176,7 @@ namespace Sqllite_Library.Data
                 'voiceaverage_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY AUTOINCREMENT,
                 'voiceaverage_average' TEXT NOT NULL  DEFAULT '1'
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateAppTable(SQLiteConnection sqlCon)
@@ -155,7 +187,7 @@ namespace Sqllite_Library.Data
                 'app_active' INTEGER(1) NOT NULL  DEFAULT 0,
                 UNIQUE (app_name)
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateMediaTable(SQLiteConnection sqlCon)
@@ -166,7 +198,7 @@ namespace Sqllite_Library.Data
                 'media_color' TEXT(15) NOT NULL  DEFAULT 'NULL', 
                 UNIQUE (media_name)
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateScreenTable(SQLiteConnection sqlCon)
@@ -178,7 +210,7 @@ namespace Sqllite_Library.Data
                 'screen_hexcolor' TEXT(15) NOT NULL DEFAULT 'NULL',
                 UNIQUE (screen_name)
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateProjectTable(SQLiteConnection sqlCon)
@@ -198,7 +230,7 @@ namespace Sqllite_Library.Data
                     'project_serverid' INTEGER NOT NULL  DEFAULT 1,
                     'project_syncerror' TEXT(50) DEFAULT NULL
                     );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateProjectDetTable(SQLiteConnection sqlCon)
@@ -214,7 +246,7 @@ namespace Sqllite_Library.Data
                     'projdet_createdate' TEXT NOT NULL  DEFAULT 'NULL',
                     'projdet_modifydate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreatePlanningTable(SQLiteConnection sqlCon)
@@ -236,7 +268,7 @@ namespace Sqllite_Library.Data
                             'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0
                             ,UNIQUE (fk_planning_project, fk_planning_screen, planning_customname)
                         );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreatePlanningMediaTable(SQLiteConnection sqlCon)
@@ -246,7 +278,7 @@ namespace Sqllite_Library.Data
                             'planningmedia_mediathumb' NONE NOT NULL  DEFAULT NULL,
                             'planningmedia_mediafull' NONE NOT NULL  DEFAULT NULL
                         );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreatePlanningDescTable(SQLiteConnection sqlCon)
@@ -255,7 +287,7 @@ namespace Sqllite_Library.Data
                             'planningdesc_id' INTEGER NOT NULL  DEFAULT 1 PRIMARY KEY REFERENCES 'cbv_planning' ('planning_id'),
                             'planningdesc_line' TEXT(100) NOT NULL  DEFAULT NULL
                         );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreatePlanningBulletTable(SQLiteConnection sqlCon)
@@ -265,7 +297,7 @@ namespace Sqllite_Library.Data
                             'fk_planningbullet_desc' INTEGER NOT NULL  DEFAULT 1 REFERENCES 'cbv_planningdesc' ('planningdesc_id'),
                             'planningbullet_line' TEXT(50) NOT NULL  DEFAULT NULL
                         );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateReviewTable(SQLiteConnection sqlCon)
@@ -283,7 +315,7 @@ namespace Sqllite_Library.Data
                     'review_syncerror' TEXT(50) NOT NULL  DEFAULT 'NULL',
                     'review_isedited' INTEGER(1) NOT NULL  DEFAULT 0
                     );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateReviewImageTable(SQLiteConnection sqlCon)
@@ -294,7 +326,7 @@ namespace Sqllite_Library.Data
                     'reviewimg_media' NONE NOT NULL  DEFAULT NULL,
                     'reviewimg_createdate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateReviewFtfTable(SQLiteConnection sqlCon)
@@ -305,7 +337,7 @@ namespace Sqllite_Library.Data
                     'reviewrtf_rtfnote' TEXT NOT NULL  DEFAULT 'NULL',
                     'reviewrtf_createdate' TEXT NOT NULL  DEFAULT 'NULL'
                     );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateVideoEventTable(SQLiteConnection sqlCon)
@@ -327,7 +359,7 @@ namespace Sqllite_Library.Data
                 'videoevent_serverid' INTEGER NOT NULL  DEFAULT 1,
                 'videoevent_syncerror' TEXT(50) DEFAULT NULL
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateVideoSegmentTable(SQLiteConnection sqlCon)
@@ -342,7 +374,7 @@ namespace Sqllite_Library.Data
                 'videosegment_serverid' INTEGER NOT NULL  DEFAULT 1,
                 'videosegment_syncerror' TEXT(50) DEFAULT NULL
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         /*
@@ -356,7 +388,7 @@ namespace Sqllite_Library.Data
                 'audio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'audio_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
         */
 
@@ -377,7 +409,7 @@ namespace Sqllite_Library.Data
                 'notes_serverid' INTEGER NOT NULL  DEFAULT 1,
                 'notes_syncerror' TEXT(50) DEFAULT NULL
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateLocAudioTable(SQLiteConnection sqlCon)
@@ -390,7 +422,7 @@ namespace Sqllite_Library.Data
                 'locaudio_modifydate' TEXT(25) NOT NULL DEFAULT '1999-01-01 00:00:00',
                 'locaudio_isdeleted' INTEGER(1) NOT NULL DEFAULT 0
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateLivAudioTable(SQLiteConnection sqlCon)
@@ -399,7 +431,7 @@ namespace Sqllite_Library.Data
                 'livaudio_id' INTEGER NOT NULL DEFAULT NULL PRIMARY KEY AUTOINCREMENT,
                 'fk_livaudio_videoevent' INTEGER NOT NULL DEFAULT NULL REFERENCES 'cbv_videoevent' ('videoevent_id')
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateDesignTable(SQLiteConnection sqlCon)
@@ -417,7 +449,7 @@ namespace Sqllite_Library.Data
                 'design_serverid' INTEGER NOT NULL  DEFAULT 1,
                 'design_syncerror' TEXT(50) DEFAULT NULL
                 );";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
         private static void CreateFinalMp4Table(SQLiteConnection sqlCon)
@@ -436,7 +468,7 @@ namespace Sqllite_Library.Data
                 'finalmp4_syncerror' TEXT(50) DEFAULT NULL,
                 UNIQUE (fk_finalmp4_project, finalmp4_version)
                 );;";
-            CreateTableHelper(sqlQueryString, sqlCon);
+            ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
         }
 
 
@@ -556,22 +588,38 @@ namespace Sqllite_Library.Data
         public static int InsertRowsToBackground(DataTable dataTable)
         {
             var insertedId = -1;
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var values = new List<string>();
-                values.Add($"({dr["fk_background_company"]}, {dr["background_active"]}, @blob)");
-                var valuesString = string.Join(",", values.ToArray());
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var values = new List<string>();
+                        values.Add($"({dr["fk_background_company"]}, {dr["background_active"]}, @blob)");
+                        var valuesString = string.Join(",", values.ToArray());
 
-                string sqlQueryString =
-                    $@"INSERT INTO cbv_background 
+                        string sqlQueryString =
+                            $@"INSERT INTO cbv_background 
                     (fk_background_company, background_active, background_media) 
                 VALUES 
                     {valuesString}";
 
-                insertedId = InsertBlobRecordsInTable("cbv_background", sqlQueryString, dr["background_media"] as byte[]);
+                        insertedId = InsertBlobRecordsInTable("cbv_background", sqlQueryString, dr["background_media"] as byte[], sqlCon);
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+                return insertedId;
             }
 
-            return insertedId;
+
+
         }
 
         public static int InsertRowsToProject(DataTable dataTable)
@@ -648,6 +696,24 @@ namespace Sqllite_Library.Data
             result = Convert.ToString(sqlQuery.ExecuteScalar());
             sqlQuery.Dispose();
             sqlCon.Close();
+            return string.IsNullOrEmpty(result) ? "00:00:00.000" : result;
+        }
+
+        public static string GetNextStartForTransaction(int fk_videoevent_media, int projdetId, SQLiteConnection sqlCon)
+        {
+            string result;
+            string sqlQueryString = $@"Select max(videoevent_end) from cbv_videoevent ";
+            var whereClause = string.Empty;
+
+            if (fk_videoevent_media <= 4) whereClause = " where (fk_videoevent_media = 1 or fk_videoevent_media = 2 or fk_videoevent_media = 4) ";
+            else whereClause = $" where fk_videoevent_media = {fk_videoevent_media}";
+
+
+            whereClause += $" and fk_videoevent_projdet = {projdetId} and videoevent_isdeleted = 0 and videoevent_track = 2";
+
+            var sqlQuery = new SQLiteCommand(sqlQueryString + whereClause, sqlCon);
+            result = Convert.ToString(sqlQuery.ExecuteScalar());
+            sqlQuery.Dispose();
             return string.IsNullOrEmpty(result) ? "00:00:00.000" : result;
         }
 
@@ -734,7 +800,7 @@ namespace Sqllite_Library.Data
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             int planningId = 0;
-            if(dr.Table.Columns.Contains("videoevent_planning") && dr["videoevent_planning"] != DBNull.Value)
+            if (dr.Table.Columns.Contains("videoevent_planning") && dr["videoevent_planning"] != DBNull.Value)
                 planningId = Convert.ToInt32(dr["videoevent_planning"]);
 
             var start = Convert.ToString(dr["videoevent_start"]);
@@ -766,9 +832,102 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
+        public static int InsertRowsToVideoEventForTransaction(DataRow dr, SQLiteConnection sqlCon)
+        {
+            var values = new List<string>();
+
+            var createDate = Convert.ToString(dr["videoevent_createdate"]);
+            if (string.IsNullOrEmpty(createDate))
+                createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            var modifyDate = Convert.ToString(dr["videoevent_modifydate"]);
+            if (string.IsNullOrEmpty(modifyDate))
+                modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+            int planningId = 0;
+            if (dr.Table.Columns.Contains("videoevent_planning") && dr["videoevent_planning"] != DBNull.Value)
+                planningId = Convert.ToInt32(dr["videoevent_planning"]);
+
+            var start = Convert.ToString(dr["videoevent_start"]);
+            //if (string.IsNullOrEmpty(start) || start == "00:00:00.000" || start == "00:00:00")
+            //    start = GetNextStart(Convert.ToInt32(dr["fk_videoevent_media"]), Convert.ToInt32(dr["fk_videoevent_projdet"]));
+
+            var end = ShiftRight(start, Convert.ToString(dr["videoevent_duration"]));
+
+            var issynced = Convert.ToInt16(dr["videoevent_issynced"]);
+            var serverid = Convert.ToInt64(dr["videoevent_serverid"]);
+
+            var syncErrorString = Convert.ToString(dr["videoevent_syncerror"]);
+            var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+
+            values.Add($"({dr["fk_videoevent_projdet"]}, {dr["fk_videoevent_media"]}, {dr["videoevent_track"]}, " +
+                $"'{start}', '{dr["videoevent_duration"]}', '{dr["videoevent_origduration"]}', '{end}', {planningId}, " +
+                $"'{createDate}', '{modifyDate}', {dr["videoevent_isdeleted"]}, {issynced}, {serverid}, '{syncerror}')");
+
+            var valuesString = string.Join(",", values.ToArray());
+            string sqlQueryString =
+                $@"INSERT INTO cbv_videoevent 
+                    (fk_videoevent_projdet, fk_videoevent_media, videoevent_track, 
+                        videoevent_start, videoevent_duration, videoevent_origduration, videoevent_end, videoevent_planning, 
+                        videoevent_createdate, videoevent_modifydate, videoevent_isdeleted, videoevent_issynced, videoevent_serverid, videoevent_syncerror) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTableForTransaction("cbv_videoevent", sqlQueryString, sqlCon);
+            return insertedId;
+        }
+
         public static int InsertRowsToVideoSegment(DataTable dataTable)
         {
             var values = new List<string>();
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var createDate = Convert.ToString(dr["videosegment_createdate"]);
+                        if (string.IsNullOrEmpty(createDate))
+                            createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                        var modifyDate = Convert.ToString(dr["videosegment_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                        var issynced = Convert.ToInt16(dr["videosegment_issynced"]);
+                        var serverid = Convert.ToInt64(dr["videosegment_serverid"]);
+                        var syncErrorString = Convert.ToString(dr["videosegment_syncerror"]);
+                        var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+
+                        values.Add($"({dr["videosegment_id"]}, @blob, '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                    }
+                    var valuesString = string.Join(",", values.ToArray());
+
+                    string sqlQueryString =
+                        $@"INSERT INTO cbv_videosegment 
+                    (videosegment_id, videosegment_media, videosegment_createdate, videosegment_modifydate, 
+                            videosegment_isdeleted, videosegment_issynced, videosegment_serverid, videosegment_syncerror) 
+                VALUES 
+                    {valuesString}";
+
+                    var insertedId = InsertBlobRecordsInTable("cbv_videosegment", sqlQueryString, dataTable.Rows[0]["videosegment_media"] as byte[], sqlCon); // This does not have seq
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+                return 1;
+            }
+        }
+
+        public static int InsertRowsToVideoSegmentForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
+        {
+            var values = new List<string>();
+
             foreach (DataRow dr in dataTable.Rows)
             {
                 var createDate = Convert.ToString(dr["videosegment_createdate"]);
@@ -795,8 +954,8 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-            var insertedId = InsertBlobRecordsInTable("cbv_videosegment", sqlQueryString, dataTable.Rows[0]["videosegment_media"] as byte[]); // This does not have seq
-            return 1;
+            var insertedId = InsertBlobRecordsInTable("cbv_videosegment", sqlQueryString, dataTable.Rows[0]["videosegment_media"] as byte[], sqlCon); // This does not have seq
+            return insertedId;
         }
 
         /*
@@ -862,6 +1021,42 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
+
+        public static int InsertRowsToDesignForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
+        {
+            var values = new List<string>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                var createDate = Convert.ToString(dr["design_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["design_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var issynced = Convert.ToInt16(dr["design_issynced"]);
+                var serverid = Convert.ToInt64(dr["design_serverid"]);
+                var syncErrorString = Convert.ToString(dr["design_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+
+                values.Add($"({dr["fk_design_videoevent"]}, {dr["fk_design_background"]}, {dr["fk_design_screen"]}, '{dr["design_xml"]}', '{createDate}', '{modifyDate}'" +
+                            $", 0, {issynced}, {serverid}, '{syncerror}')");
+            }
+            var valuesString = string.Join(",", values.ToArray());
+
+            string sqlQueryString =
+                $@"INSERT INTO cbv_design 
+                    (fk_design_videoevent, fk_design_background, fk_design_screen, design_xml, design_createdate, design_modifydate, 
+                        design_isdeleted, design_issynced, design_serverid, design_syncerror) 
+                VALUES 
+                    {valuesString}";
+
+            var insertedId = InsertRecordsInTableForTransaction("cbv_design", sqlQueryString, sqlCon);
+            return insertedId;
+        }
+
+
         public static int InsertRowsToNotes(DataTable dataTable)
         {
             var insertedId = 0;
@@ -902,34 +1097,90 @@ namespace Sqllite_Library.Data
             return insertedId;
         }
 
+
+        public static int InsertRowsToNotesForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
+        {
+            var insertedId = 0;
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                //(Select Max(notes_index) + 1 from cbv_notes where fk_notes_videoevent = 1) as index
+                var max_index = GetMaxIndexForNotesForTransaction(Convert.ToInt32(dr["fk_notes_videoevent"]), sqlCon);
+                var createDate = Convert.ToString(dr["notes_createdate"]);
+                if (string.IsNullOrEmpty(createDate))
+                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var modifyDate = Convert.ToString(dr["notes_modifydate"]);
+                if (string.IsNullOrEmpty(modifyDate))
+                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+
+                var issynced = Convert.ToInt16(dr["notes_issynced"]);
+                var serverid = Convert.ToInt64(dr["notes_serverid"]);
+                var syncErrorString = Convert.ToString(dr["notes_syncerror"]);
+                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                var notes_line = Convert.ToString(dr["notes_line"]).Trim('\'');
+
+                var values = new List<string>();
+                values.Add($"({dr["fk_notes_videoevent"]}, '{notes_line}', {dr["notes_wordcount"]}, {max_index}, '{dr["notes_start"]}', " +
+                         $"'{dr["notes_duration"]}', '{createDate}', '{modifyDate}', 0, {issynced}, {serverid}, '{syncerror}')");
+                var valuesString = string.Join(",", values.ToArray());
+
+                string sqlQueryString =
+                    $@"INSERT INTO cbv_notes 
+                    (fk_notes_videoevent, notes_line, notes_wordcount, notes_index, notes_start, notes_duration, notes_createdate, notes_modifydate, 
+                        notes_isdeleted, notes_issynced, notes_serverid, notes_syncerror) 
+                VALUES 
+                    {valuesString}";
+
+                insertedId = InsertRecordsInTableForTransaction("cbv_notes", sqlQueryString, sqlCon);
+            }
+
+            return insertedId;
+        }
+
+
+
         #endregion
 
         public static List<int> InsertRowsToLocAudio(DataTable dataTable)
         {
             var insertedIds = new List<int>();
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var values = new List<string>();
-                var createDate = Convert.ToString(dr["locaudio_createdate"]);
-                if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var values = new List<string>();
+                        var createDate = Convert.ToString(dr["locaudio_createdate"]);
+                        if (string.IsNullOrEmpty(createDate))
+                            createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                        var modifyDate = Convert.ToString(dr["locaudio_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                values.Add($"({dr["fk_locaudio_notes"]}, @blob, '{createDate}', '{modifyDate}', 0)");
+                        values.Add($"({dr["fk_locaudio_notes"]}, @blob, '{createDate}', '{modifyDate}', 0)");
 
-                var valuesString = string.Join(",", values.ToArray());
+                        var valuesString = string.Join(",", values.ToArray());
 
-                string sqlQueryString =
-                    $@"INSERT INTO cbv_locaudio 
+                        string sqlQueryString =
+                            $@"INSERT INTO cbv_locaudio 
                     (fk_locaudio_notes, locaudio_media, locaudio_createdate, locaudio_modifydate, locaudio_isdeleted) 
                 VALUES 
                     {valuesString}";
 
-                var insertedId = InsertBlobRecordsInTable("cbv_locaudio", sqlQueryString, dataTable.Rows[0]["locaudio_media"] as byte[]);
-                insertedIds.Add(insertedId);
+                        var insertedId = InsertBlobRecordsInTable("cbv_locaudio", sqlQueryString, dataTable.Rows[0]["locaudio_media"] as byte[], sqlCon);
+                        insertedIds.Add(insertedId);
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
             return insertedIds;
         }
@@ -941,35 +1192,48 @@ namespace Sqllite_Library.Data
         {
             var values = new List<string>();
             var insertedId = -1;
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var createDate = Convert.ToString(dr["finalmp4_createdate"]);
-                if (string.IsNullOrEmpty(createDate))
-                    createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var createDate = Convert.ToString(dr["finalmp4_createdate"]);
+                        if (string.IsNullOrEmpty(createDate))
+                            createDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var modifyDate = Convert.ToString(dr["finalmp4_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                        var modifyDate = Convert.ToString(dr["finalmp4_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var issynced = Convert.ToInt16(dr["finalmp4_issynced"]);
-                var serverid = Convert.ToInt64(dr["finalmp4_serverid"]);
-                var syncErrorString = Convert.ToString(dr["finalmp4_syncerror"]);
-                var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
+                        var issynced = Convert.ToInt16(dr["finalmp4_issynced"]);
+                        var serverid = Convert.ToInt64(dr["finalmp4_serverid"]);
+                        var syncErrorString = Convert.ToString(dr["finalmp4_syncerror"]);
+                        var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
-                values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', " +
-                    $"0, {issynced}, {serverid}, '{syncerror}')");
-                var valuesString = string.Join(",", values.ToArray());
+                        values.Add($"({dr["fk_finalmp4_project"]}, {dr["finalmp4_version"]}, '{dr["finalmp4_comments"]}', @blob, '{createDate}', '{modifyDate}', " +
+                            $"0, {issynced}, {serverid}, '{syncerror}')");
+                        var valuesString = string.Join(",", values.ToArray());
 
-                string sqlQueryString =
-                    $@"INSERT INTO cbv_finalmp4 
+                        string sqlQueryString =
+                            $@"INSERT INTO cbv_finalmp4 
                     (fk_finalmp4_project, finalmp4_version, finalmp4_comments, finalmp4_media, finalmp4_createdate, finalmp4_modifydate, 
                         finalmp4_isdeleted, finalmp4_issynced, finalmp4_serverid, finalmp4_syncerror) 
                 VALUES 
                     {valuesString}";
 
-                insertedId = InsertBlobRecordsInTable("cbv_finalmp4", sqlQueryString, dr["finalmp4_media"] as byte[]);
+                        insertedId = InsertBlobRecordsInTable("cbv_finalmp4", sqlQueryString, dr["finalmp4_media"] as byte[], sqlCon);
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
-
             return insertedId;
         }
 
@@ -1028,33 +1292,17 @@ namespace Sqllite_Library.Data
 
         #region == Insert Helper ==
 
-        private static int InsertBlobRecordsInTable(string tableName, string InsertQuery, byte[] blob)
+        private static int InsertBlobRecordsInTable(string tableName, string InsertQuery, byte[] blob, SQLiteConnection sqlCon)
         {
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            SQLiteConnection sqlCon = null;
             var id = -1;
             try
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
                 using (var command = new SQLiteCommand(InsertQuery, sqlCon))
                 {
                     var dataParameter = new SQLiteParameter("blob", DbType.Binary) { Value = blob };
                     command.Parameters.Add(dataParameter);
                     command.ExecuteNonQuery();
                 }
-                //// Execute the SQLite query
-                //var sqlQuery = new SQLiteCommand(InsertQuery, sqlCon);
-                //sqlQuery.ExecuteNonQuery();
 
                 // Read the project ID
                 var sqlQueryString = $@"SELECT seq from sqlite_sequence where name = '{tableName}'";
@@ -1070,71 +1318,7 @@ namespace Sqllite_Library.Data
             }
             catch (Exception)
             {
-                if (null != sqlCon)
-                    sqlCon.Close();
                 throw;
-            }
-            finally
-            {
-                if (sqlCon != null)
-                {
-                    sqlCon.Close();
-                    sqlCon = null;
-                }
-            }
-            return id;
-        }
-
-        private static int Insert2BlobRecordsInTable(string tableName, string InsertQuery, byte[] blob1, byte[] blob2)
-        {
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            SQLiteConnection sqlCon = null;
-            var id = -1;
-            try
-            {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                using (var command = new SQLiteCommand(InsertQuery, sqlCon))
-                {
-                    command.Parameters.Add(new SQLiteParameter("blob1", DbType.Binary) { Value = blob1 });
-                    command.Parameters.Add(new SQLiteParameter("blob2", DbType.Binary) { Value = blob2 });
-                    command.ExecuteNonQuery();
-                }
-
-                // Read the project ID
-                var sqlQueryString = $@"SELECT seq from sqlite_sequence where name = '{tableName}'";
-                using (var command = new SQLiteCommand(sqlQueryString, sqlCon))
-                {
-                    using (SQLiteDataReader sqlReader = command.ExecuteReader())
-                    {
-                        if (sqlReader.HasRows)
-                            if (sqlReader.Read())
-                                id = sqlReader.GetInt32(0);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-            finally
-            {
-                if (sqlCon != null)
-                {
-                    sqlCon.Close();
-                    sqlCon = null;
-                }
             }
             return id;
         }
@@ -1253,6 +1437,16 @@ namespace Sqllite_Library.Data
                 throw;
             }
 
+            return count;
+        }
+
+        public static int GetMaxIndexForNotesForTransaction(int fkVideoEventId, SQLiteConnection sqlCon)
+        {
+            int count;
+            string sqlQueryString = $@"Select IFNULL(Max(notes_index),0) + 1 from cbv_notes where fk_notes_videoevent = {fkVideoEventId} and notes_isdeleted = 0";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            count = Convert.ToInt32(sqlQuery.ExecuteScalar());
+            sqlQuery.Dispose();
             return count;
         }
 
@@ -1391,6 +1585,33 @@ namespace Sqllite_Library.Data
                 throw;
             }
 
+            return data;
+        }
+
+        public static List<CBVBackground> GetBackgroundForTransaction(int company_id, SQLiteConnection sqlCon)
+        {
+            var data = new List<CBVBackground>();
+            string sqlQueryString = $@"SELECT * FROM cbv_background ";
+            if (company_id > -1)
+                sqlQueryString += $@" where fk_background_company = {company_id} ";
+
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var obj = new CBVBackground
+                    {
+                        background_id = Convert.ToInt32(sqlReader["background_id"]),
+                        fk_background_company = Convert.ToInt32(sqlReader["fk_background_company"]),
+                        background_active = Convert.ToBoolean(sqlReader["background_active"]),
+                        background_media = GetBlobMedia(sqlReader, "background_media")
+                    };
+                    data.Add(obj);
+                }
+            }
+            // Close database
+            sqlQuery.Dispose();
             return data;
         }
 
@@ -1536,81 +1757,41 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static int IsProjectPlanningAvailable(int projectId)
+        public static int IsProjectPlanningAvailableForTransaction(int projectId, SQLiteConnection sqlCon)
         {
             int planning_id = -1;
             // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
             string sqlQueryString = $@"SELECT planning_id FROM cbv_planning Where fk_planning_project = {projectId} Limit 1";
 
-            SQLiteConnection sqlCon = null;
-            try
+
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
+                while (sqlReader.Read())
                 {
-                    while (sqlReader.Read())
-                    {
-                        planning_id = Convert.ToInt32(sqlReader["planning_id"]);
-                        return planning_id;
-                    }
+                    planning_id = Convert.ToInt32(sqlReader["planning_id"]);
+                    return planning_id;
                 }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
             }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
+            sqlQuery.Dispose();
             return planning_id;
         }
 
-        public static int IsProjectAvailable(int projectServerId)
+        public static int IsProjectAvailableForTransaction(int projectServerId, SQLiteConnection sqlCon)
         {
             int project_id = -1;
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
             string sqlQueryString = $@"SELECT project_id FROM cbv_project Where project_serverid = {projectServerId}";
-
-            SQLiteConnection sqlCon = null;
-            try
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
+                while (sqlReader.Read())
                 {
-                    while (sqlReader.Read())
-                    {
-                        project_id = Convert.ToInt32(sqlReader["project_id"]);
-                        return project_id;
-                    }
+                    project_id = Convert.ToInt32(sqlReader["project_id"]);
+                    return project_id;
                 }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
             }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
+            sqlQuery.Dispose();
+
             return project_id;
         }
 
@@ -1782,6 +1963,47 @@ namespace Sqllite_Library.Data
         }
 
 
+        public static List<CBVProject> GetProjectByIdForTransaction(int projectId, bool projdetFlag, SQLiteConnection sqlCon)
+        {
+            var data = new List<CBVProject>();
+            string sqlQueryString = $@"SELECT * FROM cbv_project where project_id = {projectId}";
+
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var obj = new CBVProject
+                    {
+                        project_id = Convert.ToInt32(sqlReader["project_id"]),
+                        project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
+                        project_currwfstep = Convert.ToString(sqlReader["project_currwfstep"]),
+                        project_uploaded = Convert.ToBoolean(sqlReader["project_uploaded"]),
+                        fk_project_background = Convert.ToInt32(sqlReader["fk_project_background"]),
+                        project_date = Convert.ToDateTime(sqlReader["project_date"]),
+                        project_archived = Convert.ToBoolean(sqlReader["project_archived"]),
+                        project_createdate = Convert.ToDateTime(sqlReader["project_createdate"]),
+                        project_modifydate = Convert.ToDateTime(sqlReader["project_modifydate"]),
+                        project_isdeleted = Convert.ToBoolean(sqlReader["project_isdeleted"]),
+                        project_issynced = Convert.ToBoolean(sqlReader["project_issynced"]),
+                        project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
+                        project_syncerror = Convert.ToString(sqlReader["project_syncerror"])
+
+                    };
+                    if (projdetFlag)
+                    {
+                        var projdetails = GetProjectDetails(projectId);
+                        obj.projdet_data = projdetails;
+                    }
+                    data.Add(obj);
+                }
+            }
+            sqlQuery.Dispose();
+            return data;
+        }
+
+
+
         #region == Planning GET ==
 
         public static List<CBVPlanning> GetPlanning(int projectId, bool dependentData = true)
@@ -1849,6 +2071,47 @@ namespace Sqllite_Library.Data
             return data;
         }
 
+        public static List<CBVPlanning> GetPlanningForTransaction(int projectId, SQLiteConnection sqlCon, bool dependentData = true)
+        {
+            var data = new List<CBVPlanning>();
+            string sqlQueryString = $@"SELECT * FROM cbv_planning where fk_planning_project = {projectId}";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var planningId = Convert.ToInt32(sqlReader["planning_id"]);
+                    var obj = new CBVPlanning
+                    {
+                        planning_id = planningId,
+                        fk_planning_project = Convert.ToInt32(sqlReader["fk_planning_project"]),
+                        fk_planning_screen = Convert.ToInt32(sqlReader["fk_planning_screen"]),
+                        planning_customname = Convert.ToString(sqlReader["planning_customname"]),
+                        planning_notesline = Convert.ToString(sqlReader["planning_notesline"]),
+                        planning_medialibid = Convert.ToInt32(sqlReader["planning_medialibid"]),
+                        planning_sort = Convert.ToInt32(sqlReader["planning_sort"]),
+                        planning_suggestnotesline = Convert.ToString(sqlReader["planning_suggestnotesline"]),
+                        planning_createdate = Convert.ToDateTime(sqlReader["planning_createdate"]),
+                        planning_modifydate = Convert.ToDateTime(sqlReader["planning_modifydate"]),
+                        planning_serverid = Convert.ToInt64(sqlReader["planning_serverid"]),
+                        planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
+                        planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
+                        planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                    };
+
+                    if (dependentData)
+                    {
+                        obj.planning_desc = GetPlanningDescriptionsForTransaction(planningId, sqlCon);
+                        obj.planning_media = GetPlanningMediaForTransaction(planningId, sqlCon);
+                    }
+                    data.Add(obj);
+                }
+            }
+            sqlQuery.Dispose();
+            return data;
+        }
+
+
 
         public static CBVPlanning GetPlanningById(int planningid = 0, Int64 planningServerId = 0)
         {
@@ -1859,7 +2122,7 @@ namespace Sqllite_Library.Data
                 throw new Exception("Database is not present.");
 
             string sqlQueryString = $@"SELECT * FROM cbv_planning where planning_id = {planningid}";
-            if(planningid == 0 && planningServerId > 0)
+            if (planningid == 0 && planningServerId > 0)
                 sqlQueryString = $@"SELECT * FROM cbv_planning where planning_serverid = {planningServerId}";
             SQLiteConnection sqlCon = null;
             try
@@ -1909,7 +2172,7 @@ namespace Sqllite_Library.Data
             return obj;
         }
 
-        public static List<CBVPlanningDesc> GetPlanningDescriptions(int planning_id)
+        private static List<CBVPlanningDesc> GetPlanningDescriptions(int planning_id)
         {
             var data = new List<CBVPlanningDesc>();
 
@@ -1956,7 +2219,29 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVPlanningBullet> GetPlanningBullets(int planningdesc_id)
+        private static List<CBVPlanningDesc> GetPlanningDescriptionsForTransaction(int planning_id, SQLiteConnection sqlCon)
+        {
+            var data = new List<CBVPlanningDesc>();
+            string sqlQueryString = $@"SELECT * FROM cbv_planningdesc where planningdesc_id = {planning_id}";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var obj = new CBVPlanningDesc
+                    {
+                        planningdesc_id = Convert.ToInt32(sqlReader["planningdesc_id"]),
+                        planningdesc_line = Convert.ToString(sqlReader["planningdesc_line"]),
+                        planningdesc_bullets = GetPlanningBulletsForTransaction(Convert.ToInt32(sqlReader["planningdesc_id"]), sqlCon)
+                    };
+                    data.Add(obj);
+                }
+            }
+            sqlQuery.Dispose();
+            return data;
+        }
+
+        private static List<CBVPlanningBullet> GetPlanningBullets(int planningdesc_id)
         {
             var data = new List<CBVPlanningBullet>();
 
@@ -2003,7 +2288,30 @@ namespace Sqllite_Library.Data
             return data;
         }
 
-        public static List<CBVPlanningMedia> GetPlanningMedia(int planning_id)
+        private static List<CBVPlanningBullet> GetPlanningBulletsForTransaction(int planningdesc_id, SQLiteConnection sqlCon)
+        {
+            var data = new List<CBVPlanningBullet>();
+            string sqlQueryString = $@"SELECT * FROM cbv_planningbullet where fk_planningbullet_desc = {planningdesc_id}";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var obj = new CBVPlanningBullet
+                    {
+                        planningbullet_id = Convert.ToInt32(sqlReader["planningbullet_id"]),
+                        fk_planningbullet_desc = Convert.ToInt32(sqlReader["fk_planningbullet_desc"]),
+                        planningbullet_line = Convert.ToString(sqlReader["planningbullet_line"]),
+                    };
+                    data.Add(obj);
+                }
+            }
+            // Close database
+            sqlQuery.Dispose();
+            return data;
+        }
+
+        private static List<CBVPlanningMedia> GetPlanningMedia(int planning_id)
         {
             var data = new List<CBVPlanningMedia>();
 
@@ -2047,6 +2355,28 @@ namespace Sqllite_Library.Data
                 throw;
             }
 
+            return data;
+        }
+
+        private static List<CBVPlanningMedia> GetPlanningMediaForTransaction(int planning_id, SQLiteConnection sqlCon)
+        {
+            var data = new List<CBVPlanningMedia>();
+            string sqlQueryString = $@"SELECT * FROM cbv_planningmedia where planningmedia_id = {planning_id}";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var obj = new CBVPlanningMedia
+                    {
+                        planningmedia_id = Convert.ToInt32(sqlReader["planningmedia_id"]),
+                        planningmedia_mediafull = GetBlobMedia(sqlReader, "planningmedia_mediafull"),
+                        planningmedia_mediathumb = GetBlobMedia(sqlReader, "planningmedia_mediathumb")
+                    };
+                    data.Add(obj);
+                }
+            }
+            sqlQuery.Dispose();
             return data;
         }
 
@@ -2331,12 +2661,12 @@ namespace Sqllite_Library.Data
                 }
                 // Close database
                 sqlQuery.Dispose();
-                sqlCon.Close();
+                sqlCon?.Close();
             }
             catch (Exception)
             {
                 sqlCon?.Close();
-                throw;
+                return new List<CBVVideoEvent>();
             }
 
             return data;
@@ -2967,6 +3297,22 @@ namespace Sqllite_Library.Data
             return flag;
         }
 
+        public static bool ReferentialKeyPresentForTransaction(SQLiteConnection sqlCon, string tablename, string IdColumnName, int id = -1)
+        {
+            var flag = false;
+            string sqlQueryString = $@"SELECT * FROM {tablename} WHERE {IdColumnName} = {id}";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                flag = sqlReader.HasRows;
+            }
+            // Close database
+            sqlQuery.Dispose();
+
+
+            return flag;
+        }
+
         private static byte[] GetBlobMedia(SQLiteDataReader dr, string columnName)
         {
             try
@@ -2991,33 +3337,19 @@ namespace Sqllite_Library.Data
         #region == Update Methods ==
 
         #region == Update Helper methods ==
-        private static bool ExecuteNonQueryInTable(string UpdateQuery)
+        private static bool ExecuteNonQueryInTable(string UpdateQuery, SQLiteConnection sqlCon)
         {
-            // Check if database is created
-            if (false == IsDbCreated())
-            {
-                throw new Exception("Database is not present.");
-            }
-
-            SQLiteConnection sqlCon = null;
+            // Execute the SQLite query
+            var sqlQuery = new SQLiteCommand(UpdateQuery, sqlCon);
             try
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                // Execute the SQLite query
-                var sqlQuery = new SQLiteCommand(UpdateQuery, sqlCon);
                 sqlQuery.ExecuteNonQuery();
                 sqlQuery.Dispose();
-                sqlCon?.Close();
                 return true;
             }
             catch (Exception)
             {
-                sqlCon?.Close();
+                sqlQuery?.Dispose();
                 throw;
             }
         }
@@ -3095,15 +3427,20 @@ namespace Sqllite_Library.Data
 
         public static void UpdateRowsToProject(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var modifyDate = Convert.ToString(dr["project_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var modifyDate = Convert.ToString(dr["project_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var project_id = Convert.ToInt32(dr["project_id"]);
+                        var project_id = Convert.ToInt32(dr["project_id"]);
 
-                var updateQueryString = $@" UPDATE cbv_project 
+                        var updateQueryString = $@" UPDATE cbv_project 
                                         SET 
                                             project_videotitle = '{Convert.ToString(dr["project_videotitle"])}',
                                             project_version = {Convert.ToInt32(dr["project_version"])},
@@ -3118,20 +3455,34 @@ namespace Sqllite_Library.Data
                                             project_modifydate = '{modifyDate}'
                                         WHERE 
                                             project_id = {project_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_project table update status for id - {project_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
         public static void ShiftVideoEvents(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
 
-                var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                        var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var videoevent_serverid = Convert.ToInt32(dr["videoevent_serverid"]);
-                var updateQueryString = $@" UPDATE cbv_videoevent 
+                        var videoevent_serverid = Convert.ToInt32(dr["videoevent_serverid"]);
+                        var updateQueryString = $@" UPDATE cbv_videoevent 
                                         SET 
                                             videoevent_start = '{Convert.ToString(dr["videoevent_start"])}',
                                             videoevent_duration = '{Convert.ToString(dr["videoevent_duration"])}',
@@ -3140,21 +3491,35 @@ namespace Sqllite_Library.Data
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
                                             videoevent_serverid = {videoevent_serverid}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_videoevent table update status for serverid - {videoevent_serverid} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_videoevent table update status for serverid - {videoevent_serverid} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
         public static void UpdateRowsToVideoEvent(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var modifyDate = Convert.ToString(dr["videoevent_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var modifyDate = Convert.ToString(dr["videoevent_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var videoevent_id = Convert.ToInt32(dr["videoevent_id"]);
-                var updateQueryString = $@" UPDATE cbv_videoevent 
+                        var videoevent_id = Convert.ToInt32(dr["videoevent_id"]);
+                        var updateQueryString = $@" UPDATE cbv_videoevent 
                                         SET 
                                             fk_videoevent_media = {Convert.ToInt32(dr["fk_videoevent_media"])},
                                             videoevent_track = {Convert.ToInt32(dr["videoevent_track"])},
@@ -3168,17 +3533,30 @@ namespace Sqllite_Library.Data
                                             videoevent_modifydate = '{modifyDate}'
                                         WHERE 
                                             videoevent_id = {videoevent_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_videoevent table update status for id - {videoevent_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_videoevent table update status for id - {videoevent_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
         public static void UpdateServerId(string table, int localId, Int64 serverId, string ErrorMessage)
         {
             var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
 
-
-            var updateQueryString = $@" UPDATE cbv_{table} 
+                    var updateQueryString = $@" UPDATE cbv_{table} 
                                         SET 
                                             {table}_issynced = {string.IsNullOrEmpty(ErrorMessage)},
                                             {table}_serverid = {serverId},
@@ -3186,8 +3564,17 @@ namespace Sqllite_Library.Data
                                             {table}_modifydate = '{modifyDate}'
                                         WHERE 
                                             {table}_id = {localId}";
-            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-            Console.WriteLine($@"cbv_{table} table update status for id - {localId} result - {updateFlag}");
+                    var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                    Console.WriteLine($@"cbv_{table} table update status for id - {localId} result - {updateFlag}");
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+            }
         }
 
         public static void UpdateRowsToVideoSegment(DataTable dataTable)
@@ -3234,14 +3621,19 @@ namespace Sqllite_Library.Data
 
         public static void UpdateRowsToDesign(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var modifyDate = Convert.ToString(dr["design_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var modifyDate = Convert.ToString(dr["design_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var design_id = Convert.ToInt32(dr["design_id"]);
-                var updateQueryString = $@" UPDATE cbv_design
+                        var design_id = Convert.ToInt32(dr["design_id"]);
+                        var updateQueryString = $@" UPDATE cbv_design
                                         SET 
                                             fk_design_videoevent = {Convert.ToInt32(dr["fk_design_videoevent"])},
                                             fk_design_background = {Convert.ToInt32(dr["fk_design_background"])},
@@ -3253,21 +3645,35 @@ namespace Sqllite_Library.Data
                                             design_modifydate = '{modifyDate}'
                                         WHERE 
                                             design_id = {design_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_design table update status for id - {design_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_design table update status for id - {design_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
         public static void UpdateRowsToNotes(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var modifyDate = Convert.ToString(dr["notes_modifydate"]);
-                if (string.IsNullOrEmpty(modifyDate))
-                    modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var modifyDate = Convert.ToString(dr["notes_modifydate"]);
+                        if (string.IsNullOrEmpty(modifyDate))
+                            modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-                var notes_id = Convert.ToInt32(dr["notes_id"]);
-                var updateQueryString = $@" UPDATE cbv_notes
+                        var notes_id = Convert.ToInt32(dr["notes_id"]);
+                        var updateQueryString = $@" UPDATE cbv_notes
                                         SET 
                                             notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
@@ -3280,8 +3686,17 @@ namespace Sqllite_Library.Data
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
@@ -3292,7 +3707,12 @@ namespace Sqllite_Library.Data
                 modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
             var notes_id = Convert.ToInt32(dr["notes_id"]);
-            var updateQueryString = $@" UPDATE cbv_notes
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
+                    var updateQueryString = $@" UPDATE cbv_notes
                                         SET 
                                             notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
                                             notes_wordcount = {Convert.ToInt32(dr["notes_wordcount"])},
@@ -3305,8 +3725,17 @@ namespace Sqllite_Library.Data
                                             notes_modifydate = '{modifyDate}'
                                         WHERE 
                                             notes_id = {notes_id}";
-            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-            Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
+                    var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                    Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+            }
         }
 
         public static void UpdateRowsToLocAudio(DataTable dataTable)
@@ -3358,50 +3787,92 @@ namespace Sqllite_Library.Data
 
         public static void UpdateRowsToVoiceTimer(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var voicetimer_id = Convert.ToInt32(dr["voicetimer_id"]);
-                var updateQueryString = $@" UPDATE cbv_voicetimer 
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var voicetimer_id = Convert.ToInt32(dr["voicetimer_id"]);
+                        var updateQueryString = $@" UPDATE cbv_voicetimer 
                                         SET 
                                             voicetimer_line = '{Convert.ToString(dr["voicetimer_line"])}',
                                             voicetimer_wordcount = {Convert.ToInt32(dr["voicetimer_wordcount"])},
                                             voicetimer_index = {Convert.ToInt32(dr["voicetimer_index"])}
                                         WHERE 
                                             voicetimer_id = {voicetimer_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_voicetimer table update status for id - {voicetimer_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_voicetimer table update status for id - {voicetimer_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
         public static void UpdateRowsToVoiceAverage(DataTable dataTable)
         {
-            foreach (DataRow dr in dataTable.Rows)
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
             {
-                var voiceaverage_id = Convert.ToInt32(dr["voiceaverage_id"]);
-                var updateQueryString = $@" UPDATE cbv_voiceaverage 
+                try
+                {
+                    foreach (DataRow dr in dataTable.Rows)
+                    {
+                        var voiceaverage_id = Convert.ToInt32(dr["voiceaverage_id"]);
+                        var updateQueryString = $@" UPDATE cbv_voiceaverage 
                                         SET 
                                             voiceaverage_average = '{Convert.ToString(dr["voiceaverage_average"])}'
                                         WHERE 
                                             voiceaverage_id = {voiceaverage_id}";
-                var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-                Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
+                        var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                        Console.WriteLine($@"cbv_voiceaverage table update status for id - {voiceaverage_id} result - {updateFlag}");
+                    }
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
             }
         }
 
 
         public static void SetProjectDetailSubmitted(int projdet_id)
         {
-            var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
+            var sqlCon = GetOpenedConnection();
+            using (var transaction = sqlCon.BeginTransaction())
+            {
+                try
+                {
+                    var modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
-            var updateQueryString = $@" UPDATE cbv_projdet 
+                    var updateQueryString = $@" UPDATE cbv_projdet 
                                     SET 
                                         projdet_submitted = 1,
                                         projdet_modifydate = '{modifyDate}'
                                     WHERE 
                                         projdet_id = {projdet_id}";
-            var updateFlag = ExecuteNonQueryInTable(updateQueryString);
-            Console.WriteLine($@"cbv_projdet table update status for id - {projdet_id} result - {updateFlag}");
-            
+                    var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
+                    Console.WriteLine($@"cbv_projdet table update status for id - {projdet_id} result - {updateFlag}");
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+                transaction.Commit();
+                sqlCon?.Close();
+            }
+
         }
 
         #endregion
@@ -3468,18 +3939,18 @@ namespace Sqllite_Library.Data
         }
 
 
-        public static void HardDeletePlanningsByProjectId(int projectId)
+        public static void HardDeletePlanningsByProjectIdForTransaction(int projectId, SQLiteConnection sqlCon)
         {
             var deleteQueryString = $@" 
                                         Delete From cbv_planning 
                                         WHERE 
                                             fk_planning_project = {projectId};
                                         ";
-            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
-            Console.WriteLine($@"cbv_planning table delete status for project Id - {projectId} | result - {deleteFlag}");
+            ExecuteNonQueryForTransaction(deleteQueryString, sqlCon);
+            Console.WriteLine($@"cbv_planning table delete status for project Id - {projectId} | result - {true}");
         }
 
-        public static void HardDeleteVideoEventsById(int videoeventId, bool cascadeDelete)
+        public static void HardDeleteVideoEventsByIdForTransaction(int videoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
             var deleteQueryString = $@" 
                                         Delete From cbv_videoevent 
@@ -3504,57 +3975,29 @@ namespace Sqllite_Library.Data
                                         WHERE 
                                             fk_notes_videoevent = {videoeventId};
                                         " + deleteQueryString;
-            var deleteFlag = DeleteRecordsInTable(deleteQueryString);
-            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} | result - {deleteFlag}");
+            ExecuteNonQueryForTransaction(deleteQueryString, sqlCon);
+            Console.WriteLine($@"cbv_videoevent table delete status for id - {videoeventId} | result - {true}");
         }
 
-        public static void HardDeleteVideoEventsByServerId(int serverVideoeventId, bool cascadeDelete)
+        public static void HardDeleteVideoEventsByServerIdForTransaction(int serverVideoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
             int videoEventId = -1;
-
-            // Check if database is created
-            if (false == IsDbCreated())
-                throw new Exception("Database is not present.");
-
             string sqlQueryString = $@"SELECT videoevent_id FROM cbv_videoevent where videoevent_serverId = {serverVideoeventId}";
-
-            SQLiteConnection sqlCon = null;
-            try
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
             {
-                string fileName = RegisteryHelper.GetFileName();
-
-                // Open Database connection 
-                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
-                sqlCon.Open();
-
-                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
-                using (var sqlReader = sqlQuery.ExecuteReader())
+                while (sqlReader.Read())
                 {
-                    while (sqlReader.Read())
-                    {
-                        videoEventId = sqlReader.GetInt32(0);
-                        break;
-                    }
+                    videoEventId = sqlReader.GetInt32(0);
+                    break;
                 }
-                // Close database
-                sqlQuery.Dispose();
-                sqlCon.Close();
             }
-            catch (Exception)
-            {
-                if (null != sqlCon)
-                    sqlCon.Close();
-                throw;
-            }
-
+            sqlQuery.Dispose();
             if (videoEventId > 0)
-                HardDeleteVideoEventsById(videoEventId, cascadeDelete);
-
-
-            Console.WriteLine($@"cbv_videoevent table delete status for serverid - {serverVideoeventId} completed");
+                HardDeleteVideoEventsByIdForTransaction(videoEventId, cascadeDelete, sqlCon);
+            Console.WriteLine($@"cbv_videoevent table delete status for videoevent serverid - {serverVideoeventId} completed");
         }
 
-        
 
         public static void DeleteAllVideoEventsByProjdetId(int projdetId, bool cascadeDelete)
         {
@@ -3627,13 +4070,14 @@ namespace Sqllite_Library.Data
                 throw;
             }
         }
+
         #endregion
 
         #endregion
 
 
         #region == Upsert Methods ==
-        public static void UpsertRowsToApp(DataTable dataTable)
+        public static void UpsertRowsToAppForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -3648,12 +4092,12 @@ namespace Sqllite_Library.Data
                                                 SET
                                                     app_active = excluded.app_active;";
 
-                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString, sqlCon);
                 Console.WriteLine($@"cbv_app table upsert status for id - {app_id} result - {upsertFlag}");
             }
         }
 
-        public static void UpsertRowsToMedia(DataTable dataTable)
+        public static void UpsertRowsToMediaForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -3668,12 +4112,12 @@ namespace Sqllite_Library.Data
                                                 SET
                                                     media_color = excluded.media_color;";
 
-                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString, sqlCon);
                 Console.WriteLine($@"cbv_media table upsert status for id - {media_id} result - {upsertFlag}");
             }
         }
 
-        public static void UpsertRowsToScreen(DataTable dataTable)
+        public static void UpsertRowsToScreenForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -3690,12 +4134,12 @@ namespace Sqllite_Library.Data
                                                     screen_color = excluded.screen_color,
                                                     screen_hexcolor = excluded.screen_hexcolor;";
 
-                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString, sqlCon);
                 Console.WriteLine($@"cbv_screen table upsert status for id - {screen_id} result - {upsertFlag}");
             }
         }
 
-        public static void UpsertRowsToCompany(DataTable dataTable)
+        public static void UpsertRowsToCompanyForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -3709,12 +4153,12 @@ namespace Sqllite_Library.Data
                                                 SET
                                                     company_id = {company_id};";
 
-                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString);
+                var upsertFlag = ExecuteNonQueryInTable(upsertQueryString, sqlCon);
                 Console.WriteLine($@"cbv_company table upsert status for id - {company_id} result - {company_name}");
             }
         }
 
-        public static void UpsertRowsToBackground(DataTable dataTable)
+        public static void UpsertRowsToBackgroundForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -3727,12 +4171,12 @@ namespace Sqllite_Library.Data
                 var upsertQueryString = $@" INSERT INTO cbv_background(fk_background_company, background_active, background_media)
                                                    Select {fk_background_company}, {background_active}, @blob
                                                 WHERE {whereClause};";
-                var upsertFlag = InsertBlobRecordsInTable("cbv_background", upsertQueryString, dr["background_media"] as byte[]);
+                var upsertFlag = InsertBlobRecordsInTable("cbv_background", upsertQueryString, dr["background_media"] as byte[], sqlCon);
                 Console.WriteLine($@"cbv_background table upsert status for id - {background_id} result - {upsertFlag}");
             }
         }
 
-        public static int UpsertRowsToProject(DataTable dataTable)
+        public static int UpsertRowsToProjectForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             var values = new List<string>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3771,11 +4215,11 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-            var insertedId = InsertRecordsInTable("cbv_project", sqlQueryString);
+            var insertedId = InsertRecordsInTableForTransaction("cbv_project", sqlQueryString, sqlCon);
             return insertedId;
         }
 
-        public static int InsertRowsToProjectDetail(DataTable dataTable, int Project_Id)
+        public static int InsertRowsToProjectDetail(DataTable dataTable, int Project_Id, SQLiteConnection sqlCon)
         {
             var values = new List<string>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3798,7 +4242,7 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_projdet", sqlQueryString);
+                var insertedId = InsertRecordsInTableForTransaction("cbv_projdet", sqlQueryString, sqlCon);
                 return insertedId;
             }
 
@@ -3806,7 +4250,7 @@ namespace Sqllite_Library.Data
         }
 
 
-        public static List<int> InsertRowsToPlanning(DataTable dataTable)
+        public static List<int> InsertRowsToPlanningForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             var ids = new List<int>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3842,24 +4286,24 @@ namespace Sqllite_Library.Data
                 VALUES 
                     {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_planning", sqlQueryString);
+                var insertedId = InsertRecordsInTableForTransaction("cbv_planning", sqlQueryString, sqlCon);
 
                 //Logic for PlanningDesc && Bullets
                 var dtDesc = dr["planning_desc"] as DataTable;
                 if (dtDesc != null && dtDesc.Rows?.Count > 0)
-                    InsertRowsToPlanningDesc(dtDesc, insertedId);
+                    InsertRowsToPlanningDescForTransaction(dtDesc, insertedId, sqlCon);
 
                 //Logic for PlanningMedia
                 var dtMedia = dr["planning_media"] as DataTable;
                 if (dtMedia != null && dtMedia.Rows?.Count > 0)
-                    InsertRowsToPlanningMedia(dtMedia, insertedId);
+                    InsertRowsToPlanningMediaForTransaction(dtMedia, insertedId, sqlCon);
 
                 ids.Add(insertedId);
             }
             return ids;
         }
 
-        public static List<int> InsertRowsToPlanningDesc(DataTable dataTable, int planning_id)
+        private static List<int> InsertRowsToPlanningDescForTransaction(DataTable dataTable, int planning_id, SQLiteConnection sqlCon)
         {
             var ids = new List<int>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3871,17 +4315,17 @@ namespace Sqllite_Library.Data
                         VALUES 
                             {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_planningdesc", sqlQueryString); // return -1 always
-                //Logic for Bullets
+                var insertedId = InsertRecordsInTableForTransaction("cbv_planningdesc", sqlQueryString, sqlCon); // return -1 always
+                                                                                                                 //Logic for Bullets
                 var dtbullet = dr["planningdesc_bullet"] as DataTable;
                 if (dtbullet != null && dtbullet.Rows?.Count > 0)
-                    InsertRowsToPlanningBullet(dtbullet, planning_id);
+                    InsertRowsToPlanningBulletForTransaction(dtbullet, planning_id, sqlCon);
                 ids.Add(planning_id);
             }
             return ids;
         }
 
-        public static List<int> InsertRowsToPlanningBullet(DataTable dataTable, int planningdesc_id)
+        private static List<int> InsertRowsToPlanningBulletForTransaction(DataTable dataTable, int planningdesc_id, SQLiteConnection sqlCon)
         {
             var ids = new List<int>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3893,13 +4337,13 @@ namespace Sqllite_Library.Data
                         VALUES 
                             {valuesString}";
 
-                var insertedId = InsertRecordsInTable("cbv_planningbullet", sqlQueryString);
+                var insertedId = InsertRecordsInTableForTransaction("cbv_planningbullet", sqlQueryString, sqlCon);
                 ids.Add(insertedId);
             }
             return ids;
         }
 
-        public static List<int> InsertRowsToPlanningMedia(DataTable dataTable, int planning_id)
+        private static List<int> InsertRowsToPlanningMediaForTransaction(DataTable dataTable, int planning_id, SQLiteConnection sqlCon)
         {
             var ids = new List<int>();
             foreach (DataRow dr in dataTable.Rows)
@@ -3913,16 +4357,66 @@ namespace Sqllite_Library.Data
 
                 var insertedId = Insert2BlobRecordsInTable("cbv_planningmedia", sqlQueryString,
                             dr["planningmedia_mediathumb"] != DBNull.Value ? dr["planningmedia_mediathumb"] as byte[] : null,
-                            dr["planningmedia_mediafull"] != DBNull.Value ? dr["planningmedia_mediafull"] as byte[] : null);
+                            dr["planningmedia_mediafull"] != DBNull.Value ? dr["planningmedia_mediafull"] as byte[] : null,
+                            sqlCon);
                 ids.Add(insertedId);
             }
             return ids;
         }
 
-
-
-
         #endregion
+
+        private static int Insert2BlobRecordsInTable(string tableName, string InsertQuery, byte[] blob1, byte[] blob2, SQLiteConnection sqlCon)
+        {
+            var id = -1;
+            using (var command = new SQLiteCommand(InsertQuery, sqlCon))
+            {
+                command.Parameters.Add(new SQLiteParameter("blob1", DbType.Binary) { Value = blob1 });
+                command.Parameters.Add(new SQLiteParameter("blob2", DbType.Binary) { Value = blob2 });
+                command.ExecuteNonQuery();
+            }
+
+            // Read the project ID
+            var sqlQueryString = $@"SELECT seq from sqlite_sequence where name = '{tableName}'";
+            using (var command = new SQLiteCommand(sqlQueryString, sqlCon))
+            {
+                using (SQLiteDataReader sqlReader = command.ExecuteReader())
+                {
+                    if (sqlReader.HasRows)
+                        if (sqlReader.Read())
+                            id = sqlReader.GetInt32(0);
+                }
+            }
+            return id;
+        }
+
+        private static int InsertRecordsInTableForTransaction(string tableName, string InsertQuery, SQLiteConnection sqlCon)
+        {
+
+            // Execute the SQLite query
+            var sqlQuery = new SQLiteCommand(InsertQuery, sqlCon);
+            sqlQuery.ExecuteNonQuery();
+            sqlQuery.Dispose();
+
+            var id = -1;
+            // Read the project ID
+            var sqlQueryString = $@"SELECT seq from sqlite_sequence where name = '{tableName}'";
+            var command = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (SQLiteDataReader sqlReader = command.ExecuteReader())
+            {
+                if (sqlReader.HasRows)
+                {
+                    if (sqlReader.Read())
+                        id = sqlReader.GetInt32(0);
+                }
+                sqlQuery.Dispose();
+            }
+            command.Dispose();
+            return id;
+        }
+
+
+
 
     }
 }

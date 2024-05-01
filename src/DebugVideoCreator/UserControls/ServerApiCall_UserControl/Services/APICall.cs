@@ -176,16 +176,18 @@ namespace ServerApiCall_UserControl.Services
             {
                 using (HttpResponseMessage response = await apiHttpClient.DeleteAsync(url))
                 {
-                    response.EnsureSuccessStatusCode();
                     if (response.IsSuccessStatusCode)
                     {
                         var result = await response.Content.ReadAsStringAsync();
                         return result;
                     }
+                    else
+                    {
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
                 }
             }
-            catch { return null; }
-            return null;
+            catch (Exception ex) { return $"Exception - {ex.Message}"; }
         }
     }
 }

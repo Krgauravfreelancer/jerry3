@@ -9,6 +9,7 @@ using Sqllite_Library.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -21,18 +22,18 @@ namespace VideoCreator.Helpers
     {
         #region == Helper Functions ==
 
-        public static void InitializeDatabase()
+        public static SQLiteConnection InitializeDatabaseAndGetConnection()
         {
-            DataManagerSqlLite.CreateDatabaseIfNotExist(false, true); // Lets keep the flag false for now
+            var sqlCon = DataManagerSqlLite.GetOpenedConnection(false, true); // Lets keep the flag false for now
+            return sqlCon;
         }
 
         #endregion
 
         #region == Sync Functions ==
 
-        public static void SyncApp(AppModel data)
+        public static void SyncAppForTransaction(AppModel data, SQLiteConnection sqlCon)
         {
-            InitializeDatabase();
             var datatable = new DataTable();
             datatable.Columns.Add("app_id", typeof(int));
             datatable.Columns.Add("app_name", typeof(string));
@@ -47,13 +48,12 @@ namespace VideoCreator.Helpers
                 row["app_active"] = value == 1;
                 datatable.Rows.Add(row);
             }
-            DataManagerSqlLite.UpsertRowsToApp(datatable);
+            DataManagerSqlLite.UpsertRowsToAppForTransaction(datatable, sqlCon);
 
         }
 
-        public static void SyncMedia(List<MediaModel> data)
+        public static void SyncMediaForTransaction(List<MediaModel> data, SQLiteConnection sqlCon)
         {
-            InitializeDatabase();
             var datatable = new DataTable();
             datatable.Columns.Add("media_id", typeof(int));
             datatable.Columns.Add("media_name", typeof(string));
@@ -66,12 +66,11 @@ namespace VideoCreator.Helpers
                 row["media_color"] = item.media_color;
                 datatable.Rows.Add(row);
             }
-            DataManagerSqlLite.UpsertRowsToMedia(datatable);
+            DataManagerSqlLite.UpsertRowsToMediaForTransaction(datatable, sqlCon);
         }
 
-        public static void SyncScreen(List<ScreenModel> data)
+        public static void SyncScreenForTransaction(List<ScreenModel> data, SQLiteConnection sqlCon)
         {
-            InitializeDatabase();
             var datatable = new DataTable();
             datatable.Columns.Add("screen_id", typeof(int));
             datatable.Columns.Add("screen_name", typeof(string));
@@ -86,10 +85,10 @@ namespace VideoCreator.Helpers
                 row["screen_hexcolor"] = item.screen_hexcolor;
                 datatable.Rows.Add(row);
             }
-            DataManagerSqlLite.UpsertRowsToScreen(datatable);
+            DataManagerSqlLite.UpsertRowsToScreenForTransaction(datatable, sqlCon);
         }
 
-        public static void SyncCompany(List<CompanyModel> data)
+        public static void SyncCompanyForTransaction(List<CompanyModel> data, SQLiteConnection sqlCon)
         {
             var datatable = new DataTable();
             datatable.Columns.Add("company_id", typeof(int));
@@ -101,10 +100,10 @@ namespace VideoCreator.Helpers
                 row["company_name"] = item.company_name;
                 datatable.Rows.Add(row);
             }
-            DataManagerSqlLite.UpsertRowsToCompany(datatable);
+            DataManagerSqlLite.UpsertRowsToCompanyForTransaction(datatable, sqlCon);
         }
 
-        public static async void SyncBackground(List<BackgroundModel> data, AuthAPIViewModel authApiViewModel)
+        public static async void SyncBackgroundForTransaction(List<BackgroundModel> data, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("background_id", typeof(int));
@@ -122,12 +121,11 @@ namespace VideoCreator.Helpers
                     row["background_media"] = await authApiViewModel.GetSecuredFileByteArray(item.backgrounds_url);//GetSecuredFileByteArray
                 dataTable.Rows.Add(row);
             }
-            DataManagerSqlLite.UpsertRowsToBackground(dataTable);
+            DataManagerSqlLite.UpsertRowsToBackgroundForTransaction(dataTable, sqlCon);
         }
 
-        public static int UpsertProject(ProjectWithId projectModel, string version)
+        public static int UpsertProjectForTransaction(ProjectWithId projectModel, string version, SQLiteConnection sqlCon)
         {
-            InitializeDatabase();
             DataTable dataTable = new DataTable();
             //project
             dataTable.Columns.Add("project_id", typeof(int));
@@ -169,13 +167,12 @@ namespace VideoCreator.Helpers
             FillProjectDetails(dataTable, row, projdet);
 
             dataTable.Rows.Add(row);
-            var insertedId = DataManagerSqlLite.UpsertRowsToProjectbyId(dataTable, projectModel.project_id, projdet != null);
+            var insertedId = DataManagerSqlLite.UpsertRowsToProjectbyIdForTransaction(dataTable, projectModel.project_id, projdet != null, sqlCon);
             return insertedId;
         }
 
-        public static async Task<List<int>> UpsertPlanning(List<PlanningModel> plannings, int localProjectId, ProjectWithId projectModel, AuthAPIViewModel authApiViewModel)
+        public static async Task<List<int>> UpsertPlanningForTransaction(List<PlanningModel> plannings, int localProjectId, ProjectWithId projectModel, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)
         {
-            InitializeDatabase();
             DataTable dataTable = new DataTable();
             //project
             dataTable.Columns.Add("planning_id", typeof(int));
@@ -194,9 +191,6 @@ namespace VideoCreator.Helpers
             dataTable.Columns.Add("planning_isedited", typeof(bool));
             dataTable.Columns.Add("planning_desc", typeof(DataTable));
             dataTable.Columns.Add("planning_media", typeof(DataTable));
-
-
-
 
             foreach (var planning in plannings)
             {
@@ -228,11 +222,11 @@ namespace VideoCreator.Helpers
                 dataTable.Rows.Add(row);
             }
 
-            var insertedIds = DataManagerSqlLite.UpsertRowsToPlanning(dataTable, localProjectId);
+            var insertedIds = DataManagerSqlLite.UpsertRowsToPlanningForTransaction(dataTable, localProjectId, sqlCon);
             return insertedIds;
         }
 
-        public static DataTable GetPlanningDescriptionDataTable(PlanningDesc description)
+        private static DataTable GetPlanningDescriptionDataTable(PlanningDesc description)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("planningdesc_id", typeof(int));
@@ -249,7 +243,7 @@ namespace VideoCreator.Helpers
             return dataTable;
         }
 
-        public static DataTable GetPlanningBulletDataTable(List<PlanningBullet> bullets)
+        private static DataTable GetPlanningBulletDataTable(List<PlanningBullet> bullets)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("planningbullet_id", typeof(int));
@@ -266,7 +260,7 @@ namespace VideoCreator.Helpers
             return dataTable;
         }
 
-        public static async Task<DataTable> GetPlanningMediaDataTable(PlanningModel planning, AuthAPIViewModel authApiViewModel)
+        private static async Task<DataTable> GetPlanningMediaDataTable(PlanningModel planning, AuthAPIViewModel authApiViewModel)
         {
             var dataTable = new DataTable();
             dataTable.Columns.Add("planningmedia_id", typeof(int));

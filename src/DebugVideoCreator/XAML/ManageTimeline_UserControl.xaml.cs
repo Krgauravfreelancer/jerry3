@@ -1556,6 +1556,7 @@ namespace VideoCreator.XAML
             if (confirm == MessageBoxResult.Yes)
             {
                 await SyncServerEventsHelper.SyncServerDataToLocalDB(null, this, btnDownloadServerData, selectedProjectEvent, loader, authApiViewModel);
+                Refresh();
             }
         }
 
