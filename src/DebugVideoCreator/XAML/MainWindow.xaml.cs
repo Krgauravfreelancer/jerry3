@@ -58,14 +58,14 @@ namespace VideoCreator.XAML
         {
             LoaderHelper.ShowLoader(this, loader);
             await Login();
-            await SyncMasterTables();
-            await InitialiseAndRefreshScreen(true);
+            await SyncMasterTablesAndRefresh();
+           
             LoaderHelper.HideLoader(this, loader);
         }
 
         #region == Sync Section ==
 
-        private async Task SyncMasterTables()
+        private async Task SyncMasterTablesAndRefresh()
         {
             LogManagerHelper.WriteVerboseLog("SyncMasterTables Started");
             var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
@@ -78,6 +78,7 @@ namespace VideoCreator.XAML
                     await SyncCompany(sqlCon);
                     await SyncBackground(sqlCon);
                     await SyncScreens(sqlCon);
+                    await InitialiseAndRefreshScreen(sqlCon);
                 }
                 catch (Exception)
                 {
@@ -191,42 +192,52 @@ namespace VideoCreator.XAML
             return style;
         }
 
-        private async Task InitialiseAndRefreshScreen(bool isFirstCall = false)
+        private async Task InitialiseAndRefreshScreen(SQLiteConnection sqlCon)
         {
-            downloadedProjects = DataManagerSqlLite.GetDownloadedProjectList();
+            downloadedProjects = DataManagerSqlLite.GetDownloadedProjectListForTransaction(sqlCon);
             availableProjects = await authApiViewModel.GetAvailableProjectsData();
             availableProjectsDataSource = RemoveUnnecessaryFields(availableProjects);
-            if (isFirstCall)
+            var item = availableProjectsDataSource != null ? availableProjectsDataSource[0] : null;
+            if (item != null)
             {
-                var item = availableProjectsDataSource != null ? availableProjectsDataSource[0] : null;
-
-                if (item != null)
+                foreach (PropertyInfo prop in item.GetType().GetProperties())
                 {
-                    foreach (PropertyInfo prop in item.GetType().GetProperties())
+                    var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                    if (prop.Name == "project_localId")
+                    { }
+                    else
                     {
-                        var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-                        if (prop.Name == "project_localId")
-                        { }
+                        if (type == typeof(System.Collections.Generic.List<string>))
+                        {
+                            datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name) });
+                        }
                         else
                         {
-                            if (type == typeof(System.Collections.Generic.List<string>))
+                            datagrid.Columns.Add(new DataGridTextColumn()
                             {
-                                datagrid.Columns.Add(new DataGridComboBoxColumn() { Header = GetHeaderName(prop.Name) });
-                            }
-                            else
-                            {
-                                datagrid.Columns.Add(new DataGridTextColumn()
-                                {
-                                    Header = GetHeaderName(prop.Name),
-                                    Binding = new Binding(prop.Name),
-                                    Width = GetWidth(prop.Name),
-                                    HeaderStyle = GetStyle(prop.Name)
-                                });
-                            }
+                                Header = GetHeaderName(prop.Name),
+                                Binding = new Binding(prop.Name),
+                                Width = GetWidth(prop.Name),
+                                HeaderStyle = GetStyle(prop.Name)
+                            });
                         }
                     }
                 }
             }
+            var selected = selectedItem; //make a local copy;
+            datagrid.ItemsSource = availableProjectsDataSource;
+            if (selected != null)
+                datagrid.SelectedItem = availableProjectsDataSource?.Find(x => x.project_id == selected.project_id && x.projdet_version == selected.projdet_version);
+            datagrid.Visibility = Visibility.Visible;
+            manageApplicationStack.Visibility = Visibility.Visible;
+        }
+
+        private async Task InitialiseAndRefreshScreenForSubsequentCall()
+        {
+            downloadedProjects = DataManagerSqlLite.GetDownloadedProjectList();
+            availableProjects = await authApiViewModel.GetAvailableProjectsData();
+            availableProjectsDataSource = RemoveUnnecessaryFields(availableProjects);
+           
             var selected = selectedItem; //make a local copy;
             datagrid.ItemsSource = availableProjectsDataSource;
             if (selected != null)
@@ -537,7 +548,7 @@ namespace VideoCreator.XAML
                 manageTimelineWindow = null;
             };
             manageTimelineWindow.Show();
-            await InitialiseAndRefreshScreen();
+            await InitialiseAndRefreshScreenForSubsequentCall();
         }
 
         private async void DownloadProjectMenu_Click(object sender, RoutedEventArgs e)
@@ -565,7 +576,7 @@ namespace VideoCreator.XAML
                     }
                     transaction.Commit();
                     sqlCon?.Close();
-                    await InitialiseAndRefreshScreen();
+                    await InitialiseAndRefreshScreenForSubsequentCall();
                     await authApiViewModel.UpdatedPlanningLastUpdated(selectedItem.project_id);
                     LoaderHelper.HideLoader(this, loader);
                 }
@@ -585,7 +596,7 @@ namespace VideoCreator.XAML
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
-            await InitialiseAndRefreshScreen();
+            await InitialiseAndRefreshScreenForSubsequentCall();
             LoaderHelper.HideLoader(this, loader);
         }
 

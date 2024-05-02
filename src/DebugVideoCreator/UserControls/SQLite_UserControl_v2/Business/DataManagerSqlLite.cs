@@ -499,6 +499,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetDownloadedProjectList();
         }
 
+        public static List<CBVProjectForJoin> GetDownloadedProjectListForTransaction(SQLiteConnection sqlCon)
+        {
+            return SqlLiteData.GetDownloadedProjectListForTransaction(sqlCon);
+        }
+
         public static CBVProject GetProjectById(int projectId = -1, bool projdetFlag = false)
         {
             return SqlLiteData.GetProjectById(projectId, projdetFlag).FirstOrDefault();

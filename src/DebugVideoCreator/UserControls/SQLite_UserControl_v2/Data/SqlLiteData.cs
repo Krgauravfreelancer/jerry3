@@ -1842,11 +1842,34 @@ namespace Sqllite_Library.Data
                     sqlCon.Close();
                 throw;
             }
-
             return projects;
+        }
 
-
-
+        public static List<CBVProjectForJoin> GetDownloadedProjectListForTransaction(SQLiteConnection sqlCon)
+        {
+            var projects = new List<CBVProjectForJoin>();
+            string sqlQueryString = $@"SELECT 
+                                                P.project_id, P.project_videotitle, P.project_date, P.project_serverid, PD.projdet_version
+                                            FROM cbv_project P
+                                                JOIN cbv_projdet PD on PD.fk_projdet_project = P.project_id";
+            var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+            using (var sqlReader = sqlQuery.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    var project = new CBVProjectForJoin
+                    {
+                        project_id = Convert.ToInt32(sqlReader["project_id"]),
+                        project_videotitle = Convert.ToString(sqlReader["project_videotitle"]),
+                        project_version = Convert.ToString(sqlReader["projdet_version"]),
+                        project_date = Convert.ToDateTime(sqlReader["project_date"]),
+                        project_serverid = Convert.ToInt64(sqlReader["project_serverid"]),
+                    };
+                    projects.Add(project);
+                }
+            }
+            sqlQuery.Dispose();
+            return projects;
         }
 
         public static List<CBVProjdet> GetProjectDetails(int projectId)
