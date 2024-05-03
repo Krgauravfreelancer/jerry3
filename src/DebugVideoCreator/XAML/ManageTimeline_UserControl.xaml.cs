@@ -270,18 +270,17 @@ namespace VideoCreator.XAML
                 uc.RefreshData();
             };
 
-            uc.ScreenRecorder_NotesCreatedEvent += async (DataTable dt) =>
+            uc.ScreenRecorder_NotesCreatedEvent += async (DataTable dtNotes) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows?.Count} Notes");
-
-                // Logic Here
-                foreach (DataRow noteRow in dt.Rows)
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dtNotes?.Rows?.Count} Notes");
+                var notesAll = NotesEventHandlerHelper.GetNotesModelList(dtNotes);
+                foreach(KeyValuePair<Int64, List<NotesModelPost>> item in notesAll)
                 {
-                    var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
-                    var savedNotes = await authApiViewModel.POSTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
+                    var savedNotes = await authApiViewModel.POSTNotes(item.Key, item.Value);
                     if (savedNotes != null)
                     {
-                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(noteRow["fk_notes_videoevent"]));
+                        var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
+                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, localVideoEventId);
                         DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
                     }
                 }
@@ -408,19 +407,18 @@ namespace VideoCreator.XAML
 
         #region == Manage Media Notes Section ==
 
-        private async Task ManageMedia_NotesCreatedEvent(Window GeneratedRecorderWindow, DataTable dt, ManageMediaWindowManager uc)
+        private async Task ManageMedia_NotesCreatedEvent(Window GeneratedRecorderWindow, DataTable dtNotes, ManageMediaWindowManager uc)
         {
-            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dt?.Rows.Count} notes ..");
-            // Logic Here
-            foreach (DataRow noteRow in dt.Rows)
+            LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dtNotes?.Rows.Count} notes ..");
+            var notesAll = NotesEventHandlerHelper.GetNotesModelList(dtNotes);
+            foreach (KeyValuePair<Int64, List<NotesModelPost>> item in notesAll)
             {
-                var notes = NotesEventHandlerHelper.GetNotesModelList(noteRow);
-                var localVideoEventId = Convert.ToInt32(noteRow["fk_notes_videoevent"]);
-                var selectedServerVideoEventId = DataManagerSqlLite.GetVideoEventbyId(localVideoEventId, false, false)[0].videoevent_serverid;
-                var savedNotes = await authApiViewModel.POSTNotes(selectedServerVideoEventId, notes);
+                var localVideoEventId = item.Key;
+                var selectedServerVideoEventId = DataManagerSqlLite.GetVideoEventbyId(Convert.ToInt32(localVideoEventId), false, false)[0].videoevent_serverid;
+                var savedNotes = await authApiViewModel.POSTNotes(selectedServerVideoEventId, item.Value);
                 if (savedNotes != null)
                 {
-                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, localVideoEventId);
+                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, Convert.ToInt32(localVideoEventId));
                     DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
                 }
             }

@@ -9,11 +9,13 @@ namespace VideoCreator.Helpers
     {
         #region === Notes Functions ==
 
-        public static List<NotesModelPost> GetNotesModelList(DataTable dt)
+        public static Dictionary<Int64, List<NotesModelPost>> GetNotesModelList(DataTable dt)
         {
-            var data = new List<NotesModelPost>();
+            var data = new Dictionary<Int64, List<NotesModelPost>>();
             foreach (DataRow note in dt.Rows)
             {
+                Int64 videoEventServerId = Convert.ToInt64(note["fk_notes_videoevent"]);
+
                 var notesModel = new NotesModelPost();
                 notesModel.notes_line = Convert.ToString(note["notes_line"]);
                 notesModel.notes_index = Convert.ToString(note["notes_index"]);
@@ -21,7 +23,17 @@ namespace VideoCreator.Helpers
                 notesModel.notes_start = Convert.ToString(note["notes_start"]);
                 notesModel.notes_duration = Convert.ToString(note["notes_duration"]);
                 notesModel.notes_modifylocdate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
-                data.Add(notesModel);
+                if(data.ContainsKey(videoEventServerId))
+                {
+                    var flag = data.TryGetValue(videoEventServerId, out List<NotesModelPost> value);
+                    value.Add(notesModel);
+                }
+                else
+                {
+                    var value = new List<NotesModelPost>();
+                    value.Add(notesModel);
+                    data.Add(videoEventServerId, value);
+                }
             }
             return data;
         }

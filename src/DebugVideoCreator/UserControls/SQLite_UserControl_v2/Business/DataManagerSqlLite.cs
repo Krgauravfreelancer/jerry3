@@ -556,6 +556,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag, designFlag);
         }
 
+        public static List<CBVVideoEvent> GetVideoEventbyServerId(Int64 videoeventServerId = 0)
+        {
+            return SqlLiteData.GetVideoEventbyServerId(videoeventServerId);
+        }
+
 
         public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
