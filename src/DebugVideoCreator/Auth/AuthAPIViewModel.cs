@@ -841,7 +841,7 @@ namespace VideoCreator.Auth
             return response?.Data;
         }
 
-        public async Task<List<NotesResponseModel>> PUTNotes(Int64 selectedServerVideoEventId, List<NotesModelPut> notes)
+        public async Task<List<NotesModel>> PUTNotes(Int64 selectedServerVideoEventId, List<NotesModelPut> notes)
         {
             var url = $"api/connect/videoevent/{selectedServerVideoEventId}/notes";
             var parameters = new Dictionary<string, string>
@@ -850,7 +850,7 @@ namespace VideoCreator.Auth
             };
             var payload = new FormUrlEncodedContent(parameters);
 
-            var response = await _apiClientHelper.Update<ParentData<List<NotesResponseModel>>>(url, payload);
+            var response = await _apiClientHelper.Update<ParentDataList<NotesModel>>(url, payload);
             return response?.Data;
         }
 

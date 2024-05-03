@@ -2507,7 +2507,7 @@ namespace Sqllite_Library.Data
 
             string sqlQueryString = $@"SELECT * FROM cbv_videoevent where videoevent_serverid = {videoeventServerId}";
 
-            
+
             SQLiteConnection sqlCon = null;
             try
             {
@@ -3740,7 +3740,7 @@ namespace Sqllite_Library.Data
             }
         }
 
-        public static void UpdateRowsToNotes(DataTable dataTable)
+        public static void UpdateRowsToNotes(DataTable dataTable, bool isNotesServerId = false)
         {
             var sqlCon = GetOpenedConnection();
             using (var transaction = sqlCon.BeginTransaction())
@@ -3753,7 +3753,17 @@ namespace Sqllite_Library.Data
                         if (string.IsNullOrEmpty(modifyDate))
                             modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+                        var whereClause = string.Empty;
                         var notes_id = Convert.ToInt32(dr["notes_id"]);
+                        if (!isNotesServerId)
+                        {
+                            whereClause = $"WHERE notes_id = {notes_id}";
+                        }
+                        else
+                        {
+                            notes_id = Convert.ToInt32(dr["notes_serverid"]);
+                            whereClause = $"WHERE notes_serverid = {notes_id}";
+                        }
                         var updateQueryString = $@" UPDATE cbv_notes
                                         SET 
                                             notes_line = '{Convert.ToString(dr["notes_line"]).Trim('\'')}',
@@ -3765,8 +3775,7 @@ namespace Sqllite_Library.Data
                                             notes_serverid = {Convert.ToInt64(dr["notes_serverid"])},
                                             notes_syncerror = '{Convert.ToString(dr["notes_syncerror"])}',
                                             notes_modifydate = '{modifyDate}'
-                                        WHERE 
-                                            notes_id = {notes_id}";
+                                       {whereClause}";
                         var updateFlag = ExecuteNonQueryInTable(updateQueryString, sqlCon);
                         Console.WriteLine($@"cbv_notes table update status for id - {notes_id} result - {updateFlag}");
                     }

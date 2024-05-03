@@ -697,9 +697,9 @@ namespace Sqllite_Library.Business
             SqlLiteData.UpdateRowsToDesign(dataTable);
         }
 
-        public static void UpdateRowsToNotes(DataTable dataTable)
+        public static void UpdateRowsToNotes(DataTable dataTable, bool isNotesServerId = false)
         {
-            SqlLiteData.UpdateRowsToNotes(dataTable);
+            SqlLiteData.UpdateRowsToNotes(dataTable, isNotesServerId);
         }
 
         public static void UpdateRowsToNotes(DataRow dr)
