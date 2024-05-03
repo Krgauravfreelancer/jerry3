@@ -75,13 +75,6 @@ namespace VideoCreator.Helpers
             return dtNotes;
         }
 
-        public static DataTable GetNotesDataTableForLocalDBUpdate(List<NotesModel> notes, int localVideoEventId)
-        {
-            var dtNotes = GetNotesRawTable();
-            UpdateNotesRowToDataTable(dtNotes, notes, localVideoEventId);
-            return dtNotes;
-        }
-
         private static DataTable GetNotesRawTable()
         {
             var dtNotes = new DataTable();
@@ -102,30 +95,6 @@ namespace VideoCreator.Helpers
         }
 
         private static DataTable AddNotesRowToDataTable(this DataTable dt, List<NotesModel> notes, int localVideoEventId)
-        {
-            foreach (var item in notes)
-            {
-                var dRow = dt.NewRow();
-                dRow["notes_index"] = item.notes_index;
-                dRow["notes_id"] = -1;
-                dRow["notes_line"] = item.notes_line;
-                dRow["notes_start"] = item.notes_start;
-                dRow["notes_duration"] = item.notes_duration;
-                dRow["notes_createdate"] = item.notes_createdate;
-                dRow["notes_modifydate"] = item.notes_modifydate;
-                dRow["fk_notes_videoevent"] = localVideoEventId;
-                dRow["notes_wordcount"] = item.notes_wordcount;
-                dRow["notes_isdeleted"] = false;
-                dRow["notes_issynced"] = true;
-                dRow["notes_serverid"] = item.notes_id;
-                dRow["notes_syncerror"] = "";
-                dt.Rows.Add(dRow);
-            }
-
-            return dt;
-        }
-
-        private static DataTable UpdateNotesRowToDataTable(this DataTable dt, List<NotesModel> notes, int localVideoEventId)
         {
             foreach (var item in notes)
             {

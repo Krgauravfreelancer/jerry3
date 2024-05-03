@@ -288,21 +288,23 @@ namespace VideoCreator.XAML
                 uc.RefreshData();
             };
 
-            uc.ScreenRecorder_NotesChangedEvent += async (DataTable dt) =>
+            uc.ScreenRecorder_NotesChangedEvent += async (DataTable dtNotes) =>
             {
-                //LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dt?.Rows?.Count} Notes");
-                //// Logic Here
-                //foreach (DataRow noteRow in dt.Rows)
-                //{
-                //    var notes = NotesEventHandlerHelper.GetNotesModelListPut(noteRow);
-                //    var updatedNotes = await authApiViewModel.PUTNotes(Convert.ToInt64(noteRow["fk_notes_videoevent"]), notes);
-                //    if (updatedNotes != null)
-                //    {
-                //        DataManagerSqlLite.UpdateRowsToNotes(noteRow);
-                //    }
-                //}
-                //LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                //uc.RefreshData();
+                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dtNotes?.Rows?.Count} Notes");
+                var notesAll = NotesEventHandlerHelper.GetNotesModelListPut(dtNotes);
+                foreach (KeyValuePair<Int64, List<NotesModelPut>> item in notesAll)
+                {
+                    var serverVideoEventId = item.Key;
+                    var updatedNotes = await authApiViewModel.PUTNotes(serverVideoEventId, item.Value);
+                    if (updatedNotes != null)
+                    {
+                        var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
+                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(updatedNotes, localVideoEventId);
+                        DataManagerSqlLite.UpdateRowsToNotes(notesDatatable, true);
+                    }
+                }
+                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+                uc.RefreshData();
             };
 
             uc.ScreenRecorder_NotesDeletedEvent += async (List<int> Ids) =>
@@ -438,7 +440,7 @@ namespace VideoCreator.XAML
                 var updatedNotes = await authApiViewModel.PUTNotes(selectedServerVideoEventId, item.Value);
                 if (updatedNotes != null)
                 {
-                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDBUpdate(updatedNotes, localVideoEventId);
+                    var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(updatedNotes, localVideoEventId);
                     DataManagerSqlLite.UpdateRowsToNotes(notesDatatable, true);
                 }
             }
