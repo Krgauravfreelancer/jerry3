@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
+using VideoCreator.Models;
 
 namespace VideoCreator.XAML
 {
@@ -27,6 +28,7 @@ namespace VideoCreator.XAML
         private int editVideoEventLocalId;
         //private CBVBackground selectedBGItem;
         private string imagePath;
+        
         public Designer_UserControl(int _selectedProjectId, string _backgroundDatastring, int _editVideoEventLocalId = -1, bool _isImagePathGiven = false, bool _isFormEvent = false)
         {
             InitializeComponent();
@@ -39,6 +41,8 @@ namespace VideoCreator.XAML
                 BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
 
             InitialSetup();
+
+            InitializeBackgroundsAndOthers();
         }
 
         private void InitialSetup()
@@ -72,8 +76,8 @@ namespace VideoCreator.XAML
                 
                 designViewer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
                 designViewer.LoadDesignForEdit(designData);
-                cbShowBackground.IsEnabled = false;
-                BtnInitialiseDesigner.Visibility = Visibility.Hidden;
+                //cbShowBackground.IsEnabled = false;
+                //BtnInitialiseDesigner.Visibility = Visibility.Hidden;
                 designer.Visibility = Visibility.Visible;
                 designViewer.Visibility = Visibility.Hidden;
             }
@@ -114,53 +118,53 @@ namespace VideoCreator.XAML
             }
         }
 
-        private void cbShowBackground_Checked(object sender, RoutedEventArgs e)
-        {
-            if (designer == null) return;
-            DataTable designElements = designer.GetDesign();
-            if (designElements.Rows.Count > 0)
-            {
-                foreach (DataRow row in designElements.Rows)
-                {
-                    if (row[1].ToString().StartsWith("<Image ") == false)
-                    {
-                        var bgImageXAML = GetBackgroundImageElement();
-                        if (!string.IsNullOrEmpty(bgImageXAML))
-                        {
-                            DataRow dataRow = designElements.NewRow();
-                            dataRow["id"] = 1;
-                            dataRow["xaml"] = bgImageXAML;
-                            designElements.Rows.InsertAt(dataRow, 0);
-                            break;
-                        }
-                    }
-                }
-                designer.LoadDesign(designElements);
+        //private void cbShowBackground_Checked(object sender, RoutedEventArgs e)
+        //{
+        //    if (designer == null) return;
+        //    DataTable designElements = designer.GetDesign();
+        //    if (designElements.Rows.Count > 0)
+        //    {
+        //        foreach (DataRow row in designElements.Rows)
+        //        {
+        //            if (row[1].ToString().StartsWith("<Image ") == false)
+        //            {
+        //                var bgImageXAML = GetBackgroundImageElement();
+        //                if (!string.IsNullOrEmpty(bgImageXAML))
+        //                {
+        //                    DataRow dataRow = designElements.NewRow();
+        //                    dataRow["id"] = 1;
+        //                    dataRow["xaml"] = bgImageXAML;
+        //                    designElements.Rows.InsertAt(dataRow, 0);
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        designer.LoadDesign(designElements);
 
-            }
-            else
-            {
-                var bgImageXAML = GetBackgroundImageElement();
-                designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        var bgImageXAML = GetBackgroundImageElement();
+        //        designer.LoadDesign(LoadBackgroundFromDB(bgImageXAML));
+        //    }
+        //}
 
-        private void cbShowBackground_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (designer == null) return;
-            DataTable designElements = designer.GetDesign();
-            foreach (DataRow row in designElements.Rows)
-            {
-                if (row[1].ToString().StartsWith("<Image "))
-                {
-                    designElements.Rows.Remove(row);
-                    break;
-                }
-            }
+        //private void cbShowBackground_Unchecked(object sender, RoutedEventArgs e)
+        //{
+        //    if (designer == null) return;
+        //    DataTable designElements = designer.GetDesign();
+        //    foreach (DataRow row in designElements.Rows)
+        //    {
+        //        if (row[1].ToString().StartsWith("<Image "))
+        //        {
+        //            designElements.Rows.Remove(row);
+        //            break;
+        //        }
+        //    }
 
 
-            designer.LoadDesign(designElements);
-        }
+        //    designer.LoadDesign(designElements);
+        //}
 
         #endregion
 
@@ -209,7 +213,7 @@ namespace VideoCreator.XAML
             return dataTable;
         }
 
-        private void BtnInitialiseDesigner_Click(object sender, RoutedEventArgs e)
+        private void InitializeBackgroundsAndOthers()
         {
             // This can come from database
             var bgImageXAML = GetBackgroundImageElement();
@@ -227,8 +231,13 @@ namespace VideoCreator.XAML
             }
 
             toggleFlag = !toggleFlag;
-            BtnInitialiseDesigner.IsEnabled = false;
-            cbShowBackground.IsEnabled = true;
+            //BtnInitialiseDesigner.IsEnabled = false;
+            //cbShowBackground.IsEnabled = true;
+        }
+
+        private void BtnInitialiseDesigner_Click(object sender, RoutedEventArgs e)
+        {
+            InitializeBackgroundsAndOthers();
         }
 
         private void AddToDatabase(DataTable dtElements)
@@ -283,5 +292,10 @@ namespace VideoCreator.XAML
         }
 
         #endregion
+
+        private void designer_zoom_event(object sender, double e)
+        {
+            zoomBlock.Text = $"Zoom Level - {e.ToString("0.0")}";
+        }
     }
 }

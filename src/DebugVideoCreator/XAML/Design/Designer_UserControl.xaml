@@ -13,34 +13,35 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <!--<RowDefinition Height="auto"/>-->
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" />
+       
+        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="0" />
+        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="0"/>
+        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="2" Grid.Row="0" />
         <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" />
-        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" />
-        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="0" Grid.Row="1" />
-        <Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="1" Grid.Row="1" />
         <!--<Border BorderThickness="1" BorderBrush="#3381CC"  Grid.Column="2" Grid.Row="1" />-->
-        <StackPanel Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
+        <!--<StackPanel Grid.Row="0"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Margin="2" x:Name="BtnInitialiseDesigner" Content="Initialize" Click="BtnInitialiseDesigner_Click" Width="200" Height="25"></Button>
             <CheckBox Content="Show Background" IsEnabled="False" x:Name="cbShowBackground" IsChecked="True" Height="22" Margin="2" Unchecked="cbShowBackground_Unchecked" Checked="cbShowBackground_Checked"/>
-        </StackPanel>
+        </StackPanel>-->
         
-        <designer:ShapeBar Grid.Column="0" Grid.Row="1" Margin="2" x:Name="shapeBar"  ></designer:ShapeBar>
+        <designer:ShapeBar Grid.Column="0" Grid.Row="0" Margin="2" x:Name="shapeBar"  ></designer:ShapeBar>
         <!--<ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" >
             <StackPanel x:Name="stackDesigner" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
                 <designer:Designer x:Name="designer" />
             </StackPanel>
         </ScrollViewer>-->
-        <StackPanel x:Name="stackDesigner" Grid.Column="1" Grid.Row="1" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
-            <designer:Designer x:Name="designer" />
+        <StackPanel x:Name="stackDesigner" Grid.Column="1" Grid.Row="0" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <designer:Designer x:Name="designer" zoom_event="designer_zoom_event" />
         </StackPanel>
-        <DesignViewer:DesignViewer Grid.Column="1" Grid.Row="1" Margin="2" x:Name="designViewer" Visibility="Visible"/>
-        <designer:PropertyWindow Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" Margin="2" x:Name="propertyWindow" MaxHeight="450"></designer:PropertyWindow>
-        <StackPanel Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
+        <DesignViewer:DesignViewer Grid.Column="1" Grid.Row="0" Margin="2" x:Name="designViewer" Visibility="Visible"/>
+        <designer:PropertyWindow Grid.Column="2" Grid.Row="0" VerticalAlignment="Top" Margin="2" x:Name="propertyWindow" MaxHeight="450"></designer:PropertyWindow>
+        <StackPanel Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="3" FlowDirection="LeftToRight" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Margin="2" x:Name="btnSave" Click="BtnProceed_Click" Width="200" Height="25">Proceed</Button>
+            <TextBlock x:Name="zoomBlock" FontWeight="Bold" Margin="20, 5, 0 ,0" />
         </StackPanel>
 
     </Grid>

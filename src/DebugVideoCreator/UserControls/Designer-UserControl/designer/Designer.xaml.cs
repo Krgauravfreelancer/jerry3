@@ -10,6 +10,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml;
+using Xceed.Wpf.Toolkit.Zoombox;
 
 namespace DesignerNp.controls
 {
@@ -20,7 +21,20 @@ namespace DesignerNp.controls
     {
         private double width;
         private double height;
-        
+
+        // Zoom
+        private Double zoomMax = 5;
+        private Double zoomMin = 0.2;
+        private Double zoomSpeed = 0.001;
+        private Double zoom = 0.7;
+
+
+        /// <summary>
+        /// Zoom Event zoom_event
+        /// </summary>
+        /// 
+        public event EventHandler<Double> zoom_event;
+
         /// <summary>
         /// PropertyWindow propertyWindow
         /// </summary>
@@ -53,15 +67,18 @@ namespace DesignerNp.controls
 
             dataTable = null;
 
-            if (scrollbar != null)
-            {
-                //Console.WriteLine($"I am here - {System.Windows.Window.ActualWidth.ToString()}, {System.Windows.Window.ActualHeightProperty}");
-                //scrollbar.Width = System.Windows.Window.ActualWidthProperty - 280;
-                //scrollbar.Height = System.Windows.Window.ActualWidthProperty - 90;
 
-                //scrollbar.Width = 1640;
-                //scrollbar.Height = 990;
-            }
+            container.RenderTransform = new ScaleTransform(zoom, zoom); // transform Canvas size
+            
+            //if (scrollbar != null)
+            //{
+            //    //Console.WriteLine($"I am here - {System.Windows.Window.ActualWidth.ToString()}, {System.Windows.Window.ActualHeightProperty}");
+            //    //scrollbar.Width = System.Windows.Window.ActualWidthProperty - 280;
+            //    //scrollbar.Height = System.Windows.Window.ActualWidthProperty - 90;
+
+            //    //scrollbar.Width = 1640;
+            //    //scrollbar.Height = 990;
+            //}
             this.SizeChanged += UserControl_SizeChanged;
         }
 
@@ -490,6 +507,7 @@ namespace DesignerNp.controls
                 }
             }
         }
+        
         private void container_MouseMove(object sender, MouseEventArgs e)
         {
             if (!(e.OriginalSource is Canvas))
@@ -547,6 +565,30 @@ namespace DesignerNp.controls
                 }
             }
         }
+
+
+        
+
+        // Zoom on Mouse wheel
+        private void container_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            zoom += zoomSpeed * e.Delta; // Ajust zooming speed (e.Delta = Mouse spin value )
+            if (zoom < zoomMin) { zoom = zoomMin; } // Limit Min Scale
+            if (zoom > zoomMax) { zoom = zoomMax; } // Limit Max Scale
+
+            Point mousePos = e.GetPosition(container);
+
+            if (zoom > 1)
+            {
+                container.RenderTransform = new ScaleTransform(zoom, zoom, mousePos.X, mousePos.Y); // transform Canvas size from mouse position
+            }
+            else
+            {
+                container.RenderTransform = new ScaleTransform(zoom, zoom); // transform Canvas size
+            }
+            zoom_event(sender, zoom);
+        }
+
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
