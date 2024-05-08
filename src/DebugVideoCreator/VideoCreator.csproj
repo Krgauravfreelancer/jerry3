@@ -644,6 +644,10 @@
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
+    <ProjectReference Include="UserControls\VideoCreatorHelperLibrary\VideoCreatorHelperLibrary.csproj">
+      <Project>{85abde1a-d28f-473c-9319-82070548a577}</Project>
+      <Name>VideoCreatorHelperLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="UserControls\VideoCreatorXAMLLibrary\VideoCreatorXAMLLibrary.csproj">
       <Project>{31aa82e7-d9ce-43b1-bb8d-0f0a0fadf684}</Project>
       <Name>VideoCreatorXAMLLibrary</Name>
