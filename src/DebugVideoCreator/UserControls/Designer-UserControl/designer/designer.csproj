@@ -116,8 +116,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SQLite_UserControl_v2\SQLite_Library.csproj">
-      <Project>{4562DAB3-B29E-43E3-94D5-C377101A5D61}</Project>
+    <ProjectReference Include="..\..\SQLite_UserControl\SQLite_Library.csproj">
+      <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
     </ProjectReference>
   </ItemGroup>
