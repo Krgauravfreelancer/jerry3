@@ -41,8 +41,8 @@ namespace VideoCreator.XAML
                 BackgroundImagesData = JsonConvert.DeserializeObject<List<CBVBackground>>(_backgroundDatastring);
 
             InitialSetup();
-
-            InitializeBackgroundsAndOthers();
+            if (editVideoEventLocalId <= 0)
+                InitializeBackgroundsAndOthers();
         }
 
         private void InitialSetup()

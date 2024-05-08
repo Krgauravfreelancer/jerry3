@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager", "UserControl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManageMedia_UserControl", "UserControls\ManageMedia_UserControl\ManageMedia_UserControl.csproj", "{2DFC6EBC-CF5F-4372-87FE-70D45C3FE06F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoCreatorLibrary", "UserControls\VideoCreatorLibrary\VideoCreatorLibrary.csproj", "{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +132,18 @@ Global
 		{2DFC6EBC-CF5F-4372-87FE-70D45C3FE06F}.Release|ARM64.Build.0 = Release|Any CPU
 		{2DFC6EBC-CF5F-4372-87FE-70D45C3FE06F}.Release|x64.ActiveCfg = Release|Any CPU
 		{2DFC6EBC-CF5F-4372-87FE-70D45C3FE06F}.Release|x64.Build.0 = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Debug|x64.Build.0 = Debug|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|ARM64.Build.0 = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|x64.ActiveCfg = Release|Any CPU
+		{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

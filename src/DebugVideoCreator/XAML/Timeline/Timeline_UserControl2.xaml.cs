@@ -31,7 +31,7 @@ namespace VideoCreator.XAML
         public event EventHandler ContextMenu_AddVideoEvent_Clicked;
 
         public event EventHandler<string> ContextMenu_AddImageEventUsingCBLibrary_Clicked;
-        public event EventHandler<FormOrCloneEvent> ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked;
+        //public event EventHandler<FormOrCloneEvent> ContextMenu_AddImageEventUsingCBLibraryInMiddle_Clicked;
         public event EventHandler ContextMenu_ManageMedia_Clicked;
 
         public event EventHandler<FormOrCloneEvent> ContextMenu_AddCallout1_Clicked;
