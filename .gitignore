@@ -406,3 +406,5 @@
 /src/DebugVideoCreator/UserControls/ManageMedia_Wrapper/ManageMedia_Wrapper/.vs
 /src/DebugVideoCreator/UserControls/VideoCreatorLibrary/bin
 /src/DebugVideoCreator/UserControls/VideoCreatorLibrary/obj
+/src/DebugVideoCreator/UserControls/VideoCreatorXAMLLibrary/bin
+/src/DebugVideoCreator/UserControls/VideoCreatorXAMLLibrary/obj

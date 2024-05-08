@@ -24,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesignImager", "UserControl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManageMedia_UserControl", "UserControls\ManageMedia_UserControl\ManageMedia_UserControl.csproj", "{2DFC6EBC-CF5F-4372-87FE-70D45C3FE06F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoCreatorLibrary", "UserControls\VideoCreatorLibrary\VideoCreatorLibrary.csproj", "{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoCreatorXAMLLibrary", "UserControls\VideoCreatorXAMLLibrary\VideoCreatorXAMLLibrary.csproj", "{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

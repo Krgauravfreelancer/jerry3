@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VideoCreatorLibrary.Properties
+namespace VideoCreatorXAMLLibrary.Properties
 {
     
     
