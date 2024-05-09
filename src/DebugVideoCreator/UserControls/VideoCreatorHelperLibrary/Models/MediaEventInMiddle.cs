@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace VideoCreator.Models
+namespace VideoCreatorHelperLibrary.Models
 {
     public class MediaEventInMiddle
     {

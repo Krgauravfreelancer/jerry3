@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Windows;
-using VideoCreator.Auth;
-using VideoCreator.XAML;
+using VideoCreatorHelperLibrary.Auth;
+using VideoCreatorHelperLibrary.XAML;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class ShiftEventsHelper
     {

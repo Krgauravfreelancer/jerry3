@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class CommentsHelper
     {

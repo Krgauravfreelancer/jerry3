@@ -11,11 +11,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using VideoCreator.Loader;
+using VideoCreatorHelperLibrary.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
 using SCModels = ScreenRecorder_UserControl.Models;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public class ManageMediaWindowManager
     {

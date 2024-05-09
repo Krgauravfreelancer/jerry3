@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using VideoCreator.Auth;
+using VideoCreatorHelperLibrary.Auth;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class BackgroundProcessHelper
     {

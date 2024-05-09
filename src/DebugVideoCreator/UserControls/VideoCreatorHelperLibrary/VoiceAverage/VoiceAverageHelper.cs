@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace VideoCreator.VoiceAverage
+namespace VideoCreatorHelperLibrary.VoiceAverage
 {
     public class VoiceAverageHelper
     {

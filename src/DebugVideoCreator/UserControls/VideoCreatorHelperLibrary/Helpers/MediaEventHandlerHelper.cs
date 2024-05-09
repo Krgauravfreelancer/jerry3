@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using VideoCreator.Auth;
-using VideoCreator.Models;
+using VideoCreatorHelperLibrary.Auth;
+using VideoCreatorHelperLibrary.Models;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class MediaEventHandlerHelper
     {

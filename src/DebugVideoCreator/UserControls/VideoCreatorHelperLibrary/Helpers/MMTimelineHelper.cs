@@ -10,7 +10,7 @@ using MMClass = ManageMedia_UserControl.Classes;
 using MMControl = ManageMedia_UserControl.Controls;
 using SRModel = ScreenRecorder_UserControl.Models;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class MMTimelineHelper
     {

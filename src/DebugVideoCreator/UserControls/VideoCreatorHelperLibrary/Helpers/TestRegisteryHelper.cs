@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class TestRegisteryHelper
     {

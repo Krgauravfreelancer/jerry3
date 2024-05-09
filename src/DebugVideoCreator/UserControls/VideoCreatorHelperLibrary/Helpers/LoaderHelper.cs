@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using VideoCreator.Loader;
+using VideoCreatorHelperLibrary.Loader;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class LoaderHelper
     {

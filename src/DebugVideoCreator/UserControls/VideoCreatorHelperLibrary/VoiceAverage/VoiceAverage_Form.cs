@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using VideoCreator.VoiceAverage;
+using VideoCreatorHelperLibrary.VoiceAverage;
 
-namespace VideoCreator
+namespace VideoCreatorHelperLibrary
 {
     public partial class VoiceAverage_Form : Form
     {

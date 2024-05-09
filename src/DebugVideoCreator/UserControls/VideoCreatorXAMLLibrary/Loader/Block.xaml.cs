@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace VideoCreator.Loader
+namespace VideoCreatorXAMLLibrary.Loader
 {
     /// <summary>
     /// Interaction logic for Block.xaml

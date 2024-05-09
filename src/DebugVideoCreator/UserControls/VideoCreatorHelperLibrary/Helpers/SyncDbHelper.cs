@@ -14,9 +14,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using VideoCreator.Auth;
+using VideoCreatorHelperLibrary.Auth;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class SyncDbHelper
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VideoCreator.Models
+namespace VideoCreatorHelperLibrary.Models
 {
     public class TimelineVideoEvent
     {

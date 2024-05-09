@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MMClass = ManageMedia_UserControl.Classes;
 
-namespace VideoCreator.Models
+namespace VideoCreatorHelperLibrary.Models
 {
     public class FormOrCloneEvent
     {

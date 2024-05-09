@@ -11,9 +11,9 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Windows;
-using VideoCreator.Helpers;
+using VideoCreatorHelperLibrary.Helpers;
 
-namespace VideoCreator.Auth
+namespace VideoCreatorHelperLibrary.Auth
 {
     public class VideoCreatorAuthHelper : ViewModelBase
     {

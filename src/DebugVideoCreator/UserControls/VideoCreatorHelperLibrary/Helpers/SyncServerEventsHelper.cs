@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using VideoCreator.Auth;
-using VideoCreator.Loader;
-using VideoCreator.XAML;
+using VideoCreatorHelperLibrary.Auth;
+using VideoCreatorHelperLibrary.Loader;
+using VideoCreatorHelperLibrary.XAML;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class SyncServerEventsHelper
     {

@@ -19,12 +19,12 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xml;
-using VideoCreator.Auth;
-using VideoCreator.Loader;
-using VideoCreator.Models;
-using VideoCreator.XAML;
+using VideoCreatorHelperLibrary.Auth;
+using VideoCreatorHelperLibrary.Loader;
+using VideoCreatorHelperLibrary.Models;
+using VideoCreatorHelperLibrary.XAML;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class PlanningHandlerHelper
     {

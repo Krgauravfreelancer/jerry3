@@ -2,7 +2,7 @@
 using System;
 using System.Configuration;
 
-namespace VideoCreator.Helpers
+namespace VideoCreatorHelperLibrary.Helpers
 {
     public static class LogManagerHelper
     {
