@@ -17,9 +17,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using VideoCreatorHelperLibrary.Auth;
-using VideoCreatorHelperLibrary.Helpers;
-using VideoCreatorHelperLibrary.Models;
+using VideoCreatorXAMLLibrary.Auth;
+using VideoCreatorXAMLLibrary.Helpers;
+using VideoCreatorXAMLLibrary.Models;
 
 namespace VideoCreatorXAMLLibrary
 {

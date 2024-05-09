@@ -38,6 +38,9 @@
     <Reference Include="FullScreenPlayer_UserControl">
       <HintPath>..\..\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
     </Reference>
+    <Reference Include="LocalVoiceGen_UserControl">
+      <HintPath>..\..\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="ScreenRecorder_UserControl">
       <HintPath>..\..\Libraries\ScreenRecorder_UserControl.dll</HintPath>
     </Reference>
@@ -53,6 +56,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WavePlayer_UserControl">
+      <HintPath>..\..\Libraries\WavePlayer_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -64,6 +70,8 @@
     <Compile Include="Audio\Audio_UserControl.xaml.cs">
       <DependentUpon>Audio_UserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Auth\AuthAPIViewModel.cs" />
+    <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Design\Designer_UserControl.xaml.cs">
       <DependentUpon>Designer_UserControl.xaml</DependentUpon>
     </Compile>
@@ -76,6 +84,23 @@
     <Compile Include="FullScreen\FullScreen_UserControl.xaml.cs">
       <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BackgroundProcessHelper.cs" />
+    <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
+    <Compile Include="Helpers\CommentsHandler.cs" />
+    <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
+    <Compile Include="Helpers\FormHandlerHelper.cs" />
+    <Compile Include="Helpers\LoaderHelper.cs" />
+    <Compile Include="Helpers\LogManagerHelper.cs" />
+    <Compile Include="Helpers\ManageMediaWindowManager.cs" />
+    <Compile Include="Helpers\MediaEventHandlerHelper.cs" />
+    <Compile Include="Helpers\MMTimelineHelper.cs" />
+    <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
+    <Compile Include="Helpers\PlanningHandlerHelper.cs" />
+    <Compile Include="Helpers\ScreenRecorderWindowManager.cs" />
+    <Compile Include="Helpers\ShiftEventsHelper.cs" />
+    <Compile Include="Helpers\SyncDbHelper.cs" />
+    <Compile Include="Helpers\SyncServerEventsHelper.cs" />
+    <Compile Include="Helpers\TestRegisteryHelper.cs" />
     <Compile Include="Loader\Block.xaml.cs">
       <DependentUpon>Block.xaml</DependentUpon>
     </Compile>
@@ -94,6 +119,10 @@
     <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
       <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\FormOrCloneEvent.cs" />
+    <Compile Include="Models\MediaEventInMiddle.cs" />
+    <Compile Include="Models\PlanningEvent.cs" />
+    <Compile Include="Models\TimelineVideoEvent.cs" />
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
     </Compile>
@@ -113,15 +142,20 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Timeline\Timeline_UserControl.xaml.cs">
-      <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Timeline\Timeline_UserControl2.xaml.cs">
       <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VoiceAverage\VoiceAverageHelper.cs" />
+    <Compile Include="VoiceAverage\VoiceAverage_Form.cs" />
+    <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
+      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VoiceAverage\VoiceAverage_Form.resx">
+      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -185,10 +219,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Timeline\Timeline_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Timeline\Timeline_UserControl2.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -199,6 +229,14 @@
       <Project>{e7717082-151e-4ce2-96f7-fff228ea8854}</Project>
       <Name>designer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DesignImager\DesignImager.csproj">
+      <Project>{cc6e035c-150e-43d6-aadd-a1f6fe558e96}</Project>
+      <Name>DesignImager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DesignViewer\DesignViewer.csproj">
+      <Project>{81e1ac70-ce77-49e9-8261-8c094c4ac1c3}</Project>
+      <Name>DesignViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ManageMedia_UserControl\ManageMedia_UserControl.csproj">
       <Project>{2dfc6ebc-cf5f-4372-87fe-70d45c3fe06f}</Project>
       <Name>ManageMedia_UserControl</Name>
@@ -206,10 +244,6 @@
     <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
       <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
       <Name>SQLite_Library</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\VideoCreatorHelperLibrary\VideoCreatorHelperLibrary.csproj">
-      <Project>{85abde1a-d28f-473c-9319-82070548a577}</Project>
-      <Name>VideoCreatorHelperLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
       <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
@@ -221,6 +255,43 @@
     <Resource Include="MediaLibraryData\Resources\last.png" />
     <Resource Include="MediaLibraryData\Resources\next.png" />
     <Resource Include="MediaLibraryData\Resources\previous.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\audio.png" />
+    <Resource Include="Icons\callout1.png" />
+    <Resource Include="Icons\callout2.png" />
+    <Resource Include="Icons\clone.png" />
+    <Resource Include="Icons\delete.png" />
+    <Resource Include="Icons\edit.png" />
+    <Resource Include="Icons\form.png" />
+    <Resource Include="Icons\imageFromLib.png" />
+    <Resource Include="Icons\manage-media.png" />
+    <Resource Include="Icons\Manage\download.png" />
+    <Resource Include="Icons\Manage\manage.png" />
+    <Resource Include="Icons\Manage\review.png" />
+    <Resource Include="Icons\Manage\submit.png" />
+    <Resource Include="Icons\planning.png" />
+    <Resource Include="Icons\populate.png" />
+    <Resource Include="Icons\run.png" />
+    <Resource Include="Icons\save.png" />
+    <Resource Include="Icons\shift.png" />
+    <Resource Include="Icons\undo.png" />
+    <Resource Include="Icons\video.png" />
+    <Resource Include="Images\black_background.png" />
+    <Resource Include="Images\cbslogo_temp.ico" />
+    <Resource Include="Images\cbslogo_temp.jpg" />
+    <Resource Include="Images\manufacturing_background.png" />
+    <Resource Include="Images\white_background.png" />
+    <Content Include="Media\Audio1.mp3" />
+    <Content Include="Media\Screencast1.mp4" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAudio">
+      <Version>2.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="NAudio.Core">
+      <Version>2.2.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

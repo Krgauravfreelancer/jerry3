@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using VideoCreator.Helpers;
-using VideoCreator.Models;
+using VideoCreatorXAMLLibrary.Helpers;
+using VideoCreatorXAMLLibrary.Models;
 
 namespace VideoCreatorXAMLLibrary
 {

@@ -13,9 +13,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using VideoCreator.Auth;
-using VideoCreator.Helpers;
-using VideoCreator.Models;
+using VideoCreatorXAMLLibrary.Auth;
+using VideoCreatorXAMLLibrary.Helpers;
+using VideoCreatorXAMLLibrary.Models;
 using MMClass = ManageMedia_UserControl.Classes;
 using MMModel = ManageMedia_UserControl.Models;
 
