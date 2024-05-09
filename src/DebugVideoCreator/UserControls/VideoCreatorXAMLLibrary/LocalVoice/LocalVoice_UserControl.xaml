@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="VideoCreatorXAMLLibrary.LocalVoice_UserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:VideoCreatorXAMLLibrary" 
+        xmlns:lvg_uc="clr-namespace:LocalVoiceGen_UserControl;assembly=LocalVoiceGen_UserControl"
+        mc:Ignorable="d" UseLayoutRounding="False" Height="400" Width="900">
+
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" Background="WhiteSmoke">
+            <Border DockPanel.Dock="Top" Background="#FFE6E6E6" >
+                <Button Name="AddNoteBtn" Content="Add New Note" HorizontalAlignment="Left" IsEnabled="False" Margin="5" Padding="10,5" Click="AddNewNoteBtn_Click"/>
+            </Border>
+
+            <ScrollViewer  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Bottom">
+                <StackPanel Name="NoteStack" Orientation="Horizontal" Margin="5">
+                    <lvg_uc:LocalVoiceGen_Control Name="GenControl" Width="300"/>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</UserControl>

@@ -322,141 +322,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
-    <Compile Include="Auth\AuthAPIViewModel.cs" />
-    <Compile Include="Helpers\MMTimelineHelper.cs" />
-    <Compile Include="Helpers\CommentsHandler.cs" />
-    <Compile Include="Helpers\PlanningHandlerHelper.cs" />
-    <Compile Include="Helpers\ShiftEventsHelper.cs" />
-    <Compile Include="Helpers\BackgroundProcessHelper.cs" />
-    <Compile Include="Helpers\FormHandlerHelper.cs" />
-    <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
-    <Compile Include="Helpers\LogManagerHelper.cs" />
-    <Compile Include="Helpers\LoaderHelper.cs" />
-    <Compile Include="Helpers\ManageMediaWindowManager.cs" />
-    <Compile Include="Helpers\MediaEventHandlerHelper.cs" />
-    <Compile Include="Helpers\NotesEventHandlerHelper.cs" />
-    <Compile Include="Helpers\DesignEventHandlerHelper.cs" />
-    <Compile Include="Helpers\ScreenRecorderWindowManager.cs" />
-    <Compile Include="Helpers\SyncServerEventsHelper.cs" />
-    <Compile Include="Helpers\SyncDbHelper.cs" />
-    <Compile Include="Helpers\TestRegisteryHelper.cs" />
-    <Compile Include="Loader\Block.xaml.cs">
-      <DependentUpon>Block.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Loader\LoadingAnimation.xaml.cs">
-      <DependentUpon>LoadingAnimation.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PlanningEvent.cs" />
-    <Compile Include="Models\MediaEventInMiddle.cs" />
-    <Compile Include="Models\FormOrCloneEvent.cs" />
-    <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
-      <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Models\TimelineVideoEvent.cs" />
-    <Compile Include="XAML\Audio\Audio_CreateEventWindow.xaml.cs">
-      <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Audio\Audio_UserControl.xaml.cs">
-      <DependentUpon>Audio_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Design\Designer_UserControl.xaml.cs">
-      <DependentUpon>Designer_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Design\DesignImager_UserControl.xaml.cs">
-      <DependentUpon>DesignImager_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\FullScreen\FullScreen_UserControl.xaml.cs">
-      <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml.cs">
-      <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\PopupWindow.xaml.cs">
-      <DependentUpon>PopupWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="VoiceAverage\VoiceAverageHelper.cs" />
-    <Compile Include="VoiceAverage\VoiceAverage_Form.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
-      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Preview\Preview.xaml.cs">
-      <DependentUpon>Preview.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="XAML\Timeline\Timeline_UserControl2.xaml.cs">
-      <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
-    </Compile>
-    <Page Include="Loader\Block.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Loader\LoadingAnimation.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MediaLibraryData\MediaLibrary_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\Audio\Audio_CreateEventWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\Audio\Audio_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\Design\Designer_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\Design\DesignImager_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\FullScreen\FullScreen_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\FullScreen\FullScreen_TimeLine_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="XAML\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="XAML\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="XAML\ManageTimeline_UserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="XAML\PopupWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="XAML\Preview\Preview.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="XAML\Timeline\Timeline_UserControl2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="XAML\ManageTimeline_UserControl.xaml.cs">
-      <DependentUpon>ManageTimeline_UserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -465,85 +336,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Content Include="Icons\audio.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\Manage\download.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\Manage\manage.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\Manage\review.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\Manage\submit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\planning.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\callout1.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\callout2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\clone.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\delete.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\edit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\form.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\imageFromLib.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\manage-media.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\populate.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\run.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\save.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\shift.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\undo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Icons\video.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Libraries\ManageMedia_UserControl.dll" />
     <Content Include="Libraries\MediaToolkit.dll" />
     <Content Include="Libraries\NotesManage_UserControl.dll" />
     <Content Include="Libraries\Notes_UserControl.dll" />
     <Content Include="Libraries\TimePicker_UserControl.dll" />
     <Content Include="Libraries\VideoToImage_UserControl.dll" />
-    <Content Include="Media\Screencast1.mp4" />
     <None Include="VideoCreator_TemporaryKey.pfx" />
-    <Resource Include="MediaLibraryData\Resources\last.png" />
-    <Resource Include="MediaLibraryData\Resources\next.png" />
-    <Resource Include="MediaLibraryData\Resources\previous.png" />
-    <Resource Include="MediaLibraryData\Resources\first.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VoiceAverage\VoiceAverage_Form.resx">
-      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include=".editorconfig" />
     <None Include="Libraries\regJerry.reg" />
@@ -563,10 +366,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="cbslogo_temp.ico" />
-    <Content Include="Images\black_background.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Resource Include="Images\cbslogo_temp.ico" />
     <Content Include="Libraries\DesignImager.dll" />
     <Resource Include="Libraries\DesignImager.xml" />
     <Content Include="Libraries\LocalVoiceGen_UserControl.dll" />
@@ -577,18 +376,6 @@
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.Metro.dll" />
     <Content Include="Libraries\Xceed.Wpf.AvalonDock.Themes.VS2010.dll" />
     <Content Include="Libraries\Xceed.Wpf.Toolkit.dll" />
-    <EmbeddedResource Include="Media\Audio1.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <Resource Include="Images\cbslogo_temp.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Content Include="Images\manufacturing_background.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\white_background.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Libraries\AudioEditor_UserControl.dll" />
     <Content Include="Libraries\AudioPlayer_UserControl.dll" />
     <Content Include="Libraries\AudioRecorder_UserControl.dll" />
@@ -660,9 +447,7 @@
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="XAML\LocalVoice\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

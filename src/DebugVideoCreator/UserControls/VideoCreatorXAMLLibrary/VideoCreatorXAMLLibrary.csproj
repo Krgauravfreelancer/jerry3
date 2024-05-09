@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{31aa82e7-d9ce-43b1-bb8d-0f0a0fadf684}</ProjectGuid>
+    <ProjectGuid>{31AA82E7-D9CE-43B1-BB8D-0F0A0FADF684}</ProjectGuid>
     <OutputType>library</OutputType>
     <RootNamespace>VideoCreatorLibrary</RootNamespace>
     <AssemblyName>VideoCreatorLibrary</AssemblyName>
@@ -14,7 +14,6 @@
     <WarningLevel>4</WarningLevel>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -32,72 +31,192 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <ItemGroup>
+    <Reference Include="AudioPlayer_UserControl">
+      <HintPath>..\..\Libraries\AudioPlayer_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="FullScreenPlayer_UserControl">
+      <HintPath>..\..\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
+    </Reference>
+    <Reference Include="ScreenRecorder_UserControl">
+      <HintPath>..\..\Libraries\ScreenRecorder_UserControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
-    
     <Reference Include="Microsoft.CSharp" />
-    
-    
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    
-    
-    <Reference Include="System.Net.Http"/>
-    
-    
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    
-    
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    
   </ItemGroup>
-
   <ItemGroup>
-    <Page Include="UserControl1.xaml">
-       <Generator>MSBuild:Compile</Generator>
-       <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="UserControl1.xaml.cs">
-      <DependentUpon>UserControl1.xaml</DependentUpon>
-      <SubType>Code</SubType>
+    <Compile Include="Audio\Audio_CreateEventWindow.xaml.cs">
+      <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Compile Include="Audio\Audio_UserControl.xaml.cs">
+      <DependentUpon>Audio_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Design\Designer_UserControl.xaml.cs">
+      <DependentUpon>Designer_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Design\DesignImager_UserControl.xaml.cs">
+      <DependentUpon>DesignImager_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FullScreen\FullScreen_TimeLine_UserControl.xaml.cs">
+      <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FullScreen\FullScreen_UserControl.xaml.cs">
+      <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loader\Block.xaml.cs">
+      <DependentUpon>Block.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Loader\LoadingAnimation.xaml.cs">
+      <DependentUpon>LoadingAnimation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="LocalVoice\LocalVoice_UserControl.xaml.cs">
+      <DependentUpon>LocalVoice_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ManageTimeline_UserControl.xaml.cs">
+      <DependentUpon>ManageTimeline_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MediaLibraryData\MediaLibrary_UserControl.xaml.cs">
+      <DependentUpon>MediaLibrary_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PopupWindow.xaml.cs">
+      <DependentUpon>PopupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Preview\Preview.xaml.cs">
+      <DependentUpon>Preview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-
+    <Compile Include="Timeline\Timeline_UserControl.xaml.cs">
+      <DependentUpon>Timeline_UserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Timeline\Timeline_UserControl2.xaml.cs">
+      <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
+  <ItemGroup>
+    <Page Include="Audio\Audio_CreateEventWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Audio\Audio_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Design\Designer_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Design\DesignImager_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FullScreen\FullScreen_TimeLine_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FullScreen\FullScreen_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Loader\Block.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Loader\LoadingAnimation.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LocalVoice\LocalVoice_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ManageTimeline_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MediaLibraryData\MediaLibrary_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PopupWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Preview\Preview.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Timeline\Timeline_UserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Timeline\Timeline_UserControl2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Designer-UserControl\designer\designer.csproj">
+      <Project>{e7717082-151e-4ce2-96f7-fff228ea8854}</Project>
+      <Name>designer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ManageMedia_UserControl\ManageMedia_UserControl.csproj">
+      <Project>{2dfc6ebc-cf5f-4372-87fe-70d45c3fe06f}</Project>
+      <Name>ManageMedia_UserControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
+      <Project>{4562dab3-b29e-43e3-94d5-c377101a5d61}</Project>
+      <Name>SQLite_Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VideoToImage_Wrapper\VideoToImage_UserControl\VideoToImage_UserControl.csproj">
+      <Project>{bdf4f483-1cac-4d83-ab7e-f03b67b3536b}</Project>
+      <Name>VideoToImage_UserControl</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MediaLibraryData\Resources\first.png" />
+    <Resource Include="MediaLibraryData\Resources\last.png" />
+    <Resource Include="MediaLibraryData\Resources\next.png" />
+    <Resource Include="MediaLibraryData\Resources\previous.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
