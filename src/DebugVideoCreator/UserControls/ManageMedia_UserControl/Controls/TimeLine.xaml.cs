@@ -62,7 +62,7 @@ namespace ManageMedia_UserControl.Controls
         public event EventHandler<Media> EventSelectionChangedEvent;
 
 
-        public event EventHandler<LocationChangedEventModel> LocationChangedEvent;
+        //public event EventHandler<LocationChangedEventModel> LocationChangedEvent;
 
         public List<Media> CalloutLocationOrSizeChangedMedia = new List<Media>();
 
