@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="VideoCreator.MediaLibraryData.MediaLibrary_UserControl"
+﻿<UserControl x:Class="VideoCreatorXAMLLibrary.MediaLibraryData.MediaLibrary_UserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:local="clr-namespace:VideoCreator.MediaLibraryData"
-             xmlns:loader="clr-namespace:VideoCreator.Loader"
+             xmlns:local="clr-namespace:VideoCreatorXAMLLibrary.MediaLibraryData"
+             xmlns:loader="clr-namespace:VideoCreatorXAMLLibrary.Loader"
              mc:Ignorable="d">
 
     <Grid Background="Transparent">

@@ -3,7 +3,7 @@ using NLog.Config;
 using System;
 using System.Windows;
 using System.Windows.Threading;
-using VideoCreator.Helpers;
+using VideoCreatorXAMLLibrary.Helpers;
 
 namespace VideoCreator
 {

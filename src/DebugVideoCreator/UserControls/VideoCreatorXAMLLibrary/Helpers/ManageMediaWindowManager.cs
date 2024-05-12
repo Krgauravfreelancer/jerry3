@@ -1,6 +1,5 @@
 ﻿using ManageMedia_UserControl;
 using ManageMedia_UserControl.Classes;
-using ManageMedia_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using Sqllite_Library.Models.Planning;

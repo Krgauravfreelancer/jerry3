@@ -1,4 +1,4 @@
-﻿namespace VideoCreator
+﻿namespace VideoCreatorXAMLLibrary
 {
     partial class VoiceAverage_Form
     {

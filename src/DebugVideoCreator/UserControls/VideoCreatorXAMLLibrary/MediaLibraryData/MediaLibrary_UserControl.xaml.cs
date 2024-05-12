@@ -9,13 +9,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using VideoCreator.Auth;
-using VideoCreator.Helpers;
-using VideoCreator.Models;
+using VideoCreatorXAMLLibrary.Auth;
+using VideoCreatorXAMLLibrary.Helpers;
+using VideoCreatorXAMLLibrary.Models;
 using UserControl = System.Windows.Controls.UserControl;
 using Windows = System.Windows.Controls;
 
-namespace VideoCreator.MediaLibraryData
+namespace VideoCreatorXAMLLibrary.MediaLibraryData
 {
     /// <summary>
     /// Interaction logic for ManageTimeline.xaml
