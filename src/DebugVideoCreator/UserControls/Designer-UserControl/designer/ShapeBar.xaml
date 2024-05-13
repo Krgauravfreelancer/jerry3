@@ -24,7 +24,7 @@
                 Fill="#97C3F2"
                 MouseLeftButtonDown="Path_MouseLeftButtonDown"
                 />
-            <TextBox Margin="5 230" Text="Text" FontSize="20" Background="Transparent" BorderThickness="0" Focusable="False" Cursor="Arrow" Foreground="#FF5E7DD1" MouseLeftButtonDown="TextBox_MouseLeftButtonDown" AllowDrop="False"/>
+            <TextBox Margin="5 230" Text="Text" FontSize="20" Background="Transparent" FontFamily="Tahoma" BorderThickness="0" Focusable="False" Cursor="Arrow" Foreground="#FF5E7DD1" MouseLeftButtonDown="TextBox_MouseLeftButtonDown" AllowDrop="False"/>
         </Canvas>
     </Grid>
 </UserControl>

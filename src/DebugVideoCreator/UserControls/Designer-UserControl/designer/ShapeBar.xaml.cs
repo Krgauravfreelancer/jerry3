@@ -92,7 +92,7 @@ namespace DesignerNp.controls
         {
             DataObject data = new DataObject();
             data.SetData(DataFormats.StringFormat,
-                @"<TextBox Text='Text' FontSize='20' Background='Transparent' BorderThickness='0' 
+                @"<TextBox Text='Text' FontSize='25' FontFamily='Tahoma' Background='Transparent' BorderThickness='0' 
                     Focusable='False' Cursor='Arrow' Foreground='#000000' AllowDrop='False'/>"
                 );
             data.SetData("Object", this);
