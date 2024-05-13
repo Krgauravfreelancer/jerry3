@@ -220,13 +220,32 @@ namespace DesignerNp.controls
         {
             if (null != design)
             {
-                var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                foreach (var item in objects)
+                XmlDocument xmlDoc = new XmlDocument(); // Create an XML document object
+                xmlDoc.LoadXml($"<root>{design.design_xml}</root>");
+                foreach (XmlNode node in xmlDoc.DocumentElement.ChildNodes)
                 {
-                    if (item.StartsWith("<Image"))
+                    string text = node.OuterXml; //or loop through its children as well
+                    if (text.ToLower().StartsWith("<image"))
                         continue;
-                    AddElement(item);
+                    AddElement(text);
                 }
+                //XmlReader rdr = XmlReader.Create(new System.IO.StringReader($"<root>{design.design_xml}</root>"));
+                //while (rdr.Read())
+                //{
+                //    if (rdr.NodeType == XmlNodeType.Element && rdr.Depth == 1)
+                //    {
+                //        Console.WriteLine(rdr.LocalName);
+                //        Console.WriteLine(rdr.ReadInnerXml());
+                //        Console.WriteLine("---------------------------");
+                //    }
+                //}
+                //var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                //foreach (var item in objects)
+                //{
+                //    if (item.StartsWith("<Image"))
+                //        continue;
+                //    AddElement(item);
+                //}
             }
         }
 

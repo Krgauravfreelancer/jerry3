@@ -1,5 +1,4 @@
 ﻿using LocalVoiceGen_UserControl.Helpers;
-using Microsoft.Data.Sqlite;
 using ScreenRecorder_UserControl.Windows.Controls;
 using ServerApiCall_UserControl.DTO.VideoEvent;
 using Sqllite_Library.Business;
@@ -548,7 +547,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             return result;
         }
 
-        private static void SuccessFlowForPlanning(VideoEventResponseModel addedData, int selectedProjectId, byte[] blob, SqliteConnection sqlCon)
+        private static void SuccessFlowForPlanning(VideoEventResponseModel addedData, int selectedProjectId, byte[] blob, SQLiteConnection sqlCon)
         {
             var dt = DesignEventHandlerHelper.GetVideoEventDataTableForDesign(addedData, selectedProjectId);
             var insertedVideoEventIds = DataManagerSqlLite.InsertRowsToVideoEventForTransaction(dt, sqlCon, false);

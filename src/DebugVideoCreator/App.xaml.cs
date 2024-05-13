@@ -3,6 +3,7 @@ using NLog.Config;
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using VideoCreatorXAMLLibrary;
 using VideoCreatorXAMLLibrary.Helpers;
 
 namespace VideoCreator
@@ -21,6 +22,8 @@ namespace VideoCreator
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             Application.Current.DispatcherUnhandledException += new DispatcherUnhandledExceptionEventHandler(AppDispatcherUnhandledException);
+            var MainWindow = new MainWindow();
+            MainWindow.Show();
         }
 
         void AppDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

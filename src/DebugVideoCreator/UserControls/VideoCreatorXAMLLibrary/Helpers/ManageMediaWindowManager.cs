@@ -1,5 +1,6 @@
 ﻿using ManageMedia_UserControl;
 using ManageMedia_UserControl.Classes;
+using ManageMedia_UserControl.Models;
 using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using Sqllite_Library.Models.Planning;
@@ -277,7 +278,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
 
         #region == Notes helper Functions
 
-        private void CreateNotes(List<(SCModels.TextItem TextItem, int VideoEventID)> CreatedNotes)
+        private void CreateNotes(List<(ScreenRecorder_UserControl.Models.TextItem TextItem, int VideoEventID)> CreatedNotes)
         {
             var notesIndex = new Dictionary<int, int>();
             foreach (var videoeventId in CreatedNotes.Select(x => x.VideoEventID).Distinct())
