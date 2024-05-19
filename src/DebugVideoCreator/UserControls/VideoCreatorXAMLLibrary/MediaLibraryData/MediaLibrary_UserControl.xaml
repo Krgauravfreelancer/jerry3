@@ -48,22 +48,22 @@
             <StackPanel Orientation="Horizontal" Background="#ececec" Margin="0,0,20,0">
                 <Button x:Name="btnFirst" Click="btnFirst_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
-                        <ImageBrush ImageSource="/VideoCreatorLibrary;component/MediaLibraryData/first.png"/>
+                        <ImageBrush ImageSource="/VideoCreatorXAMLLibrary;component/MediaLibraryData/first.png"/>
                     </Button.Background>
                 </Button>
                 <Button x:Name="btnPrevious" Click="btnPrevious_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
-                        <ImageBrush ImageSource="/VideoCreatorLibrary;component/MediaLibraryData/previous.png"/>
+                        <ImageBrush ImageSource="/VideoCreatorXAMLLibrary;component/MediaLibraryData/previous.png"/>
                     </Button.Background>
                 </Button>
                 <Button x:Name="btnNext" Click="btnNext_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
-                        <ImageBrush ImageSource="/VideoCreatorLibrary;component/MediaLibraryData/next.png"/>
+                        <ImageBrush ImageSource="/VideoCreatorXAMLLibrary;component/MediaLibraryData/next.png"/>
                     </Button.Background>
                 </Button>
                 <Button x:Name="btnLast" Click="btnLast_Click" HorizontalAlignment="Right" Width="25" Margin="5,2,5,2" Padding="3">
                     <Button.Background>
-                        <ImageBrush ImageSource="/VideoCreatorLibrary;component/MediaLibraryData/last.png"/>
+                        <ImageBrush ImageSource="/VideoCreatorXAMLLibrary;component/MediaLibraryData/last.png"/>
                     </Button.Background>
                 </Button>
             </StackPanel>
