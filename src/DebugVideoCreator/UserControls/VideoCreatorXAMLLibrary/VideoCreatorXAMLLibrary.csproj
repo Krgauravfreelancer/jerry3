@@ -272,10 +272,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="MediaLibraryData\Resources\first.png" />
-    <Resource Include="MediaLibraryData\Resources\last.png" />
-    <Resource Include="MediaLibraryData\Resources\next.png" />
-    <Resource Include="MediaLibraryData\Resources\previous.png" />
+    <EmbeddedResource Include="MediaLibraryData\Resources\first.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MediaLibraryData\Resources\last.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MediaLibraryData\Resources\next.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MediaLibraryData\Resources\previous.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\audio.png" />
@@ -303,6 +311,10 @@
     <Resource Include="Images\cbslogo_temp.jpg" />
     <Resource Include="Images\manufacturing_background.png" />
     <Resource Include="Images\white_background.png" />
+    <Resource Include="MediaLibraryData\first.png" />
+    <Resource Include="MediaLibraryData\previous.png" />
+    <Resource Include="MediaLibraryData\next.png" />
+    <Resource Include="MediaLibraryData\last.png" />
     <Content Include="Media\Audio1.mp3" />
     <Content Include="Media\Screencast1.mp4" />
   </ItemGroup>

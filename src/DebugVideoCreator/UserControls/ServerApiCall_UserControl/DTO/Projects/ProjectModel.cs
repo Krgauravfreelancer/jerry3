@@ -8,6 +8,7 @@
         public string project_createdate { get; set; }
         public int projdet_id { get; set; }
         public string project_currwfstep { get; set; }
+        
 
     }
 
@@ -20,6 +21,7 @@
         public bool current_version { get; set; }
         public string projdet_version { get; set; }
         public int project_localId { get; set; }
+        public string permissions { get; set; }
     }
 
 

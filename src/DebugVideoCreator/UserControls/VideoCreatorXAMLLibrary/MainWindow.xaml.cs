@@ -59,7 +59,6 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.ShowLoader(this, loader);
             await Login();
             await SyncMasterTablesAndRefresh();
-           
             LoaderHelper.HideLoader(this, loader);
         }
 
@@ -165,15 +164,17 @@ namespace VideoCreatorXAMLLibrary
             if (name.ToLower() == "project_id".ToLower())
                 return 75;
             else if (name.ToLower() == "project_videotitle".ToLower())
-                return 500;
+                return 400;
             else if (name.ToLower() == "projstatus_name".ToLower())
-                return 150;
+                return 120;
             else if (name.ToLower() == "project_downloaded".ToLower())
-                return 150;
+                return 120;
             else if (name.ToLower() == "current_version".ToLower())
-                return 150;
+                return 120;
             else if (name.ToLower() == "projdet_version".ToLower())
-                return 100;
+                return 120;
+            else if (name.ToLower() == "permissions".ToLower())
+                return 170;
             return 50;
         }
 
@@ -218,7 +219,7 @@ namespace VideoCreatorXAMLLibrary
                                 Header = GetHeaderName(prop.Name),
                                 Binding = new Binding(prop.Name),
                                 Width = GetWidth(prop.Name),
-                                HeaderStyle = GetStyle(prop.Name)
+                                HeaderStyle = GetStyle(prop.Name),
                             });
                         }
                     }
@@ -265,11 +266,29 @@ namespace VideoCreatorXAMLLibrary
             var selectedRow = row.Item as ProjectListUI;
             if (selectedRow != null)
             {
-                ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
-                SubmitProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
-                DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
+                var role = GetRoles(selectedRow.permissions);
+                if(role == EnumRoles.UNDEFINED || role == EnumRoles.PROJECT_READ_ONLY) // Means readonly. 
+                {
+                    ManageProjectMenu.Header = "View";
+                    ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                    SubmitProjectMenu.IsEnabled = false;
+                    DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
+                }
+                else if (role == EnumRoles.PROJECT_VIDEO_RECORDER) 
+                {
+                    ManageProjectMenu.Header = "Manage";
+                    ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                    SubmitProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                    DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
+                }
+                else if (role == EnumRoles.PROJECT_WRITE)
+                {
+                    ManageProjectMenu.Header = "Manage";
+                    ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                    SubmitProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
+                    DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
+                }
             }
-
         }
 
         private static void FindCellAndRow(DependencyObject originalSource, out DataGridCell cell, out DataGridRow row)
@@ -344,6 +363,17 @@ namespace VideoCreatorXAMLLibrary
             return result;
         }
 
+
+        private EnumRoles GetRoles(string permission)
+        {
+            if (string.IsNullOrEmpty(permission))
+                return EnumRoles.UNDEFINED;
+            else
+            {
+                Enum.TryParse(permission, out EnumRoles role);
+                return role;
+            }
+        }
 
         #region == API and Auth Events ==
         private async Task Login()

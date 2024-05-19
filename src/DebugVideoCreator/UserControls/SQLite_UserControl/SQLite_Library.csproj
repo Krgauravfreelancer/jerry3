@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Helpers\RegisteryHelper.cs" />
+    <Compile Include="Models\EnumRoles.cs" />
     <Compile Include="Models\Planning\CBVPlanningMedia.cs" />
     <Compile Include="Models\Planning\CBVPlanningBullet.cs" />
     <Compile Include="Models\Planning\CBVPlanningDesc.cs" />

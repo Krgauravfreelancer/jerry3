@@ -545,6 +545,16 @@ namespace Sqllite_Library.Business
             return SqlLiteData.GetVideoEvents(projdetId, dependentDataFlag, designFlag);
         }
 
+        public static List<CBVVideoEvent> GetPlaceholderVideoEvents(int projdetId)
+        {
+            return SqlLiteData.GetPlaceholderVideoEvents(projdetId);
+        }
+
+        public static bool IsPlaceHolderEvent(int videoeventId)
+        {
+            return SqlLiteData.IsPlaceHolderEvent(videoeventId);
+        }
+
 
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId = 0, bool dependentDataFlag = true)
         {

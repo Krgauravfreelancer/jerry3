@@ -120,6 +120,8 @@ namespace VideoCreatorXAMLLibrary
         private void Refresh()
         {
             TimelineUserConrol.Refresh();
+            if(mouseEventToProcess != null)
+                TimelineUserConrol_TrackbarMouseMoveEvent(null, mouseEventToProcess);
             //FSPUserConrol.SetSelectedProjectIdAndReset(selectedProjectId);
             //NotesUserConrol.InitializeNotes(selectedProjectEvent, selectedVideoEventId);
         }
@@ -789,7 +791,7 @@ namespace VideoCreatorXAMLLibrary
 
         private void TimelineUserConrol_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
         {
-            int trackId = 2;
+            int trackId = (int)EnumTrack.IMAGEORVIDEO;
             var mediaLibraryUserControl = new MediaLibrary_UserControl(trackId, selectedProjectEvent, authApiViewModel, startTime);
             mediaLibraryUserControl.BtnUseAndSaveClickedEventInMiddle += (MediaEventInMiddle me) => { };
             mediaLibraryUserControl.BtnUseAndSaveClickedEvent += MediaLibraryUserControl_BtnUseAndSaveClickedEvent;
@@ -911,9 +913,9 @@ namespace VideoCreatorXAMLLibrary
 
         private void TimelineUserConrol_TrackbarMouseMoveEvent(object sender, ManageMedia_UserControl.Models.TrackbarMouseMoveEventModel _mouseEventToProcess)
         {
-            //if (IfNeedToReProcess(e))
+            mouseEventToProcess = _mouseEventToProcess;
+            if (_mouseEventToProcess != null)
             {
-                mouseEventToProcess = _mouseEventToProcess;
                 PreviewUserControl.Process(mouseEventToProcess);
             }
         }

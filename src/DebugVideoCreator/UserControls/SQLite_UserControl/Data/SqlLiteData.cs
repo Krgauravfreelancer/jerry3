@@ -2841,6 +2841,135 @@ namespace Sqllite_Library.Data
             return data.GroupBy(x => x.videoevent_id).Select(p => p.First()).Distinct().ToList();
         }
 
+
+        public static List<CBVVideoEvent> GetPlaceholderVideoEvents(int projdetId)
+        {
+            var data = new List<CBVVideoEvent>();
+
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT 
+                                            VE.* 
+                                        FROM 
+                                            cbv_videoevent VE
+                                            INNER JOIN cbv_planning P on VE.videoevent_planning = P.planning_serverid AND (P.fk_planning_screen = 4 or P.fk_planning_screen = 7) ";
+
+            sqlQueryString += projdetId <= 0 ? " where VE.videoevent_isdeleted = 0 " : $@" where VE.fk_videoevent_projdet = {projdetId} and VE.videoevent_isdeleted = 0";
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVideoEvent
+                        {
+                            videoevent_id = Convert.ToInt32(sqlReader["videoevent_id"]),
+                            fk_videoevent_projdet = Convert.ToInt32(sqlReader["fk_videoevent_projdet"]),
+                            fk_videoevent_media = Convert.ToInt32(sqlReader["fk_videoevent_media"]),
+                            videoevent_track = Convert.ToInt32(sqlReader["videoevent_track"]),
+                            videoevent_start = Convert.ToString(sqlReader["videoevent_start"]),
+                            videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
+                            videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
+                            videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_planning = Convert.ToInt32(sqlReader["videoevent_planning"]),
+                            videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
+                            videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
+                            videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
+                        };
+                        
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                sqlCon?.Close();
+                throw;
+            }
+
+            return data.GroupBy(x => x.videoevent_id).Select(p => p.First()).Distinct().ToList();
+        }
+
+        public static bool IsPlaceHolderEvent(int videoeventId)
+        {
+            var data = new List<CBVVideoEvent>();
+            // Check if database is created
+            if (false == IsDbCreated())
+                throw new Exception("Database is not present.");
+
+            string sqlQueryString = $@"SELECT 
+                                            VE.* 
+                                        FROM 
+                                            cbv_videoevent VE
+                                            INNER JOIN cbv_planning P on VE.videoevent_planning = P.planning_serverid AND (P.fk_planning_screen = 4 or P.fk_planning_screen = 7) 
+                                        where VE.videoevent_id = {videoeventId}";
+
+            SQLiteConnection sqlCon = null;
+            try
+            {
+                string fileName = RegisteryHelper.GetFileName();
+
+                // Open Database connection 
+                sqlCon = new SQLiteConnection("Data Source=" + fileName + ";Version=3;");
+                sqlCon.Open();
+
+                var sqlQuery = new SQLiteCommand(sqlQueryString, sqlCon);
+                using (var sqlReader = sqlQuery.ExecuteReader())
+                {
+                    while (sqlReader.Read())
+                    {
+                        var obj = new CBVVideoEvent
+                        {
+                            videoevent_id = Convert.ToInt32(sqlReader["videoevent_id"]),
+                            fk_videoevent_projdet = Convert.ToInt32(sqlReader["fk_videoevent_projdet"]),
+                            fk_videoevent_media = Convert.ToInt32(sqlReader["fk_videoevent_media"]),
+                            videoevent_track = Convert.ToInt32(sqlReader["videoevent_track"]),
+                            videoevent_start = Convert.ToString(sqlReader["videoevent_start"]),
+                            videoevent_end = Convert.ToString(sqlReader["videoevent_end"]),
+                            videoevent_duration = Convert.ToString(sqlReader["videoevent_duration"]),
+                            videoevent_origduration = Convert.ToString(sqlReader["videoevent_origduration"]),
+                            videoevent_planning = Convert.ToInt32(sqlReader["videoevent_planning"]),
+                            videoevent_createdate = Convert.ToDateTime(sqlReader["videoevent_createdate"]),
+                            videoevent_modifydate = Convert.ToDateTime(sqlReader["videoevent_modifydate"]),
+                            videoevent_isdeleted = Convert.ToBoolean(sqlReader["videoevent_isdeleted"]),
+                            videoevent_issynced = Convert.ToBoolean(sqlReader["videoevent_issynced"]),
+                            videoevent_serverid = Convert.ToInt64(sqlReader["videoevent_serverid"]),
+                            videoevent_syncerror = Convert.ToString(sqlReader["videoevent_syncerror"])
+                        };
+
+                        data.Add(obj);
+                    }
+                }
+                // Close database
+                sqlQuery.Dispose();
+                sqlCon.Close();
+            }
+            catch (Exception)
+            {
+                sqlCon?.Close();
+                throw;
+            }
+
+            return data.Any();
+        }
+
+
         /*
         public static List<CBVAudio> GetAudio(int videoEventId)
         {
