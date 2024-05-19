@@ -1231,7 +1231,7 @@ namespace ManageMedia_UserControl.Controls
 
         public void SelectedEvent(Media videoEvent)
         {
-            EventSelectionChangedEvent.Invoke(new EventArgs(), videoEvent);
+            EventSelectionChangedEvent?.Invoke(new EventArgs(), videoEvent);
         }
 
         private void OnTrackbarMouseMoved(double positionX)

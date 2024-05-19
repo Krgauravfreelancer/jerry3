@@ -359,7 +359,8 @@ namespace VideoCreatorXAMLLibrary
                     item.project_localId = -1;
                 }
             }
-            var result = JsonConvert.DeserializeObject<List<ProjectListUI>>(JsonConvert.SerializeObject(projects));
+            var orderByProjects = projects.OrderBy(x=>x.project_id).ToList();
+            var result = JsonConvert.DeserializeObject<List<ProjectListUI>>(JsonConvert.SerializeObject(orderByProjects));
             return result;
         }
 
