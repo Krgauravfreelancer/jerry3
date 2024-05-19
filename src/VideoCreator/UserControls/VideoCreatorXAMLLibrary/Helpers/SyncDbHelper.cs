@@ -147,7 +147,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
 
             var row = dataTable.NewRow();
             row["project_id"] = -1;
-            row["project_videotitle"] = projectModel.project_videotitle?.Replace("'", "''");
+            row["project_videotitle"] = projectModel.project_videotitle?.Replace("'", "''").Replace("&", "and");
             row["project_currwfstep"] = projectModel.project_currwfstep ?? "";
             row["project_uploaded"] = false;
             row["fk_project_background"] = 1;
@@ -202,11 +202,11 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 row["planning_id"] = -1;
                 row["fk_planning_project"] = localProjectId;
                 row["fk_planning_screen"] = planning.fk_planning_screen;
-                row["planning_customname"] = planning.planning_customname?.Replace("'", "''");
-                row["planning_notesline"] = notes?.Replace("'", "''");
-                row["planning_medialibid"] = planning.planning_medialibid?.Replace("'", "''");
+                row["planning_customname"] = planning.planning_customname?.Replace("'", "''").Replace("&","and");
+                row["planning_notesline"] = notes?.Replace("'", "''").Replace("&", "and");
+                row["planning_medialibid"] = planning.planning_medialibid?.Replace("'", "''").Replace("&", "and");
                 row["planning_sort"] = planning.planning_sort;
-                row["planning_suggestnotesline"] = planning.planning_suggestnotesline?.Replace("'", "''");
+                row["planning_suggestnotesline"] = planning.planning_suggestnotesline?.Replace("'", "''").Replace("&", "and");
                 row["planning_createdate"] = planning.planning_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_modifydate"] = planning.planning_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["planning_serverid"] = planning.planning_id;
@@ -235,7 +235,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             
             var row = dataTable.NewRow();
             row["planningdesc_id"] = -1;
-            row["planningdesc_line"] = description.planningdesc_line?.Replace("'", "''");
+            row["planningdesc_line"] = description.planningdesc_line?.Replace("'", "''").Replace("&", "and");
             if(description.bullet?.Count > 0)
                 row["planningdesc_bullet"] = GetPlanningBulletDataTable(description.bullet);
             dataTable.Rows.Add(row);
@@ -254,7 +254,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 var row = dataTable.NewRow();
                 row["planningbullet_id"] = -1;
                 row["fk_planningbullet_desc"] = -1;
-                row["planningbullet_line"] = bullet.planningbullet_line?.Replace("'", "''");
+                row["planningbullet_line"] = bullet.planningbullet_line?.Replace("'", "''").Replace("&", "and");
                 dataTable.Rows.Add(row);
             }
             return dataTable;
@@ -288,9 +288,9 @@ namespace VideoCreatorXAMLLibrary.Helpers
             if (projdet != null)
             {
                 row["projdet_serverid"] = projdet.projdet_id;
-                row["projdet_version"] = projdet.projdet_version?.Replace("'", "''");
+                row["projdet_version"] = projdet.projdet_version?.Replace("'", "''").Replace("&", "and");
                 row["projdet_currver"] = projdet.projdet_currver;
-                row["projdet_comments"] = projdet.projdet_comments?.Replace("'", "''");
+                row["projdet_comments"] = projdet.projdet_comments?.Replace("'", "''").Replace("&", "and");
                 row["projdet_createdate"] = projdet.projdet_createdate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
                 row["projdet_modifydate"] = projdet.projdet_modifydate ?? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             }
