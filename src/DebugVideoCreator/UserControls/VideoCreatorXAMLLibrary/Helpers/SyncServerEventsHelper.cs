@@ -40,7 +40,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             }
             else
             {
-                btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData.Data.Count} | Local {localVideoEventCount} events";
+                btnDownloadServerData.Content = $@"Download Server Data{Environment.NewLine}Server {serverVideoEventData?.Data?.Count} | Local {localVideoEventCount} events";
                 btnDownloadServerData.IsEnabled = false;
             }
         }

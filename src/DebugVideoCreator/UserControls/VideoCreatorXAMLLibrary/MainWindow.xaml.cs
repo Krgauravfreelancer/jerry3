@@ -449,11 +449,11 @@ namespace VideoCreatorXAMLLibrary
                 MessageBox.Show("You need to download the project first to start working on it.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return false;
             }
-            else if (selectedItem.projstatus_name?.ToLower() == "review")
-            {
-                MessageBox.Show("Project is already submitted.", "READ ONLY", MessageBoxButton.OK, MessageBoxImage.Information);
-                return false;
-            }
+            //else if (selectedItem.projstatus_name?.ToLower() == "review")
+            //{
+            //    MessageBox.Show("Project is already submitted.", "READ ONLY", MessageBoxButton.OK, MessageBoxImage.Information);
+            //    return false;
+            //}
             return true;
         }
 

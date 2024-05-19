@@ -7,7 +7,7 @@
         xmlns:loader="clr-namespace:VideoCreatorXAMLLibrary.Loader"
         mc:Ignorable="d">
     <UserControl.Resources>
-        <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" ContextMenuOpening="TimelineMenu_ContextMenuOpening" >
+        <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu">
             <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/populate.png" ></Image>
@@ -73,10 +73,10 @@
 
         </ContextMenu>
     </UserControl.Resources>
-    
 
 
-        <Grid Background="White" Margin="5,1,10,1"  ContextMenu="{StaticResource TimelineMenu}">
+
+    <Grid Background="White" Margin="5,1,10,1"  ContextMenuOpening="TimelineMenu_ContextMenuOpening" ContextMenu="{StaticResource TimelineMenu}">
 
             <StackPanel Margin="5,5,5,0" Height="300" Orientation="Vertical" VerticalAlignment="Top">
                 <!--<GroupBox Header="Timeline User Control" Padding="10">
