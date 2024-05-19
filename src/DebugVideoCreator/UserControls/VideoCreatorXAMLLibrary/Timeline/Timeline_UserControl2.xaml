@@ -7,7 +7,7 @@
         xmlns:loader="clr-namespace:VideoCreatorXAMLLibrary.Loader"
         mc:Ignorable="d">
     <UserControl.Resources>
-        <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" >
+        <ContextMenu x:Key="TimelineMenu" Name="TimelineMenu" ContextMenuOpening="TimelineMenu_ContextMenuOpening" >
             <MenuItem Header="Populate from Database" x:Name="MenuItem_PopulateFromDatabase" Click="LoadTimelineDataFromDb_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/populate.png" ></Image>
@@ -24,37 +24,37 @@
                 </MenuItem.Icon>
             </MenuItem>
             <Separator/>
-            <MenuItem Header="Add Audio Event" Click="AddAudioEvent_Click" IsEnabled="False">
+            <MenuItem Header="Add Audio Event" x:Name="MenuItem_AddAudioEvent" Click="AddAudioEvent_Click" IsEnabled="False">
                 <MenuItem.Icon>
                     <Image Source="../Icons/audio.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Callout 1" Click="AddCallout1_Click">
+            <MenuItem Header="Add Callout 1" x:Name="MenuItem_AddCallout1" Click="AddCallout1_Click">
                 <MenuItem.Icon>
                     <Image Source="../Icons/callout1.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Callout 2" Click="AddCallout2_Click" >
+            <MenuItem Header="Add Callout 2" x:Name="MenuItem_AddCallout2" Click="AddCallout2_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/callout2.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Video Event" Click="AddVideoEvent_Click" >
+            <MenuItem Header="Add Video Event" x:Name="MenuItem_AddVideoEvent" Click="AddVideoEvent_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/video.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Form Event" Click="AddFormEvent_Click" >
+            <MenuItem Header="Add Form Event" x:Name="MenuItem_AddFormEvent" Click="AddFormEvent_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/form.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Add Image Event using Library" Click="AddImageEventUsingCBLibrary_Click" >
+            <MenuItem Header="Add Image Event using Library" x:Name="MenuItem_AddImageEventUsingCBLibrary" Click="AddImageEventUsingCBLibrary_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/imageFromLib.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Manage Media" Click="ManageMedia_Click" >
+            <MenuItem Header="Manage Media" x:Name="MenuItem_ManageMedia" Click="ManageMedia_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/manage-media.png" ></Image>
                 </MenuItem.Icon>

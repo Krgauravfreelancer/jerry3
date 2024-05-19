@@ -74,6 +74,46 @@ namespace VideoCreatorXAMLLibrary
             TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia = new List<MMClass.Media>();
         }
 
+        private void TimelineMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            string contextMenuKey = "TimelineMenu";
+            var menuItem_PopulateFromDatabase = GetMenuItemByResourceName(contextMenuKey, "MenuItem_PopulateFromDatabase");
+            menuItem_PopulateFromDatabase.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+
+            var MenuItem_AddPlanningEvents = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddPlanningEvents");
+            MenuItem_AddPlanningEvents.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            
+            var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+            MenuItem_SaveAllTimelines.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            
+            var MenuItem_AddAudioEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddAudioEvent");
+            MenuItem_AddAudioEvent.IsEnabled = false;
+
+            var MenuItem_AddCallout1 = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddCallout1");
+            MenuItem_AddCallout1.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            
+            var MenuItem_AddCallout2 = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddCallout2");
+            MenuItem_AddCallout2.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            
+            var MenuItem_AddVideoEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddVideoEvent");
+            MenuItem_AddVideoEvent.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+
+            var MenuItem_AddFormEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddFormEvent");
+            MenuItem_AddFormEvent.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            
+            var MenuItem_AddImageEventUsingCBLibrary = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibrary");
+            MenuItem_AddImageEventUsingCBLibrary.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+
+            var MenuItem_ManageMedia = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ManageMedia");
+            MenuItem_ManageMedia.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+
+            var MenuItem_Run = GetMenuItemByResourceName(contextMenuKey, "MenuItem_Run");
+            MenuItem_Run.IsEnabled = true;
+
+            var MenuItem_UndoDelete = GetMenuItemByResourceName(contextMenuKey, "MenuItem_UndoDelete");
+            MenuItem_UndoDelete.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+        }
+
 
         #region == TimelineUserControl : Helper functions ==
 
@@ -327,5 +367,7 @@ namespace VideoCreatorXAMLLibrary
             ContextMenu_Run_Clicked.Invoke(sender, e);
         }
         #endregion
+
+        
     }
 }
