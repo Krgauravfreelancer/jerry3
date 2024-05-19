@@ -470,3 +470,5 @@
 /src/VideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/obj
 /src/VideoCreator/UserControls/VideoToImage_Wrapper/VideoToImage_UserControl/packages
 /src/VideoCreator/UserControls/VideoToImage_Wrapper/.vs/VideoToImage_Wrapper
+/src/VideoCreator/UserControls/ManageMedia_UserControl/bin/Release
+/src/VideoCreator/UserControls/VideoCreatorXAMLLibrary/bin/Release

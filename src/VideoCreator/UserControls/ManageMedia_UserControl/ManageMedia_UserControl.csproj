@@ -33,13 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FullScreenPlayer_UserControl">
-      <HintPath>..\..\..\ManageMedia_Wrapper\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
+      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="LocalVoiceGen_UserControl">
-      <HintPath>..\..\..\ManageMedia_Wrapper\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
+      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="MediaGenApi_UserControl">
-      <HintPath>..\..\..\ManageMedia_Wrapper\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\MediaGenApi_UserControl.dll</HintPath>
+      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -53,7 +53,7 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="VoiceScripter_UserControl">
-      <HintPath>..\..\..\ManageMedia_Wrapper\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\VoiceScripter_UserControl.dll</HintPath>
+      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
