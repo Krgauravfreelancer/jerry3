@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoToImage_UserControl", "VideoToImage_UserControl.csproj", "{1B6E3A74-8B6C-443A-9BD5-C75E7DA51918}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B6E3A74-8B6C-443A-9BD5-C75E7DA51918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B6E3A74-8B6C-443A-9BD5-C75E7DA51918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B6E3A74-8B6C-443A-9BD5-C75E7DA51918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B6E3A74-8B6C-443A-9BD5-C75E7DA51918}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5AB77E1A-9DD8-4F0C-8147-E20EAD559CF0}
+	EndGlobalSection
+EndGlobal

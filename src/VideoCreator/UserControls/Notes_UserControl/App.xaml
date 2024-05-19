@@ -1,0 +1,9 @@
+﻿<Application x:Class="Notes_UserControl.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Notes_UserControl"
+             StartupUri="Notes_UserControl.xaml">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
