@@ -49,7 +49,8 @@ namespace VideoCreatorXAMLLibrary
         public event EventHandler<List<CBVVideoEvent>> ContextMenu_SaveAllTimelines_Clicked;
         public event EventHandler ContextMenu_UndeleteDeletedEvent_Clicked;
 
-        private bool ReadOnly;
+        private bool ReadOnlyFlag;
+        private EnumRole Role;
         //int i;
         public Timeline_UserControl2()
         {
@@ -60,7 +61,8 @@ namespace VideoCreatorXAMLLibrary
         {
             selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
-            ReadOnly = readonlyMode;
+            ReadOnlyFlag = readonlyMode;
+            Role = _selectedProjectEvent.role;
             MMTimelineHelper.Init(selectedProjectEvent, TimelineGridCtrl2);
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace Sqllite_Library.Models
 {
-    public enum EnumRoles
+    public enum EnumRole
     {
         UNDEFINED = 0,
         PROJECT_READ_ONLY = 1,

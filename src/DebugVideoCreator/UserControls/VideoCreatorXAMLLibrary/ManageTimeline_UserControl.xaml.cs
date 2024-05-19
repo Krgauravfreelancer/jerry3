@@ -31,7 +31,8 @@ namespace VideoCreatorXAMLLibrary
         //private AudioEditor editor;
         private readonly AuthAPIViewModel authApiViewModel;
         //public event EventHandler closeTheEditWindow;
-        private bool ReadOnly;
+        private bool ReadOnlyFlag;
+        private EnumRole Role;
         private int RetryIntervalInSeconds = 300;
         SelectedProjectEvent selectedProjectEvent;
 
@@ -46,9 +47,10 @@ namespace VideoCreatorXAMLLibrary
             InitializeComponent();
             selectedProjectEvent = _selectedProjectEvent;
             authApiViewModel = _authApiViewModel;
-            ReadOnly = _readonlyFlag;
+            ReadOnlyFlag = _readonlyFlag;
+            Role = _selectedProjectEvent.role;
             var subjectText = "Project Id - " + selectedProjectEvent.projectId;
-            lblSelectedProjectId.Content = ReadOnly ? $"[READONLY] {subjectText}" : subjectText;
+            lblSelectedProjectId.Content = ReadOnlyFlag ? $"[READONLY] {subjectText}" : subjectText;
             InitializeChildren();
             new Action(async () =>
             {
@@ -71,7 +73,7 @@ namespace VideoCreatorXAMLLibrary
             //ResetAudioMenuOptions();
 
             //Timeline
-            TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent, authApiViewModel, ReadOnly);
+            TimelineUserConrol.SetSelectedProjectId(selectedProjectEvent, authApiViewModel, ReadOnlyFlag);
             TimelineUserConrol.TrackbarMouseMoveEvent += TimelineUserConrol_TrackbarMouseMoveEvent;
             TimelineUserConrol.VideoEventSelectionChangedEvent += TimelineUserConrol_VideoEventSelectionChangedEvent;
             TimelineUserConrol.ContextMenu_AddCallout1_Clicked += TimelineUserConrol_ContextMenu_AddCallout1_Clicked;

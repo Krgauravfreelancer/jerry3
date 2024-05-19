@@ -267,21 +267,21 @@ namespace VideoCreatorXAMLLibrary
             if (selectedRow != null)
             {
                 var role = GetRoles(selectedRow.permissions);
-                if(role == EnumRoles.UNDEFINED || role == EnumRoles.PROJECT_READ_ONLY) // Means readonly. 
+                if(role == EnumRole.UNDEFINED || role == EnumRole.PROJECT_READ_ONLY) // Means readonly. 
                 {
                     ManageProjectMenu.Header = "View";
                     ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
                     SubmitProjectMenu.IsEnabled = false;
                     DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
                 }
-                else if (role == EnumRoles.PROJECT_VIDEO_RECORDER) 
+                else if (role == EnumRole.PROJECT_VIDEO_RECORDER) 
                 {
                     ManageProjectMenu.Header = "Manage";
                     ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
                     SubmitProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
                     DownloadProjectMenu.IsEnabled = selectedRow.project_downloaded != "YES";
                 }
-                else if (role == EnumRoles.PROJECT_WRITE)
+                else if (role == EnumRole.PROJECT_WRITE)
                 {
                     ManageProjectMenu.Header = "Manage";
                     ManageProjectMenu.IsEnabled = selectedRow.project_downloaded == "YES";
@@ -364,13 +364,13 @@ namespace VideoCreatorXAMLLibrary
         }
 
 
-        private EnumRoles GetRoles(string permission)
+        private EnumRole GetRoles(string permission)
         {
             if (string.IsNullOrEmpty(permission))
-                return EnumRoles.UNDEFINED;
+                return EnumRole.UNDEFINED;
             else
             {
-                Enum.TryParse(permission, out EnumRoles role);
+                Enum.TryParse(permission, out EnumRole role);
                 return role;
             }
         }
@@ -544,7 +544,8 @@ namespace VideoCreatorXAMLLibrary
 
             //string obj = JsonConvert.SerializeObject(selectedProjectEvent);
             var readonlyFlag = selectedItem.project_downloaded == "YES" && selectedItem.current_version == false;
-            if (!readonlyFlag)
+            
+            if (!readonlyFlag && selectedProjectEvent.role == EnumRole.PROJECT_WRITE)
             {
                 var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
                 using (var transaction = sqlCon.BeginTransaction())
@@ -669,6 +670,7 @@ namespace VideoCreatorXAMLLibrary
                     serverProjectId = selectedItem?.project_id ?? -1,
                     projdetId = cbvProjDet?.projdet_id ?? -1,
                     serverProjdetId = cbvProjDet?.projdet_serverid ?? -1,
+                    role = GetRoles(selectedItem.permissions)
                 };
             }
             else

@@ -8,5 +8,6 @@ namespace Sqllite_Library.Models
         public Int64 serverProjectId;
         public int projdetId;
         public Int64 serverProjdetId;
+        public EnumRole role;
     }
 }
