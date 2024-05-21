@@ -6,7 +6,7 @@
         xmlns:loader="clr-namespace:VideoCreatorXAMLLibrary.Loader"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Loaded="OnControlLoaded"
+        Loaded="Window_OnLoaded"
         Closed="Window_Closed"
         ResizeMode="NoResize"
         Title="Video Creator" Height="850" Width="1200">

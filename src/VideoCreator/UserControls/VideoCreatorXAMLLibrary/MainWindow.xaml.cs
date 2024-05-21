@@ -34,6 +34,10 @@ namespace VideoCreatorXAMLLibrary
         private SelectedProjectEvent selectedProjectEvent;
         Window manageTimelineWindow;
 
+
+        /// <summary>
+        /// Constructor for Main Window
+        /// </summary>
         public MainWindow()
         {
             LogManagerHelper.WriteVerboseLog("Starting the windows application");
@@ -41,6 +45,9 @@ namespace VideoCreatorXAMLLibrary
             authApiViewModel = new AuthAPIViewModel();
         }
 
+        /// <summary>
+        /// Called when main window is closed
+        /// </summary>
         private void Window_Closed(object sender, EventArgs e)
         {
             LogManagerHelper.WriteVerboseLog("Initiating Application shutdown");
@@ -54,7 +61,10 @@ namespace VideoCreatorXAMLLibrary
             LogManagerHelper.WriteVerboseLog("Application shutdown completed");
         }
 
-        private async void OnControlLoaded(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Called when Main Window is loaded
+        /// </summary>
+        private async void Window_OnLoaded(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
             await Login();
@@ -64,6 +74,9 @@ namespace VideoCreatorXAMLLibrary
 
         #region == Sync Section ==
 
+        /// <summary>
+        /// Every time the window is loaded, local master data is synced with server
+        /// </summary>
         private async Task SyncMasterTablesAndRefresh()
         {
             LogManagerHelper.WriteVerboseLog("SyncMasterTables Started");
@@ -90,6 +103,9 @@ namespace VideoCreatorXAMLLibrary
             LogManagerHelper.WriteVerboseLog("SyncMasterTables Completed");
         }
 
+        /// <summary>
+        /// Sync App Table data
+        /// </summary>
         private async Task SyncApp(SQLiteConnection sqlCon)
         {
             var data = await authApiViewModel.GetAllApp();
@@ -97,6 +113,9 @@ namespace VideoCreatorXAMLLibrary
             SyncDbHelper.SyncAppForTransaction(data, sqlCon);
         }
 
+        /// <summary>
+        /// Sync Media Table data
+        /// </summary>
         private async Task SyncMedia(SQLiteConnection sqlCon)
         {
             var data = await authApiViewModel.GetAllMedia();
@@ -104,6 +123,9 @@ namespace VideoCreatorXAMLLibrary
             SyncDbHelper.SyncMediaForTransaction(data, sqlCon);
         }
 
+        /// <summary>
+        /// Sync Screen Table data
+        /// </summary>
         private async Task SyncScreens(SQLiteConnection sqlCon)
         {
             var data = await authApiViewModel.GetAllScreens();
@@ -111,6 +133,9 @@ namespace VideoCreatorXAMLLibrary
             SyncDbHelper.SyncScreenForTransaction(data, sqlCon);
         }
 
+        /// <summary>
+        /// Sync Company Table data
+        /// </summary>
         private async Task SyncCompany(SQLiteConnection sqlCon)
         {
             var data = await authApiViewModel.GetAllCompany();
@@ -118,6 +143,9 @@ namespace VideoCreatorXAMLLibrary
             SyncDbHelper.SyncCompanyForTransaction(data, sqlCon);
         }
 
+        /// <summary>
+        /// Sync Background Table data
+        /// </summary>
         private async Task SyncBackground(SQLiteConnection sqlCon)
         {
             var data = await authApiViewModel.GetAllBackground();
@@ -129,6 +157,9 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
+        /// <summary>
+        /// Main Grid > To Get Header Name
+        /// </summary>
         private string GetHeaderName(string name)
         {
             if (name.ToLower() == "project_id".ToLower())
@@ -178,6 +209,9 @@ namespace VideoCreatorXAMLLibrary
             return 50;
         }
 
+        /// <summary>
+        /// Main Grid > Get Cell Styles
+        /// </summary>
         private Style GetStyle(string name)
         {
             var style = new Style(typeof(DataGridColumnHeader));
@@ -193,6 +227,9 @@ namespace VideoCreatorXAMLLibrary
             return style;
         }
 
+        /// <summary>
+        /// Main Grid > Function to initialise the main screen for first call
+        /// </summary>
         private async Task InitialiseAndRefreshScreen(SQLiteConnection sqlCon)
         {
             downloadedProjects = DataManagerSqlLite.GetDownloadedProjectListForTransaction(sqlCon);
@@ -233,6 +270,9 @@ namespace VideoCreatorXAMLLibrary
             manageApplicationStack.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Main Grid > Function to initialise the main screen for next call
+        /// </summary>
         private async Task InitialiseAndRefreshScreenForSubsequentCall()
         {
             downloadedProjects = DataManagerSqlLite.GetDownloadedProjectList();
@@ -247,6 +287,9 @@ namespace VideoCreatorXAMLLibrary
             manageApplicationStack.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Main Grid > Context Menu opening
+        /// </summary>
         private void GridContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             DataGridCell cell;
@@ -341,6 +384,9 @@ namespace VideoCreatorXAMLLibrary
             return originalSource;
         }
 
+        /// <summary>
+        /// Main Grid > Remove not UI specific fields from API data
+        /// </summary>
         private List<ProjectListUI> RemoveUnnecessaryFields(List<ProjectList> projects)
         {
             if (projects == null)
@@ -365,6 +411,9 @@ namespace VideoCreatorXAMLLibrary
         }
 
 
+        /// <summary>
+        /// Main Grid > get Roles based upon permissions
+        /// </summary>
         private EnumRole GetRoles(string permission)
         {
             if (string.IsNullOrEmpty(permission))
@@ -426,6 +475,9 @@ namespace VideoCreatorXAMLLibrary
 
         #region == Events ==
 
+        /// <summary>
+        /// Main Grid > Set welcome message
+        /// </summary>
         private void SetWelcomeMessage(bool isLogOut = false)
         {
             if (isLogOut) { this.Title = "Video Creator"; return; }
@@ -438,6 +490,9 @@ namespace VideoCreatorXAMLLibrary
             }
         }
 
+        /// <summary>
+        /// Main Grid > Validatons on selected row
+        /// </summary>
         private bool PreValidations()
         {
             if (selectedItem == null)
@@ -458,7 +513,10 @@ namespace VideoCreatorXAMLLibrary
             return true;
         }
 
-        
+
+        /// <summary>
+        /// Main Grid > Refetch planning if planning data is updated on server
+        /// </summary>
         private async Task PlanningUpdatedFlow(SQLiteConnection sqlCon)
         {
             var isPlanningUpdated = await authApiViewModel.IsPlanningUpdated(selectedItem.project_id);
@@ -494,6 +552,9 @@ namespace VideoCreatorXAMLLibrary
 
         }
 
+        /// <summary>
+        /// Main Grid > Create planning data to Video Events
+        /// </summary>
         private async Task CreatePlanningAutomatically(SQLiteConnection sqlCon)
         {
             //Check if planning events exists or not
@@ -529,6 +590,9 @@ namespace VideoCreatorXAMLLibrary
             }
         }
 
+        /// <summary>
+        /// Main Grid > manage project context menu
+        /// </summary>
         private async void ManageProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             if (PreValidations() == false)
@@ -583,6 +647,9 @@ namespace VideoCreatorXAMLLibrary
             await InitialiseAndRefreshScreenForSubsequentCall();
         }
 
+        /// <summary>
+        /// Main Grid > Download project context menu
+        /// </summary>
         private async void DownloadProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             var selectedItemFull = await authApiViewModel.GetProjectById(selectedItem.project_id);
@@ -617,6 +684,9 @@ namespace VideoCreatorXAMLLibrary
                 MessageBox.Show("Something went wrong, please try again later", "Download Error", MessageBoxButton.OK, MessageBoxImage.Stop);
         }
 
+        /// <summary>
+        /// Main Grid > Submit project context menu
+        /// </summary>
         private async void SubmitProjectMenu_Click(object sender, RoutedEventArgs e)
         {
             var submitProjectMessage = await authApiViewModel.SubmitProject(selectedProjectEvent);
@@ -625,6 +695,9 @@ namespace VideoCreatorXAMLLibrary
         }
 
 
+        /// <summary>
+        /// Main Grid > Refresh Button
+        /// </summary>
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -632,31 +705,19 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Main Grid > Close Button
+        /// </summary>
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
 
-
-
-
-        //private void BtnInsertLocAudio_Click(object sender, RoutedEventArgs e)
-        //{
-        //    InitialiseDbHelper.PopulateLOCAudioTable();
-        //}
-
-        private void BtnGetLOCAudio_Click(object sender, RoutedEventArgs e)
-        {
-            var data = DataManagerSqlLite.GetLocAudio();
-            var dataResult = $"id \t notesid \t media.Length \r\n";
-            foreach (var item in data)
-            {
-                dataResult += item.ToString();
-            }
-            MessageBox.Show(dataResult, "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
         #endregion == Events ==
+
+        /// <summary>
+        /// Main Grid > row selection changed event
+        /// </summary>
         private void datagrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             selectedItem = datagrid.SelectedItem != null ? (ProjectListUI)datagrid.SelectedItem : null;
@@ -706,6 +767,9 @@ namespace VideoCreatorXAMLLibrary
             return dataTable;
         }
 
+        /// <summary>
+        /// Called when app is closed
+        /// </summary>
         public void Dispose()
         {
             Console.WriteLine("The dispose() function has been called and the resources have been released!");

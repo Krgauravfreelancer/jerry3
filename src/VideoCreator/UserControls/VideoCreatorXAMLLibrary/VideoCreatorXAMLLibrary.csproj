@@ -152,19 +152,9 @@
     <Compile Include="Timeline\Timeline_UserControl2.xaml.cs">
       <DependentUpon>Timeline_UserControl2.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VoiceAverage\VoiceAverageHelper.cs" />
-    <Compile Include="VoiceAverage\VoiceAverage_Form.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VoiceAverage\VoiceAverage_Form.Designer.cs">
-      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VoiceAverage\VoiceAverage_Form.resx">
-      <DependentUpon>VoiceAverage_Form.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -322,8 +312,6 @@
       <Version>0.3.38</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LocalVoice\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
