@@ -37,6 +37,14 @@ namespace VideoCreatorXAMLLibrary
         private int selectedVideoEventId = -1;
         private int undoVideoEventId = -1;
 
+        
+        
+        /// <summary>
+        /// Constructor to call the manage timeline
+        /// </summary>
+        /// <param name="_selectedProjectEvent"> selected project event from main grid</param>
+        /// <param name="_authApiViewModel">Authentication API model</param>
+        /// <param name="_readonlyFlag">Whether to open window in readonly mode or not</param>
         public ManageTimeline_UserControl(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool _readonlyFlag)
         {
             InitializeComponent();
@@ -59,6 +67,9 @@ namespace VideoCreatorXAMLLibrary
 
 
 
+        /// <summary>
+        /// Initialize all child usercontrol and bind the events which are needed to perform the functions
+        /// </summary>
         private void InitializeChildren()
         {
             popup = new PopupWindow();
@@ -82,6 +93,9 @@ namespace VideoCreatorXAMLLibrary
             TimelineUserConrol.ContextMenu_SaveAllTimelines_Clicked += TimelineUserConrol_SaveAllTimelines_Clicked;
         }
 
+        /// <summary>
+        /// refresh the timeline once any CRUD operations are completed
+        /// </summary>
         private void Refresh()
         {
             TimelineUserConrol.Refresh();
@@ -90,10 +104,11 @@ namespace VideoCreatorXAMLLibrary
         }
 
 
-        
-
         #region == Video Event Context Menu ==
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Run context menu option is selected
+        /// </summary>
         private void TimelineUserConrol_ContextMenu_Run_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -117,6 +132,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Add Video Event context menu option is selected
+        /// </summary>
         private void TimelineUserConrol_ContextMenu_AddVideoEvent_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -210,6 +228,10 @@ namespace VideoCreatorXAMLLibrary
 
 
         #region == Manage Media Section ==
+
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media context menu option is selected
+        /// </summary>
         private void TimelineUserConrol_ContextMenu_ManageMedia_Clicked(object sender, EventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -252,8 +274,13 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+
+
         #region == Manage Media VideoEvent Section==
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> New Video Event is added
+        /// </summary>
         private async Task ManageMedia_AddVideoEvents(Window GeneratedRecorderWindow, DataTable datatable, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {datatable?.Rows.Count} events ..");
@@ -262,6 +289,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> Delete Video Event is called
+        /// </summary>
         private async Task ManageMedia_DeletedVideoEvents(Window GeneratedRecorderWindow, int videoeventLocalId, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
@@ -270,6 +300,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> Adjust Video Event is called
+        /// </summary>
         private async Task ManageMedia_AdjustVideoEvents(Window GeneratedRecorderWindow, DataTable table, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(this, loader, $"Adjusting Video Events");
@@ -279,8 +312,12 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
-        #region == Manage Media Notes Section ==
 
+        #region == Manage Media Notes Section ==
+        
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> New Note is created
+        /// </summary>
         private async Task ManageMedia_NotesCreatedEvent(Window GeneratedRecorderWindow, DataTable dtNotes, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dtNotes?.Rows.Count} notes ..");
@@ -300,6 +337,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> Note is changed
+        /// </summary>
         private async Task ManageMedia_NotesChangedEvent(Window GeneratedRecorderWindow, DataTable dtNotes, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dtNotes?.Rows?.Count} Notes");
@@ -320,6 +360,9 @@ namespace VideoCreatorXAMLLibrary
             uc.RefreshData();
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Manage Media ==> Note is Deleted
+        /// </summary>
         private async Task ManageMedia_NotesDeletedEvent(Window GeneratedRecorderWindow, List<int> Ids, ManageMediaWindowManager uc)
         {
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
@@ -344,6 +387,9 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Logic when Video Event is Deleted
+        /// </summary>
         private async Task HandleDeleteLogicForVideoEvent(int videoeventLocalId)
         {
             //Logic Here
@@ -456,6 +502,9 @@ namespace VideoCreatorXAMLLibrary
                 await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: false, EnumTrack.CALLOUT1, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Edit Design form is called
+        /// </summary>
         private async void TimelineUserConrol_EditFormEvent(object sender, int editVideoeventLocalId)
         {
             var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false).FirstOrDefault();
@@ -484,7 +533,9 @@ namespace VideoCreatorXAMLLibrary
             }
         }
 
-
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Event is deleted
+        /// </summary>
         private async void TimelineUserConrol_DeleteEventOnTimelines(object sender, int videoeventLocalId)
         {
             LoaderHelper.ShowLoader(this, loader, $"Deleting Event & shifting other events");
@@ -495,6 +546,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Event ==> TimelineUserConrol ==> Event is undeleted (undo)
+        /// </summary>
         private async void TimelineUserConrol_UndeleteDeletedEvent_Clicked(object sender, EventArgs e)
         {
             var canUndelete = ShiftEventsHelper.CheckIfUndeleteCanbeDone(undoVideoEventId, TimelineUserConrol);
@@ -526,6 +580,9 @@ namespace VideoCreatorXAMLLibrary
 
         #region == Add Video/Image Event ==
 
+        /// <summary>
+        /// Logic when new videoevent is deleted
+        /// </summary>
         private async Task AddVideoEvent_Clicked(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
@@ -533,6 +590,9 @@ namespace VideoCreatorXAMLLibrary
                 await ProcessVideoSegmentDataRowByRow(row);
         }
 
+        /// <summary>
+        /// Logic to process video segment data one by one as there can be N events
+        /// </summary>
         private async Task<int> ProcessVideoSegmentDataRowByRow(DataRow row)
         {
             DataTable dtNotes = null;
@@ -556,7 +616,9 @@ namespace VideoCreatorXAMLLibrary
                 return SuccessFlowForSaveImageorVideo(row, addedData);
         }
 
-
+        /// <summary>
+        /// Logic when new videoevent is added and success result from server is returned
+        /// </summary>
         private int SuccessFlowForSaveImageorVideo(DataRow row, VideoEventResponseModel addedData)
         {
             var insertedVideoSegmentId = -1;
@@ -580,6 +642,9 @@ namespace VideoCreatorXAMLLibrary
             return insertedVideoSegmentId;
         }
 
+        /// <summary>
+        /// Logic when new videoevent is added and failure result from server is returned
+        /// </summary>
         private int FailureFlowForSaveImageorVideo(DataRow row)
         {
             // Save the record locally with server Id = temp and issynced = false
@@ -647,9 +712,6 @@ namespace VideoCreatorXAMLLibrary
             return notesDataTable;
         }
 
-
-
-
         #endregion == Add Video/Image Event ==
 
         #endregion
@@ -657,7 +719,9 @@ namespace VideoCreatorXAMLLibrary
 
         #region == ContextMenu > AddImageEvent > Using CB Library ==
 
-
+        /// <summary>
+        /// TimelineUserConrol ==> Add Image Event From CB Library is Clicked
+        /// </summary>
         private void TimelineUserConrol_AddImageEventFromCBLibrary_Clicked(object sender, string startTime)
         {
             int trackId = (int)EnumTrack.IMAGEORVIDEO;
@@ -683,6 +747,9 @@ namespace VideoCreatorXAMLLibrary
                 LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Use and save image logic for TimelineUserConrol ==> Add Image Event From CB Library is Clicked 
+        /// </summary>
         private async void MediaLibraryUserControl_BtnUseAndSaveClickedEvent(DataTable dataTable)
         {
             // We need to insert the Data to server here and once it is success, then to local DB
@@ -693,9 +760,12 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
-        
+
         #region == ContextMenu > OtherEvents ==
 
+        /// <summary>
+        /// Logic for TimelineUserConrol ==> Context menu ==> Save all timeline is Clicked 
+        /// </summary>
         private async void TimelineUserConrol_SaveAllTimelines_Clicked(object sender, List<CBVVideoEvent> modifiedEvents)
         {
             LoaderHelper.ShowLoader(this, loader, "Processing ...");
@@ -739,6 +809,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// Logic for TimelineUserConrol ==> Timeline ==> When selected video event is changed 
+        /// </summary>
         private void TimelineUserConrol_VideoEventSelectionChangedEvent(object sender, TimelineSelectedEvent selectedEvent)
         {
             if (selectedEvent.Track == EnumTrack.NOTES)
@@ -780,7 +853,9 @@ namespace VideoCreatorXAMLLibrary
         //}
         */
 
-
+        /// <summary>
+        /// Logic for TimelineUserConrol ==> Timeline ==> When tracbar mouse is moved
+        /// </summary>
         private void TimelineUserConrol_TrackbarMouseMoveEvent(object sender, ManageMedia_UserControl.Models.TrackbarMouseMoveEventModel _mouseEventToProcess)
         {
             mouseEventToProcess = _mouseEventToProcess;
@@ -792,9 +867,12 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
-        
+
         #region == ContextMenu > CloneEvent ==
-        
+
+        /// <summary>
+        /// Logic for TimelineUserConrol ==> Context menu ==> Clone Event is Clicked 
+        /// </summary>
         private async void TimelineUserConrol_ContextMenu_CloneEvent_Clicked(object sender, FormOrCloneEvent payload)
         {
             LoaderHelper.ShowLoader(this, loader);
@@ -874,9 +952,12 @@ namespace VideoCreatorXAMLLibrary
 
         #endregion
 
-        
+
         #region == Design/Form Context Menu Option ==
 
+        /// <summary>
+        /// Logic for TimelineUserConrol ==> ContextMenu > Add Callout 1/ callout 2 or Form is Clicked
+        /// </summary>
         private async Task HandleFormLogic(FormOrCloneEvent calloutEvent, EnumTrack track, string imagePath, bool isFormEvent)
         {
             await FormHandlerHelper.CallOut(calloutEvent, "Designer", selectedProjectEvent, authApiViewModel, track, this, loader, imagePath, isFormEvent);
@@ -884,6 +965,9 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.HideLoader(this, loader);
         }
 
+        /// <summary>
+        /// TimelineUserConrol ==> ContextMenu > Add Callout 1 is Clicked
+        /// </summary>
         private async void TimelineUserConrol_ContextMenu_AddCallout1_Clicked(object sender, FormOrCloneEvent calloutEvent)
         {
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
@@ -896,6 +980,9 @@ namespace VideoCreatorXAMLLibrary
                 await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT1, null, false);
         }
 
+        /// <summary>
+        /// TimelineUserConrol ==> ContextMenu > Add Callout 2 is Clicked
+        /// </summary>
         private async void TimelineUserConrol_ContextMenu_AddCallout2_Clicked(object sender, FormOrCloneEvent calloutEvent)
         {
             LoaderHelper.ShowLoader(this, loader, "Callout Window is opened ..");
@@ -908,6 +995,9 @@ namespace VideoCreatorXAMLLibrary
                 await HandleFormLogic(calloutEvent, EnumTrack.CALLOUT2, null, false);
         }
 
+        /// <summary>
+        /// TimelineUserConrol ==> ContextMenu > Add Form event is Clicked
+        /// </summary>
         private async void TimelineUserConrol_ContextMenu_AddFormEvent_Clicked(object sender, FormOrCloneEvent calloutEvent)
         {
             LoaderHelper.ShowLoader(this, loader, "Form Window is opened ..");
@@ -986,6 +1076,9 @@ namespace VideoCreatorXAMLLibrary
         }
 
 
+        /// <summary>
+        /// Logic for Downloading server video events when local DB does not have the event(s)
+        /// </summary>
         private async void btnDownloadServer_Click(object sender, RoutedEventArgs e)
         {
             var confirm = MessageBox.Show($"This will overwrite all local changes and server data will be synchronised to local DB", "Please confirm", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -996,6 +1089,9 @@ namespace VideoCreatorXAMLLibrary
             }
         }
 
+        /// <summary>
+        /// Called when Dispose is called
+        /// </summary>
         public void Dispose()
         {
             Console.WriteLine("The ManageTimeline_UserControl > dispose() function has been called and the resources have been released!");
