@@ -86,12 +86,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Audio\Audio_CreateEventWindow.xaml.cs">
-      <DependentUpon>Audio_CreateEventWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Audio\Audio_UserControl.xaml.cs">
-      <DependentUpon>Audio_UserControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Auth\AuthAPIViewModel.cs" />
     <Compile Include="Auth\VideoCreatorAuthHelper.cs" />
     <Compile Include="Design\Designer_UserControl.xaml.cs">
@@ -99,12 +93,6 @@
     </Compile>
     <Compile Include="Design\DesignImager_UserControl.xaml.cs">
       <DependentUpon>DesignImager_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="FullScreen\FullScreen_TimeLine_UserControl.xaml.cs">
-      <DependentUpon>FullScreen_TimeLine_UserControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="FullScreen\FullScreen_UserControl.xaml.cs">
-      <DependentUpon>FullScreen_UserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\BackgroundProcessHelper.cs" />
     <Compile Include="Helpers\CloneEventHandlerHelper.cs" />
@@ -184,27 +172,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Audio\Audio_CreateEventWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Audio\Audio_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Design\Designer_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Design\DesignImager_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FullScreen\FullScreen_TimeLine_UserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="FullScreen\FullScreen_UserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -272,16 +244,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MediaLibraryData\Resources\first.png">
+    <EmbeddedResource Include="Icons\MediaResources\first.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="MediaLibraryData\Resources\last.png">
+    <EmbeddedResource Include="Icons\MediaResources\last.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="MediaLibraryData\Resources\next.png">
+    <EmbeddedResource Include="Icons\MediaResources\next.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="MediaLibraryData\Resources\previous.png">
+    <EmbeddedResource Include="Icons\MediaResources\previous.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
