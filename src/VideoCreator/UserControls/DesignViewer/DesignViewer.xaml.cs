@@ -19,6 +19,9 @@ namespace DesignViewerNp.controls
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Load design from Data table
+        /// </summary>
         public void LoadDesign(DataTable dataTable)
         {
             container.Children.Clear();
@@ -29,6 +32,9 @@ namespace DesignViewerNp.controls
             }
         }
 
+        /// <summary>
+        /// Load design from Model
+        /// </summary>
         public void LoadDesignForEdit(CBVDesign design)
         {
             if (container.Children.Count > 0)
@@ -45,26 +51,12 @@ namespace DesignViewerNp.controls
                         continue;
                     AddElement(text);
                 }
-                //XmlReader rdr = XmlReader.Create(new System.IO.StringReader($"<root>{design.design_xml}</root>"));
-                //while (rdr.Read())
-                //{
-                //    if (rdr.NodeType == XmlNodeType.Element && rdr.Depth == 1)
-                //    {
-                //        Console.WriteLine(rdr.LocalName);
-                //        Console.WriteLine(rdr.ReadInnerXml());
-                //        Console.WriteLine("---------------------------");
-                //    }
-                //}
-                //var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                //foreach (var item in objects)
-                //{
-                //    if (item.StartsWith("<Image"))
-                //        continue;
-                //    AddElement(item);
-                //}
             }
         }
 
+        /// <summary>
+        /// Add new element to canvas
+        /// </summary>
         private void AddElement(string xaml)
         {
             string canvasStart = @"<Canvas 

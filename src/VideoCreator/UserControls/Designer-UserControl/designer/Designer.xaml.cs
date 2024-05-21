@@ -229,23 +229,6 @@ namespace DesignerNp.controls
                         continue;
                     AddElement(text);
                 }
-                //XmlReader rdr = XmlReader.Create(new System.IO.StringReader($"<root>{design.design_xml}</root>"));
-                //while (rdr.Read())
-                //{
-                //    if (rdr.NodeType == XmlNodeType.Element && rdr.Depth == 1)
-                //    {
-                //        Console.WriteLine(rdr.LocalName);
-                //        Console.WriteLine(rdr.ReadInnerXml());
-                //        Console.WriteLine("---------------------------");
-                //    }
-                //}
-                //var objects = design.design_xml?.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-                //foreach (var item in objects)
-                //{
-                //    if (item.StartsWith("<Image"))
-                //        continue;
-                //    AddElement(item);
-                //}
             }
         }
 
@@ -269,6 +252,9 @@ namespace DesignerNp.controls
             return dataTable;
         }
 
+        /// <summary>
+        /// Add new element to canvas
+        /// </summary>
         private void AddDesign(string shape, double positionX, double positionY)
         {
             string canvasStart = @"<Canvas 
@@ -321,6 +307,9 @@ namespace DesignerNp.controls
 
             container.Children.Add(uIElement);
         }
+        /// <summary>
+        /// Add new element to canvas
+        /// </summary>
         private void AddElement(string xaml)
         {
             string canvasStart = @"<Canvas
@@ -349,7 +338,9 @@ namespace DesignerNp.controls
             }
         }
 
-
+        /// <summary>
+        /// Drag drop > left button is down
+        /// </summary>
         private void container_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(e.OriginalSource is Canvas))
@@ -380,6 +371,9 @@ namespace DesignerNp.controls
             }
         }
 
+        /// <summary>
+        /// Drag drop > left button is up
+        /// </summary>
         private void container_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             container.Focus();
@@ -434,6 +428,9 @@ namespace DesignerNp.controls
             }
         }
 
+        /// <summary>
+        /// Drag drop > Selected item 
+        /// </summary>
         private void setSelection(UIElement uiElement, TextBox textBox, bool isSelected)
         {
             if (null == uiElement)
@@ -526,7 +523,10 @@ namespace DesignerNp.controls
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Drag drop > Mouse is moved
+        /// </summary>
         private void container_MouseMove(object sender, MouseEventArgs e)
         {
             if (!(e.OriginalSource is Canvas))
@@ -608,12 +608,17 @@ namespace DesignerNp.controls
             zoom_event(sender, zoom);
         }
 
-
+        /// <summary>
+        /// Called when user control is loaded
+        /// </summary>
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             adornerLayer = AdornerLayer.GetAdornerLayer(container);
         }
 
+        /// <summary>
+        /// Called when key is up
+        /// </summary>
         private void container_KeyUp(object sender, KeyEventArgs e)
         {
             int index = -1;
