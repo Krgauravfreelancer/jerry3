@@ -14,6 +14,13 @@ namespace Sqllite_Library.Business
     {
 
         #region == Database Methods ==
+        
+        /// <summary>
+        /// method to get opened connection for local DB, create DB if nt exist
+        /// </summary>
+        /// <param name="encryptFlag">Whether Db is enrypted or not</param>
+        /// <param name="canCreateRegistryIfNotExists">insert entries in registry for futur use</param>
+        /// <returns></returns>
         public static SQLiteConnection GetOpenedConnection(bool encryptFlag, bool canCreateRegistryIfNotExists = false)
         {
             string message;
@@ -30,6 +37,11 @@ namespace Sqllite_Library.Business
             return sqlCon;
         }
 
+
+        /// <summary>
+        /// Clear registry items
+        /// </summary>
+        /// <returns></returns>
         public static string ClearRegistryAndDeleteDB()
         {
             string message;
@@ -44,6 +56,12 @@ namespace Sqllite_Library.Business
 
         #region == Insert Methods ==
 
+
+        /// <summary>
+        /// Insert new records to Project table
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToProject(DataTable data)
         {
             //foreach (DataRow rowMain in data.Rows)
@@ -370,6 +388,12 @@ namespace Sqllite_Library.Business
 
         #endregion
 
+
+        /// <summary>
+        /// Insert new records to Notes table
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToNotes(DataTable data)
         {
             var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
@@ -379,6 +403,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToNotes(data);
         }
 
+        /// <summary>
+        /// Insert new records to Notes table (using Transactions)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToNotesForTransaction(DataTable data, SQLiteConnection sqlCon)
         {
             var videoeventFlag = SqlLiteData.ReferentialKeyPresentForTransaction(sqlCon, "cbv_videoevent", "videoevent_id", (int)data?.Rows[0]["fk_notes_videoevent"]);
@@ -388,6 +417,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToNotesForTransaction(data, sqlCon);
         }
 
+        /// <summary>
+        /// Insert new records to LOC table (wo using Transactions)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> InsertRowsToLocAudio(DataTable data)
         {
             //var videoeventFlag = SqlLiteData.ReferentialKeyPresent("cbv_notes", "notes_id", (int)data?.Rows[0]["fk_locaudio_notes"]);
@@ -397,6 +431,11 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToLocAudio(data);
         }
 
+        /// <summary>
+        /// Insert new records to Final MP4 table (wo using Transactions)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToFinalMp4(DataTable data)
         {
             //var projectFlag = SqlLiteData.ReferentialKeyPresent("cbv_project", "project_id", (int)data?.Rows[0]["fk_finalmp4_project"]);
@@ -406,11 +445,21 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToFinalMp4(data);
         }
 
+        /// <summary>
+        /// Insert new records to Company table (wo using Transactions)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToCompany(DataTable data)
         {
             return SqlLiteData.InsertRowsToCompany(data);
         }
 
+        /// <summary>
+        /// Insert new records to background table (wo using Transactions)
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static int InsertRowsToBackground(DataTable data)
         {
             //var companyFlag = SqlLiteData.ReferentialKeyPresent("cbv_company", "company_id", (int)data?.Rows[0]["fk_background_company"]);
@@ -420,11 +469,21 @@ namespace Sqllite_Library.Business
             return SqlLiteData.InsertRowsToBackground(data);
         }
 
+        /// <summary>
+        /// Insert new records to Voice table (wo using Transactions) - NOT IN USE
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> InsertRowsToVoiceTimer(DataTable data)
         {
             return SqlLiteData.InsertRowsToVoiceTimer(data);
         }
 
+        /// <summary>
+        /// Insert new records to Voice Avg table (wo using Transactions) - NOT IN USE
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static List<int> InsertRowsToVoiceAverage(DataTable data)
         {
             return SqlLiteData.InsertRowsToVoiceAverage(data);
@@ -435,24 +494,44 @@ namespace Sqllite_Library.Business
 
         #region == Sync methods ==
 
+        /// <summary>
+        /// Upsert records to APP table (wo using Transactions)
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
         public static List<int> SyncApp(DataTable dataTable)
         {
             var insertedIds = SqlLiteData.SyncApp(dataTable);
             return insertedIds;
         }
 
+        /// <summary>
+        /// Upsert records to SCREEN table (wo using Transactions)
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
         public static List<int> SyncScreen(DataTable dataTable)
         {
             var insertedId = SqlLiteData.SyncScreen(dataTable);
             return insertedId;
         }
 
+        /// <summary>
+        /// Upsert records to MEDIA table (wo using Transactions)
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
         public static List<int> SyncMedia(DataTable dataTable)
         {
             var insertedIds = SqlLiteData.SyncMedia(dataTable);
             return insertedIds;
         }
 
+        /// <summary>
+        /// Upsert records to COMPANY table (wo using Transactions)
+        /// </summary>
+        /// <param name="dataTable"></param>
+        /// <returns></returns>
         public static List<int> SyncCompany(DataTable dataTable)
         {
             var insertedIds = SqlLiteData.SyncCompany(dataTable);
@@ -464,129 +543,205 @@ namespace Sqllite_Library.Business
 
         #region == Get Methods ==
 
+        /// <summary>
+        /// Get records From MEDIA table (wo using Transactions)
+        /// </summary>
+        /// <returns></returns>
         public static List<CBVMedia> GetMedia()
         {
             return SqlLiteData.GetMedia();
         }
 
+        /// <summary>
+        /// Get records From SCREENS table (wo using Transactions)
+        /// </summary>
+        /// <returns></returns>
         public static List<CBVScreen> GetScreens()
         {
             return SqlLiteData.GetScreens();
         }
 
+        /// <summary>
+        /// Get records From APP table (wo using Transactions)
+        /// </summary>
+        /// <returns></returns>
         public static List<CBVApp> GetApp()
         {
             return SqlLiteData.GetApp();
         }
 
+        /// <summary>
+        /// Get records From Planning table (wo using Transactions)
+        /// </summary>
         public static List<CBVPlanning> GetPlanning(int projectId, bool dependentFlag = true)
         {
             return SqlLiteData.GetPlanning(projectId, dependentFlag);
         }
 
+        /// <summary>
+        /// Get records From Planning table (using Transactions)
+        /// </summary>
         public static List<CBVPlanning> GetPlanningForTransaction(int projectId, SQLiteConnection sqlCon, bool dependentFlag = true)
         {
             return SqlLiteData.GetPlanningForTransaction(projectId, sqlCon, dependentFlag);
         }
 
+        /// <summary>
+        /// Get specific record From Planning table (wo using Transactions)
+        /// </summary>
         public static CBVPlanning GetPlanningById(int planningid = 0, Int64 planningServerId = 0)
         {
             return SqlLiteData.GetPlanningById(planningid, planningServerId);
         }
 
+        /// <summary>
+        /// Get downloaded projects (wo using Transactions)
+        /// </summary>
         public static List<CBVProjectForJoin> GetDownloadedProjectList()
         {
             return SqlLiteData.GetDownloadedProjectList();
         }
 
+        /// <summary>
+        /// Get downloaded projects (using Transactions)
+        /// </summary>
         public static List<CBVProjectForJoin> GetDownloadedProjectListForTransaction(SQLiteConnection sqlCon)
         {
             return SqlLiteData.GetDownloadedProjectListForTransaction(sqlCon);
         }
 
+        /// <summary>
+        /// Get specific record from project (wo using Transactions)
+        /// </summary>
         public static CBVProject GetProjectById(int projectId = -1, bool projdetFlag = false)
         {
             return SqlLiteData.GetProjectById(projectId, projdetFlag).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Get specific record from project (using Transactions)
+        /// </summary>
         public static CBVProject GetProjectByIdForTransaction(SQLiteConnection sqlCon, int projectId = -1, bool projdetFlag = false)
         {
             return SqlLiteData.GetProjectByIdForTransaction(projectId, projdetFlag, sqlCon).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Get records count for project table (wo using Transactions)
+        /// </summary>
         public static int GetProjectsCount()
         {
             return SqlLiteData.GetCount("cbv_project");
         }
 
+        /// <summary>
+        /// Get records count for Background table (wo using Transactions)
+        /// </summary>
         public static int GetBackgroundsCount()
         {
             return SqlLiteData.GetCount("cbv_background");
         }
 
+        /// <summary>
+        /// Get records count for Voice Timer table (wo using Transactions)
+        /// </summary>
         public static int GetVoiceTimerCount()
         {
             return SqlLiteData.GetCount("cbv_voicetimer");
         }
 
+        /// <summary>
+        /// Get records count for Voice Average table (wo using Transactions)
+        /// </summary>
         public static int GetVoiceAverageCount() // For Testing Purpose
         {
             return SqlLiteData.GetCount("cbv_voiceaverage");
         }
 
+        /// <summary>
+        /// Get records count for videoevents based upong 2 params (wo using Transactions)
+        /// </summary>
         public static int GetVideoEventCountProjectAndDetailId(int ProjectId, int ProjectdetailId)
         {
             return SqlLiteData.GetVideoEventCountProjectAndDetailId(ProjectId, ProjectdetailId);
         }
 
-        // Lets not fetch dependent tables be default and thats why flag is false
+        /// <summary>
+        /// Get records count for videoevents based upong 3 params (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetVideoEvents(int projdetId = 0, bool dependentDataFlag = false, bool designFlag = false)
         {
             return SqlLiteData.GetVideoEvents(projdetId, dependentDataFlag, designFlag);
         }
 
+        /// <summary>
+        /// Get placeholder videoevents - For Johan (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetPlaceholderVideoEvents(int projdetId)
         {
             return SqlLiteData.GetPlaceholderVideoEvents(projdetId);
         }
 
+        /// <summary>
+        /// Check if provided id is placeholder or not - For Johan (wo using Transactions)
+        /// </summary>
         public static bool IsPlaceHolderEvent(int videoeventId)
         {
             return SqlLiteData.IsPlaceHolderEvent(videoeventId);
         }
 
 
+        /// <summary>
+        /// Find all the events which are not present on server but locally (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetNotSyncedVideoEvents(int projdetId = 0, bool dependentDataFlag = true)
         {
             return SqlLiteData.GetNotSyncedVideoEvents(projdetId, dependentDataFlag);
         }
 
+        /// <summary>
+        /// Find specific videoevent by local Id (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetVideoEventbyId(int videoeventId = 0, bool dependentDataFlag = false, bool designFlag = false)
         {
             return SqlLiteData.GetVideoEventbyId(videoeventId, dependentDataFlag, designFlag);
         }
 
+        /// <summary>
+        /// Find specific videoevent by server Id (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetVideoEventbyServerId(Int64 videoeventServerId = 0)
         {
             return SqlLiteData.GetVideoEventbyServerId(videoeventServerId);
         }
 
-
+        /// <summary>
+        /// Find videoevents which needs to be shifted based upon End Time (wo using Transactions)
+        /// </summary>
         public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyEndTime(int fk_videoevent_projdet, string endTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
             return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, endTime, track);
         }
 
+        /// <summary>
+        /// Find videoevents which needs to be shifted based upon Start Time (wo using Transactions)
+        /// </summary>
         public static List<CBVShiftVideoEvent> GetShiftVideoEventsbyStartTime(int fk_videoevent_projdet, string startTime, EnumTrack track = EnumTrack.IMAGEORVIDEO)
         {
             return SqlLiteData.GetShiftVideoEventsbyTime(fk_videoevent_projdet, startTime, track);
         }
 
+        /// <summary>
+        /// Find videoevents which are overlapping - based upon start/end time (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoEvent> GetOverlappingCalloutsByTime(int fk_videoevent_projdet, string startTime, string endtime)
         {
             return SqlLiteData.GetOverlappingCalloutsByTime(fk_videoevent_projdet, startTime, endtime);
         }
 
+        /// <summary>
+        /// Get records count for Videoevent table (wo using Transactions)
+        /// </summary>
         public static int GetVideoEventsCount()
         {
             return SqlLiteData.GetCount("cbv_videoevent");
@@ -599,61 +754,97 @@ namespace Sqllite_Library.Business
         }
         */
 
+        /// <summary>
+        /// Find all videosegment for provided videoevent Id (wo using Transactions)
+        /// </summary>
         public static List<CBVVideoSegment> GetVideoSegment(int VideoEventId = -1)
         {
             return SqlLiteData.GetVideoSegment(VideoEventId);
         }
 
+        /// <summary>
+        /// Find all Design for provided videoevent Id (wo using Transactions)
+        /// </summary>
         public static List<CBVDesign> GetDesign(int VideoEventId = -1)
         {
             return SqlLiteData.GetDesign(VideoEventId);
         }
 
+        /// <summary>
+        /// Find all Notes for provided videoevent Id (wo using Transactions)
+        /// </summary>
         public static List<CBVNotes> GetNotes(int VideoEventId = -1)
         {
             return SqlLiteData.GetNotes(VideoEventId);
         }
 
+        /// <summary>
+        /// Find specific notes record by local id (wo using Transactions)
+        /// </summary>
         public static List<CBVNotes> GetNotesbyId(int notesId)
         {
             return SqlLiteData.GetNotesbyId(notesId);
         }
 
+        /// <summary>
+        /// Find max index for notes records by videoevent Id (wo using Transactions)
+        /// </summary>
         public static int GetMaxIndexForNotes(int fkVideoEventId)
         {
             return SqlLiteData.GetMaxIndexForNotes(fkVideoEventId);
         }
 
+        /// <summary>
+        /// Not in use
+        /// </summary>
         public static List<CBVLocAudio> GetLocAudio(int notesId = -1)
         {
             return SqlLiteData.GetLocAudio(notesId);
         }
 
+        /// <summary>
+        /// not in use
+        /// </summary>
         public static List<CBVFinalMp4> GetFinalMp4(int ProjectId = -1, bool dependentDataFlag = false)
         {
             return SqlLiteData.GetFinalMp4(ProjectId, dependentDataFlag);
         }
 
+        /// <summary>
+        /// Find All company records (wo using Transactions)
+        /// </summary>
         public static List<CBVCompany> GetCompany()
         {
             return SqlLiteData.GetCompany();
         }
-
+        
+        /// <summary>
+        /// Find background by company Id (wo using Transactions)
+        /// </summary>
         public static List<CBVBackground> GetBackground(int company_id = -1)
         {
             return SqlLiteData.GetBackground(company_id);
         }
 
+        /// <summary>
+        /// Find background by company Id (using Transactions)
+        /// </summary>
         public static List<CBVBackground> GetBackgroundForTransaction(SQLiteConnection sqlCon, int company_id = -1)
         {
             return SqlLiteData.GetBackgroundForTransaction(company_id, sqlCon);
         }
 
+        /// <summary>
+        /// Find VoiceTimers - Not In Use (WO using Transactions)
+        /// </summary>
         public static List<CBVVoiceTimer> GetVoiceTimers()
         {
             return SqlLiteData.GetVoiceTimers();
         }
 
+        /// <summary>
+        /// Find VoiceAverage - Not In Use (WO using Transactions)
+        /// </summary>
         public static List<CBVVoiceAvergae> GetVoiceAverage()
         {
             return SqlLiteData.GetVoiceAverage();
@@ -664,31 +855,49 @@ namespace Sqllite_Library.Business
 
         #region == Update Methods ==
 
+        /// <summary>
+        /// Update Rows to Project table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToProject(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToProject(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to Project table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToVideoEvent(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToVideoEvent(dataTable);
         }
 
+        /// <summary>
+        /// Update VideoEvent table > Server Id (WO using Transactions)
+        /// </summary>
         public static void UpdateVideoEventDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
         {
             SqlLiteData.UpdateServerId("videoevent", localId, serverId, ErrorMessage);
         }
 
+        /// <summary>
+        /// Update Rows to VideoSegment table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToVideoSegment(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToVideoSegment(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to VideoSegment table based upon server Id (WO using Transactions)
+        /// </summary>
         public static void UpdateVideoSegmentDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
         {
             SqlLiteData.UpdateServerId("videosegment", localId, serverId, ErrorMessage);
         }
 
+        /// <summary>
+        /// Update Design table > Server Id (WO using Transactions)
+        /// </summary>
         public static void UpdateDesignDataTableServerId(int localId, Int64 serverId, string ErrorMessage = "")
         {
             SqlLiteData.UpdateServerId("design", localId, serverId, ErrorMessage);
@@ -702,46 +911,73 @@ namespace Sqllite_Library.Business
         }
         */
 
+        /// <summary>
+        /// Update Rows to Design table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToDesign(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToDesign(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to Notes table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToNotes(DataTable dataTable, bool isNotesServerId = false)
         {
             SqlLiteData.UpdateRowsToNotes(dataTable, isNotesServerId);
         }
 
+        /// <summary>
+        /// Update Rows to Notes table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToNotes(DataRow dr)
         {
             SqlLiteData.UpdateRowsToNotes(dr);
         }
 
+        /// <summary>
+        /// Update Rows to LocAudio table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToLocAudio(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToLocAudio(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to FinalMp4 table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToFinalMp4(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToFinalMp4(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to VoiceTimer table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToVoiceTimer(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToVoiceTimer(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to VoiceAverage table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void UpdateRowsToVoiceAverage(DataTable dataTable)
         {
             SqlLiteData.UpdateRowsToVoiceAverage(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to shift VideoEvents based upon datatable (WO using Transactions)
+        /// </summary>
         public static void ShiftVideoEvents(DataTable dataTable)
         {
             SqlLiteData.ShiftVideoEvents(dataTable);
         }
 
+        /// <summary>
+        /// Update Rows to ProjectDetail table based upon datatable (WO using Transactions)
+        /// </summary>
         public static void SetProjectDetailSubmitted(int projdet_id)
         {
             SqlLiteData.SetProjectDetailSubmitted(projdet_id);
@@ -777,26 +1013,41 @@ namespace Sqllite_Library.Business
 
         #region == Upsert Methods ==
 
+        /// <summary>
+        /// Upsert row to APP means insert if not exist else update 
+        /// </summary>
         public static void UpsertRowsToAppForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             SqlLiteData.UpsertRowsToAppForTransaction(dataTable, sqlCon);
         }
 
+        /// <summary>
+        /// Upsert row to Media means insert if not exist else update 
+        /// </summary>
         public static void UpsertRowsToMediaForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             SqlLiteData.UpsertRowsToMediaForTransaction(dataTable, sqlCon);
         }
 
+        /// <summary>
+        /// Upsert row to Screen means insert if not exist else update 
+        /// </summary>
         public static void UpsertRowsToScreenForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             SqlLiteData.UpsertRowsToScreenForTransaction(dataTable, sqlCon);
         }
 
+        /// <summary>
+        /// Upsert row to Company means insert if not exist else update 
+        /// </summary>
         public static void UpsertRowsToCompanyForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             SqlLiteData.UpsertRowsToCompanyForTransaction(dataTable, sqlCon);
         }
 
+        /// <summary>
+        /// Upsert row to Background means insert if not exist else update 
+        /// </summary>
         public static void UpsertRowsToBackgroundForTransaction(DataTable dataTable, SQLiteConnection sqlCon)
         {
             SqlLiteData.UpsertRowsToBackgroundForTransaction(dataTable, sqlCon);
@@ -807,6 +1058,9 @@ namespace Sqllite_Library.Business
             return SqlLiteData.IsProjectAvailableForTransaction(projectServerId, sqlCon);
         }
 
+        /// <summary>
+        /// Upsert row to project means insert if not exist else update 
+        /// </summary>
         public static int UpsertRowsToProjectbyIdForTransaction(DataTable data, int projectServerId, bool projdetAvailable, SQLiteConnection sqlCon)
         {
             foreach (DataRow rowMain in data.Rows)
@@ -825,6 +1079,9 @@ namespace Sqllite_Library.Business
             return projectId;
         }
 
+        /// <summary>
+        /// Upsert row to Planning means insert if not exist else update 
+        /// </summary>
         public static List<int> UpsertRowsToPlanningForTransaction(DataTable data, int projectId, SQLiteConnection sqlCon)
         {
             var planningId = SqlLiteData.IsProjectPlanningAvailableForTransaction(projectId, sqlCon);
@@ -841,16 +1098,25 @@ namespace Sqllite_Library.Business
 
         #region == Hard Delete ==
 
+        /// <summary>
+        /// hard delete all planning - not recoverable 
+        /// </summary>
         public static void HardDeletePlanningsByProjectIdForTransaction(int projectId, SQLiteConnection sqlCon)
         {
             SqlLiteData.HardDeletePlanningsByProjectIdForTransaction(projectId, sqlCon);
         }
 
+        /// <summary>
+        /// hard delete VideoEvent by Id - not recoverable 
+        /// </summary>
         public static void HardDeleteVideoEventsByIdForTransaction(int videoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
             SqlLiteData.HardDeleteVideoEventsByIdForTransaction(videoeventId, cascadeDelete, sqlCon);
         }
 
+        /// <summary>
+        /// hard delete VideoEvent by serverId - not recoverable 
+        /// </summary>
         public static void HardDeleteVideoEventsByServerIdForTransaction(int serverVideoeventId, bool cascadeDelete, SQLiteConnection sqlCon)
         {
             SqlLiteData.HardDeleteVideoEventsByServerIdForTransaction(serverVideoeventId, cascadeDelete, sqlCon);
@@ -861,36 +1127,57 @@ namespace Sqllite_Library.Business
 
         #region == Helper Function == 
 
+        /// <summary>
+        /// Return next available start time based for a project detail
+        /// </summary>
         public static string GetNextStart(int fk_videoevent_media, int projdetId)
         {
             return SqlLiteData.GetNextStart(fk_videoevent_media, projdetId);
         }
 
+        /// <summary>
+        /// Return next available start time based for a project detail (using transaction)
+        /// </summary>
         public static string GetNextStartForTransaction(int fk_videoevent_media, int projdetId, SQLiteConnection sqlCon)
         {
             return SqlLiteData.GetNextStartForTransaction(fk_videoevent_media, projdetId, sqlCon);
         }
 
+        /// <summary>
+        /// Return next available end time by adding start and duration
+        /// </summary>
         public static string CalcNextEnd(string start, string duration)
         {
             return SqlLiteData.ShiftRight(start, duration);
         }
 
+        /// <summary>
+        /// Return next available end time by adding start and duration
+        /// </summary>
         public static string ShiftRight(string start, string duration)
         {
             return SqlLiteData.ShiftRight(start, duration);
         }
 
+        /// <summary>
+        /// Return next available end time by subtracting start and duration
+        /// </summary>
         public static string ShiftLeft(string time, string durationToShift)
         {
             return SqlLiteData.ShiftLeft(time, durationToShift);
         }
 
+        /// <summary>
+        /// Convert Timespan to millisceond
+        /// </summary>
         public static int GetMillisecondsFromTimespan(string timespan)
         {
             return SqlLiteData.GetMillisecondsFromTimespan(timespan);
         }
 
+        /// <summary>
+        /// Convert millisecond to Timespan
+        /// </summary>
         public static string GetTimespanFromSeconds(int seconds)
         {
             return SqlLiteData.GetTimespanFromSeconds(seconds);
