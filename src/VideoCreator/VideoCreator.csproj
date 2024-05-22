@@ -342,6 +342,7 @@
     <Content Include="Libraries\Notes_UserControl.dll" />
     <Content Include="Libraries\TimePicker_UserControl.dll" />
     <Content Include="Libraries\VideoToImage_UserControl.dll" />
+    <Resource Include="ReadmeFile.txt" />
     <None Include="VideoCreator_TemporaryKey.pfx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
