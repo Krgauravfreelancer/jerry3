@@ -140,82 +140,89 @@ namespace VideoCreatorXAMLLibrary
             LoaderHelper.ShowLoader(this, loader);
             var uc = new ScreenRecorderWindowManager();
             var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent);
+            GeneratedRecorderWindow.Closed += (se, ev) =>
+            {
+                //this.Visibility = Visibility.Visible;
+                GeneratedRecorderWindow = null;
+                //LoadPlaceHolderBox(Selected_ID);
+                //LoadVideoEventBox(Selected_ID);
+            };
             uc.ScreenRecorder_BtnSaveClickedEvent += async (DataTable dt) =>
             {
                 LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {dt?.Rows.Count} events ..");
                 await AddVideoEvent_Clicked(dt);
                 LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
+                uc.LoadProjectData();
             };
 
-            uc.ScreenRecorder_BtnDeleteMediaClicked += async (int videoeventLocalId) =>
-            {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
-                // Logic Here
-                var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
-                var videoevent = videoevents.FirstOrDefault();
-                await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
+            //uc.ScreenRecorder_BtnDeleteMediaClicked += async (int videoeventLocalId) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting event with id - {videoeventLocalId} and shifting other events");
+            //    // Logic Here
+            //    var videoevents = DataManagerSqlLite.GetVideoEventbyId(videoeventLocalId, false, false);
+            //    var videoevent = videoevents.FirstOrDefault();
+            //    await ShiftEventsHelper.DeleteAndShiftEvent(videoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
 
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
-            };
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            //    uc.LoadProjectData();
+            //};
 
-            uc.ScreenRecorder_NotesCreatedEvent += async (DataTable dtNotes) =>
-            {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dtNotes?.Rows?.Count} Notes");
-                var notesAll = NotesEventHandlerHelper.GetNotesModelList(dtNotes);
-                foreach(KeyValuePair<Int64, List<NotesModelPost>> item in notesAll)
-                {
-                    var savedNotes = await authApiViewModel.POSTNotes(item.Key, item.Value);
-                    if (savedNotes != null)
-                    {
-                        var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
-                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, localVideoEventId);
-                        DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
-                    }
-                }
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
-            };
+            //uc.ScreenRecorder_NotesCreatedEvent += async (DataTable dtNotes) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Adding {dtNotes?.Rows?.Count} Notes");
+            //    var notesAll = NotesEventHandlerHelper.GetNotesModelList(dtNotes);
+            //    foreach(KeyValuePair<Int64, List<NotesModelPost>> item in notesAll)
+            //    {
+            //        var savedNotes = await authApiViewModel.POSTNotes(item.Key, item.Value);
+            //        if (savedNotes != null)
+            //        {
+            //            var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
+            //            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(savedNotes.Notes, localVideoEventId);
+            //            DataManagerSqlLite.InsertRowsToNotes(notesDatatable);
+            //        }
+            //    }
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            //    uc.LoadProjectData();
+            //};
 
-            uc.ScreenRecorder_NotesChangedEvent += async (DataTable dtNotes) =>
-            {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dtNotes?.Rows?.Count} Notes");
-                var notesAll = NotesEventHandlerHelper.GetNotesModelListPut(dtNotes);
-                foreach (KeyValuePair<Int64, List<NotesModelPut>> item in notesAll)
-                {
-                    var serverVideoEventId = item.Key;
-                    var updatedNotes = await authApiViewModel.PUTNotes(serverVideoEventId, item.Value);
-                    if (updatedNotes != null)
-                    {
-                        var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
-                        var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(updatedNotes, localVideoEventId);
-                        DataManagerSqlLite.UpdateRowsToNotes(notesDatatable, true);
-                    }
-                }
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
-            };
+            //uc.ScreenRecorder_NotesChangedEvent += async (DataTable dtNotes) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Updating {dtNotes?.Rows?.Count} Notes");
+            //    var notesAll = NotesEventHandlerHelper.GetNotesModelListPut(dtNotes);
+            //    foreach (KeyValuePair<Int64, List<NotesModelPut>> item in notesAll)
+            //    {
+            //        var serverVideoEventId = item.Key;
+            //        var updatedNotes = await authApiViewModel.PUTNotes(serverVideoEventId, item.Value);
+            //        if (updatedNotes != null)
+            //        {
+            //            var localVideoEventId = DataManagerSqlLite.GetVideoEventbyServerId(item.Key).FirstOrDefault().videoevent_id;
+            //            var notesDatatable = NotesEventHandlerHelper.GetNotesDataTableForLocalDB(updatedNotes, localVideoEventId);
+            //            DataManagerSqlLite.UpdateRowsToNotes(notesDatatable, true);
+            //        }
+            //    }
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            //    uc.LoadProjectData();
+            //};
 
-            uc.ScreenRecorder_NotesDeletedEvent += async (List<int> Ids) =>
-            {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
+            //uc.ScreenRecorder_NotesDeletedEvent += async (List<int> Ids) =>
+            //{
+            //    LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"Deleting {Ids.Count} Notes");
 
-                // Logic Here
-                foreach (var noteId in Ids)
-                {
-                    var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
-                    var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
-                    var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
-                    if (deletedNotes != null)
-                    {
-                        DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
-                    }
-                }
+            //    // Logic Here
+            //    foreach (var noteId in Ids)
+            //    {
+            //        var noteItem = DataManagerSqlLite.GetNotesbyId(noteId).FirstOrDefault();
+            //        var videoEventServerId = DataManagerSqlLite.GetVideoEventbyId(noteItem.fk_notes_videoevent).FirstOrDefault().videoevent_serverid;
+            //        var deletedNotes = await authApiViewModel.DeleteNotesById(videoEventServerId, noteItem.notes_serverid);
+            //        if (deletedNotes != null)
+            //        {
+            //            DataManagerSqlLite.DeleteNotesById(noteItem.notes_id);
+            //        }
+            //    }
 
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
-                uc.RefreshData();
-            };
+            //    LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
+            //    uc.LoadProjectData();
+            //};
 
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
             var result = uc.ShowWindow(GeneratedRecorderWindow);
@@ -520,7 +527,66 @@ namespace VideoCreatorXAMLLibrary
                 else if(editVideoEvent.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
                 {
                     if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.VIDEO || editVideoEvent.fk_videoevent_media == (int)EnumMedia.IMAGE)
-                        MessageBox.Show("Coming soon !!", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    {
+                        var isPlaceholder = DataManagerSqlLite.IsPlaceHolderEvent(editVideoeventLocalId);
+                        //if (isPlaceholder)
+                        {
+                            LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
+                            var uc =  new ScreenRecorderWindowManager();
+                            var placeholderWindow = uc.CreateWindowWithPlaceHolder(selectedProjectEvent, editVideoeventLocalId);
+
+                            uc.ScreenRecorder_BtnReplaceEvent += async (PlaceholderEvent placeholderEvent) =>
+                            {
+                                LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
+                                
+                                // Logic Here
+                                var videoevents = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false);
+                                var videoevent = videoevents.FirstOrDefault();
+
+
+                                // Step-1 Delete the existing event and shift afterwards event
+                                await ShiftEventsHelper.DeleteAndShiftEvent(editVideoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
+
+                                LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
+                                
+                                // Step-2 Fetch next events of Added event
+                                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
+
+                                // Step-3 Add new element(s)
+                                await AddVideoEvent_Clicked(placeholderEvent?.newEventsDT);
+
+
+                                // Step-4 Call server API to shift video event and then save locally the shifted events
+                                await ShiftEventsHelper.ShiftRight(tobeShiftedVideoEvents, placeholderEvent.newDuration.ToString(@"hh\:mm\:ss\.fff"), selectedProjectEvent, authApiViewModel);
+
+
+                                //Step-5 Replace the notes Id if needed from previous to new
+
+                                LoaderHelper.HideLoader(placeholderWindow, uc.loader);
+
+                                //Step-6: Finally refresh the timeline
+                                Refresh();
+                            };
+
+
+                            placeholderWindow.Closed += (se, ev) =>
+                            {
+                                this.Visibility = Visibility.Visible;
+                                placeholderWindow = null;
+                                Refresh();
+                            };
+                            this.Visibility = Visibility.Hidden;
+                            placeholderWindow.Show();
+                            LoaderHelper.HideLoader(this, loader);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Not a placeholder event so cant be dited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                    }
+
+
+
                     else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
                     {
                         LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
