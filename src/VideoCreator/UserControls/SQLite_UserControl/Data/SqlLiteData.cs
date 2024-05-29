@@ -2569,8 +2569,6 @@ namespace Sqllite_Library.Data
             else
                 whereTrackClause = $@"videoevent_track > {(int)EnumTrack.IMAGEORVIDEO}"; // For callout1 and callout 2
 
-
-
             string sqlQueryString = $@" Select 
 	                                        videoevent_id,
 	                                        videoevent_start, 

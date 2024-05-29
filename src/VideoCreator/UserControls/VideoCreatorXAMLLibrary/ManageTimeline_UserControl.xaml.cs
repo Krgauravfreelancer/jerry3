@@ -524,21 +524,21 @@ namespace VideoCreatorXAMLLibrary
                     Refresh();
                     LoaderHelper.HideLoader(this, loader);
                 }
-                else if(editVideoEvent.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
+                else if (editVideoEvent.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
                 {
                     if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.VIDEO || editVideoEvent.fk_videoevent_media == (int)EnumMedia.IMAGE)
                     {
                         var isPlaceholder = DataManagerSqlLite.IsPlaceHolderEvent(editVideoeventLocalId);
-                        //if (isPlaceholder)
+                        if (true)
                         {
                             LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
-                            var uc =  new ScreenRecorderWindowManager();
+                            var uc = new ScreenRecorderWindowManager();
                             var placeholderWindow = uc.CreateWindowWithPlaceHolder(selectedProjectEvent, editVideoeventLocalId);
 
                             uc.ScreenRecorder_BtnReplaceEvent += async (PlaceholderEvent placeholderEvent) =>
                             {
                                 LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
-                                
+
                                 // Logic Here
                                 var videoevents = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false);
                                 var videoevent = videoevents.FirstOrDefault();
@@ -548,7 +548,7 @@ namespace VideoCreatorXAMLLibrary
                                 await ShiftEventsHelper.DeleteAndShiftEvent(editVideoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
 
                                 LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
-                                
+
                                 // Step-2 Fetch next events of Added event
                                 var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
 
@@ -585,15 +585,15 @@ namespace VideoCreatorXAMLLibrary
                         }
                     }
 
+                
 
-
-                    else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
-                    {
-                        LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
-                        await FormHandlerHelper.EditFormEvent(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
-                        Refresh();
-                        LoaderHelper.HideLoader(this, loader);
-                    }
+                else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
+                {
+                    LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
+                    await FormHandlerHelper.EditFormEvent(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
+                    Refresh();
+                    LoaderHelper.HideLoader(this, loader);
+                }
                    
                 }
             }

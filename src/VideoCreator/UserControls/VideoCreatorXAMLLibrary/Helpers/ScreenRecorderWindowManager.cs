@@ -55,8 +55,8 @@ namespace VideoCreatorXAMLLibrary.Helpers
         public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent)
         {
             window = new Window();
-            window.Width = 1000;
-            window.Height = 618;
+            window.Width = 1100;
+            window.Height = 660;
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Recorder = new ScreenRecorder_Control();
             selectedProjectEvent = _selectedProjectEvent;
@@ -80,8 +80,8 @@ namespace VideoCreatorXAMLLibrary.Helpers
         public Window CreateWindowWithPlaceHolder(SelectedProjectEvent _selectedProjectEvent, int placeholderVideoEventId)
         {
             window = new Window();
-            window.Width = 1000;
-            window.Height = 618;
+            window.Width = 1100;
+            window.Height = 660;
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Recorder = new ScreenRecorder_Control();
             selectedProjectEvent = _selectedProjectEvent;
@@ -146,15 +146,15 @@ namespace VideoCreatorXAMLLibrary.Helpers
                     TextItem textItem = new TextItem();
                     textItem.NoteID = note.notes_id;
                     textItem.Text = note.notes_line;
-                    textItem.Start = TimeSpan.Parse(note.notes_start);
-                    textItem.Duration = TimeSpan.Parse(note.notes_duration);
+                    textItem.Start = TimeSpan.ParseExact(note.notes_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+                    textItem.Duration = TimeSpan.ParseExact(note.notes_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
                     textItems.Add(textItem);
                 }
                 media.RecordedTextList = textItems;
             }
-            media.Duration = TimeSpan.Parse(PlaceHolderItems.videoevent_duration);
-            media.StartTime = TimeSpan.Parse(PlaceHolderItems.videoevent_start);
+            media.Duration = TimeSpan.ParseExact(PlaceHolderItems.videoevent_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+            media.StartTime = TimeSpan.ParseExact(PlaceHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
             TimeSpan StartTime = TimeSpan.ParseExact(PlaceHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
@@ -325,14 +325,8 @@ namespace VideoCreatorXAMLLibrary.Helpers
         {
             if (PromptOveride == false)
             {
-                //bool Saved = Recorder.ShowClosingPrompt();
-                Recorder.ShowClosingPrompt();
-                bool Saved = false;
-
-                if (Saved != true)
-                {
-                    e.Cancel = true;
-                }
+                bool UnSavedChanges = Recorder.ShowClosingPrompt();
+                e.Cancel = UnSavedChanges;
             }
         }
 
