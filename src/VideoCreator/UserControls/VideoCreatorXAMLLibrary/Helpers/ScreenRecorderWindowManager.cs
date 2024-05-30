@@ -90,7 +90,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             //if (Selected_ID != -1)
             if (selectedProjectEvent != null && placeholderVideoEventId > 0)
             {
-                List<CBVVideoEvent> PlaceHolderItems = DataManagerSqlLite.GetVideoEventbyId(placeholderVideoEventId);
+                List<CBVVideoEvent> PlaceHolderItems = DataManagerSqlLite.GetVideoEventbyId(placeholderVideoEventId, true, false);
 
                 if (PlaceHolderItems.Count > 0)
                 {
