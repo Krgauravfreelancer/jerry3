@@ -191,6 +191,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             dataTable.Columns.Add("planning_isedited", typeof(bool));
             dataTable.Columns.Add("planning_desc", typeof(DataTable));
             dataTable.Columns.Add("planning_media", typeof(DataTable));
+            dataTable.Columns.Add("planning_audioduration", typeof(string));
 
             foreach (var planning in plannings)
             {
@@ -213,6 +214,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 row["planning_issynced"] = true;
                 row["planning_syncerror"] = "";
                 row["planning_isedited"] = false;
+                row["planning_audioduration"] = planning.planning_audioduration ?? string.Empty;
                 //Dependent Tables
                 if (planning.planningdesc != null)
                     row["planning_desc"] = GetPlanningDescriptionDataTable(planning.planningdesc);

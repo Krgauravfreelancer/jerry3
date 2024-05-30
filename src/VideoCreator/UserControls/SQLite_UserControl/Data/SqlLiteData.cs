@@ -265,7 +265,8 @@ namespace Sqllite_Library.Data
                             'planning_serverid' INTEGER NOT NULL  DEFAULT 1,
                             'planning_issynced' INTEGER(1) NOT NULL  DEFAULT 0,
                             'planning_syncerror' TEXT(50) NOT NULL  DEFAULT NULL,
-                            'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0
+                            'planning_isedited' INTEGER(1) NOT NULL  DEFAULT 0,
+                            'planning_audioduration' TEXT(20) DEFAULT NULL
                             ,UNIQUE (fk_planning_project, fk_planning_screen, planning_customname)
                         );";
             ExecuteNonQueryForTransaction(sqlQueryString, sqlCon);
@@ -2070,6 +2071,7 @@ namespace Sqllite_Library.Data
                             planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
                             planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
                             planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                            planning_audioduration = Convert.ToString(sqlReader["planning_audioduration"])
                         };
 
                         if (dependentData)
@@ -2120,6 +2122,7 @@ namespace Sqllite_Library.Data
                         planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
                         planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
                         planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                        planning_audioduration = Convert.ToString(sqlReader["planning_audioduration"])
                     };
 
                     if (dependentData)
@@ -2178,6 +2181,7 @@ namespace Sqllite_Library.Data
                             planning_issynced = Convert.ToBoolean(sqlReader["planning_issynced"]),
                             planning_syncerror = Convert.ToString(sqlReader["planning_syncerror"]),
                             planning_isedited = Convert.ToBoolean(sqlReader["planning_isedited"]),
+                            planning_audioduration = Convert.ToString(sqlReader["planning_audioduration"])
                         };
                     }
                 }
@@ -4481,6 +4485,7 @@ namespace Sqllite_Library.Data
                 if (string.IsNullOrEmpty(modifyDate))
                     modifyDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 
+                var audioDuration = Convert.ToString(dr["planning_audioduration"]);
 
                 var planning_medialibid = Convert.ToInt32(Convert.ToString(dr["planning_medialibid"]) == "" ? 0 : dr["planning_medialibid"]);
                 var planning_sort = Convert.ToInt32(dr["planning_sort"]);
@@ -4493,13 +4498,13 @@ namespace Sqllite_Library.Data
                 var syncerror = syncErrorString?.Length > 50 ? syncErrorString.Substring(0, 50) : syncErrorString;
 
                 values.Add($"({dr["fk_planning_project"]},  {dr["fk_planning_screen"]}, '{dr["planning_customname"]}', '{dr["planning_notesline"]}', {planning_medialibid}, {planning_sort}, '{dr["planning_suggestnotesline"]}', " +
-                    $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isedited})");
+                    $"'{createDate}', '{modifyDate}', {serverid}, {issynced}, '{syncerror}', {isedited}, '{audioDuration}')");
 
                 var valuesString = string.Join(",", values.ToArray());
                 string sqlQueryString =
                     $@"INSERT INTO  cbv_planning 
                     (fk_planning_project, fk_planning_screen, planning_customname, planning_notesline, planning_medialibid, planning_sort, planning_suggestnotesline, 
-                        planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isedited) 
+                        planning_createdate, planning_modifydate, planning_serverid, planning_issynced, planning_syncerror, planning_isedited, planning_audioduration) 
                 VALUES 
                     {valuesString}";
 

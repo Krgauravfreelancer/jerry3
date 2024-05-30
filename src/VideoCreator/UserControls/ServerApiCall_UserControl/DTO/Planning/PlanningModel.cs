@@ -16,6 +16,8 @@ namespace ServerApiCall_UserControl.DTO.Background
         public string planning_media_full { get; set; }
         public string planning_createdate { get; set; }
         public string planning_modifydate { get; set; }
+        public string planning_audioduration { get; set; }
+        
 
 
         // API Call params

@@ -21,6 +21,7 @@ namespace Sqllite_Library.Models.Planning
         public bool planning_issynced { get; set; }
         public string planning_syncerror { get; set; }
         public bool planning_isedited { get; set; }
+        public string planning_audioduration { get; set; }
 
         public List<CBVPlanningDesc> planning_desc { get; set; }
         public List<CBVPlanningMedia> planning_media { get; set; }
