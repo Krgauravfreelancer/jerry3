@@ -1504,10 +1504,10 @@ namespace ManageMedia_UserControl.Controls
             CloneAtEnd_Event(sender, media);
         }
 
-        public void AddImageUsingLibraryAfterSelectedEvent(object sender, RoutedEventArgs e)
-        {
-            var media = GetMedia(sender);
-        }
+        //public void AddImageUsingLibraryAfterSelectedEvent(object sender, RoutedEventArgs e)
+        //{
+        //    var media = GetMedia(sender);
+        //}
 
 
         internal void DeleteEventBtn_Click(object sender, RoutedEventArgs e)

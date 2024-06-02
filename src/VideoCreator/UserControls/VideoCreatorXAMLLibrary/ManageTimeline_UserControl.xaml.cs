@@ -149,10 +149,10 @@ namespace VideoCreatorXAMLLibrary
             };
             uc.ScreenRecorder_BtnSaveClickedEvent += async (DataTable dt) =>
             {
-                LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader, $"saving {dt?.Rows.Count} events ..");
+                LoaderHelper.ShowLoader(this, loader, $"saving {dt?.Rows.Count} events ..");
                 await AddVideoEvent_Clicked(dt);
-                LoaderHelper.HideLoader(GeneratedRecorderWindow, uc.loader);
                 uc.LoadProjectData();
+                LoaderHelper.HideLoader(this, loader);
             };
 
             //uc.ScreenRecorder_BtnDeleteMediaClicked += async (int videoeventLocalId) =>
@@ -514,7 +514,7 @@ namespace VideoCreatorXAMLLibrary
         /// </summary>
         private async void TimelineUserConrol_EditFormEvent(object sender, int editVideoeventLocalId)
         {
-            var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false).FirstOrDefault();
+            var editVideoEvent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, true, false).FirstOrDefault();
             if (editVideoEvent != null)
             {
                 if (editVideoEvent.videoevent_track == (int)EnumTrack.CALLOUT1 || editVideoEvent.videoevent_track == (int)EnumTrack.CALLOUT2)
@@ -537,17 +537,15 @@ namespace VideoCreatorXAMLLibrary
 
                             uc.ScreenRecorder_BtnReplaceEvent += async (PlaceholderEvent placeholderEvent) =>
                             {
-                                LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
+                                LoaderHelper.ShowLoader(this, loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
 
                                 // Logic Here
-                                var videoevents = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, false, false);
-                                var videoevent = videoevents.FirstOrDefault();
-
+                                var videoevent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, true, false).FirstOrDefault();
 
                                 // Step-1 Delete the existing event and shift afterwards event
                                 await ShiftEventsHelper.DeleteAndShiftEvent(editVideoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
 
-                                LoaderHelper.ShowLoader(placeholderWindow, uc.loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
+                                LoaderHelper.ShowLoader(this, loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
 
                                 // Step-2 Fetch next events of Added event
                                 var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
@@ -561,8 +559,12 @@ namespace VideoCreatorXAMLLibrary
 
 
                                 //Step-5 Replace the notes Id if needed from previous to new
+                                if(videoevent?.notes_data?.Count > 0)
+                                {
 
-                                LoaderHelper.HideLoader(placeholderWindow, uc.loader);
+                                }
+
+                                LoaderHelper.HideLoader(this, loader);
 
                                 //Step-6: Finally refresh the timeline
                                 Refresh();
@@ -950,7 +952,7 @@ namespace VideoCreatorXAMLLibrary
             var videoEventList = DataManagerSqlLite.GetVideoEventbyId(payload.timelineVideoEvent.VideoEventID, true, false);
             var dtVideoSegment = CloneEventHandlerHelper.GetVideoSegmentDataTableClient(videoEventList[0].videosegment_data, selectedProjectEvent.serverProjectId, -1);
             var blob = CloneEventHandlerHelper.GetBlobBytes(dtVideoSegment);
-            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, videoEventList[0].videoevent_end);
+            var videoEventResponse = await CloneEventHandlerHelper.PostVideoEventToServerForClone(videoEventList, blob, selectedProjectEvent, authApiViewModel, payload.timeAtTheMoment);
 
             if (videoEventResponse != null)
             {

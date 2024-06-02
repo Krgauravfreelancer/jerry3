@@ -257,17 +257,17 @@ namespace ManageMedia_UserControl.Controls
                 };
                 CloneEventAtTimelineEndBtn.Click += timeline.CloneEventAtTimelineEnd;
 
-                AddImageUsingLibraryAfterSelectedEventBtn = new MenuItem()
-                {
-                    Header = "Add Image using Library After Selected Event",
-                };
-                AddImageUsingLibraryAfterSelectedEventBtn.Click += timeline.AddImageUsingLibraryAfterSelectedEvent;
+                //AddImageUsingLibraryAfterSelectedEventBtn = new MenuItem()
+                //{
+                //    Header = "Add Image using Library After Selected Event",
+                //};
+                //AddImageUsingLibraryAfterSelectedEventBtn.Click += timeline.AddImageUsingLibraryAfterSelectedEvent;
 
                 myContextMenu.Items.Add(EditEventBtn);
                 myContextMenu.Items.Add(DeleteEventBtn);
                 myContextMenu.Items.Add(CloneEventAtTrackbarLocationBtn);
                 myContextMenu.Items.Add(CloneEventAtTimelineEndBtn);
-                myContextMenu.Items.Add(AddImageUsingLibraryAfterSelectedEventBtn);
+                //myContextMenu.Items.Add(AddImageUsingLibraryAfterSelectedEventBtn);
 
                 HighlightedColor = ScaleColorByValue(Color, 0.2);
 
@@ -318,7 +318,7 @@ namespace ManageMedia_UserControl.Controls
                     DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
                     CloneEventAtTimelineEndBtn.Click -= timeLine.CloneEventAtTimelineEnd;
                     CloneEventAtTrackbarLocationBtn.Click -= timeLine.CloneEventAtTrackbar;
-                    AddImageUsingLibraryAfterSelectedEventBtn.Click -= timeLine.AddImageUsingLibraryAfterSelectedEvent;
+                    //AddImageUsingLibraryAfterSelectedEventBtn.Click -= timeLine.AddImageUsingLibraryAfterSelectedEvent;
                 }
             }
 

@@ -104,8 +104,8 @@ namespace VideoCreatorXAMLLibrary
             var MenuItem_AddImageEventUsingCBLibrary = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibrary");
             MenuItem_AddImageEventUsingCBLibrary.IsEnabled = Role == EnumRole.PROJECT_WRITE;
 
-            var MenuItem_ManageMedia = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ManageMedia");
-            MenuItem_ManageMedia.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+            //var MenuItem_ManageMedia = GetMenuItemByResourceName(contextMenuKey, "MenuItem_ManageMedia");
+            //MenuItem_ManageMedia.IsEnabled = Role == EnumRole.PROJECT_WRITE;
 
             var MenuItem_Run = GetMenuItemByResourceName(contextMenuKey, "MenuItem_Run");
             MenuItem_Run.IsEnabled = true;

@@ -39,19 +39,15 @@ namespace ServerApiCall_UserControl.Services
 
         public async Task<byte[]> GetFileByteArray(string url)
         {
-            try
+            using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
             {
-                using (HttpResponseMessage response = await apiHttpClient.GetAsync(url))
+                response.EnsureSuccessStatusCode();
+                if (response.IsSuccessStatusCode)
                 {
-                    response.EnsureSuccessStatusCode();
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var contentAsByteArray = await response.Content.ReadAsByteArrayAsync(); // get the actual content stream
-                        return contentAsByteArray;
-                    }
+                    var contentAsByteArray = await response.Content.ReadAsByteArrayAsync(); // get the actual content stream
+                    return contentAsByteArray;
                 }
             }
-            catch { return null; }
             return null;
         }
 

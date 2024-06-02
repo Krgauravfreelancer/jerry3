@@ -54,11 +54,11 @@
                     <Image Source="../Icons/imageFromLib.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Manage Media" x:Name="MenuItem_ManageMedia" Click="ManageMedia_Click" >
+            <!--<MenuItem Header="Manage Media" x:Name="MenuItem_ManageMedia" Click="ManageMedia_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/manage-media.png" ></Image>
                 </MenuItem.Icon>
-            </MenuItem>
+            </MenuItem>-->
             <MenuItem Header="Run" x:Name="MenuItem_Run" Click="RunEvent_Click" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/run.png" ></Image>

@@ -28,10 +28,12 @@ namespace VideoCreatorXAMLLibrary.Helpers
         SelectedProjectEvent selectedProjectEvent;
         public LoadingAnimation loader;
         bool PromptOveride = false;
+        int placeholderVideoEventId;
+        CBVVideoEvent PlaceHolderItem;
 
         public event Action<DataTable> ScreenRecorder_BtnSaveClickedEvent; //Added By KG
         public event Action<PlaceholderEvent> ScreenRecorder_BtnReplaceEvent; //Added By KG
-        
+
 
         private Grid AddLoaderAndReturnContent(ScreenRecorder_Control Recorder)
         {
@@ -77,7 +79,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             return window;
         }
 
-        public Window CreateWindowWithPlaceHolder(SelectedProjectEvent _selectedProjectEvent, int placeholderVideoEventId)
+        public Window CreateWindowWithPlaceHolder(SelectedProjectEvent _selectedProjectEvent, int _placeholderVideoEventId)
         {
             window = new Window();
             window.Width = 1100;
@@ -86,17 +88,15 @@ namespace VideoCreatorXAMLLibrary.Helpers
             Recorder = new ScreenRecorder_Control();
             selectedProjectEvent = _selectedProjectEvent;
             PromptOveride = false;
+            placeholderVideoEventId = _placeholderVideoEventId;
 
             //if (Selected_ID != -1)
             if (selectedProjectEvent != null && placeholderVideoEventId > 0)
             {
-                List<CBVVideoEvent> PlaceHolderItems = DataManagerSqlLite.GetVideoEventbyId(placeholderVideoEventId, true, false);
-
-                if (PlaceHolderItems.Count > 0)
-                {
-                    CBVVideoEvent PlaceHolderItem = PlaceHolderItems.FirstOrDefault();
+                PlaceHolderItem = DataManagerSqlLite.GetVideoEventbyId(placeholderVideoEventId, true, false).FirstOrDefault();
+                if(PlaceHolderItem != null)
+                { 
                     LoadPlaceHolderData(PlaceHolderItem);
-
                     Recorder.Loaded += ScreenRecorder_Control_Loaded;
                     Recorder.CloseWindow += ScreenRecorder_Control_CloseWindow;
                     Recorder.Save += Recorder_Save;
@@ -124,7 +124,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             Recorder.LoadProjectData(TotalTime, selectedProjectEvent.projdetId);
         }
 
-        private void LoadPlaceHolderData(CBVVideoEvent PlaceHolderItems)
+        private void LoadPlaceHolderData(CBVVideoEvent placeHolderItems)
         {
             Media media = new Media();
             Color background = Colors.LightGray;
@@ -134,29 +134,27 @@ namespace VideoCreatorXAMLLibrary.Helpers
 
             media.Color = background;
 
-            media.VideoEventServerID = PlaceHolderItems.videoevent_serverid;
-            media.VideoEventID = PlaceHolderItems.videoevent_id;
+            media.VideoEventServerID = placeHolderItems.videoevent_serverid;
+            media.VideoEventID = placeHolderItems.videoevent_id;
             media.ProjectId = selectedProjectEvent.projectId;
-            media.TrackId = PlaceHolderItems.videoevent_track;
-            if (PlaceHolderItems.notes_data != null)
+            media.TrackId = placeHolderItems.videoevent_track;
+            if (placeHolderItems.notes_data != null)
             {
                 List<TextItem> textItems = new List<TextItem>();
-                foreach (var note in PlaceHolderItems.notes_data)
+                foreach (var note in placeHolderItems.notes_data)
                 {
                     TextItem textItem = new TextItem();
                     textItem.NoteID = note.notes_id;
                     textItem.Text = note.notes_line;
                     textItem.Start = TimeSpan.ParseExact(note.notes_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
                     textItem.Duration = TimeSpan.ParseExact(note.notes_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
-
                     textItems.Add(textItem);
                 }
                 media.RecordedTextList = textItems;
             }
-            media.Duration = TimeSpan.ParseExact(PlaceHolderItems.videoevent_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
-            media.StartTime = TimeSpan.ParseExact(PlaceHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
-
-            TimeSpan StartTime = TimeSpan.ParseExact(PlaceHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+            media.Duration = TimeSpan.ParseExact(placeHolderItems.videoevent_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+            media.StartTime = TimeSpan.ParseExact(placeHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+            TimeSpan StartTime = TimeSpan.ParseExact(placeHolderItems.videoevent_start, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
             Recorder.LoadPlaceHolderData(media, selectedProjectEvent.projectId, StartTime);
         }
@@ -166,76 +164,60 @@ namespace VideoCreatorXAMLLibrary.Helpers
 
         private void Recorder_Save(object sender, SaveEventArgs e)
         {
-            #region == Delete PlaceHolder If Needed ==
+            SaveMedia(e);
+
+            if (window != null)
+            {
+                PromptOveride = true;
+                window.Close();
+            }
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (PromptOveride == false)
+            {
+                bool UnSavedChanges = Recorder.ShowClosingPrompt();
+                e.Cancel = UnSavedChanges;
+            }
+        }
+
+        private void ScreenRecorder_Control_CloseWindow(object sender, EventArgs e)
+        {
+            if (window != null)
+            {
+                PromptOveride = true;
+                window.Close();
+            }
+        }
+
+        private void ScreenRecorder_Control_Loaded(object sender, RoutedEventArgs e)
+        {
+            var displays = Recorder.GetDisplays();
+
+            int i = 1;
+            foreach (var display in displays)
+            {
+                Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
+                i++;
+            }
+        }
+
+        #endregion
+        public void SetProjectID(int projectID)
+        {
+            //ProjectID = projectID;
+            //LoadProjectData();
+        }
+
+        private void SaveMedia(SaveEventArgs e)
+        {
             bool isReplace = false;
             if (e.RecordingMode == ScreenRecorder_UserControl.Controls.Mode.RecordPlaceHolder)
             {
                 isReplace = true;
-                /*
-                try
-                {
-                    var PlaceHolderEvent = DataManagerSqlLite.GetVideoEventbyId(e.PlaceHolderID, true);
-
-                    if (PlaceHolderEvent?.Count > 0)
-                    {
-                        DataManagerSqlLite.DeleteVideoEventsById(e.PlaceHolderID, true);
-
-                        var VideoEvents = DataManagerSqlLite.GetVideoEvents(selectedProjectEvent.projdetId, true);
-
-                        var dataTable = new DataTable();
-
-                        dataTable.Columns.Add("videoevent_start", typeof(string));
-                        dataTable.Columns.Add("videoevent_duration", typeof(string));
-                        dataTable.Columns.Add("videoevent_origduration", typeof(string));
-                        dataTable.Columns.Add("videoevent_end", typeof(string));
-                        dataTable.Columns.Add("videoevent_serverid", typeof(Int64));
-                        dataTable.Rows.Clear();
-
-                        List<CBVShiftVideoEvent> elements = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, PlaceHolderEvent[0].videoevent_start);
-
-                        TimeSpan AmountToShift = e.RecordingDuration - TimeSpan.ParseExact(PlaceHolderEvent[0].videoevent_duration, @"hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
-
-                        if (AmountToShift > TimeSpan.Zero)
-                        {
-
-                            foreach (var element in elements)
-                            {
-                                var row = dataTable.NewRow();
-                                row["videoevent_start"] = DataManagerSqlLite.ShiftRight(element.videoevent_start, AmountToShift.Duration().ToString(@"hh\:mm\:ss\.fff"));
-                                row["videoevent_duration"] = element.videoevent_duration;
-                                row["videoevent_origduration"] = element.videoevent_origduration;
-                                row["videoevent_end"] = DataManagerSqlLite.ShiftRight(element.videoevent_end, AmountToShift.Duration().ToString(@"hh\:mm\:ss\.fff"));
-                                row["videoevent_serverid"] = element.videoevent_serverid;
-                                dataTable.Rows.Add(row);
-                            }
-
-                            DataManagerSqlLite.ShiftVideoEvents(dataTable);
-                        }
-                        else
-                        {
-                            foreach (var element in elements)
-                            {
-                                var row = dataTable.NewRow();
-                                row["videoevent_start"] = DataManagerSqlLite.ShiftLeft(element.videoevent_start, AmountToShift.Duration().ToString(@"hh\:mm\:ss\.fff"));
-                                row["videoevent_duration"] = element.videoevent_duration;
-                                row["videoevent_origduration"] = element.videoevent_origduration;
-                                row["videoevent_end"] = DataManagerSqlLite.ShiftLeft(element.videoevent_end, AmountToShift.Duration().ToString(@"hh\:mm\:ss\.fff"));
-                                row["videoevent_serverid"] = element.videoevent_serverid;
-                                dataTable.Rows.Add(row);
-                            }
-
-                            DataManagerSqlLite.ShiftVideoEvents(dataTable);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                */
             }
-
-            #endregion == Delete PlaceHolder If Needed ==
 
             #region == Save Recorded Video Events ==
 
@@ -293,9 +275,8 @@ namespace VideoCreatorXAMLLibrary.Helpers
                     row["videoevent_origduration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff");
                     row["fk_videoevent_media"] = mediaId;
                     row["videoevent_notes"] = GetNotesDataTableWithData(element); //Added By KG
-                    row["media"] = element.mediaData;
+                    row["media"] = isReplace ? (element.mediaData == null ? PlaceHolderItem.videosegment_data[0].videosegment_media : element.mediaData) : element.mediaData;
                     dataTable.Rows.Add(row);
-
                 }
                 if (isReplace)
                 {
@@ -313,51 +294,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             }
 
             #endregion == Save Recorded Video Events ==
-
-            if (window != null)
-            {
-                PromptOveride = true;
-                window.Close();
-            }
         }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            if (PromptOveride == false)
-            {
-                bool UnSavedChanges = Recorder.ShowClosingPrompt();
-                e.Cancel = UnSavedChanges;
-            }
-        }
-
-        private void ScreenRecorder_Control_CloseWindow(object sender, EventArgs e)
-        {
-            if (window != null)
-            {
-                PromptOveride = true;
-                window.Close();
-            }
-        }
-
-        private void ScreenRecorder_Control_Loaded(object sender, RoutedEventArgs e)
-        {
-            var displays = Recorder.GetDisplays();
-
-            int i = 1;
-            foreach (var display in displays)
-            {
-                Recorder.AddRecordRegion(new System.Drawing.Rectangle(display.screen.PhysicalBounds.Left, display.screen.PhysicalBounds.Top, display.screen.PhysicalBounds.Width / 2, display.screen.PhysicalBounds.Height), $"Display {display.DisplayNumber} - Region {i}");
-                i++;
-            }
-        }
-
-        #endregion
-        public void SetProjectID(int projectID)
-        {
-            //ProjectID = projectID;
-            //LoadProjectData();
-        }
-
 
 
         private void CreateNotes(DataTable dataTable)
@@ -386,10 +323,10 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 noteRow["notes_id"] = -1;
                 noteRow["fk_notes_videoevent"] = -1;
                 noteRow["notes_line"] = element.Text.Replace("'", "''"); ;
-                noteRow["notes_wordcount"] = element.WordCount;
+                noteRow["notes_wordcount"] = element.WordCount <= 0 ? element.Text.Split(' ').Length : element.WordCount;
                 noteRow["notes_index"] = NotesIndex;
                 noteRow["notes_start"] = element.Start.ToString(@"hh\:mm\:ss\.fff");
-                noteRow["notes_duration"] = 0;// element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
+                noteRow["notes_duration"] = element.Duration.ToString(@"hh\:mm\:ss\.fff"); ;
                 noteRow["notes_createdate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_modifydate"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 noteRow["notes_isdeleted"] = false;
