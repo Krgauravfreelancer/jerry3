@@ -142,7 +142,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="MediaGenApi_UserControl">
+    <Reference Include="MediaGenApi_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="MediaToolkit">
@@ -211,7 +212,7 @@
     <Reference Include="OggVorbisEncoder, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\OggVorbisEncoder.1.2.2\lib\net461\OggVorbisEncoder.dll</HintPath>
     </Reference>
-    <Reference Include="ScreenRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="ScreenRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\ScreenRecorder_UserControl.dll</HintPath>
     </Reference>

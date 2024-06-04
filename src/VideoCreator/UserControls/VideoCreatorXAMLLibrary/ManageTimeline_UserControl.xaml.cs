@@ -583,7 +583,7 @@ namespace VideoCreatorXAMLLibrary
                         }
                         else
                         {
-                            MessageBox.Show("Not a placeholder event so cant be dited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            MessageBox.Show("Not a placeholder event so cant be edited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                     }
 
