@@ -32,14 +32,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FullScreenPlayer_UserControl">
-      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
+    <Reference Include="FullScreenPlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="LocalVoiceGen_UserControl">
-      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
+    <Reference Include="LocalVoiceGen_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="MediaGenApi_UserControl">
-      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\MediaGenApi_UserControl.dll</HintPath>
+    <Reference Include="MediaGenApi_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -52,8 +55,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="VoiceScripter_UserControl">
-      <HintPath>..\ManageMedia_Wrapper\ManageMedia_Wrapper\Libraries\VoiceScripter_UserControl.dll</HintPath>
+    <Reference Include="VoiceScripter_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />

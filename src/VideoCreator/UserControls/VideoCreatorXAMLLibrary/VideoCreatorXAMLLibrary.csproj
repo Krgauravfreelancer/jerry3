@@ -35,16 +35,20 @@
     <Reference Include="AudioPlayer_UserControl">
       <HintPath>..\..\Libraries\AudioPlayer_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="FullScreenPlayer_UserControl">
+    <Reference Include="FullScreenPlayer_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\FullScreenPlayer_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="LocalVoiceGen_UserControl">
+    <Reference Include="LocalVoiceGen_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\LocalVoiceGen_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="MediaGenApi_UserControl">
+    <Reference Include="MediaGenApi_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\MediaGenApi_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="ScreenRecorder_UserControl">
+    <Reference Include="ScreenRecorder_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\ScreenRecorder_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -60,7 +64,8 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="VoiceScripter_UserControl">
+    <Reference Include="VoiceScripter_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="WavePlayer_UserControl">

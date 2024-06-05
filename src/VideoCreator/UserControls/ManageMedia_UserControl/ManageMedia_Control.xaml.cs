@@ -841,10 +841,10 @@ namespace ManageMedia_UserControl
         {
             //Reload Changed Text Items Into FullScreenPlayer
             List<(TextItem TextItem, int VideoEventID)> TextItems = TimeLineControl.GetTextItems();
-            List<(PlayListTextItem TextItem, int VideoEventID)> PlayListTextItemList = new List<(PlayListTextItem TextItem, int VideoEventID)>();
+            List<(PlayListTextItem TextItem, Guid VideoEventID)> PlayListTextItemList = new List<(PlayListTextItem TextItem, Guid VideoEventID)>();
             foreach ((TextItem TextItem, int VideoEventID) element in TextItems)
             {
-                PlayListTextItemList.Add((new PlayListTextItem() { StartTime = element.TextItem.Start, Text = element.TextItem.Text }, element.VideoEventID));
+                PlayListTextItemList.Add((new PlayListTextItem() { StartTime = element.TextItem.Start, Text = element.TextItem.Text }, new Guid()));
             }
 
             Player.ReloadNotes(PlayListTextItemList);

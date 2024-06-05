@@ -284,7 +284,8 @@
     <Reference Include="TimePicker_UserControl">
       <HintPath>Libraries\TimePicker_UserControl.dll</HintPath>
     </Reference>
-    <Reference Include="VoiceScripter_UserControl">
+    <Reference Include="VoiceScripter_UserControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\VoiceScripter_UserControl.dll</HintPath>
     </Reference>
     <Reference Include="Vosk, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
