@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -761,6 +762,36 @@ namespace DesignerNp.controls
                 _textBox.SetValue(Canvas.LeftProperty, x);
             }
             return;
+        }
+
+        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void txtThickness_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            //if (null == _uiElement) return;
+
+            //double endY;
+            //if (!double.TryParse(txtEndY.Text, out endY)) return;
+
+            //Line element = (Line)_uiElement;
+            //if ((string)element.Tag == "Arrow")
+            //{
+            //    Canvas canvas = (Canvas)VisualTreeHelper.GetParent(element);
+            //    Line line = (Line)canvas.Children[0];
+            //    Line head = (Line)canvas.Children[1];
+
+            //    calculateDxDy(line, out double dx, out double dy);
+            //    line.Y2 = endY - 25 * dy;
+            //    moveHead(line, head);
+            //}
+            //else
+            //{
+            //    element.Y2 = endY;
+            //}
         }
     }
 }

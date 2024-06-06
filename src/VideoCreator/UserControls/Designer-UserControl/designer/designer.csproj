@@ -121,5 +121,14 @@
       <Name>SQLite_Library</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="left-align.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="center-align.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="right-align.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
