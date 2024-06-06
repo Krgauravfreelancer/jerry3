@@ -11,78 +11,12 @@
 
 
 
-        <DataTemplate x:Key="DefaultTemplate">
-            <Grid x:Name="GridItem" Height="25"  Background="#33E6E6E6" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1*" />
-                </Grid.ColumnDefinitions>
-                <Image Source="{Binding Path=MediaIcon}" Height="17" VerticalAlignment="Center" HorizontalAlignment="Left" Opacity="0.5"/>
-                <TextBlock x:Name="MediaName" Grid.Column="1" Text="{Binding Path=MediaName}"  TextAlignment="Left" VerticalAlignment="Center"/>
-                <TextBlock x:Name="Start" Grid.Column="2" Text="{Binding Path=Start}"   TextAlignment="Center"  VerticalAlignment="Center"/>
-                <TextBlock x:Name="Duration" Grid.Column="3" Text="{Binding Path=ClipDuration}"  TextAlignment="Center"  VerticalAlignment="Center"/>
-            </Grid>
-        </DataTemplate>
+
         <Style x:Key="FocusVisual">
             <Setter Property="Control.Template">
                 <Setter.Value>
                     <ControlTemplate>
                         <Rectangle Margin="2" StrokeDashArray="1 2" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" SnapsToDevicePixels="true" StrokeThickness="1"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <SolidColorBrush x:Key="Item.MouseOver.Background" Color="#1F26A0DA"/>
-        <SolidColorBrush x:Key="Item.MouseOver.Border" Color="#a826A0Da"/>
-        <SolidColorBrush x:Key="Item.SelectedActive.Background" Color="#3D26A0DA"/>
-        <SolidColorBrush x:Key="Item.SelectedActive.Border" Color="#FF26A0DA"/>
-        <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="#3D26A0DA"/>
-        <SolidColorBrush x:Key="Item.SelectedInactive.Border" Color="#FF26A0DA"/>
-        <Style x:Key="ListBoxItemStyle1" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Padding" Value="4,1"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.MouseOver.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.MouseOver.Border}"/>
-                            </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Selector.IsSelectionActive" Value="False"/>
-                                    <Condition Property="IsSelected" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedInactive.Border}"/>
-                            </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Selector.IsSelectionActive" Value="True"/>
-                                    <Condition Property="IsSelected" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Background}"/>
-                                <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource Item.SelectedActive.Border}"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -384,96 +318,30 @@
     </UserControl.Resources>
 
     <Grid Name="ControlContainer">
-        <Grid Name="MainContainer">
+        <DockPanel Name="MainContainer">
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="400" Width="2*"/>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition MaxWidth="400" Width="2*"/>
-            </Grid.ColumnDefinitions>
+            <controls:ClippingBorder x:Name="ControlBar" Height="35" Margin="5,5,5,0" CornerRadius="3" DockPanel.Dock="Top" BorderBrush="#d5dfe5" BorderThickness="1">
+                <controls:ClippingBorder.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FFF0F0F0"/>
+                        <GradientStop Color="#FFE5E5E5" Offset="1"/>
+                    </LinearGradientBrush>
+                </controls:ClippingBorder.Background>
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
+                    <Button Name="SaveBtn" Margin="2" IsEnabled="False" Click="SaveBtn_Click">
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" IsHitTestVisible="False">
+                            <Image Name="SaveBtnIcon" Height="18" Source="/ManageMedia_UserControl;component/Icons/Save-icon.png" Opacity="0.5"></Image>
+                            <TextBlock Text="Save Media" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Name="SaveBtnTxt" Text="- All Items Saved   ✓" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="#FF4C4C4C" />
+                </StackPanel>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition/>
-                <RowDefinition MaxHeight="200"/>
-            </Grid.RowDefinitions>
+
+            </controls:ClippingBorder>
 
 
-
-
-
-            <GroupBox Header="Event Grid" Grid.Column="0" Grid.Row="1" Margin="0,5">
-                <DockPanel >
-                    <Border  BorderBrush="LightGray" BorderThickness="1,1,1,0" DockPanel.Dock="Top" >
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30"/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="{Binding Source={x:Static SystemParameters.VerticalScrollBarWidth}}"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Media Type" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="Start" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="Duration" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </Border>
-                    <ListBox Name="listBoxVideoEvent" ItemTemplate="{StaticResource DefaultTemplate}"  ItemContainerStyle="{StaticResource ListBoxItemStyle1}" DockPanel.Dock="Top" ScrollViewer.VerticalScrollBarVisibility="Visible" SelectionChanged="listBoxVideoEvent_SelectionChanged">
-                        <ListBoxItem Style="{DynamicResource ListBoxItemStyle1}"/>
-                    </ListBox>
-                </DockPanel>
-            </GroupBox>
-
-            <GroupBox Name="PlayerGroupBox" Grid.Row="1" Header="Player" Grid.Column="1" Margin="5" Padding="5">
-
-                <fullscreenplayer_usercontrol:FullScreenPlayer_Control Name="Player" IsControlBarVisible="False" Position_Changed="Player_Position_Changed" Playing="Player_Playing" Paused="Player_Paused" Grid.Row="0"   />
-
-            </GroupBox>
-
-            <GroupBox Header="Planning" Grid.Row="1" Grid.Column="3" Margin="0,5">
-                <DockPanel>
-                    <DockPanel Margin="0,5" DockPanel.Dock="Top" >
-
-                        <!--<ComboBox Name="PlannerIndexGroupBox" Margin="0,0,5,0" MinWidth="50" DisplayMemberPath="GroupName" SelectedValuePath="GroupName" SelectionChanged="PlannerGroupBox_SelectionChanged"/>-->
-
-                        <ComboBox Name="PlannerGroupBox" SelectionChanged="PlannerGroupBox_SelectionChanged"/>
-
-                    </DockPanel>
-
-                    <TabControl DockPanel.Dock="Top">
-                        <TabItem Header="Notes">
-                            <ListBox Name="PlannerTextListBox" Margin="5"  ScrollViewer.VerticalScrollBarVisibility="Visible">
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                        <Setter Property="Padding" Value="0"></Setter>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </TabItem>
-                        <TabItem Header="Images">
-                            <ListBox Name="PlannerImageListBox" Margin="5"  ScrollViewer.VerticalScrollBarVisibility="Visible">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel Width="{Binding Path=ViewportWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem">
-                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                        <Setter Property="Padding" Value="0"></Setter>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
-                            </ListBox>
-                        </TabItem>
-                        <TabItem Header="Suggestions">
-                            <TextBox Name="SuggestedTxt" Margin="5" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-                        </TabItem>
-                    </TabControl>
-                </DockPanel>
-            </GroupBox>
-
-            <Border  Grid.Row="2" Margin="5,0,5,0" Grid.ColumnSpan="3" Background="#FFEAEAEA" BorderBrush="#FF9C9C9C" BorderThickness="1">
+            <controls:ClippingBorder  Grid.Row="2" Margin="5,0,5,5" CornerRadius="3" MinHeight="200" DockPanel.Dock="Bottom" Background="#FFEAEAEA" BorderBrush="#d5dfe5" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25"/>
@@ -482,26 +350,28 @@
                     <Border Background="#FFCCCCCC">
                         <DockPanel>
                             <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                                <TextBlock Text="Mode" VerticalAlignment="Center" Margin="2"/>
-                                <ComboBox Name="ModeBox" Margin="2" MinWidth="100" SelectionChanged="ModeBox_SelectionChanged"/>
-                                <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
-                                <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
-                                <Label Content="Source"/>
-                                <ComboBox Name="AudioSrcCmb" Width="200" VerticalAlignment="Center" SelectionChanged="AudioSrcCmb_SelectionChanged"/>
-                                <Label Content="Status"/>
-                                <Border SnapsToDevicePixels="True" BorderThickness="1" MinWidth="70" Padding="15,0" BorderBrush="Gray" Margin="2" Background="#FFE9E9E9">
-                                    <TextBlock Name="VoiceStatusTxt" Text="Idle" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                </Border>
-                                <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
-                                <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
-                                <Button Name="RecordBtn" Padding="5,0" Margin="2" Click="RecordBtn_Click">
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border Name="RecordBtnLight"  Width="12" Height="12" Margin="0,3,5,3" CornerRadius="7" Background="Gray" BorderThickness="1" BorderBrush="#FF212121"/>
-                                        <TextBlock Text="Record"/>
-                                    </StackPanel>
-                                </Button>
-                                <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
-                                <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
+                                <StackPanel Name="RecordPanel" Orientation="Horizontal">
+                                    <TextBlock Text="Mode" VerticalAlignment="Center" Margin="2"/>
+                                    <ComboBox Name="ModeBox" Margin="2" MinWidth="100" SelectionChanged="ModeBox_SelectionChanged"/>
+                                    <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
+                                    <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
+                                    <Label Content="Source"/>
+                                    <ComboBox Name="AudioSrcCmb" Width="200" VerticalAlignment="Center" SelectionChanged="AudioSrcCmb_SelectionChanged"/>
+                                    <Label Content="Status"/>
+                                    <Border SnapsToDevicePixels="True" BorderThickness="1" MinWidth="70" Padding="15,0" BorderBrush="Gray" Margin="2" Background="#FFE9E9E9">
+                                        <TextBlock Name="VoiceStatusTxt" Text="Idle" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
+                                    <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
+                                    <Button Name="RecordBtn" Padding="5,0" Margin="2" Click="RecordBtn_Click">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border Name="RecordBtnLight"  Width="12" Height="12" Margin="0,3,5,3" CornerRadius="7" Background="Gray" BorderThickness="1" BorderBrush="#FF212121"/>
+                                            <TextBlock Text="Record"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Rectangle Width="1" Fill="Gray" Margin="2,2,0,2"/>
+                                    <Rectangle Width="1" Fill="#FFE6E6E6" Margin="0,2,2,2"/>
+                                </StackPanel>
                                 <Button Name="PrevBtn" Margin="2" Width="25" Click="PrevBtn_Click">
                                     <Rectangle Fill="#FF353535" Width="12" Height="12">
                                         <Rectangle.OpacityMask>
@@ -523,7 +393,13 @@
                                         </Rectangle.OpacityMask>
                                     </Rectangle>
                                 </Button>
-
+                                <Button Name="FullScreenBtn" Margin="2" Width="25" Click="FullScreenBtn_Click">
+                                    <Rectangle Fill="#FF353535" Width="12" Height="12">
+                                        <Rectangle.OpacityMask>
+                                            <ImageBrush ImageSource="/ManageMedia_UserControl;component/Icons/EnterFullScreen.png" Stretch="Fill"/>
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                </Button>
                             </StackPanel>
 
                             <Border Width="150" DockPanel.Dock="Right">
@@ -567,8 +443,17 @@
                     </Grid>
 
                 </Grid>
-            </Border>
-            <Border Grid.Row="0" Grid.ColumnSpan="3" BorderBrush="#FFB7B7B7" BorderThickness="0,0,0,1" >
+            </controls:ClippingBorder>
+            <controls:ClippingBorder x:Name="PlayerContainer" DockPanel.Dock="Top" BorderBrush="#d5dfe5" BorderThickness="1" Grid.Column="0" Margin="5" CornerRadius="3">
+
+                <fullscreenplayer_usercontrol:FullScreenPlayer_Control Name="Player" IsControlBarVisible="False" Position_Changed="Player_Position_Changed" Playing="Player_Playing" Paused="Player_Paused" ExitFullScreen_Clicked="Player_ExitFullScreen_Clicked" Grid.Row="0"   />
+
+
+            </controls:ClippingBorder>
+
+
+
+            <!--<Border Grid.Row="0" Grid.ColumnSpan="3" BorderBrush="#FFB7B7B7" BorderThickness="0,0,0,1" >
                 <Border.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FFEDEDED" Offset="0.296"/>
@@ -576,16 +461,10 @@
                         <GradientStop Color="#FFE0E0E0" Offset="0"/>
                     </LinearGradientBrush>
                 </Border.Background>
-                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left">
-                    <Button Name="SaveBtn" Margin="2" IsEnabled="False" Click="SaveBtn_Click">
-                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0" IsHitTestVisible="False">
-                            <Image Name="SaveBtnIcon" Height="18" Source="/ManageMedia_UserControl;component/Icons/Save-icon.png" Opacity="0.5"></Image>
-                            <TextBlock Text="Save Media" Margin="5,0"/>
-                        </StackPanel>
-                    </Button>
-                    <TextBlock Name="SaveBtnTxt" Text="- All Items Saved   ✓" VerticalAlignment="Center" Margin="5,0,0,0" Foreground="#FF4C4C4C" />
-                </StackPanel>
-            </Border>
-        </Grid>
+
+            </Border>-->
+
+
+        </DockPanel>
     </Grid>
 </UserControl>

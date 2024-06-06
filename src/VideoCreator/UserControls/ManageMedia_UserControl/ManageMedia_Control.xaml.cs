@@ -1,4 +1,5 @@
-﻿using FullScreenPlayer_UserControl.Models;
+﻿using FullScreenPlayer_UserControl.Controls;
+using FullScreenPlayer_UserControl.Models;
 using LocalVoiceGen_UserControl.Helpers;
 using ManageMedia_UserControl.Classes;
 using ManageMedia_UserControl.Controls;
@@ -29,7 +30,6 @@ namespace ManageMedia_UserControl
     public partial class ManageMedia_Control : System.Windows.Controls.UserControl
     {
         int _ProjectID = -1;
-        List<PlannedTextGroup> _PlannedTextGroupList = null;
         List<Media> _PlayList = new List<Media>();
         List<Media> _OriginalPlayList = new List<Media>();
         VoiceScripter_Library voiceScripter_Library;
@@ -80,6 +80,8 @@ namespace ManageMedia_UserControl
             }
             else
             {
+                RecordPanel.Visibility = Visibility.Collapsed;
+                ControlBar.Visibility = Visibility.Collapsed;
                 RecordBtn.IsEnabled = false;
             }
         }
@@ -87,32 +89,6 @@ namespace ManageMedia_UserControl
         public void SetProjectInfo(int projectID)
         {
             _ProjectID = projectID;
-        }
-
-        public void LoadPlannedText(List<PlannedTextGroup> PlannedTextGroupList)
-        {
-            List<PlannedTextGroup> MyPlannedTextGroup = PlannedTextGroupList.ToList();
-
-            PlannedTextGroupList.Clear();
-
-            if (_PlannedTextGroupList != null)
-            {
-                _PlannedTextGroupList.Clear();
-            }
-
-            _PlannedTextGroupList = MyPlannedTextGroup;
-
-            PlannerGroupBox.Items.Clear();
-
-            for (int i = 0; i < MyPlannedTextGroup.Count; i++)
-            {
-                PlannerGroupBox.Items.Add(MyPlannedTextGroup[i].GroupName);
-            }
-
-            if (PlannerGroupBox.Items.Count > 0)
-            {
-                PlannerGroupBox.SelectedIndex = 0;
-            }
         }
 
         public void SetNoteID(int index, TextItem textItem)
@@ -195,9 +171,6 @@ namespace ManageMedia_UserControl
 
         private void LoadPlayer()
         {
-            listBoxVideoEvent.SelectedItem = null;
-            listBoxVideoEvent.Items.Clear();
-
             List<PlaylistItem> playlist = new List<PlaylistItem>();
             foreach (var item in _PlayList)
             {
@@ -240,10 +213,6 @@ namespace ManageMedia_UserControl
 
                     itemExtended.Start = item.StartTime.ToString(@"mm\:ss\:fff");
                     itemExtended.ClipDuration = item.Duration.ToString(@"mm\:ss\:fff");
-
-
-
-                    listBoxVideoEvent.Items.Add(itemExtended);
                 }
 
                 var playlistItem = CreatePlaylistItem(item);
@@ -347,354 +316,11 @@ namespace ManageMedia_UserControl
             return null;
         }
 
-        private void PlannerGroupBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (PlannerGroupBox.SelectedIndex != -1)
-            {
-                string SuggestedText = "";
-                for (int i = 0; i < _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].SuggestedText.Count; i++)
-                {
-                    SuggestedText += _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].SuggestedText[i] + Environment.NewLine;
-                }
-
-                SuggestedTxt.Text = SuggestedText;
-
-                PlannerTextListBox.Items.Clear();
-
-                for (int i = 0; i < _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].PlannedTexts.Count; i++)
-                {
-                    PlannedText plannedText = _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].PlannedTexts[i];
-                    string[] TextList = plannedText.Text.Split(new string[] { Environment.NewLine, "\n" }, StringSplitOptions.None);
-
-                    for (int t = 0; t < TextList.Length; t++)
-                    {
-                        string text = TextList[t];
-                        if (text != "")
-                        {
-
-                            //Height="25"  Background="#33E6E6E6" 
-                            SolidColorBrush backgroundColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#33E6E6E6"));
-                            TextBlock textBlock = new TextBlock()
-                            {
-                                Text = text,
-                                Margin = new Thickness(5, 0, 0, 0),
-                                HorizontalAlignment = HorizontalAlignment.Stretch,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                IsHitTestVisible = false,
-                            };
-
-                            Border TextContainer = new Border()
-                            {
-                                Background = backgroundColor,
-                                Height = 25,
-                            };
-                            TextContainer.Child = textBlock;
-
-
-                            if (_ReadOnly == false)
-                            {
-                                TextContainer.PreviewMouseLeftButtonDown += PlannerListBoxItem_MouseDown;
-                                TextContainer.PreviewMouseMove += PlannerListBoxItem_MouseMove;
-                                TextContainer.PreviewMouseLeftButtonUp += PlannerListBoxItem_MouseUp;
-                            }
-
-                            PlannerTextListBox.Items.Add(TextContainer);
-                        }
-                    }
-                }
-
-                PlannerImageListBox.Items.Clear();
-
-                for (int i = 0; i < _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].Images.Count; i++)
-                {
-                    PlannedImage plannedImage = _PlannedTextGroupList[PlannerGroupBox.SelectedIndex].Images[i];
-
-                    ThumbNail thumbNail = new ThumbNail(plannedImage);
-
-                    if (_ReadOnly == false)
-                    {
-                        thumbNail.PreviewMouseLeftButtonDown += PlannerListBoxImageItem_MouseDown;
-                        thumbNail.PreviewMouseMove += PlannerListBoxImageItem_MouseMove;
-                        thumbNail.PreviewMouseLeftButtonUp += PlannerListBoxImageItem_MouseUp;
-                    }
-
-                    PlannerImageListBox.Items.Add(thumbNail);
-                }
-            }
-        }
-
-        bool MouseDownOnPlannerBox = false;
-        Point MouseDownLocation = new Point(0, 0);
-        UIElement DraggingFromItem;
-        private void PlannerListBoxItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            DraggingFromItem = sender as UIElement;
-            MouseDownOnPlannerBox = true;
-            DraggingFromItem.CaptureMouse();
-            MouseDownLocation = Mouse.GetPosition(this);
-        }
-
-        private void PlannerListBoxItem_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (MouseDownOnPlannerBox == true)
-            {
-                Point NewLocation = Mouse.GetPosition(this);
-                if (Math.Abs(MouseDownLocation.X - NewLocation.X) > 5 || Math.Abs(MouseDownLocation.Y - NewLocation.Y) > 5)
-                {
-                    //Mouse Is Dragging
-                    MouseDownOnPlannerBox = false;
-                    DraggingFromItem.ReleaseMouseCapture();
-
-                    string SelectedText = ((TextBlock)((Border)PlannerTextListBox.SelectedItem).Child).Text;
-
-                    TimeSpan MeasuredText = TextMeasurement.Measure(SelectedText);
-                    NoteItemControl noteControl = new NoteItemControl(
-                        new TextItem()
-                        {
-                            Text = SelectedText,
-                        }, -1, TimeSpan.Zero, TimeSpan.Zero, true);
-
-                    noteControl.Width = 250;
-                    if (MeasuredText != TimeSpan.Zero)
-                    {
-                        noteControl.Width = TimeLineControl.GetWidthByTimeSpan(MeasuredText);
-                    }
-                    noteControl.Height = 30;
-                    noteControl.Opacity = 0.8;
-                    noteControl.VerticalAlignment = VerticalAlignment.Top;
-                    noteControl.HorizontalAlignment = HorizontalAlignment.Left;
-
-                    noteControl.IsEnabled = true;
-
-                    Grid.SetColumnSpan(noteControl, 5);
-                    Grid.SetRowSpan(noteControl, 5);
-
-                    MainContainer.Children.Add(noteControl);
-
-                    noteControl.Loaded += (se, ee) =>
-                    {
-                        NoteItemControl myNote = se as NoteItemControl;
-                        myNote.CaptureMouse();
-
-                        myNote.MouseMove += (se2, ee2) =>
-                        {
-                            Point NoteLocation = Mouse.GetPosition(this);
-                            myNote.Margin = new Thickness(NoteLocation.X - (myNote.ActualWidth / 2), NoteLocation.Y - (myNote.ActualHeight / 2), 0, 0);
-                            var state = Mouse.LeftButton;
-                            if (state == MouseButtonState.Released)
-                            {
-                                MainContainer.Children.Remove(noteControl);
-                                myNote.ReleaseMouseCapture();
-                                DraggingFromItem.ReleaseMouseCapture();
-                            }
-                        };
-
-                        myNote.MouseLeftButtonUp += (se2, ee2) =>
-                        {
-                            Point MouseLocation = Mouse.GetPosition(this);
-                            Point relativePoint = DropArea.TransformToAncestor(this).Transform(new Point(0, 0));
-
-                            MainContainer.Children.Remove(noteControl);
-                            myNote.ReleaseMouseCapture();
-                            DraggingFromItem.ReleaseMouseCapture();
-
-
-                            if (MouseLocation.X >= relativePoint.X && MouseLocation.X <= relativePoint.X + DropArea.ActualWidth)
-                            {
-                                if (MouseLocation.Y >= relativePoint.Y && MouseLocation.Y <= relativePoint.Y + DropArea.ActualHeight)
-                                {
-                                    Point DropLocationTimeLine = Mouse.GetPosition(DropArea);
-
-                                    TimeLineControl.AddNewNoteItemByPoint(new TextItem()
-                                    {
-                                        Text = SelectedText,
-                                        Duration = MeasuredText,
-                                    }, DropLocationTimeLine, true);
-                                }
-                            }
-
-                            DropArea.Visibility = Visibility.Collapsed;
-                        };
-                    };
-
-                    DropArea.Opacity = 0.0;
-                    DropArea.Visibility = Visibility.Visible;
-
-                    var a = new DoubleAnimation
-                    {
-                        From = 0.0,
-                        To = 1.0,
-                        FillBehavior = FillBehavior.HoldEnd,
-                        Duration = new Duration(TimeSpan.FromSeconds(0.3))
-                    };
-                    var storyboard = new Storyboard();
-
-                    storyboard.Children.Add(a);
-                    Storyboard.SetTarget(a, DropArea);
-                    Storyboard.SetTargetProperty(a, new PropertyPath(OpacityProperty));
-                    storyboard.Begin();
-
-                }
-                else
-                {
-                    var state = Mouse.LeftButton;
-                    if (state == MouseButtonState.Released)
-                    {
-                        DraggingFromItem.ReleaseMouseCapture();
-                    }
-                }
-            }
-        }
-
-        private void PlannerListBoxItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (MouseDownOnPlannerBox == true)
-            {
-                MouseDownOnPlannerBox = false;
-                DraggingFromItem.ReleaseMouseCapture();
-            }
-        }
-
-        private void PlannerListBoxImageItem_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            DraggingFromItem = sender as UIElement;
-            MouseDownOnPlannerBox = true;
-            DraggingFromItem.CaptureMouse();
-            MouseDownLocation = Mouse.GetPosition(this);
-        }
-
-        private void PlannerListBoxImageItem_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (MouseDownOnPlannerBox == true)
-            {
-                Point NewLocation = Mouse.GetPosition(this);
-                if (Math.Abs(MouseDownLocation.X - NewLocation.X) > 5 || Math.Abs(MouseDownLocation.Y - NewLocation.Y) > 5)
-                {
-                    //Mouse Is Dragging
-                    MouseDownOnPlannerBox = false;
-                    DraggingFromItem.ReleaseMouseCapture();
-
-                    Image imageControl = new Image()
-                    {
-                        Source = ((ThumbNail)sender).GetMainImage(),
-                        Width = ((ThumbNail)sender).ActualWidth,
-                        Height = ((ThumbNail)sender).ActualHeight,
-                        Opacity = 0.8,
-                        VerticalAlignment = VerticalAlignment.Top,
-                        HorizontalAlignment = HorizontalAlignment.Left
-                    };
-
-                    Grid.SetColumnSpan(imageControl, 5);
-                    Grid.SetRowSpan(imageControl, 5);
-
-                    MainContainer.Children.Add(imageControl);
-
-                    imageControl.Loaded += (se, ee) =>
-                    {
-                        Image myImage = se as Image;
-                        myImage.CaptureMouse();
-
-                        myImage.MouseMove += (se2, ee2) =>
-                        {
-                            Point NoteLocation = Mouse.GetPosition(this);
-                            myImage.Margin = new Thickness(NoteLocation.X - (myImage.ActualWidth / 2), NoteLocation.Y - (myImage.ActualHeight / 2), 0, 0);
-                            var state = Mouse.LeftButton;
-                            if (state == MouseButtonState.Released)
-                            {
-                                MainContainer.Children.Remove(imageControl);
-                                myImage.ReleaseMouseCapture();
-                                DraggingFromItem.ReleaseMouseCapture();
-                            }
-                        };
-
-                        myImage.MouseUp += (se2, ee2) =>
-                        {
-
-                            Point MouseLocation = Mouse.GetPosition(this);
-                            Point relativePoint = DropArea.TransformToAncestor(this).Transform(new Point(0, 0));
-
-                            MainContainer.Children.Remove(imageControl);
-                            myImage.ReleaseMouseCapture();
-                            DraggingFromItem.ReleaseMouseCapture();
-
-
-                            if (MouseLocation.X >= relativePoint.X && MouseLocation.X <= relativePoint.X + DropArea.ActualWidth)
-                            {
-                                if (MouseLocation.Y >= relativePoint.Y && MouseLocation.Y <= relativePoint.Y + DropArea.ActualHeight)
-                                {
-                                    Point DropLocationTimeLine = Mouse.GetPosition(DropArea);
-
-                                    TimeLineControl.AddNewVideoEventByPoint(myImage.Source, DropLocationTimeLine, true);
-                                }
-                            }
-
-                            DropArea.Visibility = Visibility.Collapsed;
-                        };
-                    };
-
-                    DropArea.Opacity = 0.0;
-                    DropArea.Visibility = Visibility.Visible;
-
-                    var a = new DoubleAnimation
-                    {
-                        From = 0.0,
-                        To = 1.0,
-                        FillBehavior = FillBehavior.HoldEnd,
-                        Duration = new Duration(TimeSpan.FromSeconds(0.3))
-                    };
-                    var storyboard = new Storyboard();
-
-                    storyboard.Children.Add(a);
-                    Storyboard.SetTarget(a, DropArea);
-                    Storyboard.SetTargetProperty(a, new PropertyPath(OpacityProperty));
-                    storyboard.Begin();
-
-                }
-                else
-                {
-                    var state = Mouse.LeftButton;
-                    if (state == MouseButtonState.Released)
-                    {
-                        DraggingFromItem.ReleaseMouseCapture();
-                    }
-                }
-            }
-        }
-
-        private void PlannerListBoxImageItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (MouseDownOnPlannerBox == true)
-            {
-                MouseDownOnPlannerBox = false;
-                DraggingFromItem.ReleaseMouseCapture();
-            }
-        }
-
-        private void listBoxVideoEvent_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            MediaExtended selectedMedia = listBoxVideoEvent.SelectedItem as MediaExtended;
-            if (selectedMedia != null)
-            {
-                if (Player.State == FullScreenPlayer_UserControl.FullScreenPlayerState.Playing)
-                {
-                    Player.Pause();
-                }
-                ModeBox.SelectedItem = TimeLineMode.Selected;
-                TimeLineControl.SetSelectedMedia(((Media)selectedMedia).VideoEventID);
-                TimeLineControl.SetTimeLineMode(TimeLineMode.Selected);
-            }
-        }
-
         private void ModeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ModeBox.SelectedItem != null)
             {
                 MediaExtended selectedMedia = null;
-
-                if (listBoxVideoEvent.SelectedIndex != -1)
-                {
-                    selectedMedia = (MediaExtended)listBoxVideoEvent.SelectedItem;
-                }
 
                 if (selectedMedia != null)
                 {
@@ -841,10 +467,10 @@ namespace ManageMedia_UserControl
         {
             //Reload Changed Text Items Into FullScreenPlayer
             List<(TextItem TextItem, int VideoEventID)> TextItems = TimeLineControl.GetTextItems();
-            List<(PlayListTextItem TextItem, Guid VideoEventID)> PlayListTextItemList = new List<(PlayListTextItem TextItem, Guid VideoEventID)>();
+            List<(PlayListTextItem TextItem, int VideoEventID)> PlayListTextItemList = new List<(PlayListTextItem TextItem, int VideoEventID)>();
             foreach ((TextItem TextItem, int VideoEventID) element in TextItems)
             {
-                PlayListTextItemList.Add((new PlayListTextItem() { StartTime = element.TextItem.Start, Text = element.TextItem.Text }, new Guid()));
+                PlayListTextItemList.Add((new PlayListTextItem() { StartTime = element.TextItem.Start, Text = element.TextItem.Text }, element.VideoEventID));
             }
 
             Player.ReloadNotes(PlayListTextItemList);
@@ -976,21 +602,6 @@ namespace ManageMedia_UserControl
 
         private void TimeLineControl_SelectedVideo(object sender, SelectedVideoEventArgs e)
         {
-            MediaExtended SelectedMedia = null;
-            for (int i = 0; i < listBoxVideoEvent.Items.Count; i++)
-            {
-                MediaExtended mediaExtended = (MediaExtended)listBoxVideoEvent.Items[i];
-                if (mediaExtended.VideoEventID == e.MediaItem.VideoEventID)
-                {
-                    SelectedMedia = mediaExtended;
-                    break;
-                }
-            }
-
-            if (SelectedMedia != null)
-            {
-                listBoxVideoEvent.SelectedItem = SelectedMedia;
-            }
 
         }
 
@@ -1007,25 +618,15 @@ namespace ManageMedia_UserControl
         {
             Player.Init(new List<PlaylistItem>());
             TimeLineControl.ClearResources();
-
-            _PlannedTextGroupList.Clear();
             _PlayList.Clear();
             voiceScripter_Library = null;
             _RecordingTimer.Tick -= _RecordingTimer_Tick;
             _RecordingTimer = null;
 
-
-            PlannerTextListBox.Items.Clear();
-            PlannerImageListBox.Items.Clear();
-            listBoxVideoEvent.Items.Clear();
-
-            PlannerGroupBox.Items.Clear();
-
             Player.Position_Changed -= Player_Position_Changed;
             Player.Playing -= Player_Playing;
             Player.Paused -= Player_Paused;
-
-            PlayerGroupBox.Content = null;
+            PlayerContainer.Child = null;
 
             this.Content = null;
         }
@@ -1291,6 +892,17 @@ namespace ManageMedia_UserControl
 
             BlurEffect blurEffect = new BlurEffect() { Radius = 10 };
             MainContainer.Effect = blurEffect;
+        }
+
+        private void FullScreenBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Player.IsControlBarVisible = true;
+            Player.ToggleFullScreenMode();
+        }
+
+        private void Player_ExitFullScreen_Clicked(object sender, EventArgs e)
+        {
+            Player.IsControlBarVisible = false;
         }
     }
 

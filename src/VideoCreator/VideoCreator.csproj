@@ -338,7 +338,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Content Include="Libraries\ManageMedia_UserControl.dll" />
     <Content Include="Libraries\MediaToolkit.dll" />
     <Content Include="Libraries\NotesManage_UserControl.dll" />
     <Content Include="Libraries\Notes_UserControl.dll" />

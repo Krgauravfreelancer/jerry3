@@ -28,8 +28,8 @@ namespace VideoCreatorXAMLLibrary.Helpers
 
         public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent, bool readOnly = false)
         {
-            _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             ReadOnly = readOnly;
+            _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             selectedProjectEvent = _selectedProjectEvent;
 
             //ProjectID = Selected_ID;
@@ -359,59 +359,59 @@ namespace VideoCreatorXAMLLibrary.Helpers
         {
             #region Planned Text
 
-            List<CBVScreen> screens = DataManagerSqlLite.GetScreens();
-            List<CBVPlanning> PlanningData = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId);
-            if (screens?.Count > 0 && PlanningData?.Count > 0)
-            {
-                List<PlannedTextGroup> PlannedTextGroups = new List<PlannedTextGroup>();
-                for (int i = 0; i < screens.Count; i++)
-                {
-                    PlannedTextGroup PlannedGroup = new PlannedTextGroup()
-                    {
-                        GroupID = screens[i].screen_id,
-                        GroupName = screens[i].screen_name,
-                        PlannedTexts = new List<PlannedText>()
-                    };
-                    PlannedTextGroups.Add(PlannedGroup);
-                }
+            //List<CBVScreen> screens = DataManagerSqlLite.GetScreens();
+            //List<CBVPlanning> PlanningData = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId);
+            //if (screens?.Count > 0 && PlanningData?.Count > 0)
+            //{
+            //    List<PlannedTextGroup> PlannedTextGroups = new List<PlannedTextGroup>();
+            //    for (int i = 0; i < screens.Count; i++)
+            //    {
+            //        PlannedTextGroup PlannedGroup = new PlannedTextGroup()
+            //        {
+            //            GroupID = screens[i].screen_id,
+            //            GroupName = screens[i].screen_name,
+            //            PlannedTexts = new List<PlannedText>()
+            //        };
+            //        PlannedTextGroups.Add(PlannedGroup);
+            //    }
 
-                for (int i = 0; i < PlanningData.Count; i++)
-                {
-                    CBVPlanning CurrentPlanning = PlanningData[i];
-                    for (int x = 0; x < PlannedTextGroups.Count; x++)
-                    {
-                        PlannedTextGroup CurrentGroup = PlannedTextGroups[x];
-                        if (CurrentPlanning.fk_planning_screen == CurrentGroup.GroupID)
-                        {
-                            CurrentGroup.PlannedTexts.Add(
-                            new PlannedText()
-                            {
-                                PlannedTextID = CurrentPlanning.planning_id,
-                                Text = CurrentPlanning.planning_notesline,
-                                SortKey = CurrentPlanning.planning_sort
-                            });
+            //    for (int i = 0; i < PlanningData.Count; i++)
+            //    {
+            //        CBVPlanning CurrentPlanning = PlanningData[i];
+            //        for (int x = 0; x < PlannedTextGroups.Count; x++)
+            //        {
+            //            PlannedTextGroup CurrentGroup = PlannedTextGroups[x];
+            //            if (CurrentPlanning.fk_planning_screen == CurrentGroup.GroupID)
+            //            {
+            //                CurrentGroup.PlannedTexts.Add(
+            //                new PlannedText()
+            //                {
+            //                    PlannedTextID = CurrentPlanning.planning_id,
+            //                    Text = CurrentPlanning.planning_notesline,
+            //                    SortKey = CurrentPlanning.planning_sort
+            //                });
 
-                            //if (CurrentPlanning.planning_mediathumb != null && CurrentPlanning.planning_mediafull != null)
-                            //{
-                            //    CurrentGroup.Images.Add(new PlannedImage()
-                            //    {
-                            //        PlannedTextID = CurrentPlanning.planning_id,
-                            //        Image = CurrentPlanning.planning_mediafull,
-                            //        SortKey = CurrentPlanning.planning_sort,
-                            //        ThumbNail = CurrentPlanning.planning_mediathumb,
-                            //    });
-                            //}
+            //                //if (CurrentPlanning.planning_mediathumb != null && CurrentPlanning.planning_mediafull != null)
+            //                //{
+            //                //    CurrentGroup.Images.Add(new PlannedImage()
+            //                //    {
+            //                //        PlannedTextID = CurrentPlanning.planning_id,
+            //                //        Image = CurrentPlanning.planning_mediafull,
+            //                //        SortKey = CurrentPlanning.planning_sort,
+            //                //        ThumbNail = CurrentPlanning.planning_mediathumb,
+            //                //    });
+            //                //}
 
-                            if (CurrentPlanning.planning_suggestnotesline != "" && CurrentPlanning.planning_suggestnotesline != null)
-                            {
-                                CurrentGroup.SuggestedText.Add(CurrentPlanning.planning_suggestnotesline);
-                            }
-                        }
-                    }
-                }
+            //                if (CurrentPlanning.planning_suggestnotesline != "" && CurrentPlanning.planning_suggestnotesline != null)
+            //                {
+            //                    CurrentGroup.SuggestedText.Add(CurrentPlanning.planning_suggestnotesline);
+            //                }
+            //            }
+            //        }
+            //    }
 
-                _ManageMedia.LoadPlannedText(PlannedTextGroups);
-            }
+            //    _ManageMedia.LoadPlannedText(PlannedTextGroups);
+            //}
 
 
             #endregion
@@ -423,7 +423,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             var plannings = DataManagerSqlLite.GetPlanning(selectedProjectEvent.projectId, false);
 
 
-            List<ManageMedia> mediaList = new List<ManageMedia>();
+            List<ManageMedia> mediaList = new List<Media>();
             foreach (var item in VideoEventData)
             {
 

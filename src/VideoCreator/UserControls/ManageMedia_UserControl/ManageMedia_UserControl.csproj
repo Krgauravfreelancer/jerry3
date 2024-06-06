@@ -75,6 +75,7 @@
     <Compile Include="Classes\TimeLine\DrawEngine\DrawVideoEvents.cs" />
     <Compile Include="Classes\TimeLine\TrackItemProcessor.cs" />
     <Compile Include="Classes\TimeLine\TrackItemSelectionEngine.cs" />
+    <Compile Include="Controls\ClippingBorder.cs" />
     <Compile Include="Controls\ClosingPrompt.xaml.cs">
       <DependentUpon>ClosingPrompt.xaml</DependentUpon>
     </Compile>
@@ -191,6 +192,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Save-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\EnterFullScreen.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SQLite_UserControl\SQLite_Library.csproj">
