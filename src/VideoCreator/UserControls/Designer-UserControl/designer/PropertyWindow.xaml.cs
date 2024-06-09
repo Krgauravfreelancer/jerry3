@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -125,7 +127,8 @@ namespace DesignerNp.controls
                 txtEndY.IsEnabled = false;
                 txtEndY.Text = "";
 
-
+                txtThickness.IsEnabled = false;
+                txtThickness.Text = "";
             }
             else if (null == _uiElement && null != _textBox)
             {
@@ -176,6 +179,13 @@ namespace DesignerNp.controls
                 {
                     SolidColorBrush solidColorBrush = (SolidColorBrush)brush;
                     colorPicker.SelectedColor = solidColorBrush.Color;
+                }
+
+                txtThickness.IsEnabled = true;
+                var thickness = (double)_uiElement.GetValue(Shape.StrokeThicknessProperty);
+                if (thickness > 0)
+                {
+                    txtThickness.Text = thickness.ToString();
                 }
 
                 //Type type = _uiElement.GetType();
@@ -766,32 +776,35 @@ namespace DesignerNp.controls
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
+            var textBox = sender as TextBox;
+            var fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+            double val;
+            e.Handled = !double.TryParse(fullText,
+                                         NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign,
+                                         CultureInfo.InvariantCulture,
+                                         out val);
         }
 
         private void txtThickness_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //if (null == _uiElement) return;
+            if (null == _uiElement) return;
+            double thickness;
+            if (!double.TryParse(txtThickness.Text, out thickness)) return;
+            if (null != _uiElement)
+            {
+                Type type = _uiElement.GetType();
+                switch (type.Name)
+                {
+                    case "Rectangle":
+                    case "Ellipse":
+                    case "Line":
+                    case "Path":
+                        _uiElement.SetValue(Shape.StrokeThicknessProperty, thickness);
+                        break;
 
-            //double endY;
-            //if (!double.TryParse(txtEndY.Text, out endY)) return;
 
-            //Line element = (Line)_uiElement;
-            //if ((string)element.Tag == "Arrow")
-            //{
-            //    Canvas canvas = (Canvas)VisualTreeHelper.GetParent(element);
-            //    Line line = (Line)canvas.Children[0];
-            //    Line head = (Line)canvas.Children[1];
-
-            //    calculateDxDy(line, out double dx, out double dy);
-            //    line.Y2 = endY - 25 * dy;
-            //    moveHead(line, head);
-            //}
-            //else
-            //{
-            //    element.Y2 = endY;
-            //}
+                }
+            }
         }
     }
 }
