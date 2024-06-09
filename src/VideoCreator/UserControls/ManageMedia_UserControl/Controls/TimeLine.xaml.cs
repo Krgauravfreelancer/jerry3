@@ -10,6 +10,7 @@ using ScreenRecorder_UserControl.Models;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -64,7 +65,7 @@ namespace ManageMedia_UserControl.Controls
 
         //public event EventHandler<LocationChangedEventModel> LocationChangedEvent;
 
-        public List<Media> CalloutLocationOrSizeChangedMedia = new List<Media>();
+        public ObservableCollection<Media> CalloutLocationOrSizeChangedMedia = new ObservableCollection<Media>();
 
         public Point TrackBarPosition = new Point(0, 0);
         public TimeSpan TrackBarTimespan = new TimeSpan(0, 0, 0);
@@ -1539,7 +1540,7 @@ namespace ManageMedia_UserControl.Controls
             {
                 if(CalloutLocationOrSizeChangedMedia != null && CalloutLocationOrSizeChangedMedia.Count > 0)
                 {
-                    var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.Find(x => x?.VideoEventID == item?.MediaCallout?.VideoEventID);
+                    var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.ToList().Find(x => x?.VideoEventID == item?.MediaCallout?.VideoEventID);
                     if (isAlreadyExist != null)
                         CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
                 }
@@ -1556,7 +1557,7 @@ namespace ManageMedia_UserControl.Controls
         {
             if (calloutMedia != null)
             {
-                var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.Find(x => x?.VideoEventID == calloutMedia?.VideoEventID);
+                var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.ToList().Find(x => x?.VideoEventID == calloutMedia?.VideoEventID);
                 if (isAlreadyExist != null)
                     CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
                 CalloutLocationOrSizeChangedMedia.Add(calloutMedia);

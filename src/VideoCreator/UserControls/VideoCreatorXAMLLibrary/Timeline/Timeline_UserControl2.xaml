@@ -18,11 +18,11 @@
                     <Image Source="../Icons/planning.png" ></Image>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" >
+            <!--<MenuItem Header="Save All Timelines" x:Name="MenuItem_SaveAllTimelines" Click="SaveTimeline" >
                 <MenuItem.Icon>
                     <Image Source="../Icons/save.png" ></Image>
                 </MenuItem.Icon>
-            </MenuItem>
+            </MenuItem>-->
             <Separator/>
             <MenuItem Header="Add Audio Event" x:Name="MenuItem_AddAudioEvent" Click="AddAudioEvent_Click" IsEnabled="False">
                 <MenuItem.Icon>
@@ -84,7 +84,9 @@
                     </GroupBox>-->
                 <!--<GroupBox Padding="2">-->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                <Label Content="Use Right click to add Audio/Video Event" Margin="5,-5,0,0" VerticalAlignment="Top" />
+                <Label Content="Use Right click to add Audio/Video Event" Margin="0,0,0,0" VerticalAlignment="Top" />
+                <Button Margin="10,0,0,0" x:Name="btnSave" Click="BtnSave_Click" Padding="20,0,20,0" IsEnabled="False">Save</Button>
+                <Label x:Name="lblMesssage" Content="" Margin="5,0,0,0" VerticalAlignment="Top" Foreground="Red"  />
             </StackPanel>
             <mmtimepicker:TimeLine x:Name="TimelineGridCtrl2" BorderBrush="Gray" BorderThickness="1" 
                                    EventSelectionChangedEvent="EventSelectionChangedEvent"  

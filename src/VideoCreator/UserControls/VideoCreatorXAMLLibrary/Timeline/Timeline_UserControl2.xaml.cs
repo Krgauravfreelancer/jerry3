@@ -16,6 +16,7 @@ using System.Windows.Threading;
 using VideoCreatorXAMLLibrary.Auth;
 using VideoCreatorXAMLLibrary.Helpers;
 using VideoCreatorXAMLLibrary.Models;
+using System.Collections.ObjectModel;
 using MMClass = ManageMedia_UserControl.Classes;
 using MMModel = ManageMedia_UserControl.Models;
 
@@ -55,6 +56,27 @@ namespace VideoCreatorXAMLLibrary
         public Timeline_UserControl2()
         {
             InitializeComponent();
+            lblMesssage.Content = "";
+            TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia.CollectionChanged += CalloutLocationOrSizeChangedMedia_CollectionChanged;
+        }
+
+        void CalloutLocationOrSizeChangedMedia_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+            {
+                btnSave.IsEnabled = true;
+                lblMesssage.Content = $"{TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia.Count} events changed.";
+            }
+            else
+            {
+                btnSave.IsEnabled = false;
+                lblMesssage.Content = "";
+            }
+        }
+
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveTimeline(sender, e);
         }
 
         public void SetSelectedProjectId(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool readonlyMode = false)
@@ -71,7 +93,24 @@ namespace VideoCreatorXAMLLibrary
         {
             MMTimelineHelper.Init(selectedProjectEvent, TimelineGridCtrl2);
             TimelineGridCtrl2.SetTrackbar();
-            TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia = new List<MMClass.Media>();
+            TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia = new ObservableCollection<MMClass.Media>();
+            btnSave.IsEnabled = TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia.Count > 0;
+            TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia.CollectionChanged += CalloutLocationOrSizeChangedMedia_CollectionChanged;
+            lblMesssage.Content = "";
+        }
+
+        private MessageBoxResult ConfirmOverwriteChanges()
+        {
+            var result = MessageBoxResult.Yes;
+            if (TimelineGridCtrl2.CalloutLocationOrSizeChangedMedia?.Count > 0)
+            {
+                result = MessageBox.Show($"You have unsaved changes, do you want to save those changes first?{Environment.NewLine}Press Cancel to return.", "Confirm", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if(result == MessageBoxResult.Yes)
+                {
+                    SaveTimeline(null, null);
+                }
+            }
+            return result;
         }
 
         private void TimelineMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -82,25 +121,25 @@ namespace VideoCreatorXAMLLibrary
 
             var MenuItem_AddPlanningEvents = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddPlanningEvents");
             MenuItem_AddPlanningEvents.IsEnabled = Role == EnumRole.PROJECT_WRITE;
-            
-            var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
-            MenuItem_SaveAllTimelines.IsEnabled = Role == EnumRole.PROJECT_WRITE;
-            
+
+            //var MenuItem_SaveAllTimelines = GetMenuItemByResourceName(contextMenuKey, "MenuItem_SaveAllTimelines");
+            //MenuItem_SaveAllTimelines.IsEnabled = Role == EnumRole.PROJECT_WRITE;
+
             var MenuItem_AddAudioEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddAudioEvent");
             MenuItem_AddAudioEvent.IsEnabled = false;
 
             var MenuItem_AddCallout1 = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddCallout1");
             MenuItem_AddCallout1.IsEnabled = Role == EnumRole.PROJECT_WRITE;
-            
+
             var MenuItem_AddCallout2 = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddCallout2");
             MenuItem_AddCallout2.IsEnabled = Role == EnumRole.PROJECT_WRITE;
-            
+
             var MenuItem_AddVideoEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddVideoEvent");
             MenuItem_AddVideoEvent.IsEnabled = Role == EnumRole.PROJECT_WRITE;
 
             var MenuItem_AddFormEvent = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddFormEvent");
             MenuItem_AddFormEvent.IsEnabled = Role == EnumRole.PROJECT_WRITE;
-            
+
             var MenuItem_AddImageEventUsingCBLibrary = GetMenuItemByResourceName(contextMenuKey, "MenuItem_AddImageEventUsingCBLibrary");
             MenuItem_AddImageEventUsingCBLibrary.IsEnabled = Role == EnumRole.PROJECT_WRITE;
 
@@ -189,17 +228,23 @@ namespace VideoCreatorXAMLLibrary
 
         private void AddVideoEvent_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
+            var result = ConfirmOverwriteChanges();
+            if(result != MessageBoxResult.Cancel)
+                ContextMenu_AddVideoEvent_Clicked.Invoke(sender, e);
         }
 
         private void LoadTimelineDataFromDb_Click(object sender, RoutedEventArgs e)
         {
-            Refresh();
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+                Refresh();
         }
 
         private void UndeleteDeletedEvent(object sender, RoutedEventArgs e)
         {
-            ContextMenu_UndeleteDeletedEvent_Clicked.Invoke(sender, e);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+                ContextMenu_UndeleteDeletedEvent_Clicked.Invoke(sender, e);
             DisableUndoDeleteAndReset();
         }
 
@@ -234,37 +279,41 @@ namespace VideoCreatorXAMLLibrary
         #region == Planning Events ==
         private async void AddPlanningEvents_Click(object sender, RoutedEventArgs e)
         {
-            var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
-            using (var transaction = sqlCon.BeginTransaction())
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
             {
-                try
+                var sqlCon = SyncDbHelper.InitializeDatabaseAndGetConnection();
+                using (var transaction = sqlCon.BeginTransaction())
                 {
-
-                    var trackbarTime = DataManagerSqlLite.GetNextStartForTransaction((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId, sqlCon);
-                    var payload = new PlanningEvent
+                    try
                     {
-                        Type = EnumScreen.All,
-                        TimeAtTheMoment = trackbarTime
-                    };
 
-                    var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent(sqlCon);
-                    if (backgroundImagePath == null)
-                        MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
-                    else
-                    {
-                        await PlanningHandlerHelper.ProcessForTransaction(payload, selectedProjectEvent, authApiViewModel, this, loader, sqlCon, backgroundImagePath);
+                        var trackbarTime = DataManagerSqlLite.GetNextStartForTransaction((int)EnumMedia.VIDEO, selectedProjectEvent.projdetId, sqlCon);
+                        var payload = new PlanningEvent
+                        {
+                            Type = EnumScreen.All,
+                            TimeAtTheMoment = trackbarTime
+                        };
+
+                        var backgroundImagePath = PlanningHandlerHelper.CheckIfBackgroundPresent(sqlCon);
+                        if (backgroundImagePath == null)
+                            MessageBox.Show($"No Background found, plannings cannot be added.", "Information", MessageBoxButton.OK, MessageBoxImage.Error);
+                        else
+                        {
+                            await PlanningHandlerHelper.ProcessForTransaction(payload, selectedProjectEvent, authApiViewModel, this, loader, sqlCon, backgroundImagePath);
+                        }
                     }
+                    catch (Exception)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                    transaction.Commit();
+                    sqlCon?.Close();
                 }
-                catch (Exception)
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-                transaction.Commit();
-                sqlCon?.Close();
+                Refresh();
+                LoaderHelper.HideLoader(this, loader);
             }
-            Refresh();
-            LoaderHelper.HideLoader(this, loader);
 
         }
         #endregion
@@ -312,14 +361,22 @@ namespace VideoCreatorXAMLLibrary
 
         private void AddCallout1_Click(object sender, RoutedEventArgs e)
         {
-            var payload = CalloutPreprocessing();
-            ContextMenu_AddCallout1_Clicked.Invoke(sender, payload);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+            {
+                var payload = CalloutPreprocessing();
+                ContextMenu_AddCallout1_Clicked.Invoke(sender, payload);
+            }
         }
 
         private void AddCallout2_Click(object sender, RoutedEventArgs e)
         {
-            var payload = CalloutPreprocessing();
-            ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+            {
+                var payload = CalloutPreprocessing();
+                ContextMenu_AddCallout2_Clicked.Invoke(sender, payload);
+            }
         }
 
         private FormOrCloneEvent CalloutPreprocessing(bool IsCallout = true)
@@ -346,8 +403,12 @@ namespace VideoCreatorXAMLLibrary
 
         private void AddFormEvent_Click(object sender, RoutedEventArgs e)
         {
-            var payload = CalloutPreprocessing(false);
-            ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+            {
+                var payload = CalloutPreprocessing(false);
+                ContextMenu_AddFormEvent_Clicked.Invoke(sender, payload);
+            }
         }
 
 
@@ -358,16 +419,24 @@ namespace VideoCreatorXAMLLibrary
 
         private void AddImageEventUsingCBLibrary_Click(object sender, RoutedEventArgs e)
         {
-            var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId);
-            ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+            {
+                var trackbarTime = DataManagerSqlLite.GetNextStart((int)EnumMedia.FORM, selectedProjectEvent.projdetId);
+                ContextMenu_AddImageEventUsingCBLibrary_Clicked.Invoke(sender, trackbarTime);
+            }
         }
 
         private void RunEvent_Click(object sender, RoutedEventArgs e)
         {
-            ContextMenu_Run_Clicked.Invoke(sender, e);
+            var result = ConfirmOverwriteChanges();
+            if (result != MessageBoxResult.Cancel)
+            {
+                ContextMenu_Run_Clicked.Invoke(sender, e);
+            }
         }
         #endregion
 
-        
+
     }
 }
