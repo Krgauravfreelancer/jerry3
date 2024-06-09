@@ -658,7 +658,7 @@ namespace DesignerNp.controls
 
             var bc = new BrushConverter();
             verticalLine.Background = (Brush)bc.ConvertFrom("#0345bf");
-            verticalLine.Width = 3;
+            verticalLine.Width = 0;
             verticalLine.Cursor = Cursors.SizeWE;
         }
 
