@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace DesignerNp.controls
+namespace DesignerNp.Adorners
 {
     internal class ChatBubbleAdorners : Adorner
     {

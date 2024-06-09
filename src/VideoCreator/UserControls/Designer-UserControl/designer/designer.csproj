@@ -64,7 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TextBoxAdorners.cs" />
+    <Compile Include="Adorners\TextBoxAdorners.cs" />
     <Page Include="Designer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -77,16 +77,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="ArrowAdorners.cs" />
-    <Compile Include="ChatBubbleAdorners.cs" />
+    <Compile Include="Adorners\ArrowAdorners.cs" />
+    <Compile Include="Adorners\ChatBubbleAdorners.cs" />
     <Compile Include="Designer.xaml.cs">
       <DependentUpon>Designer.xaml</DependentUpon>
     </Compile>
-    <Compile Include="LineAdorners.cs" />
+    <Compile Include="Adorners\LineAdorners.cs" />
     <Compile Include="PropertyWindow.xaml.cs">
       <DependentUpon>PropertyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ResizeRotateAdorners.cs" />
+    <Compile Include="Adorners\ResizeRotateAdorners.cs" />
     <Compile Include="ShapeBar.xaml.cs">
       <DependentUpon>ShapeBar.xaml</DependentUpon>
     </Compile>

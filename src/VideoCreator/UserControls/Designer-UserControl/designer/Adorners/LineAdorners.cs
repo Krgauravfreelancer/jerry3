@@ -4,7 +4,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace DesignerNp.controls
+namespace DesignerNp.Adorners
 {
     internal class LineAdorners : Adorner
     {

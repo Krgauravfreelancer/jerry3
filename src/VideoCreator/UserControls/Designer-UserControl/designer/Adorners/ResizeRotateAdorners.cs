@@ -6,12 +6,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
-
-namespace DesignerNp.controls
+namespace DesignerNp.Adorners
 {
-    internal class TextBoxAdorners : Adorner
+    internal class ResizeRotateAdorners : Adorner
     {
-
         VisualCollection visuals;
 
         Thumb rotate;
@@ -25,7 +23,7 @@ namespace DesignerNp.controls
 
         Thumb resize;
 
-        public TextBoxAdorners(TextBox adornedElement) : base(adornedElement)
+        public ResizeRotateAdorners(UIElement adornedElement) : base(adornedElement)
         {
             visuals = new VisualCollection(this);
 
@@ -48,8 +46,8 @@ namespace DesignerNp.controls
             }
 
             uIElement.RenderTransformOrigin = new Point(0.5, 0.5);
-            double width = AdornedElement.RenderSize.Width;
-            double height = AdornedElement.RenderSize.Height;
+            double width = AdornedElement.DesiredSize.Width;
+            double height = AdornedElement.DesiredSize.Height;
 
             container = VisualTreeHelper.GetParent(uIElement) as Canvas;
 
@@ -95,8 +93,6 @@ namespace DesignerNp.controls
 
         private void Resize_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            return;
-            /*
             uIElement = AdornedElement;
             container = VisualTreeHelper.GetParent(uIElement) as Canvas;
             if (null == uIElement || null == container)
@@ -104,29 +100,19 @@ namespace DesignerNp.controls
                 return;
             }
 
-            TextBox textBox = (TextBox)AdornedElement;
+            double newhHeight = (double)uIElement.GetValue(HeightProperty) + e.VerticalChange;
+            double newWwidth = (double)uIElement.GetValue(WidthProperty) + e.HorizontalChange;
 
-            // Initial Condition
-            if ("MatrixTransform" == textBox.LayoutTransform.GetType().Name)
+
+            if (newhHeight > 0)
             {
-                textBox.LayoutTransform = new ScaleTransform(1, 1);
+                uIElement.SetValue(HeightProperty, newhHeight);
             }
 
-            ScaleTransform scaleTransform = (ScaleTransform)textBox.LayoutTransform;
-
-            double oldWidth = textBox.RenderSize.Width;
-            double oldHeight = textBox.RenderSize.Height;
-
-            double newWwidth = oldWidth + e.HorizontalChange / scaleTransform.ScaleX;
-            double newhHeight = oldHeight + e.VerticalChange / scaleTransform.ScaleY;
-
-            if (newWwidth > 0 && newhHeight > 0)
+            if (newWwidth > 0)
             {
-                scaleTransform.ScaleX = newWwidth * scaleTransform.ScaleX / oldWidth;
-                scaleTransform.ScaleY = newhHeight * scaleTransform.ScaleY / oldHeight;
-                textBox.LayoutTransform = scaleTransform;
+                uIElement.SetValue(WidthProperty, newWwidth);
             }
-            */
         }
 
         private void ArrowEnd_DragDelta(object sender, DragDeltaEventArgs e)
@@ -148,44 +134,11 @@ namespace DesignerNp.controls
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-            TextBox textBox = (TextBox)AdornedElement;
-            double scaleX = 1;
-            double scaleY = 1;
-            if ("ScaleTransform" == textBox.LayoutTransform.GetType().Name)
-            {
-                ScaleTransform scaleTransform = (ScaleTransform)textBox.LayoutTransform;
-                scaleX = scaleTransform.ScaleX;
-                scaleY = scaleTransform.ScaleY;
-            }
+            rotate.Arrange(new Rect(AdornedElement.DesiredSize.Width / 2 - 5, -30, 10, 10));
 
-            rotate.Arrange(new Rect(AdornedElement.RenderSize.Width / 2 - (5 / scaleX), -5 / scaleY, 10, 10));
-
-            resize.Arrange(new Rect(AdornedElement.RenderSize.Width - 5, AdornedElement.RenderSize.Height - 5, 10, 10));
+            resize.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, 10, 10));
 
             return base.ArrangeOverride(finalSize);
         }
-
-
-        public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
-        {
-            TextBox textBox = (TextBox)AdornedElement;
-
-            if ("ScaleTransform" == textBox.LayoutTransform.GetType().Name)
-            {
-                ScaleTransform scaleTransform = (ScaleTransform)textBox.LayoutTransform;
-
-                double newScaleX = 1.0 / scaleTransform.ScaleX;
-                double newScaleY = 1.0 / scaleTransform.ScaleY;
-
-                if (newScaleX > 0 && newScaleY > 0)
-                {
-                    rotate.RenderTransform = new ScaleTransform(1.0 / scaleTransform.ScaleX, 1.0 / scaleTransform.ScaleY);
-                    resize.RenderTransform = new ScaleTransform(1.0 / scaleTransform.ScaleX, 1.0 / scaleTransform.ScaleY);
-                }
-            }
-
-            return base.GetDesiredTransform(transform);
-        }
-
     }
 }
