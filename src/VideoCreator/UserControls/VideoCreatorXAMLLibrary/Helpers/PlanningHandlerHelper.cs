@@ -129,7 +129,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
+            var finalBlob = designImagerUserControl.XMLToImage(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
 
             string notes_duration = "00:00:10.000";
@@ -150,7 +150,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(title).Replace("'", "''");
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
+            var finalBlob = designImagerUserControl.XMLToImage(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
             var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: null, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, "00:00:10.000", planningServerId: 0, sqlCon);
             return result;
@@ -167,7 +167,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 rowTitle["design_xml"] += Environment.NewLine + GetTitleElement(text).Replace("'", "''");
 
                 var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
-                var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
+                var finalBlob = designImagerUserControl.XMLToImage(designerUserControl.dataTableObject);
                 designImagerUserControl.SaveToDataTable(finalBlob);
 
                 var dtNotes = GetNotesDatatable(item.planning_notesline, out string notes_duration);
@@ -265,7 +265,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             var notedataTable = GetNotesDatatable(notesText, out string notes_duration);
 
             var designImagerUserControl = new DesignImager_UserControl(designerUserControl.dataTableObject);
-            var finalBlob = XMLToImagePlanningSetup(designerUserControl.dataTableObject);
+            var finalBlob = designImagerUserControl.XMLToImage(designerUserControl.dataTableObject);
             designImagerUserControl.SaveToDataTable(finalBlob);
             var result = await SavePlanningToServerAndLocalDB(designImagerUserControl, designerUserControl, dtNotes: notedataTable, selectedProjectEvent, authApiViewModel, EnumTrack.IMAGEORVIDEO, notes_duration, item.planning_serverid, sqlCon);
             return result;
@@ -381,62 +381,6 @@ namespace VideoCreatorXAMLLibrary.Helpers
             var top = 280 + (bulletNumber * 150);
             var circle = $"<Ellipse Fill=\"#00000000\" Stroke=\"#FFF0F8FF\" StrokeThickness=\"10\" StrokeDashArray=\"\" Width=\"20\" Height=\"20\" Opacity=\"1\" Canvas.Left=\"380\" Canvas.Top=\"{top}\" xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><Ellipse.RenderTransform><RotateTransform Angle=\"0\" /></Ellipse.RenderTransform></Ellipse>";
             return circle;
-        }
-
-        public static byte[] XMLToImagePlanningSetup(DataTable dataTable)
-        {
-            // Get the Image as byte stream 
-            Canvas container = new Canvas();
-            container.RenderSize = new Size(1920, 1080);
-
-            //Canvas canvas = new Canvas();
-            //canvas.RenderSize = new Size(1920, 1080);
-            string text = $@"<Canvas
-                                xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
-                                xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
-            string text2 = "</Canvas>";
-            foreach (DataRow row in dataTable.Rows)
-            {
-                var xaml = (string)row["design_xml"];
-                string s = text + xaml + text2;
-                StringReader input = new StringReader(s);
-                XmlReader reader = XmlReader.Create(input);
-                var canvas = (Canvas)XamlReader.Load(reader);
-                canvas.RenderSize = new Size(1920, 1080);
-                if (canvas.Children.Count == 1)
-                {
-                    UIElement element = canvas.Children[0];
-                    canvas.Children.RemoveAt(0);
-                    container.Children.Add(element);
-                }
-                else
-                {
-                    while (canvas.Children.Count > 0)
-                    {
-                        UIElement element = canvas.Children[0];
-                        canvas.Children.RemoveAt(0);
-                        container.Children.Add(element);
-                    }
-                }
-            }
-
-            container.Measure(new Size(1920, 1080));
-            Rect rect = new Rect(0, 0, 1920, 1080);
-            container.Arrange(rect);
-
-            //Rect rect = new Rect(canvas.RenderSize);
-            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96.0, 96.0, PixelFormats.Default);
-            renderTargetBitmap.Render(container);
-
-            BitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-            bitmapEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-            MemoryStream memoryStream = new MemoryStream();
-            bitmapEncoder.Save(memoryStream);
-            // Process 
-            byte[] blob = (byte[])memoryStream.ToArray();
-            BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
-            memoryStream.Close();
-            return blob;
         }
 
         private static async Task<int> ProcessVideoSegmentDataRowByRow(DataRow row, SelectedProjectEvent selectedProjectEvent, AuthAPIViewModel authApiViewModel, SQLiteConnection sqlCon)

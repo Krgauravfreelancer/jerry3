@@ -130,6 +130,15 @@ namespace VideoCreatorXAMLLibrary.Helpers
         private static DesignImager_UserControl CallOut_XML2Image(DataTable designDataTable, UserControl uc, LoadingAnimation loader)
         {
             var designImagerUserControl = new DesignImager_UserControl(designDataTable);
+            var blob = designImagerUserControl.XMLToImage(designDataTable);
+            if (blob != null && designImagerUserControl.dtVideoSegment != null)
+            {
+                designImagerUserControl.SaveToDataTable(blob);
+                return designImagerUserControl;
+            }
+                
+            return null;
+            /*
             var window = new Window
             {
                 Title = "Design Image",
@@ -141,6 +150,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
             if (result.HasValue && designImagerUserControl.dtVideoSegment != null && designImagerUserControl.dtVideoSegment.Rows.Count > 0)
                 return designImagerUserControl;
             return null;
+            */
         }
 
 

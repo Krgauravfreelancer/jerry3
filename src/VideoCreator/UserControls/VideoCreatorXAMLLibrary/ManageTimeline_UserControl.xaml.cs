@@ -581,10 +581,10 @@ namespace VideoCreatorXAMLLibrary
                             placeholderWindow.Show();
                             LoaderHelper.HideLoader(this, loader);
                         }
-                        else
-                        {
-                            MessageBox.Show("Not a placeholder event so cant be edited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
+                        //else
+                        //{
+                        //    MessageBox.Show("Not a placeholder event so cant be edited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        //}
                     }
 
                 

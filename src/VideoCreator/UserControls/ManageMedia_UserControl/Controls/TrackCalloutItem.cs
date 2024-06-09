@@ -26,7 +26,8 @@ namespace ManageMedia_UserControl.Controls
         internal Color Color = Colors.Gray;
         internal event EventHandler<Media> MediaSelectedEvent;
         ContextMenu myContextMenu;
-        MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, AddImageUsingLibraryAfterSelectedEventBtn, EditEventBtn;
+        MenuItem DeleteEventBtn, CloneEventAtTrackbarLocationBtn, CloneEventAtTimelineEndBtn, EditEventBtn;
+        //MenuItem AddImageUsingLibraryAfterSelectedEventBtn;
         TimeLine timeLine;
         List<TrackCalloutItem> TrackCalloutItems;
         Border OverTimeBorder;

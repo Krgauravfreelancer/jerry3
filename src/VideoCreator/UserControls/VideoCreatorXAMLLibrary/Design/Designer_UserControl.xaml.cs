@@ -99,7 +99,7 @@ namespace VideoCreatorXAMLLibrary.XAML
 
         #region == Events ==
 
-        private void BtnProceed_Click(object sender, RoutedEventArgs e)
+        private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             DataTable designElements = designer.GetDesign();
             designViewer.LoadDesign(designElements);

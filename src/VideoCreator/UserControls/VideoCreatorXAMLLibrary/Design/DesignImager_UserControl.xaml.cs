@@ -3,9 +3,13 @@ using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml;
 
 namespace VideoCreatorXAMLLibrary
 {
@@ -36,10 +40,13 @@ namespace VideoCreatorXAMLLibrary
             DataTable dataTable = designImager.GetImage();
 
             // Process 
-            byte[] blob = (byte[])dataTable.Rows[0]["imageData"];
-            BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
-            imgDesign.Source = x;
-            SaveToDataTable(blob);
+            if (dataTable != null)
+            {
+                byte[] blob = (byte[])dataTable.Rows[0]["imageData"];
+                BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
+                imgDesign.Source = x;
+                SaveToDataTable(blob);
+            }
             UserConsent = true;
             var myWindow = Window.GetWindow(this);
             myWindow.Close();
@@ -101,6 +108,62 @@ namespace VideoCreatorXAMLLibrary
             newRow["videosegment_modifydate"] = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             newRow["videosegment_media"] = blob;
             dtVideoSegment.Rows.Add(newRow);
+        }
+
+        public byte[] XMLToImage(DataTable dataTable)
+        {
+            // Get the Image as byte stream 
+            Canvas container = new Canvas();
+            container.RenderSize = new Size(1920, 1080);
+
+            //Canvas canvas = new Canvas();
+            //canvas.RenderSize = new Size(1920, 1080);
+            string text = $@"<Canvas
+                                xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
+                                xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
+            string text2 = "</Canvas>";
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var xaml = (string)row["design_xml"];
+                string s = text + xaml + text2;
+                StringReader input = new StringReader(s);
+                XmlReader reader = XmlReader.Create(input);
+                var canvas = (Canvas)XamlReader.Load(reader);
+                canvas.RenderSize = new Size(1920, 1080);
+                if (canvas.Children.Count == 1)
+                {
+                    UIElement element = canvas.Children[0];
+                    canvas.Children.RemoveAt(0);
+                    container.Children.Add(element);
+                }
+                else
+                {
+                    while (canvas.Children.Count > 0)
+                    {
+                        UIElement element = canvas.Children[0];
+                        canvas.Children.RemoveAt(0);
+                        container.Children.Add(element);
+                    }
+                }
+            }
+
+            container.Measure(new Size(1920, 1080));
+            Rect rect = new Rect(0, 0, 1920, 1080);
+            container.Arrange(rect);
+
+            //Rect rect = new Rect(canvas.RenderSize);
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)rect.Right, (int)rect.Bottom, 96.0, 96.0, PixelFormats.Default);
+            renderTargetBitmap.Render(container);
+
+            BitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+            bitmapEncoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+            MemoryStream memoryStream = new MemoryStream();
+            bitmapEncoder.Save(memoryStream);
+            // Process 
+            byte[] blob = (byte[])memoryStream.ToArray();
+            BitmapSource x = (BitmapSource)((new ImageSourceConverter()).ConvertFrom(blob));
+            memoryStream.Close();
+            return blob;
         }
     }
 }
