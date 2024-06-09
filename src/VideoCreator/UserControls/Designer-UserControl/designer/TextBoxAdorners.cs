@@ -95,6 +95,8 @@ namespace DesignerNp.controls
 
         private void Resize_DragDelta(object sender, DragDeltaEventArgs e)
         {
+            return;
+            /*
             uIElement = AdornedElement;
             container = VisualTreeHelper.GetParent(uIElement) as Canvas;
             if (null == uIElement || null == container)
@@ -124,6 +126,7 @@ namespace DesignerNp.controls
                 scaleTransform.ScaleY = newhHeight * scaleTransform.ScaleY / oldHeight;
                 textBox.LayoutTransform = scaleTransform;
             }
+            */
         }
 
         private void ArrowEnd_DragDelta(object sender, DragDeltaEventArgs e)
