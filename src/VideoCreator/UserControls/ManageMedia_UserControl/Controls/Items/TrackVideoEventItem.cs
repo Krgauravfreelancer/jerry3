@@ -12,7 +12,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
 using Sqllite_Library.Models;
 
-namespace ManageMedia_UserControl.Controls
+namespace ManageMedia_UserControl.Controls.Items
 {
     public class TrackVideoEventItem : Border
     {

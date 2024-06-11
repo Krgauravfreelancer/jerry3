@@ -17,7 +17,7 @@ using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
 using System.Windows.Documents;
 using Sqllite_Library.Models;
 
-namespace ManageMedia_UserControl.Controls
+namespace ManageMedia_UserControl.Controls.Items
 {
     public class TrackCalloutItem : Border
     {

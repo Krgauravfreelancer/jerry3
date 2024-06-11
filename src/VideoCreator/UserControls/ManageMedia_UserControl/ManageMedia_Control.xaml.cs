@@ -564,7 +564,10 @@ namespace ManageMedia_UserControl
                         true));
                     else
                     {
-
+                        if (CloseWindow != null)
+                        {
+                            CloseWindow(this, EventArgs.Empty);
+                        }
                     }
                 };
 

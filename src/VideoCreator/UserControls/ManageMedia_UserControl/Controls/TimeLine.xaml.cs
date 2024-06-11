@@ -2,6 +2,7 @@
 using ManageMedia_UserControl.Classes;
 using ManageMedia_UserControl.Classes.TimeLine;
 using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
+using ManageMedia_UserControl.Controls.Items;
 using ManageMedia_UserControl.Models;
 using NAudio.CoreAudioApi;
 using NAudio.Gui;

@@ -12,6 +12,7 @@ using NAudio.Mixer;
 using System.Windows.Media.Imaging;
 using System.Windows.Input;
 using System.Security.Policy;
+using ManageMedia_UserControl.Controls.Items;
 
 namespace ManageMedia_UserControl.Classes.TimeLine.DrawEngine
 {

@@ -1,5 +1,6 @@
 ﻿using ManageMedia_UserControl.Classes.TimeLine.DrawEngine;
 using ManageMedia_UserControl.Controls;
+using ManageMedia_UserControl.Controls.Items;
 using ManageMedia_UserControl.Models;
 using ScreenRecorder_UserControl.Models;
 using System;

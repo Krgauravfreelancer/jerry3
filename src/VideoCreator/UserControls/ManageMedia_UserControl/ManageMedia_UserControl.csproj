@@ -87,7 +87,7 @@
     <Compile Include="Controls\TrackbarLineControl.xaml.cs">
       <DependentUpon>TrackbarLineControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TrackCalloutItem.cs" />
+    <Compile Include="Controls\Items\TrackCalloutItem.cs" />
     <Compile Include="Models\LocationChangedEvent.cs" />
     <Compile Include="Models\MouseDownEvent.cs" />
     <Compile Include="TimeLineHelpers.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Controls\TimeLine.xaml.cs">
       <DependentUpon>TimeLine.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TrackVideoEventItem.cs" />
+    <Compile Include="Controls\Items\TrackVideoEventItem.cs" />
     <Compile Include="Models\PlannedText.cs" />
     <Compile Include="ManageMedia_Control.xaml.cs">
       <DependentUpon>ManageMedia_Control.xaml</DependentUpon>
@@ -202,8 +202,6 @@
       <Name>SQLite_Library</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\Items\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
