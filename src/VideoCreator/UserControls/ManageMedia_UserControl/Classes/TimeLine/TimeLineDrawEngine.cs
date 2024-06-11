@@ -181,7 +181,7 @@ namespace ManageMedia_UserControl.Classes.TimeLine
 
                     //Draw Track Items
                     DrawVideoEvents.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _Playlist, _TrackMediaElements, timeline, DrawProperties, IsReadOnly, Result, TrackVideoEventItems, TrackCalloutItems, IsManageMedia);
-                    if (!alreadyAdded && !IsManageMedia)
+                    if (!alreadyAdded)
                         AddEventHandlers(MainCanvas, timeline);
                     DrawNoteItems.Draw(MainCanvas, LegendCanvas, ViewPortStart, ViewPortDuration, _ItemControlsOnTimeLine, _NoteItemControls, timeline, DrawProperties, Result);
 

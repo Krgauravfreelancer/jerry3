@@ -552,6 +552,7 @@ namespace ManageMedia_UserControl
                 };
 
                 closingPrompt.SaveClicked += (se, ee) => {
+                    if(_ReadOnly == false)
                     ManageMediaSaveEvent(
                         new ManageMediaSaveEventArgs(
                         Result.CreatedVideoEvents,
@@ -561,6 +562,10 @@ namespace ManageMedia_UserControl
                         Result.DeletedTextItem,
                         Result.ChangedTextItem, 
                         true));
+                    else
+                    {
+
+                    }
                 };
 
                 closingPrompt.CancelClicked += (se, ee) => {

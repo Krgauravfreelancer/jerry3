@@ -31,17 +31,17 @@ namespace ManageMedia_UserControl.Controls
         TimeLine timeLine;
         List<TrackCalloutItem> TrackCalloutItems;
         Border OverTimeBorder;
-        bool _IsManageMedia;
+        bool IsManageMedia;
         TrackCalloutItem NextElement;
         public bool IsSelected;
-        internal TrackCalloutItem(Media media, Color color, EnumMedia MediaType, TimeLine timeline, double width, double height, bool IsManageMedia, Canvas MainCanvas, List<TrackCalloutItem> _TrackCalloutItems)
+        internal TrackCalloutItem(Media media, Color color, EnumMedia MediaType, TimeLine timeline, double width, double height, bool _IsManageMedia, Canvas MainCanvas, List<TrackCalloutItem> _TrackCalloutItems)
         {
             this.Unloaded += TrackCalloutItem_Unloaded;
             MediaCallout = media;
             Color = color;
             timeLine = timeline;
             TrackCalloutItems = _TrackCalloutItems;
-            _IsManageMedia = IsManageMedia;
+            IsManageMedia = _IsManageMedia;
             if (height < 2)
             { 
                 height = 2;
@@ -126,8 +126,7 @@ namespace ManageMedia_UserControl.Controls
             {
                 rightBorderItem.Margin = new Thickness(width - 8, 0, 0, 0);
             }
-            if(!IsManageMedia)
-                AddEventHandlers(rightBorderItem, MainCanvas);
+            AddEventHandlers(rightBorderItem, MainCanvas);
 
             return rightBorderItem;
         }
@@ -230,7 +229,7 @@ namespace ManageMedia_UserControl.Controls
 
         private void SetupContextMenu(TimeLine timeline)
         {
-            if (!_IsManageMedia)
+            if (!IsManageMedia)
             {
                 myContextMenu = new ContextMenu();
 
@@ -313,7 +312,7 @@ namespace ManageMedia_UserControl.Controls
             
             if (myContextMenu != null)
             {
-                if (!_IsManageMedia)
+                if (!IsManageMedia)
                 {
                     myContextMenu.Closed -= MyContextMenu_Closed;
                     DeleteEventBtn.Click -= timeLine.DeleteEventBtn_Click;
