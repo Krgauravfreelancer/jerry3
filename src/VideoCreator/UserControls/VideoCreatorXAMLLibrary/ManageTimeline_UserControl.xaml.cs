@@ -120,7 +120,11 @@ namespace VideoCreatorXAMLLibrary
             uc.ManageMedia_NotesDeletedEvent += (List<int> DeletedIds) => { };
             uc.ManageMedia_AddVideoEvents += (DataTable dt) => { };
             uc.ManageMedia_DeletedVideoEvents += (int videoeventLocalId) => { };
-            uc.ManageMedia_AdjustVideoEvents += (DataTable table) => { };
+            uc.ManageMedia_AdjustVideoEvents += async (DataTable table) => 
+            {
+                await ManageMedia_AdjustVideoEvents(GeneratedRecorderWindow, table, uc);
+                Refresh();
+            };
 
             // Logic to Display window
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
