@@ -37,8 +37,8 @@ namespace VideoCreatorXAMLLibrary
         private int selectedVideoEventId = -1;
         private int undoVideoEventId = -1;
 
-        
-        
+
+
         /// <summary>
         /// Constructor to call the manage timeline
         /// </summary>
@@ -99,7 +99,7 @@ namespace VideoCreatorXAMLLibrary
         private void Refresh()
         {
             TimelineUserConrol.Refresh();
-            if(mouseEventToProcess != null)
+            if (mouseEventToProcess != null)
                 TimelineUserConrol_TrackbarMouseMoveEvent(null, mouseEventToProcess);
         }
 
@@ -321,7 +321,7 @@ namespace VideoCreatorXAMLLibrary
 
 
         #region == Manage Media Notes Section ==
-        
+
         /// <summary>
         /// Event ==> TimelineUserConrol ==> Manage Media ==> New Note is created
         /// </summary>
@@ -355,7 +355,7 @@ namespace VideoCreatorXAMLLibrary
             {
                 var localVideoEventId = Convert.ToInt32(item.Key);
                 var selectedServerVideoEventId = DataManagerSqlLite.GetVideoEventbyId(localVideoEventId, false, false)[0].videoevent_serverid;
-                
+
                 var updatedNotes = await authApiViewModel.PUTNotes(selectedServerVideoEventId, item.Value);
                 if (updatedNotes != null)
                 {
@@ -526,77 +526,60 @@ namespace VideoCreatorXAMLLibrary
                 }
                 else if (editVideoEvent.videoevent_track == (int)EnumTrack.IMAGEORVIDEO)
                 {
-                    if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.VIDEO || editVideoEvent.fk_videoevent_media == (int)EnumMedia.IMAGE)
+                    var isPlaceholder = DataManagerSqlLite.IsPlaceHolderEvent(editVideoeventLocalId);
+                    if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.VIDEO || editVideoEvent.fk_videoevent_media == (int)EnumMedia.IMAGE || (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM && isPlaceholder))
                     {
-                        var isPlaceholder = DataManagerSqlLite.IsPlaceHolderEvent(editVideoeventLocalId);
-                        if (true)
+
+                        LoaderHelper.ShowLoader(this, loader, "Edit event Window is opened ..");
+                        var uc = new ScreenRecorderWindowManager();
+                        var placeholderWindow = uc.CreateWindowWithPlaceHolder(selectedProjectEvent, editVideoeventLocalId);
+
+                        uc.ScreenRecorder_BtnReplaceEvent += async (PlaceholderEvent placeholderEvent) =>
                         {
-                            LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
-                            var uc = new ScreenRecorderWindowManager();
-                            var placeholderWindow = uc.CreateWindowWithPlaceHolder(selectedProjectEvent, editVideoeventLocalId);
+                            LoaderHelper.ShowLoader(this, loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
 
-                            uc.ScreenRecorder_BtnReplaceEvent += async (PlaceholderEvent placeholderEvent) =>
-                            {
-                                LoaderHelper.ShowLoader(this, loader, $"Deleting event with id - {editVideoeventLocalId} and shifting other events");
+                            // Logic Here
+                            var videoevent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, true, false).FirstOrDefault();
 
-                                // Logic Here
-                                var videoevent = DataManagerSqlLite.GetVideoEventbyId(editVideoeventLocalId, true, false).FirstOrDefault();
+                            // Step-1 Delete the existing event and shift afterwards event
+                            await ShiftEventsHelper.DeleteAndShiftEvent(editVideoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
 
-                                // Step-1 Delete the existing event and shift afterwards event
-                                await ShiftEventsHelper.DeleteAndShiftEvent(editVideoeventLocalId, videoevent.videoevent_serverid, isShift: true, EnumTrack.IMAGEORVIDEO, videoevent.videoevent_duration, videoevent.videoevent_end, selectedProjectEvent, authApiViewModel);
+                            LoaderHelper.ShowLoader(this, loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
 
-                                LoaderHelper.ShowLoader(this, loader, $"saving {placeholderEvent?.newEventsDT?.Rows.Count} events ..");
+                            // Step-2 Fetch next events of Added event
+                            var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
 
-                                // Step-2 Fetch next events of Added event
-                                var tobeShiftedVideoEvents = DataManagerSqlLite.GetShiftVideoEventsbyStartTime(selectedProjectEvent.projdetId, videoevent.videoevent_start);
-
-                                // Step-3 Add new element(s)
-                                await AddVideoEvent_Clicked(placeholderEvent?.newEventsDT);
+                            // Step-3 Add new element(s)
+                            await AddVideoEvent_Clicked(placeholderEvent?.newEventsDT);
 
 
-                                // Step-4 Call server API to shift video event and then save locally the shifted events
-                                await ShiftEventsHelper.ShiftRight(tobeShiftedVideoEvents, placeholderEvent.newDuration.ToString(@"hh\:mm\:ss\.fff"), selectedProjectEvent, authApiViewModel);
+                            // Step-4 Call server API to shift video event and then save locally the shifted events
+                            await ShiftEventsHelper.ShiftRight(tobeShiftedVideoEvents, placeholderEvent.newDuration.ToString(@"hh\:mm\:ss\.fff"), selectedProjectEvent, authApiViewModel);
 
 
-                                //Step-5 Replace the notes Id if needed from previous to new
-                                if(videoevent?.notes_data?.Count > 0)
-                                {
-
-                                }
-
-                                LoaderHelper.HideLoader(this, loader);
-
-                                //Step-6: Finally refresh the timeline
-                                Refresh();
-                            };
-
-
-                            placeholderWindow.Closed += (se, ev) =>
-                            {
-                                this.Visibility = Visibility.Visible;
-                                placeholderWindow = null;
-                                Refresh();
-                            };
-                            this.Visibility = Visibility.Hidden;
-                            placeholderWindow.Show();
                             LoaderHelper.HideLoader(this, loader);
-                        }
-                        //else
-                        //{
-                        //    MessageBox.Show("Not a placeholder event so cant be edited", "Edit Video/Image Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                        //}
+
+                            //Step-5: Finally refresh the timeline
+                            Refresh();
+                        };
+
+                        placeholderWindow.Closed += (se, ev) => 
+                        {
+                            placeholderWindow = null;
+                            Refresh();
+                        };
+                        placeholderWindow.Show();
+                        LoaderHelper.HideLoader(this, loader);
+
+                    }
+                    else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
+                    {
+                        LoaderHelper.ShowLoader(this, loader, "Edit event Window is opened ..");
+                        await FormHandlerHelper.EditFormEvent(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
+                        Refresh();
+                        LoaderHelper.HideLoader(this, loader);
                     }
 
-                
-
-                else if (editVideoEvent.fk_videoevent_media == (int)EnumMedia.FORM)
-                {
-                    LoaderHelper.ShowLoader(this, loader, "Edit Form Window is opened ..");
-                    await FormHandlerHelper.EditFormEvent(editVideoeventLocalId, selectedProjectEvent, authApiViewModel, this, loader);
-                    Refresh();
-                    LoaderHelper.HideLoader(this, loader);
-                }
-                   
                 }
             }
         }
