@@ -5,6 +5,7 @@ using Sqllite_Library.Helpers;
 using Sqllite_Library.Models;
 using System;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,12 +32,11 @@ namespace VideoCreatorXAMLLibrary.Helpers
             if (videoEvent != null)
             {
                 var VideoFileName = $"{outputFolder}\\video_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.mp4";
-
                 Stream t = new FileStream(VideoFileName, FileMode.Create);
                 BinaryWriter b = new BinaryWriter(t);
                 b.Write(videoEvent.videosegment_data[0].videosegment_media);
                 t.Close();
-
+                b.Close();
                 var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
                 var convertedImage = await video2image.ConvertVideoToImage();
                 return convertedImage;
@@ -46,14 +46,45 @@ namespace VideoCreatorXAMLLibrary.Helpers
             if (imageEvent != null)
             {
                 var imagePath = $"{outputFolder}\\image_{DateTime.UtcNow.ToString("yyyy-MM-dd-HH-mm-ss")}.png";
-
-                Stream t = new FileStream(imagePath, FileMode.Create);
-                BinaryWriter b = new BinaryWriter(t);
-                b.Write(imageEvent.videosegment_data[0].videosegment_media);
-                t.Close();
-                return imagePath;
+                //MemoryStream ms = new MemoryStream(imageEvent.videosegment_data[0].videosegment_media);
+                //System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                //Bitmap bitmap1 = new Bitmap(img);
+                //Stream t = new FileStream(imagePath, FileMode.Create);
+                //BinaryWriter b = new BinaryWriter(t);
+                //b.Write(imageEvent.videosegment_data[0].videosegment_media);
+                //t.Close();
+                return ReSize(imageEvent.videosegment_data[0].videosegment_media, imagePath);
             }
+            
             return null;
+        }
+
+        private static string ReSize(byte[] bytes, string path)
+        {
+            MemoryStream ms = new MemoryStream(bytes);
+            System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+            Bitmap original = new Bitmap(img);
+            double aspectRatio = (double)original.Width / (double)original.Height;
+            double desiredRatio = (double)16 / (double)9;
+            if (desiredRatio > aspectRatio)
+            {
+                // Width is more, calc new height
+                var newheight = (double)original.Width * ((double)9 / (double)16);
+                Bitmap resized = new Bitmap(original, new System.Drawing.Size(original.Width, (int)newheight));
+                resized.Save(path);
+            }
+            else if (desiredRatio < aspectRatio)
+            {
+                // Height is more
+                var newWidth = (double)original.Height * ((double)16 / (double)9);
+                Bitmap resized = new Bitmap(original, new System.Drawing.Size((int)newWidth, original.Height));
+                resized.Save(path);
+            }
+            else
+            {
+                original.Save(path);
+            }
+            return path;
         }
 
         public static async Task<string> PreprocessAndGetBackgroundImageForEdit(CBVVideoEvent editVideoEvent, SelectedProjectEvent selectedProjectEvent)

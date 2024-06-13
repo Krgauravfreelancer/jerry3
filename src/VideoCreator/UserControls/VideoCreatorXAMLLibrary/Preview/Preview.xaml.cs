@@ -79,8 +79,27 @@ namespace VideoCreatorXAMLLibrary
                         {
                             using (var ms = new MemoryStream(imageBytes))
                             {
-                                var bmp = new Bitmap(ms);
-                                bmps.Add(bmp);
+                                Bitmap original = new Bitmap(ms);
+                                double aspectRatio = (double)original.Width / (double)original.Height;
+                                double desiredRatio = (double)16 / (double)9;
+                                if(desiredRatio > aspectRatio)
+                                {
+                                    // Width is more, calc new height
+                                    var newheight = (double)original.Width * ((double)9 / (double)16);
+                                    Bitmap resized = new Bitmap(original, new Size(original.Width, (int)newheight));
+                                    bmps.Add(resized);
+                                }
+                                else if (desiredRatio < aspectRatio)
+                                {
+                                    // Height is more
+                                    var newWidth = (double)original.Height * ((double)16 / (double)9);
+                                    Bitmap resized = new Bitmap(original, new Size((int)newWidth, original.Height));
+                                    bmps.Add(resized);
+                                }
+                                else
+                                {
+                                    bmps.Add(original);
+                                }
                             }
                         }
                     }
@@ -163,10 +182,8 @@ namespace VideoCreatorXAMLLibrary
                 //get a graphics object from the image so we can draw on it
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(finalImage))
                 {
-
-
                     //set background color
-                    g.Clear(System.Drawing.Color.White);
+                    g.Clear(System.Drawing.Color.Black);
 
                     //go through each image and draw it on the final image
                     int offset = 0;
