@@ -775,6 +775,18 @@ namespace VideoCreatorXAMLLibrary
             Console.WriteLine("The dispose() function has been called and the resources have been released!");
         }
 
-
+        private void txtprojectFiler_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var txt = txtprojectFiler.Text;
+            if (string.IsNullOrEmpty(txt))
+            {
+                datagrid.ItemsSource = availableProjectsDataSource;
+            }
+            else
+            {
+                var newSource = availableProjectsDataSource.FindAll(x => x.project_videotitle.ToLower().Contains(txt.ToLower()));
+                datagrid.ItemsSource = newSource;
+            }
+        }
     }
 }

@@ -36,7 +36,6 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 BinaryWriter b = new BinaryWriter(t);
                 b.Write(videoEvent.videosegment_data[0].videosegment_media);
                 t.Close();
-                b.Close();
                 var video2image = new VideoToImage_UserControl.VideoToImage_UserControl(VideoFileName, outputFolder);
                 var convertedImage = await video2image.ConvertVideoToImage();
                 return convertedImage;

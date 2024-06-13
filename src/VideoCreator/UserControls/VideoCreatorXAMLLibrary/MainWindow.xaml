@@ -25,8 +25,10 @@
             <!--<TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>-->
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
         </StackPanel>
-
-
+        <StackPanel Orientation="Horizontal" Margin="10,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Label Height="25" Width="85" Content="Project Filter" HorizontalAlignment="Right" VerticalAlignment="Top" FontWeight="Bold"/>
+            <TextBox Height="25" Width="400" Background="#ececec" x:Name="txtprojectFiler" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top"  TextChanged="txtprojectFiler_TextChanged"/>
+        </StackPanel>
         <!--<Label Content="Project Status" HorizontalAlignment="Left" VerticalAlignment="Top"  Foreground="#3381CC"  Margin="10,100,0,0"  Width="150" Height="25" FontWeight="Bold"/>-->
         <DataGrid ContextMenuOpening="GridContextMenuOpening" x:Name="datagrid" IsReadOnly="True" SelectionMode="Single" CanUserReorderColumns="False" CanUserResizeColumns="False" CanUserResizeRows="False" SelectionChanged="datagrid_SelectionChanged" Visibility="Hidden" MinRowHeight="25" VerticalAlignment="Stretch" HorizontalAlignment="Center" Padding="0" Width="1140" Margin="0,110,0,60" AutoGenerateColumns="False" Style="{DynamicResource DataGridStyle1}" >
 
