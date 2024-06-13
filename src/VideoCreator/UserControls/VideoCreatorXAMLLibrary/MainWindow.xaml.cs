@@ -268,6 +268,7 @@ namespace VideoCreatorXAMLLibrary
                 datagrid.SelectedItem = availableProjectsDataSource?.Find(x => x.project_id == selected.project_id && x.projdet_version == selected.projdet_version);
             datagrid.Visibility = Visibility.Visible;
             manageApplicationStack.Visibility = Visibility.Visible;
+            filterStack.Visibility = Visibility.Visible;    
         }
 
         /// <summary>
@@ -285,6 +286,7 @@ namespace VideoCreatorXAMLLibrary
                 datagrid.SelectedItem = availableProjectsDataSource?.Find(x => x.project_id == selected.project_id && x.projdet_version == selected.projdet_version);
             datagrid.Visibility = Visibility.Visible;
             manageApplicationStack.Visibility = Visibility.Visible;
+            filterStack.Visibility = Visibility.Visible;
         }
 
         /// <summary>
@@ -701,6 +703,7 @@ namespace VideoCreatorXAMLLibrary
         private async void BtnRefresh_Click(object sender, RoutedEventArgs e)
         {
             LoaderHelper.ShowLoader(this, loader);
+            txtprojectFiler.Text = string.Empty;
             await InitialiseAndRefreshScreenForSubsequentCall();
             LoaderHelper.HideLoader(this, loader);
         }
@@ -784,9 +787,20 @@ namespace VideoCreatorXAMLLibrary
             }
             else
             {
-                var newSource = availableProjectsDataSource.FindAll(x => x.project_videotitle.ToLower().Contains(txt.ToLower()));
+                var newSource = availableProjectsDataSource.FindAll(x => isMatched(txt, x.project_videotitle) == true);
                 datagrid.ItemsSource = newSource;
             }
+        }
+
+        private bool isMatched(string txtToSearch, string text)
+        {
+            var txtArray = txtToSearch.Split(' ');
+            for (int i = 0; i< txtArray.Length;i++)
+            {
+                if (text.ToLower().Contains(txtArray[i].ToLower()))
+                    return true;
+            }
+            return false;
         }
     }
 }

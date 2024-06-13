@@ -25,7 +25,7 @@
             <!--<TextBlock x:Name="txtToken" Margin="0,0,0,0" Foreground="#3381CC" HorizontalAlignment="Right"/>-->
             <TextBlock x:Name="txtError" Margin="0,0,0,0" Foreground="Red" HorizontalAlignment="Right"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Margin="10,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+        <StackPanel x:Name="filterStack" Orientation="Horizontal" Margin="10,75,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Hidden">
             <Label Height="25" Width="85" Content="Project Filter" HorizontalAlignment="Right" VerticalAlignment="Top" FontWeight="Bold"/>
             <TextBox Height="25" Width="400" Background="#ececec" x:Name="txtprojectFiler" HorizontalAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Top"  TextChanged="txtprojectFiler_TextChanged"/>
         </StackPanel>
