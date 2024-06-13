@@ -794,11 +794,29 @@ namespace VideoCreatorXAMLLibrary
 
         private bool isMatched(string txtToSearch, string text)
         {
-            var txtArray = txtToSearch.Split(' ');
-            for (int i = 0; i< txtArray.Length;i++)
+            if (string.IsNullOrEmpty(txtToSearch))
+                return true;
+
+            if (txtToSearch.IndexOf("+") > -1)
             {
-                if (text.ToLower().Contains(txtArray[i].ToLower()))
-                    return true;
+                var txtArray = txtToSearch.Split('+');
+                var returnFlag = true;
+                for (int i = 0; i < txtArray.Length; i++)
+                {
+                    if (text.ToLower().Contains(txtArray[i].ToLower()))
+                        returnFlag = returnFlag && true;
+                    else returnFlag = false;
+                }
+                return returnFlag;
+            }
+            else
+            {
+                var txtArray = txtToSearch.Split(' ');
+                for (int i = 0; i < txtArray.Length; i++)
+                {
+                    if (text.ToLower().Contains(txtArray[i].ToLower()))
+                        return true;
+                }
             }
             return false;
         }
