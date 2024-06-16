@@ -83,7 +83,7 @@ namespace ManageMedia_UserControl
                 ControlBar.Visibility = Visibility.Visible;
                 RecordBtn.IsEnabled = false;
             }
-            TimeLineControl.CalloutLocationOrSizeChangedMedia.CollectionChanged += CalloutLocationOrSizeChangedMedia_CollectionChanged;
+            ResetCalloutLocationOrSizeChangedMedia();
         }
 
         private void CalloutLocationOrSizeChangedMedia_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -100,6 +100,12 @@ namespace ManageMedia_UserControl
                 SaveBtnIcon.Opacity = 0.5;
                 SaveBtnTxt.Text = "- Media Items Saved   ✓";
             }
+        }
+
+        public void ResetCalloutLocationOrSizeChangedMedia()
+        {
+            TimeLineControl.CalloutLocationOrSizeChangedMedia = new System.Collections.ObjectModel.ObservableCollection<Media>();
+            TimeLineControl.CalloutLocationOrSizeChangedMedia.CollectionChanged += CalloutLocationOrSizeChangedMedia_CollectionChanged;
         }
 
         public void SetProjectInfo(int projectID)

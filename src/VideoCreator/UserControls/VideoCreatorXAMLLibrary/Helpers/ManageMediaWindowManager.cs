@@ -51,6 +51,7 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 _ManageMedia.SaveTimeline_Clicked += async (object sender, List<CBVVideoEvent> modifiedEvents) =>
                 {
                     await _ManageMedia_SaveTimeline_Clicked(_ManageMedia, modifiedEvents);
+                    _ManageMedia.ResetCalloutLocationOrSizeChangedMedia();
                 };
             }
             _Window = new Window

@@ -22,7 +22,7 @@ using MMModel = ManageMedia_UserControl.Models;
 
 namespace VideoCreatorXAMLLibrary
 {
-    public partial class Timeline_UserControl2 : UserControl
+    public partial class Timeline_UserControl : UserControl
     {
         public bool HasData { get; set; } = false;
         private SelectedProjectEvent selectedProjectEvent;
@@ -53,7 +53,7 @@ namespace VideoCreatorXAMLLibrary
         private bool ReadOnlyFlag;
         private EnumRole Role;
         //int i;
-        public Timeline_UserControl2()
+        public Timeline_UserControl()
         {
             InitializeComponent();
             lblMesssage.Content = "";
