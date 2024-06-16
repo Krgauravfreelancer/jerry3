@@ -113,7 +113,7 @@ namespace VideoCreatorXAMLLibrary
         {
             LoaderHelper.ShowLoader(this, loader);
             var uc = new ManageMediaWindowManager();
-            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent, readOnly: true);
+            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent, authApiViewModel, readOnly: true);
 
             uc.ManageMedia_NotesCreatedEvent += (DataTable dt) => { };
             uc.ManageMedia_NotesChangedEvent += (DataTable dt) => { };
@@ -248,7 +248,7 @@ namespace VideoCreatorXAMLLibrary
         {
             LoaderHelper.ShowLoader(this, loader);
             var uc = new ManageMediaWindowManager();
-            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent);
+            var GeneratedRecorderWindow = uc.CreateWindow(selectedProjectEvent, authApiViewModel, readOnly: false);
             LoaderHelper.ShowLoader(GeneratedRecorderWindow, uc.loader);
 
             uc.ManageMedia_NotesCreatedEvent += async (DataTable dt) =>

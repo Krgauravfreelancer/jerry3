@@ -5,6 +5,7 @@ using ManageMedia_UserControl.Classes;
 using ManageMedia_UserControl.Controls;
 using ManageMedia_UserControl.Models;
 using ScreenRecorder_UserControl.Models;
+using Sqllite_Library.Business;
 using Sqllite_Library.Models;
 using System;
 using System.Collections.Generic;
@@ -42,15 +43,13 @@ namespace ManageMedia_UserControl
 
         bool ItemsAreSaved = false;
 
-
+        public event EventHandler<List<CBVVideoEvent>> SaveTimeline_Clicked;
         (TimeSpan ViewportStart, TimeSpan ViewportDuration, TimeSpan MainCursorTime) Viewport;
 
         public ManageMedia_Control()
         {
             InitializeComponent();
-
             _ReadOnly = false;
-
             Initialize();
         }
 
@@ -93,7 +92,7 @@ namespace ManageMedia_UserControl
             {
                 SaveBtn.IsEnabled = true;
                 SaveBtnIcon.Opacity = 1;
-                SaveBtnTxt.Text = "- Unsaved Changes ...";
+                SaveBtnTxt.Text = $"- {TimeLineControl?.CalloutLocationOrSizeChangedMedia?.Count} Unsaved Changes ...";
             }
             else
             {
@@ -650,27 +649,49 @@ namespace ManageMedia_UserControl
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            (List<Media> DeletedVideoEvents,
-                List<Media> ChangedVideoEvents,
-                List<Media> CreatedVideoEvents,
-                List<TextItem> DeletedTextItem,
-                List<TextItem> ChangedTextItem,
-                List<(TextItem TextItem, int VideoEventID)> CreatedTextItem) Result = AnalyseChanges();
+            if (TimeLineControl?.CalloutLocationOrSizeChangedMedia?.Count > 0)
+            {
+                var modifiedEvents = new List<CBVVideoEvent>();
+                foreach (var item in TimeLineControl?.CalloutLocationOrSizeChangedMedia)
+                {
+                    if (item != null)
+                    {
+                        var videoevent = DataManagerSqlLite.GetVideoEventbyId(item.VideoEventID, false, false).FirstOrDefault();
+                        videoevent.videoevent_start = item.StartTime.ToString(@"hh\:mm\:ss\.fff");
+                        videoevent.videoevent_duration = item.Duration.ToString(@"hh\:mm\:ss\.fff");
+                        videoevent.videoevent_end = DataManagerSqlLite.CalcNextEnd(videoevent.videoevent_start, videoevent.videoevent_duration);
+                        modifiedEvents.Add(videoevent);
+                    }
+                }
+                SaveTimeline_Clicked.Invoke(sender, modifiedEvents);
+                ItemsAreSaved = true;
+                UpdateSaveBtnStatus();
+            }
+            else
+            {
+                // Will be used in READONLY = FALSE
+                (List<Media> DeletedVideoEvents,
+                    List<Media> ChangedVideoEvents,
+                    List<Media> CreatedVideoEvents,
+                    List<TextItem> DeletedTextItem,
+                    List<TextItem> ChangedTextItem,
+                    List<(TextItem TextItem, int VideoEventID)> CreatedTextItem) Result = AnalyseChanges();
 
-            Viewport = TimeLineControl.GetViewport();
+                Viewport = TimeLineControl.GetViewport();
 
-            ManageMediaSaveEvent(
-                new ManageMediaSaveEventArgs(
-                Result.CreatedVideoEvents,
-                Result.DeletedVideoEvents,
-                Result.ChangedVideoEvents,
-                Result.CreatedTextItem,
-                Result.DeletedTextItem,
-                Result.ChangedTextItem,
-                false));
+                ManageMediaSaveEvent(
+                    new ManageMediaSaveEventArgs(
+                    Result.CreatedVideoEvents,
+                    Result.DeletedVideoEvents,
+                    Result.ChangedVideoEvents,
+                    Result.CreatedTextItem,
+                    Result.DeletedTextItem,
+                    Result.ChangedTextItem,
+                    false));
 
-            ItemsAreSaved = true;
-            UpdateSaveBtnStatus();
+                ItemsAreSaved = true;
+                UpdateSaveBtnStatus();
+            }
         }
 
         private (List<Media> DeletedVideoEvents, List<Media> ChangedVideoEvents, List<Media> CreatedVideoEvents,

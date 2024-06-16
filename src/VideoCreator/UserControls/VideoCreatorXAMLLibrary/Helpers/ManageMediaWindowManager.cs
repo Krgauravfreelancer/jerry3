@@ -8,9 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using VideoCreatorXAMLLibrary.Auth;
 using VideoCreatorXAMLLibrary.Loader;
 using ManageMedia = ManageMedia_UserControl.Classes.Media;
 using SCModels = ScreenRecorder_UserControl.Models;
@@ -25,10 +27,12 @@ namespace VideoCreatorXAMLLibrary.Helpers
         public LoadingAnimation loader;
         bool WasDataSaved = false;
         bool ReadOnly = false;
+        private AuthAPIViewModel authApiViewModel;
 
-        public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent, bool readOnly = false)
+        public Window CreateWindow(SelectedProjectEvent _selectedProjectEvent, AuthAPIViewModel _authApiViewModel, bool readOnly = false)
         {
             ReadOnly = readOnly;
+            authApiViewModel = _authApiViewModel;
             _ManageMedia = new ManageMedia_Control(ReadOnly: ReadOnly);
             selectedProjectEvent = _selectedProjectEvent;
 
@@ -44,6 +48,10 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 //Events Go Here
                 _ManageMedia.CloseWindow += _ManageMedia_CloseWindow;
                 _ManageMedia.ManageMediaSave += _ManageMedia_ManageMediaSave;
+                _ManageMedia.SaveTimeline_Clicked += async (object sender, List<CBVVideoEvent> modifiedEvents) =>
+                {
+                    await _ManageMedia_SaveTimeline_Clicked(_ManageMedia, modifiedEvents);
+                };
             }
             _Window = new Window
             {
@@ -53,10 +61,53 @@ namespace VideoCreatorXAMLLibrary.Helpers
                 Content = AddLoaderAndReturnContent(),
             };
             _Window.Closing += _Window_Closing;
-
             //window.Show();
             return _Window;
         }
+
+        private async Task _ManageMedia_SaveTimeline_Clicked(ManageMedia_Control _manageMedia, List<CBVVideoEvent> modifiedEvents)
+        {
+            LoaderHelper.ShowLoader(_manageMedia, loader, "Processing ...");
+            foreach (var modifiedEvent in modifiedEvents)
+            {
+                var response = await MediaEventHandlerHelper.UpdateVideoEventOnlyToServer(modifiedEvent, selectedProjectEvent, authApiViewModel);
+                if (response != null)
+                {
+
+                    var videoEventDt = new DataTable();
+                    videoEventDt.Columns.Add("videoevent_id", typeof(int));
+                    videoEventDt.Columns.Add("fk_videoevent_media", typeof(int));
+                    videoEventDt.Columns.Add("videoevent_track", typeof(int));
+                    videoEventDt.Columns.Add("videoevent_start", typeof(string));
+
+                    videoEventDt.Columns.Add("videoevent_duration", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_origduration", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_end", typeof(string));
+                    videoEventDt.Columns.Add("videoevent_isdeleted", typeof(bool));
+                    videoEventDt.Columns.Add("videoevent_issynced", typeof(bool));
+                    videoEventDt.Columns.Add("videoevent_syncerror", typeof(string));
+
+                    videoEventDt.Columns.Add("videoevent_modifyDate", typeof(string));
+
+                    DataRow dataRow = videoEventDt.NewRow();
+                    dataRow["videoevent_id"] = modifiedEvent.videoevent_id;
+                    dataRow["fk_videoevent_media"] = response.fk_videoevent_media;
+                    dataRow["videoevent_track"] = response.videoevent_track;
+                    dataRow["videoevent_start"] = response.videoevent_start;
+                    dataRow["videoevent_duration"] = response.videoevent_duration;
+                    dataRow["videoevent_origduration"] = response.videoevent_origduration;
+                    dataRow["videoevent_end"] = response.videoevent_end;
+                    dataRow["videoevent_isdeleted"] = response.videoevent_isdeleted;
+                    dataRow["videoevent_issynced"] = response.videoevent_issynced;
+                    dataRow["videoevent_syncerror"] = response.videoevent_syncerror ?? string.Empty;
+                    videoEventDt.Rows.Add(dataRow);
+                    DataManagerSqlLite.UpdateRowsToVideoEvent(videoEventDt);
+                }
+            }
+            RefreshData();
+            LoaderHelper.HideLoader(_manageMedia, loader);
+        }
+    
 
         private Grid AddLoaderAndReturnContent()
         {
