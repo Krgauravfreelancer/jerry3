@@ -81,8 +81,25 @@ namespace ManageMedia_UserControl
             else
             {
                 RecordPanel.Visibility = Visibility.Collapsed;
-                ControlBar.Visibility = Visibility.Collapsed;
+                ControlBar.Visibility = Visibility.Visible;
                 RecordBtn.IsEnabled = false;
+            }
+            TimeLineControl.CalloutLocationOrSizeChangedMedia.CollectionChanged += CalloutLocationOrSizeChangedMedia_CollectionChanged;
+        }
+
+        private void CalloutLocationOrSizeChangedMedia_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add || e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Replace)
+            {
+                SaveBtn.IsEnabled = true;
+                SaveBtnIcon.Opacity = 1;
+                SaveBtnTxt.Text = "- Unsaved Changes ...";
+            }
+            else
+            {
+                SaveBtn.IsEnabled = false;
+                SaveBtnIcon.Opacity = 0.5;
+                SaveBtnTxt.Text = "- Media Items Saved   ✓";
             }
         }
 
@@ -651,8 +668,6 @@ namespace ManageMedia_UserControl
                 Result.DeletedTextItem,
                 Result.ChangedTextItem,
                 false));
-
-
 
             ItemsAreSaved = true;
             UpdateSaveBtnStatus();

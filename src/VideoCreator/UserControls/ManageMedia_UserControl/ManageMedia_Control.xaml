@@ -339,8 +339,6 @@
 
 
             </controls:ClippingBorder>
-
-
             <controls:ClippingBorder  Grid.Row="2" Margin="5,0,5,5" CornerRadius="3" MinHeight="200" DockPanel.Dock="Bottom" Background="#FFEAEAEA" BorderBrush="#d5dfe5" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -123,6 +123,7 @@ namespace VideoCreatorXAMLLibrary
             uc.ManageMedia_AdjustVideoEvents += async (DataTable table) => 
             {
                 await ManageMedia_AdjustVideoEvents(GeneratedRecorderWindow, table, uc);
+                uc.RefreshData();
                 Refresh();
             };
 

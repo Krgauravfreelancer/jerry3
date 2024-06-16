@@ -157,8 +157,10 @@ namespace VideoCreatorXAMLLibrary.Helpers
             }
             else
             {
-                _ManageMedia.SetProjectInfo(selectedProjectEvent.projectId);
-                RefreshData();
+                WasDataSaved = true;
+                LoaderHelper.HideLoader(_Window, loader);
+                //_ManageMedia.SetProjectInfo(selectedProjectEvent.projectId);
+                //RefreshData();
             }
         }
 

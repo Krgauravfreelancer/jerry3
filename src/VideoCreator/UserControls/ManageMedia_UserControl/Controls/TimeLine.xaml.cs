@@ -1539,13 +1539,16 @@ namespace ManageMedia_UserControl.Controls
         {
             foreach (var item in LCModel.CallOutItems)
             {
-                if(CalloutLocationOrSizeChangedMedia != null && CalloutLocationOrSizeChangedMedia.Count > 0)
+                if (item.MediaCallout != null)
                 {
-                    var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.ToList().Find(x => x?.VideoEventID == item?.MediaCallout?.VideoEventID);
-                    if (isAlreadyExist != null)
-                        CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
+                    if (CalloutLocationOrSizeChangedMedia != null && CalloutLocationOrSizeChangedMedia.Count > 0)
+                    {
+                        var isAlreadyExist = CalloutLocationOrSizeChangedMedia?.ToList().Find(x => x?.VideoEventID == item?.MediaCallout?.VideoEventID);
+                        if (isAlreadyExist != null)
+                            CalloutLocationOrSizeChangedMedia.Remove(isAlreadyExist);
+                    }
+                    CalloutLocationOrSizeChangedMedia.Add(item.MediaCallout);
                 }
-                CalloutLocationOrSizeChangedMedia.Add(item.MediaCallout);
             }
 
             //foreach (var item in LCModel.VideoEventItems)
