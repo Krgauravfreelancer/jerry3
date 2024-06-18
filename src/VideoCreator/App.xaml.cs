@@ -47,7 +47,7 @@ namespace VideoCreator
                 $"\n\n(if you click Yes you will continue with your work, if you click No the application will close)";
 
             LogManagerHelper.WriteErroreLog($"Exception Occured. Please see below - {exception}{Environment.NewLine}StackTrace : {e.Exception.StackTrace}");
-
+            LoaderHelper.HideAllLoader();
             if (MessageBox.Show(errorMessage, "Application Error", MessageBoxButton.YesNoCancel, MessageBoxImage.Error) == MessageBoxResult.No)
             {
                 if (MessageBox.Show("WARNING: The application will close. Any changes will not be saved!\nDo you really want to close it?", "Close the application!", MessageBoxButton.YesNoCancel, MessageBoxImage.Warning) == MessageBoxResult.Yes)
